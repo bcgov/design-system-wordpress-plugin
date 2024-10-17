@@ -14,3 +14,8 @@ License URI: LICENSE
 Text Domain: design-system-wordpress-plugin
 Tags:
 */
+
+// Enque mega-menu-nav block
+if ( file_exists( __DIR__ . '/blocks/mega-menu-nav/mega-menu-nav.php' ) ) {
+    require_once __DIR__ . '/blocks/mega-menu-nav/mega-menu-nav.php';
+}
