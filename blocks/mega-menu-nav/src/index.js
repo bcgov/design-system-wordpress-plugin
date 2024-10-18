@@ -1,0 +1,44 @@
+/**
+ * Registers a new block provided a unique name and an object defining its behavior.
+ *
+ * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
+ */
+import { registerBlockType } from "@wordpress/blocks";
+
+/**
+ * Internal dependencies
+ */
+import Edit from "./edit";
+import save from "./save";
+import metadata from "./block.json";
+
+/**
+ * Every block starts by registering a new block type definition.
+ *
+ * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
+ */
+
+const calendarIcon = (
+	<svg
+		viewBox="0 0 24 24"
+		xmlns="http://www.w3.org/2000/svg"
+		aria-hidden="true"
+		focusable="false"
+	>
+		<path d="M44.394,13.091L8.633,29.503c-0.399,0.184-0.632,0.605-0.574,1.041s0.393,0.782,0.826,0.854l15.833,2.653l1.809,14.95 c0.054,0.438,0.389,0.791,0.824,0.865c0.057,0.01,0.113,0.015,0.169,0.015c0.375,0,0.726-0.211,0.896-0.556l17.291-34.882 c0.188-0.38,0.117-0.837-0.178-1.141S44.776,12.914,44.394,13.091z M28.11,45.438l-1.496-12.369 c-0.054-0.44-0.391-0.793-0.828-0.866l-13.362-2.239L42.66,16.087L28.11,45.438z"></path>{" "}
+		<path d="M30,0C13.458,0,0,13.458,0,30s13.458,30,30,30s30-13.458,30-30S46.542,0,30,0z M30,58C14.561,58,2,45.439,2,30 S14.561,2,30,2s28,12.561,28,28S45.439,58,30,58z"></path>{" "}
+	</svg>
+);
+
+registerBlockType(metadata.name, {
+	icon: calendarIcon,
+	/**
+	 * @see ./edit.js
+	 */
+	edit: Edit,
+
+	/**
+	 * @see ./save.js
+	 */
+	save,
+});

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "create-block/mega-menu-nav",
+  "version": "0.1.0",
+  "title": "Mega Menu Nav",
+  "category": "widgets",
+  "description": "Example block scaffolded with Create Block tool.",
+  "example": {},
+  "supports": {
+    "color": {
+      "background": false,
+      "text": true
+    },
+    "html": false,
+    "typography": {
+      "fontSize": true
+    }
+  },
+  "textdomain": "mega-menu-nav",
+  "editorScript": "file:./index.js",
+  "attributes": {
+    "showIcon": {
+      "type": "boolean"
+    },
+    "menuIcon": {
+      "type": "string"
+    }
+  }
+}
