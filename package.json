@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@wordpress/element": "^6.10.0"
+  }
+}

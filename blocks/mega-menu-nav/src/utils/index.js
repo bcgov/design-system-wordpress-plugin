@@ -1,0 +1,1 @@
+export { getEntity } from "./getEntity";
