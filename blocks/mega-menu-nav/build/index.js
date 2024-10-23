@@ -21,8 +21,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils */ "./src/utils/index.js");
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @wordpress/blocks */ "@wordpress/blocks");
-/* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _utils_parseNavLinks__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils/parseNavLinks */ "./src/utils/parseNavLinks.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__);
 
@@ -41,31 +40,13 @@ function Edit({
   } = attributes;
   const [navMenus, setNavMenus] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_4__.useState)([]);
   const [openNavMenuSelector, setopenNavMenuSelector] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_4__.useState)(false);
+  const [currentNavMenu, setCurrentNavMenu] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_4__.useState)([]);
 
   // Fetch nav menus and update state
   const handleFetchNavMenus = async () => {
     const menus = await (0,_utils__WEBPACK_IMPORTED_MODULE_3__.getEntity)("postType", "wp_navigation");
     setNavMenus(menus);
     setopenNavMenuSelector(!openNavMenuSelector);
-    console.log('menus', menus);
-  };
-
-  // Parse the navigation links and create blocks
-  const parseNavigationLinks = content => {
-    // Assuming content.raw is a string of HTML
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(content, 'text/html');
-    const links = Array.from(doc.querySelectorAll('li.wp-block-navigation-item'));
-    const blocks = links.map(link => {
-      const anchor = link.querySelector('a');
-      const label = anchor.querySelector('span').textContent;
-      const url = anchor.href;
-      return (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.createBlock)('core/navigation-link', {
-        label: label,
-        url: url
-      });
-    });
-    setNavigationBlocks(blocks);
   };
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.Fragment, {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.InspectorControls, {
@@ -93,6 +74,10 @@ function Edit({
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.MenuGroup, {
           children: navMenus.map(menuItem => {
             return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.MenuItem, {
+              onClick: event => {
+                const findSelectNav = navMenus.find(item => item.title.rendered === event.target.innerText);
+                setCurrentNavMenu((0,_utils_parseNavLinks__WEBPACK_IMPORTED_MODULE_5__.parseNavLinks)(findSelectNav.content.raw));
+              },
               children: menuItem.title.rendered
             });
           })
@@ -170,6 +155,36 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _getEntity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getEntity */ "./src/utils/getEntity.js");
 
+
+/***/ }),
+
+/***/ "./src/utils/parseNavLinks.js":
+/*!************************************!*\
+  !*** ./src/utils/parseNavLinks.js ***!
+  \************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   parseNavLinks: () => (/* binding */ parseNavLinks)
+/* harmony export */ });
+const parseNavLinks = rawNavLinks => {
+  const regex = /<!-- wp:navigation-link\s*{([^}]*)}\s*\/-->/g;
+  let matches;
+  const links = [];
+  while ((matches = regex.exec(rawNavLinks)) !== null) {
+    const jsonString = `{${matches[1]}}`; // Create a JSON string from the captured group
+    const linkData = JSON.parse(jsonString); // Parse the JSON string
+    links.push({
+      label: linkData.label,
+      type: linkData.type,
+      id: linkData.id,
+      url: linkData.url,
+      kind: linkData.kind
+    }); // Store the properties in the links array
+  }
+  return links;
+};
 
 /***/ }),
 

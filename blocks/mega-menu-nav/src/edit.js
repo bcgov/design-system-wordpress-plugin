@@ -7,45 +7,22 @@ import {
 	MenuItem,
 } from "@wordpress/components";
 import { getEntity } from "./utils";
-import { useState, useEffect } from "@wordpress/element";
-import { createBlock } from "@wordpress/blocks"; 
+import { useState } from "@wordpress/element";
+import { parseNavLinks } from "./utils/parseNavLinks";
 
 export default function Edit({ attributes, setAttributes }) {
 	const { menuIcon } = attributes;
 
 	const [navMenus, setNavMenus] = useState([]);
-	const [openNavMenuSelector, setopenNavMenuSelector] = useState(false)
+	const [openNavMenuSelector, setopenNavMenuSelector] = useState(false);
+	const [currentNavMenu, setCurrentNavMenu] = useState([]);
 
 	// Fetch nav menus and update state
 	const handleFetchNavMenus = async () => {
 		const menus = await getEntity("postType", "wp_navigation");
 		setNavMenus(menus);
-		setopenNavMenuSelector(!openNavMenuSelector)
-		console.log('menus', menus)
+		setopenNavMenuSelector(!openNavMenuSelector);
 	};
-
-
-		// Parse the navigation links and create blocks
-		const parseNavigationLinks = (content) => {
-			// Assuming content.raw is a string of HTML
-			const parser = new DOMParser();
-			const doc = parser.parseFromString(content, 'text/html');
-			const links = Array.from(doc.querySelectorAll('li.wp-block-navigation-item'));
-	
-			const blocks = links.map(link => {
-				const anchor = link.querySelector('a');
-				const label = anchor.querySelector('span').textContent;
-				const url = anchor.href;
-	
-				return createBlock('core/navigation-link', {
-					label: label,
-					url: url,
-				});
-			});
-	
-			setNavigationBlocks(blocks);
-		};
-	
 
 	return (
 		<>
@@ -62,10 +39,25 @@ export default function Edit({ attributes, setAttributes }) {
 						onChange={(value) => setAttributes({ menuIcon: value })}
 					/>
 				</PanelBody>
-				<PanelBody title={__("Navigation Menu", "choose-nav-menu")} opened={openNavMenuSelector} onToggle={handleFetchNavMenus}>
+				<PanelBody
+					title={__("Navigation Menu", "choose-nav-menu")}
+					opened={openNavMenuSelector}
+					onToggle={handleFetchNavMenus}
+				>
 					<MenuGroup>
 						{navMenus.map((menuItem) => {
-							return <MenuItem>{menuItem.title.rendered}</MenuItem>;
+							return (
+								<MenuItem
+									onClick={(event) => {
+										const findSelectNav = navMenus.find(
+											(item) => item.title.rendered === event.target.innerText
+										);
+										setCurrentNavMenu(parseNavLinks(findSelectNav.content.raw));
+									}}
+								>
+									{menuItem.title.rendered}
+								</MenuItem>
+							);
 						})}
 					</MenuGroup>
 				</PanelBody>
