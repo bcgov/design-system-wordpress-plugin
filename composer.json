@@ -1,0 +1,55 @@
+{
+    "name": "bcgov-plugin/design-system-wordpress-plugin",
+    "description": "Design System WordPress Plugin",
+    "version": "1.0.0",
+    "type": "wordpress-plugin",
+    "license": "Apache-2.0",
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://apps.itsm.gov.bc.ca/satis"
+        }
+    ],
+    "require-dev": {
+        "bcgov/wordpress-utils": "2.3.0",
+        "yoast/phpunit-polyfills": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Bcgov\\Theme\\DesignSystem\\": [
+                "src",
+                "inc"
+            ]
+        }
+    },
+    "scripts": {
+        "update-version":[ 
+            " bash update-version.sh" 
+        ],
+        "test-setup":[ 
+            "bash vendor/bcgov/wordpress-utils/bin/install-wp-tests.sh wordpress_test root 'rootpassword' 0.0.0.0 latest"
+        ],
+        "production": [
+            "composer validate",
+            "composer phpcs"
+        ],
+        "phpcs": [
+            "Bcgov\\Script\\Standards::phpcs"
+        ],
+        "phpcbf": [
+            "Bcgov\\Script\\Standards::phpcbf"
+        ],
+        "test": [
+            "vendor/bin/phpunit --configuration vendor/bcgov/wordpress-utils/phpunit.xml.dist"
+        ],
+        "coverage": [
+            "./vendor/bin/phpunit --coverage-html ./coverage/php/"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/installers": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
+}

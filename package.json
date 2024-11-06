@@ -1,0 +1,31 @@
+{
+  "name": "design-system-wordpress-plugin",
+  "version": "1.0.0",
+  "description": "Design System WordPress Plugin",
+  "author": "govwordpress@gov.bc.ca",
+  "license": "GPL-2.0-or-later",
+  "keywords": [
+    "WordPress",
+    "Block Theme",
+    "BCGov",
+    "DesignSystem",
+    "Gutenberg"
+  ],
+  "homepage": "https://github.com/bcgov/design-system-wordpress-plugin#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bcgov/design-system-wordpress-plugin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bcgov/design-system-wordpress-plugin#readme",
+    "email": "govwordpress@gov.bc.ca"
+  },
+  "engines": {
+    "npm": ">= 10.7.0",
+    "node": ">=20.15.1"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "@wordpress/element": "^6.10.0"
+  }
+}
