@@ -17,10 +17,10 @@
  * @package DesignSystemPlugin
  */
 
-namespace DesignSystemPlugin\NotificationBanner;
+// Include autoload.
+require __DIR__ . '/vendor/autoload.php';
 
-// Include the custom banner class.
-require_once 'notification-banner/index.php';
+use Bcgov\DesignSystemPlugin\NotificationBanner;
 
 // Initialize the custom banner class.
 new NotificationBanner();

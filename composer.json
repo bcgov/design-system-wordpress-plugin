@@ -16,10 +16,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Bcgov\\Theme\\DesignSystem\\": [
-                "src",
-                "inc"
-            ]
+          "Bcgov\\DesignSystemPlugin\\": "src/Bcgov/DesignSystemPlugin/"
         }
     },
     "scripts": {
