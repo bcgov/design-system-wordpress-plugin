@@ -30,3 +30,5 @@ node_modules/
 .env
 
 vendor
+
+.DS_Store

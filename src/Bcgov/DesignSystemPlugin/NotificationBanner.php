@@ -15,7 +15,7 @@ class NotificationBanner {
      *
      * @var array
      */
-    private $color_map = [
+    const COLOR_MAP = [
         'var(--dswp-icons-color-warning)' => 'black',
         'var(--dswp-icons-color-danger)'  => 'white',
         'var(--dswp-icons-color-success)' => 'white',
@@ -25,7 +25,7 @@ class NotificationBanner {
     /**
      * NotificationBanner constructor.
      */
-    public function __construct() {
+    public function init() {
         add_action( 'admin_menu', [ $this, 'add_menu' ] );
         add_action( 'admin_init', [ $this, 'register_settings' ] );
         add_action( 'wp_head', [ $this, 'display_banner' ] );
@@ -75,7 +75,7 @@ class NotificationBanner {
      * Renders the settings page for the Design System.
      */
     public function render_settings_page() {
-		?>
+        ?>
         <div class="wrap">
             <h1><?php esc_html_e( 'Design System Settings', 'dswp' ); ?></h1>
         </div>
@@ -192,6 +192,6 @@ class NotificationBanner {
      * @return string The text color.
      */
     private function get_text_color( $background_color ) {
-        return isset( $this->color_map[ $background_color ] ) ? $this->color_map[ $background_color ] : 'black';
+        return isset( self::COLOR_MAP[ $background_color ] ) ? self::COLOR_MAP[ $background_color ] : 'black';
     }
 }

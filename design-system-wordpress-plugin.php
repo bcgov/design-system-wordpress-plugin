@@ -17,10 +17,24 @@
  * @package DesignSystemPlugin
  */
 
-// Include autoload.
-require __DIR__ . '/vendor/autoload.php';
+/**
+ * Loads the autoloader.
+ */
+if ( ! class_exists( 'Bcgov\\DesignSystemPlugin\\NotificationBanner' ) ) {
+    $local_composer  = __DIR__ . '/vendor/autoload.php';
+    $server_composer = __DIR__ . '/../../../../vendor/autoload.php';
+    if ( file_exists( $local_composer ) || file_exists( $server_composer ) ) {
+        if ( file_exists( $server_composer ) ) {
+            require_once $server_composer;
+        }
+        if ( ! class_exists( 'Bcgov\\DesignSystemPlugin\\NotificationBanner' ) ) {
+            require_once $local_composer;
+        }
+    }
+}
 
 use Bcgov\DesignSystemPlugin\NotificationBanner;
 
 // Initialize the custom banner class.
-new NotificationBanner();
+$notification_banner = new NotificationBanner();
+$notification_banner->init();
