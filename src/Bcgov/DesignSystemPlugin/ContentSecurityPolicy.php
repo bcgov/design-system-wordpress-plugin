@@ -18,19 +18,19 @@ class ContentSecurityPolicy {
             'option'      => 'default_src',
             'title'       => 'Default-src Policy',
             'description' => 'Fallback whitelist item for most sources. Default includes: ',
-            'default'     => "'self' gov.bc.ca *.gov.bc.ca data: *.twitter.com *.twimg.com",
+            'default'     => "'self' gov.bc.ca *.gov.bc.ca data: *.twimg.com",
         ],
         'script-src'  => [
             'option'      => 'script_src',
             'title'       => 'Script-src Policy',
             'description' => 'Allowlist for script sources. Default includes: ',
-            'default'     => "'self' 'unsafe-inline' 'unsafe-eval' gov.bc.ca *.gov.bc.ca *.twimg.com *.twitter.com *.flickr.com",
+            'default'     => "'self' 'unsafe-inline' 'unsafe-eval' gov.bc.ca *.gov.bc.ca *.twimg.com *.flickr.com",
         ],
         'style-src'   => [
             'option'      => 'style_src',
             'title'       => 'Style-src Policy',
             'description' => 'Allowlist for CSS stylesheet sources. Default includes: ',
-            'default'     => "'self' 'unsafe-inline' *.twitter.com *.twimg.com",
+            'default'     => "'self' 'unsafe-inline' *.twimg.com",
         ],
         'connect-src' => [
             'option'      => 'connect_src',
@@ -42,7 +42,7 @@ class ContentSecurityPolicy {
             'option'      => 'img_src',
             'title'       => 'Img-src Policy',
             'description' => 'Restrict image sources. Default includes: ',
-            'default'     => "'self' data: gov.bc.ca *.gov.bc.ca *.twimg.com *.twitter.com *.staticflickr.com",
+            'default'     => "'self' data: gov.bc.ca *.gov.bc.ca *.twimg.com *.staticflickr.com",
         ],
         'font-src'    => [
             'option'      => 'font_src',
@@ -60,7 +60,7 @@ class ContentSecurityPolicy {
             'option'      => 'frame_src',
             'title'       => 'Frame-src Policy',
             'description' => 'Restrict permitted URLs for JavaScript workers and embedded frame contents. Default includes: ',
-            'default'     => "'self' gov.bc.ca *.gov.bc.ca *.twitter.com youtube.com *.youtube.com youtu.be",
+            'default'     => "'self' gov.bc.ca *.gov.bc.ca youtube.com *.youtube.com youtu.be",
         ],
     ];
 
