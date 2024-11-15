@@ -62,5 +62,5 @@ $enque_styles = new Style();
 $enque_styles->init();
 
 // Initialize the enqueueing scripts class.
-$enque_scripts = new Script();
+$enqueue_scripts = new Script();
 $enque_scripts->init();
