@@ -10,8 +10,6 @@ namespace Bcgov\DesignSystemPlugin;
 class SkipNavigation {
 
 
-
-
     /**
      * Initializes the SkipNavigation class by adding necessary hooks.
      *
@@ -24,7 +22,7 @@ class SkipNavigation {
         add_filter(
             'render_block',
             function ( $block_content, $block ) {
-                return $this->modify_block_render( $block_content, $block, '<nav id="main-navigation"', 'core/navigation' );
+                return $this->modify_block_render( $block_content, $block, '<nav id="main-navigation"$1>', 'core/navigation', '/<nav([^>]*)>/' );
             },
             10,
             2
@@ -33,7 +31,7 @@ class SkipNavigation {
         add_filter(
             'render_block',
             function ( $block_content, $block ) {
-                return $this->modify_block_render( $block_content, $block, '<div id="main-content"', 'core/post-content' );
+                return $this->modify_block_render( $block_content, $block, '<div class="$1entry-content wp-block-post-content$2" id="main-content"', 'core/post-content', '/<div class="([^"]*)entry-content wp-block-post-content([^"]*)"/', '<div class="$1entry-content wp-block-post-content$2" id="main-content"' );
             },
             10,
             2
@@ -47,9 +45,10 @@ class SkipNavigation {
      * @param array       $block The block data, including its name and attributes.
      * @param string      $html The HTML element with the id attribute to prepend to the block content.
      * @param string      $block_name The name of the block to check against for modification.
+     * @param string      $regex The regex to determine which block to replace.
      * @return string|null Modified block content or null if no content.
      */
-    public function modify_block_render( $block_content, $block, $html, $block_name ) {
+    public function modify_block_render( $block_content, $block, $html, $block_name, $regex ) {
         if ( is_null( $block_content ) ) {
             return null;
         }
@@ -57,7 +56,7 @@ class SkipNavigation {
         // Check if the block name matches the passed block name.
         if ( isset( $block['blockName'] ) && $block_name === $block['blockName'] ) {
             // Modify the block content to include the id attribute.
-            $block_content = $html . $block_content;
+            $block_content = preg_replace( $regex, $html, $block_content );
         }
 
         return $block_content;
