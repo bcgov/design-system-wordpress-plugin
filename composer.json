@@ -28,7 +28,12 @@
         ],
         "production": [
             "composer validate",
-            "composer phpcs"
+            "composer phpcbf",
+            "composer phpcs",
+            "npm run fix:js",
+            "npm run fix:css",
+            "npm run lint:css",
+            "npm run lint:js"
         ],
         "phpcs": [
             "Bcgov\\Script\\Standards::phpcs"
