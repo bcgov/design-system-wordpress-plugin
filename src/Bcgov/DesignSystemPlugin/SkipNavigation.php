@@ -10,6 +10,12 @@ namespace Bcgov\DesignSystemPlugin;
 class SkipNavigation {
 
 
+    /** A variable to hold the state to determine the main element.
+     *
+     * @var bool is main element.
+     */
+    private $main_content_added = false;
+
     /**
      * Initializes the SkipNavigation class by adding necessary hooks.
      *
@@ -29,25 +35,18 @@ class SkipNavigation {
      * @return string|null Modified block content or null if no content.
      */
     public function modify_block_render( $block_content, $block ) {
-
-        /** A variable to hold the state to determine the main element.
-         *
-         * @var bool is main element.
-         */
-        $main_content_added = false;
-
         // Log the block array for more details.
         if ( is_null( $block_content ) ) {
             return null;
         }
 
         // Check for core/post-content first.
-        if ( isset( $block['blockName'] ) && 'core/post-content' === $block['blockName'] && ! $main_content_added ) {
-            $block_content      = preg_replace( '/<div/', '<div id="main-content"', $block_content, 1 );
-            $main_content_added = true; // Mark as added.
-        } elseif ( isset( $block['attrs']['tagName'] ) && 'main' === $block['attrs']['tagName'] && ! $main_content_added ) {  // Check for <main> tag if main-content hasn't been added yet.
-            $block_content      = preg_replace( '/<main([^>]*)>/', '<main$1 id="main-content">', $block_content );
-            $main_content_added = true; // Mark as added.
+        if ( isset( $block['blockName'] ) && 'core/post-content' === $block['blockName'] && ! $this->main_content_added ) {
+            $block_content            = preg_replace( '/<div/', '<div id="main-content"', $block_content, 1 );
+            $this->main_content_added = true; // Mark as added.
+        } elseif ( isset( $block['attrs']['tagName'] ) && 'main' === $block['attrs']['tagName'] && ! $this->main_content_added ) { // Check for <main> tag if main-content hasn't been added yet.
+            $block_content            = preg_replace( '/<main([^>]*)>/', '<main$1 id="main-content">', $block_content );
+            $this->main_content_added = true; // Mark as added.
         }
 
         // Always add id="main-navigation" to the navigation block.
