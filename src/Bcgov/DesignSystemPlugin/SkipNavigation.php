@@ -17,25 +17,8 @@ class SkipNavigation {
      */
     public function init() {
         add_action( 'wp_body_open', [ $this, 'add_skip_nav' ] );
-
-        // Using closures to pass custom parameters.
-        add_filter(
-            'render_block',
-            function ( $block_content, $block ) {
-                return $this->modify_block_render( $block_content, $block, '<nav id="main-navigation"$1>', 'core/navigation', '/<nav([^>]*)>/' );
-            },
-            10,
-            2
-        );
-
-        add_filter(
-            'render_block',
-            function ( $block_content, $block ) {
-                return $this->modify_block_render( $block_content, $block, '<div class="$1entry-content wp-block-post-content$2" id="main-content"', 'core/post-content', '/<div class="([^"]*)entry-content wp-block-post-content([^"]*)"/', '<div class="$1entry-content wp-block-post-content$2" id="main-content"' );
-            },
-            10,
-            2
-        );
+        remove_action( 'wp_footer', 'the_block_template_skip_link' );
+        add_filter( 'render_block', [ $this, 'modify_block_render' ], 10, 2 );
     }
 
     /**
@@ -43,20 +26,33 @@ class SkipNavigation {
      *
      * @param string|null $block_content The content of the block. Can be null if no content exists.
      * @param array       $block The block data, including its name and attributes.
-     * @param string      $html The HTML element with the id attribute to prepend to the block content.
-     * @param string      $block_name The name of the block to check against for modification.
-     * @param string      $regex The regex to determine which block to replace.
      * @return string|null Modified block content or null if no content.
      */
-    public function modify_block_render( $block_content, $block, $html, $block_name, $regex ) {
+    public function modify_block_render( $block_content, $block ) {
+
+        /** A variable to hold the state to determine the main element.
+         *
+         * @var bool is main element.
+         */
+        $main_content_added = false;
+
+        // Log the block array for more details.
         if ( is_null( $block_content ) ) {
             return null;
         }
 
-        // Check if the block name matches the passed block name.
-        if ( isset( $block['blockName'] ) && $block_name === $block['blockName'] ) {
-            // Modify the block content to include the id attribute.
-            $block_content = preg_replace( $regex, $html, $block_content );
+        // Check for core/post-content first.
+        if ( isset( $block['blockName'] ) && 'core/post-content' === $block['blockName'] && ! $main_content_added ) {
+            $block_content      = preg_replace( '/<div/', '<div id="main-content"', $block_content, 1 );
+            $main_content_added = true; // Mark as added.
+        } elseif ( isset( $block['attrs']['tagName'] ) && 'main' === $block['attrs']['tagName'] && ! $main_content_added ) {  // Check for <main> tag if main-content hasn't been added yet.
+            $block_content      = preg_replace( '/<main([^>]*)>/', '<main$1 id="main-content">', $block_content );
+            $main_content_added = true; // Mark as added.
+        }
+
+        // Always add id="main-navigation" to the navigation block.
+        if ( isset( $block['blockName'] ) && 'core/navigation' === $block['blockName'] ) {
+            $block_content = preg_replace( '/<nav([^>]*)>/', '<nav id="main-navigation"$1>', $block_content );
         }
 
         return $block_content;
