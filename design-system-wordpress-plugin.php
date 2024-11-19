@@ -35,10 +35,14 @@ if ( ! class_exists( 'Bcgov\\DesignSystemPlugin\\NotificationBanner' ) ) {
 
 use Bcgov\DesignSystemPlugin\{
     NotificationBanner,
-    ContentSecurityPolicy
+    ContentSecurityPolicy,
+    SkipNavigation
 };
 
-use Bcgov\DesignSystemPlugin\Enqueue\Style;
+use Bcgov\DesignSystemPlugin\Enqueue\{
+    Style,
+    Script
+};
 
 // Initialize the custom banner class.
 $notification_banner = new NotificationBanner();
@@ -49,6 +53,14 @@ $content_security_policy = new ContentSecurityPolicy();
 $content_security_policy->init();
 
 
+// Initialize the content security policy class.
+$skip_navigation = new SkipNavigation();
+$skip_navigation->init();
+
 // Initialize the enqueueing styles class.
 $enque_styles = new Style();
 $enque_styles->init();
+
+// Initialize the enqueueing scripts class.
+$enqueue_scripts = new Script();
+$enqueue_scripts->init();
