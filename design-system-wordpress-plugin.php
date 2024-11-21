@@ -64,3 +64,8 @@ $enque_styles->init();
 // Initialize the enqueueing scripts class.
 $enqueue_scripts = new Script();
 $enqueue_scripts->init();
+
+// Initialize the enqueueing scripts class.
+$enqueue_scripts = new Script();
+$enqueue_scripts->init();
+

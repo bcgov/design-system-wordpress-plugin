@@ -1,0 +1,8 @@
+.wp-block-your-plugin-navigation {
+    list-style: none;
+    padding: 0;
+}
+
+.wp-block-your-plugin-navigation li {
+    margin: 5px 0;
+}
