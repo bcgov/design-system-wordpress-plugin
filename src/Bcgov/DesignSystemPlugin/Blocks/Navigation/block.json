@@ -1,17 +1,28 @@
 {
-    "apiVersion": 2,
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
     "name": "design-system-wordpress-plugin/navigation",
+    "version": "1.0.0",
     "title": "Design System Navigation",
     "category": "widgets",
     "icon": "menu",
     "description": "Design System navigation block",
     "supports": {
-      "html": false
+      "color": {
+        "background": false,
+        "text": true
+      },
+      "html": false,
+      "typography": {
+        "fontSize": true
+      }
     },
     "attributes": {
-      "items": {
-        "type": "array",
-        "default": []
+      "showIcon": {
+        "type": "boolean"
+      },
+      "menuIcon":{
+        "type": "string"
       }
     },
     "editorScript": "file:./index.js",
