@@ -1,0 +1,1 @@
+{"version":3,"file":"Navigation2/style-index.css","mappings":";;;AAAA;IACI,gBAAgB;IAChB,UAAU;AACd;;AAEA;IACI,aAAa;AACjB","sources":["webpack://mega-menu-nav/./src/Navigation2/style.css"],"sourcesContent":[".wp-block-your-plugin-navigation {\n    list-style: none;\n    padding: 0;\n}\n\n.wp-block-your-plugin-navigation li {\n    margin: 5px 0;\n}\n"],"names":[],"sourceRoot":""}

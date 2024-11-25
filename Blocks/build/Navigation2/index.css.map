@@ -1,0 +1,1 @@
+{"version":3,"file":"Navigation2/index.css","mappings":";;;AAAA;IACI,uBAAuB;IACvB,aAAa;IACb,yBAAyB;AAC7B","sources":["webpack://mega-menu-nav/./src/Navigation2/editor.css"],"sourcesContent":[".wp-block-your-plugin-navigation {\n    border: 1px dashed #ccc;\n    padding: 10px;\n    background-color: #f9f9f9;\n}\n"],"names":[],"sourceRoot":""}
