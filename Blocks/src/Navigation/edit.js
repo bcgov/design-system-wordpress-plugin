@@ -25,8 +25,6 @@ export default function Edit(props) {
 
 	return (
 		<div className="custom-navigation-edit" {...useBlockProps()}>
-			{/* You can render your custom overlay menu icon here */}
-			<div>test</div>
 			{/* Use the core navigation block's edit function */}
 			{coreNavigationBlockSettings?.edit && (
 				<coreNavigationBlockSettings.edit

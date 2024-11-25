@@ -2,9 +2,9 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/Navigation/edit.js":
+/***/ "./src/navigation/edit.js":
 /*!********************************!*\
-  !*** ./src/Navigation/edit.js ***!
+  !*** ./src/navigation/edit.js ***!
   \********************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -42,12 +42,10 @@ function Edit(props) {
     context
   } = props;
   const coreNavigationBlockSettings = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__.getBlockType)("core/navigation");
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
     className: "custom-navigation-edit",
     ...(0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.useBlockProps)(),
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
-      children: "test"
-    }), coreNavigationBlockSettings?.edit && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(coreNavigationBlockSettings.edit, {
+    children: coreNavigationBlockSettings?.edit && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(coreNavigationBlockSettings.edit, {
       name: name,
       isSelected: isSelected,
       attributes: attributes,
@@ -62,26 +60,26 @@ function Edit(props) {
       __unstableLayoutClassNames: __unstableLayoutClassNames,
       __unstableParentLayout: __unstableParentLayout,
       context: context
-    })]
+    })
   });
 }
 
 /***/ }),
 
-/***/ "./src/Navigation/index.js":
+/***/ "./src/navigation/index.js":
 /*!*********************************!*\
-  !*** ./src/Navigation/index.js ***!
+  !*** ./src/navigation/index.js ***!
   \*********************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/blocks */ "@wordpress/blocks");
 /* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _edit__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./edit */ "./src/Navigation/edit.js");
-/* harmony import */ var _save__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./save */ "./src/Navigation/save.js");
-/* harmony import */ var _block_json__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./block.json */ "./src/Navigation/block.json");
-/* harmony import */ var _style_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./style.css */ "./src/Navigation/style.css");
-/* harmony import */ var _editor_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./editor.css */ "./src/Navigation/editor.css");
+/* harmony import */ var _edit__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./edit */ "./src/navigation/edit.js");
+/* harmony import */ var _save__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./save */ "./src/navigation/save.js");
+/* harmony import */ var _block_json__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./block.json */ "./src/navigation/block.json");
+/* harmony import */ var _style_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./style.css */ "./src/navigation/style.css");
+/* harmony import */ var _editor_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./editor.css */ "./src/navigation/editor.css");
 /**
  * Registers a new block provided a unique name and an object defining its behavior.
  *
@@ -114,9 +112,9 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/Navigation/save.js":
+/***/ "./src/navigation/save.js":
 /*!********************************!*\
-  !*** ./src/Navigation/save.js ***!
+  !*** ./src/navigation/save.js ***!
   \********************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -136,9 +134,9 @@ function Save() {
 
 /***/ }),
 
-/***/ "./src/Navigation/editor.css":
+/***/ "./src/navigation/editor.css":
 /*!***********************************!*\
-  !*** ./src/Navigation/editor.css ***!
+  !*** ./src/navigation/editor.css ***!
   \***********************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -148,9 +146,9 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/Navigation/style.css":
+/***/ "./src/navigation/style.css":
 /*!**********************************!*\
-  !*** ./src/Navigation/style.css ***!
+  !*** ./src/navigation/style.css ***!
   \**********************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -200,9 +198,9 @@ module.exports = window["wp"]["i18n"];
 
 /***/ }),
 
-/***/ "./src/Navigation/block.json":
+/***/ "./src/navigation/block.json":
 /*!***********************************!*\
-  !*** ./src/Navigation/block.json ***!
+  !*** ./src/navigation/block.json ***!
   \***********************************/
 /***/ ((module) => {
 
@@ -322,8 +320,8 @@ module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/tru
 /******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
 /******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
 /******/ 		var installedChunks = {
-/******/ 			"Navigation/index": 0,
-/******/ 			"Navigation/style-index": 0
+/******/ 			"navigation/index": 0,
+/******/ 			"navigation/style-index": 0
 /******/ 		};
 /******/ 		
 /******/ 		// no chunk on demand loading
@@ -375,7 +373,7 @@ module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/tru
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["Navigation/style-index"], () => (__webpack_require__("./src/Navigation/index.js")))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["navigation/style-index"], () => (__webpack_require__("./src/navigation/index.js")))
 /******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
 /******/ })()
