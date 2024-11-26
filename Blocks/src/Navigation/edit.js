@@ -1,49 +1,40 @@
-import { getBlockType } from "@wordpress/blocks";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { __ } from "@wordpress/i18n";
-import { useBlockProps } from '@wordpress/block-editor';
+import {
+	useBlockProps,
+	InspectorControls,
+	InnerBlocks,
+} from "@wordpress/block-editor";
+import { PanelBody, Button } from "@wordpress/components";
+import OverlayMenuIcon from "../navigation/overlay-menu-icon"; // Import the OverlayMenuIcon component
+import OverlayMenuPreview from "../navigation/overlay-menu-preview"; // Import the OverlayMenuPreview component
 
-export default function Edit(props) {
-	const {
-		name,
-		isSelected,
-		attributes,
-		setAttributes,
-		insertBlocksAfter,
-		onReplace,
-		onRemove,
-		mergeBlocks,
-		clientId,
-		isSelectionEnabled,
-		toggleSelection,
-		__unstableLayoutClassNames,
-		__unstableParentLayout,
-		context,
-	} = props;
+const Edit = (props) => {
+	const { attributes, setAttributes } = props;
+	const { hasIcon, icon } = attributes;
 
-	const coreNavigationBlockSettings = getBlockType("core/navigation");
-
-
+	const blockProps = useBlockProps();
 	return (
-		<div className="custom-navigation-edit" {...useBlockProps()}>
-			{/* Use the core navigation block's edit function */}
-			{coreNavigationBlockSettings?.edit && (
-				<coreNavigationBlockSettings.edit
-					name={name}
-					isSelected={isSelected}
-					attributes={attributes}
-					setAttributes={setAttributes}
-					insertBlocksAfter={insertBlocksAfter}
-					onReplace={onReplace}
-					onRemove={onRemove}
-					mergeBlocks={mergeBlocks}
-					clientId={clientId}
-					isSelectionEnabled={isSelectionEnabled}
-					toggleSelection={toggleSelection}
-					__unstableLayoutClassNames={__unstableLayoutClassNames}
-					__unstableParentLayout={__unstableParentLayout}
-					context={context}
-				/>
-			)}
+		<div {...blockProps}>
+			<InspectorControls>
+				<PanelBody title={__("Menu Icon", "text-domain")} initialOpen={true}>
+					<OverlayMenuPreview
+						setAttributes={setAttributes}
+						hasIcon={hasIcon}
+						icon={icon}
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			{/* Main Overlay Menu Icon */}
+			<div className="dswp-navigation-overlay-menu-icon-container">
+				{hasIcon && <OverlayMenuIcon icon={icon} />}
+			</div>
+			<div className="dswp-navigation-overlay-menu ">
+				<InnerBlocks allowedBlocks={["core/navigation-link"]} />
+			</div>
 		</div>
 	);
-}
+};
+
+export default Edit;
