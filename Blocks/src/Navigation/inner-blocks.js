@@ -9,8 +9,6 @@ import {
 	store as blockEditorStore,
 } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
-import { useMemo } from '@wordpress/element';
-
 
 export default function NavigationInnerBlocks( {
 	clientId,
