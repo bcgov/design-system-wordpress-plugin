@@ -44,6 +44,7 @@ function design_system_register_blocks()
 
     // Loop through each block.json file
     foreach ($block_files as $block_file) {
+        error_log($block_file);
         // Register the block type from the metadata in block.json
         register_block_type_from_metadata($block_file);
     }

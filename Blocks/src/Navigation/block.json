@@ -1,31 +1,46 @@
 {
-    "$schema": "https://schemas.wp.org/trunk/block.json",
-    "apiVersion": 3,
-    "name": "design-system-wordpress-plugin/navigation",
-    "version": "1.0.0",
-    "title": "Design System Navigation",
-    "category": "widgets",
-    "icon": "menu",
-    "description": "Design System navigation block",
-    "supports": {
-      "color": {
-        "background": false,
-        "text": true
-      },
-      "html": false,
-      "typography": {
-        "fontSize": true
-      }
-    },
-    "attributes": {
-      "showIcon": {
-        "type": "boolean"
-      },
-      "menuIcon":{
-        "type": "string"
-      }
-    },
-    "editorScript": "file:./index.js",
-    "style": "file:./style.css",
-    "editorStyle": "file:./editor.css"
-  }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "design-system-wordpress-plugin/navigation",
+	"version": "1.0.0",
+	"title": "Design System Navigation",
+	"category": "widgets",
+	"icon": "menu",
+	"description": "Design System navigation block",
+	"supports": {
+		"color": {
+			"background": false,
+			"text": true
+		},
+		"html": false,
+		"typography": {
+			"fontSize": true
+		}
+	},
+	"allowedBlocks": [
+		"core/navigation-link",
+		"core/search",
+		"core/social-links",
+		"core/page-list",
+		"core/spacer",
+		"core/home-link",
+		"core/site-title",
+		"core/site-logo",
+		"core/navigation-submenu",
+		"core/loginout",
+		"core/buttons"
+	],
+	"attributes": {
+		"hasIcon": {
+			"type": "boolean",
+			"default": false
+		},
+		"icon": {
+			"type": "string",
+			"default": "handle"
+		}
+	},
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"editorStyle": "file:./editor.css"
+}
