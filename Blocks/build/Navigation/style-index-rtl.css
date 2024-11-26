@@ -10,3 +10,11 @@
     margin: 5px 0;
 }
 
+.dswp-nav-menu-icon-container {
+    display: flex;
+    align-items: center; /* Center items vertically */
+}
+
+.dswp-nav-menu-text {
+    margin-right: 8px; /* Add space between icon and text */
+}

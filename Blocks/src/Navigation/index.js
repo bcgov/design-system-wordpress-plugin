@@ -8,7 +8,7 @@ import { registerBlockType } from "@wordpress/blocks";
 /**
  * Internal dependencies
  */
-import edit from "./edit";
+import Edit from "./edit";
 import save from "./save";
 import metadata from "./block.json";
 import './style.css';
@@ -23,7 +23,7 @@ import './editor.css';
 
 registerBlockType(metadata.name, {
 
-	edit: edit,
+	edit: Edit,
 
 	/**
 	 * @see ./save.js
