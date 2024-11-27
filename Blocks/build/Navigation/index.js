@@ -48,37 +48,6 @@ function Icon({
 
 /***/ }),
 
-/***/ "./node_modules/@wordpress/icons/build-module/library/close.js":
-/*!*********************************************************************!*\
-  !*** ./node_modules/@wordpress/icons/build-module/library/close.js ***!
-  \*********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _wordpress_primitives__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/primitives */ "@wordpress/primitives");
-/* harmony import */ var _wordpress_primitives__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_primitives__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__);
-/**
- * WordPress dependencies
- */
-
-
-const close = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_wordpress_primitives__WEBPACK_IMPORTED_MODULE_0__.SVG, {
-  xmlns: "http://www.w3.org/2000/svg",
-  viewBox: "0 0 24 24",
-  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_wordpress_primitives__WEBPACK_IMPORTED_MODULE_0__.Path, {
-    d: "m13.06 12 6.47-6.47-1.06-1.06L12 10.94 5.53 4.47 4.47 5.53 10.94 12l-6.47 6.47 1.06 1.06L12 13.06l6.47 6.47 1.06-1.06L13.06 12Z"
-  })
-});
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (close);
-//# sourceMappingURL=close.js.map
-
-/***/ }),
-
 /***/ "./node_modules/@wordpress/icons/build-module/library/menu.js":
 /*!********************************************************************!*\
   !*** ./node_modules/@wordpress/icons/build-module/library/menu.js ***!
@@ -128,20 +97,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _overlay_menu_icon__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./overlay-menu-icon */ "./src/navigation/overlay-menu-icon.js");
 /* harmony import */ var _overlay_menu_preview__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./overlay-menu-preview */ "./src/navigation/overlay-menu-preview.js");
-/* harmony import */ var _responsive_wrapper__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./responsive-wrapper */ "./src/navigation/responsive-wrapper.js");
-/* harmony import */ var _inner_blocks__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./inner-blocks */ "./src/navigation/inner-blocks.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__);
 
 
 
  // Import the OverlayMenuIcon component
  // Import the OverlayMenuPreview component
-
-
+ // Import useState for managing state
 
 const Edit = props => {
-  console.log("made it");
   const {
     attributes,
     setAttributes
@@ -150,127 +117,61 @@ const Edit = props => {
     hasIcon,
     icon
   } = attributes;
-  console.log("attributes", attributes);
+  const [isOverlayOpen, setOverlayOpen] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.useState)(false); // State to manage overlay visibility
+
   const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.useBlockProps)();
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsxs)("div", {
+
+  // Function to open the overlay
+  const openOverlay = () => {
+    setOverlayOpen(true);
+  };
+
+  // Function to close the overlay
+  const closeOverlay = () => {
+    setOverlayOpen(false);
+  };
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
     ...blockProps,
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.InspectorControls, {
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.PanelBody, {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.InspectorControls, {
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.PanelBody, {
         title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)("Menu Icon", "text-domain"),
         initialOpen: true,
-        children: attributes && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_overlay_menu_preview__WEBPACK_IMPORTED_MODULE_4__["default"], {
+        children: attributes && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_overlay_menu_preview__WEBPACK_IMPORTED_MODULE_4__["default"], {
           setAttributes: setAttributes,
           hasIcon: hasIcon,
           icon: icon
         })
       })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_responsive_wrapper__WEBPACK_IMPORTED_MODULE_5__["default"], {
-      id: "testnavigation" //!change this before PR
-      ,
-      onToggle: () => {},
-      hasIcon: hasIcon,
-      icon: icon,
-      isOpen: true,
-      isResponsive: true,
-      isHiddenByDefault: false,
-      overlayBackgroundColor: "white",
-      overlayTextColor: "black",
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_inner_blocks__WEBPACK_IMPORTED_MODULE_6__["default"], {})
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
+      className: "dswp-navigation-overlay-menu-icon-container",
+      onClick: openOverlay,
+      children: hasIcon && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_overlay_menu_icon__WEBPACK_IMPORTED_MODULE_3__["default"], {
+        icon: icon
+      })
+    }), isOverlayOpen && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
+      className: "fullscreen-overlay",
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
+        className: "overlay-content",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
+          className: "dswp-navigation-overlay-menu",
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.InnerBlocks, {
+            allowedBlocks: ["core/navigation-link"]
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Button, {
+          className: "close-overlay",
+          onClick: closeOverlay,
+          children: "Close"
+        })]
+      })
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
+      className: "dswp-navigation-overlay-menu",
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.InnerBlocks, {
+        allowedBlocks: ["core/navigation-link"]
+      })
     })]
   });
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Edit);
-
-/***/ }),
-
-/***/ "./src/navigation/inner-blocks.js":
-/*!****************************************!*\
-  !*** ./src/navigation/inner-blocks.js ***!
-  \****************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ NavigationInnerBlocks)
-/* harmony export */ });
-/* harmony import */ var _wordpress_core_data__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/core-data */ "@wordpress/core-data");
-/* harmony import */ var _wordpress_core_data__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_core_data__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
-/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
-/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__);
-/**
- * WordPress dependencies
- */
-
-
-
-
-
-function NavigationInnerBlocks({
-  clientId,
-  hasCustomPlaceholder,
-  orientation,
-  templateLock
-}) {
-  const {
-    isImmediateParentOfSelectedBlock,
-    selectedBlockHasChildren,
-    isSelected
-  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => {
-    const {
-      getBlockCount,
-      hasSelectedInnerBlock,
-      getSelectedBlockClientId
-    } = select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.store);
-    const selectedBlockId = getSelectedBlockClientId();
-    return {
-      isImmediateParentOfSelectedBlock: hasSelectedInnerBlock(clientId, false),
-      selectedBlockHasChildren: !!getBlockCount(selectedBlockId),
-      // This prop is already available but computing it here ensures it's
-      // fresh compared to isImmediateParentOfSelectedBlock.
-      isSelected: selectedBlockId === clientId
-    };
-  }, [clientId]);
-  const [blocks, onInput, onChange] = (0,_wordpress_core_data__WEBPACK_IMPORTED_MODULE_0__.useEntityBlockEditor)('postType', 'wp_navigation');
-
-  // When the block is selected itself or has a top level item selected that
-  // doesn't itself have children, show the standard appender. Else show no
-  // appender.
-  const parentOrChildHasSelection = isSelected || isImmediateParentOfSelectedBlock && !selectedBlockHasChildren;
-  const hasMenuItems = !!blocks?.length;
-
-  // If there is a `ref` attribute pointing to a `wp_navigation` but
-  // that menu has no **items** (i.e. empty) then show a placeholder.
-  // The block must also be selected else the placeholder will display
-  // alongside the appender.
-  const showPlaceholder = !hasCustomPlaceholder && !hasMenuItems && !isSelected;
-  const innerBlocksProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.useInnerBlocksProps)({
-    className: 'wp-block-navigation__container'
-  }, {
-    value: blocks,
-    onInput,
-    onChange,
-    directInsert: true,
-    orientation,
-    templateLock,
-    // As an exception to other blocks which feature nesting, show
-    // the block appender even when a child block is selected.
-    // This should be a temporary fix, to be replaced by improvements to
-    // the sibling inserter.
-    // See https://github.com/WordPress/gutenberg/issues/37572.
-    renderAppender: isSelected || isImmediateParentOfSelectedBlock && !selectedBlockHasChildren ||
-    // Show the appender while dragging to allow inserting element between item and the appender.
-    parentOrChildHasSelection ? _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.InnerBlocks.ButtonBlockAppender : false,
-    __experimentalCaptureToolbars: true,
-    __unstableDisableLayoutClassNames: true
-  });
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
-    ...innerBlocksProps
-  });
-}
 
 /***/ }),
 
@@ -406,124 +307,6 @@ function OverlayMenuPreview({
 
 /***/ }),
 
-/***/ "./src/navigation/responsive-wrapper.js":
-/*!**********************************************!*\
-  !*** ./src/navigation/responsive-wrapper.js ***!
-  \**********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ ResponsiveWrapper)
-/* harmony export */ });
-/* harmony import */ var clsx__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! clsx */ "./node_modules/clsx/dist/clsx.mjs");
-/* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/icon/index.js");
-/* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/library/close.js");
-/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
-/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
-/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _overlay_menu_icon__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./overlay-menu-icon */ "./src/navigation/overlay-menu-icon.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__);
-/**
- * External dependencies
- */
-
-/**
- * WordPress dependencies
- */
-
-
-
-
-
-/**
- * Internal dependencies
- */
-
-
-function ResponsiveWrapper({
-  children,
-  id,
-  isOpen,
-  isResponsive,
-  onToggle,
-  isHiddenByDefault,
-  overlayBackgroundColor,
-  overlayTextColor,
-  hasIcon,
-  icon
-}) {
-  if (!isResponsive) {
-    return children;
-  }
-  const responsiveContainerClasses = (0,clsx__WEBPACK_IMPORTED_MODULE_0__["default"])('wp-block-navigation__responsive-container', {
-    'has-text-color': !!overlayTextColor.color || !!overlayTextColor?.class,
-    [(0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.getColorClassName)('color', overlayTextColor?.slug)]: !!overlayTextColor?.slug,
-    'has-background': !!overlayBackgroundColor.color || overlayBackgroundColor?.class,
-    [(0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.getColorClassName)('background-color', overlayBackgroundColor?.slug)]: !!overlayBackgroundColor?.slug,
-    'is-menu-open': isOpen,
-    'hidden-by-default': isHiddenByDefault
-  });
-  const styles = {
-    color: !overlayTextColor?.slug && overlayTextColor?.color,
-    backgroundColor: !overlayBackgroundColor?.slug && overlayBackgroundColor?.color && overlayBackgroundColor.color
-  };
-  const openButtonClasses = (0,clsx__WEBPACK_IMPORTED_MODULE_0__["default"])('wp-block-navigation__responsive-container-open', {
-    'always-shown': isHiddenByDefault
-  });
-  const modalId = `${id}-modal`;
-  const dialogProps = {
-    className: 'wp-block-navigation__responsive-dialog',
-    ...(isOpen && {
-      role: 'dialog',
-      'aria-modal': true,
-      'aria-label': (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Menu')
-    })
-  };
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.Fragment, {
-    children: [!isOpen && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
-      __next40pxDefaultSize: true,
-      "aria-haspopup": "true",
-      "aria-label": hasIcon && (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Open menu'),
-      className: openButtonClasses,
-      onClick: () => onToggle(true),
-      children: [hasIcon && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(_overlay_menu_icon__WEBPACK_IMPORTED_MODULE_4__["default"], {
-        icon: icon
-      }), !hasIcon && (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Menu')]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("div", {
-      className: responsiveContainerClasses,
-      style: styles,
-      id: modalId,
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("div", {
-        className: "wp-block-navigation__responsive-close",
-        tabIndex: "-1",
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
-          ...dialogProps,
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
-            __next40pxDefaultSize: true,
-            className: "wp-block-navigation__responsive-container-close",
-            "aria-label": hasIcon && (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Close menu'),
-            onClick: () => onToggle(false),
-            children: [hasIcon && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(_wordpress_icons__WEBPACK_IMPORTED_MODULE_6__["default"], {
-              icon: _wordpress_icons__WEBPACK_IMPORTED_MODULE_7__["default"]
-            }), !hasIcon && (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Close')]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("div", {
-            className: "wp-block-navigation__responsive-container-content",
-            id: `${modalId}-content`,
-            children: children
-          })]
-        })
-      })
-    })]
-  });
-}
-
-/***/ }),
-
 /***/ "./src/navigation/save.js":
 /*!********************************!*\
   !*** ./src/navigation/save.js ***!
@@ -532,17 +315,45 @@ function ResponsiveWrapper({
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Save)
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
 /* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _overlay_menu_icon__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./overlay-menu-icon */ "./src/navigation/overlay-menu-icon.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__);
 
+ // Import the OverlayMenuIcon component
 
-function Save() {
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.InnerBlocks.Content, {});
-}
+const Save = ({
+  attributes
+}) => {
+  const {
+    hasIcon,
+    icon
+  } = attributes;
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+    className: "dswp-navigation-overlay-menu",
+    "data-has-icon": hasIcon,
+    "data-icon": icon,
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+      className: "dswp-navigation-overlay-menu-icon-container",
+      children: hasIcon && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_overlay_menu_icon__WEBPACK_IMPORTED_MODULE_1__["default"], {
+        icon: icon
+      })
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+      className: "fullscreen-overlay",
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+        className: "overlay-content",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.InnerBlocks.Content, {})
+      })
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+      className: "dswp-navigation-overlay-menu-links",
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.InnerBlocks.Content, {})
+    })]
+  });
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Save);
 
 /***/ }),
 
@@ -586,26 +397,6 @@ module.exports = window["wp"]["components"];
 
 /***/ }),
 
-/***/ "@wordpress/core-data":
-/*!**********************************!*\
-  !*** external ["wp","coreData"] ***!
-  \**********************************/
-/***/ ((module) => {
-
-module.exports = window["wp"]["coreData"];
-
-/***/ }),
-
-/***/ "@wordpress/data":
-/*!******************************!*\
-  !*** external ["wp","data"] ***!
-  \******************************/
-/***/ ((module) => {
-
-module.exports = window["wp"]["data"];
-
-/***/ }),
-
 /***/ "@wordpress/element":
 /*!*********************************!*\
   !*** external ["wp","element"] ***!
@@ -633,21 +424,6 @@ module.exports = window["wp"]["i18n"];
 /***/ ((module) => {
 
 module.exports = window["wp"]["primitives"];
-
-/***/ }),
-
-/***/ "./node_modules/clsx/dist/clsx.mjs":
-/*!*****************************************!*\
-  !*** ./node_modules/clsx/dist/clsx.mjs ***!
-  \*****************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   clsx: () => (/* binding */ clsx),
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-function r(e){var t,f,n="";if("string"==typeof e||"number"==typeof e)n+=e;else if("object"==typeof e)if(Array.isArray(e)){var o=e.length;for(t=0;t<o;t++)e[t]&&(f=r(e[t]))&&(n&&(n+=" "),n+=f)}else for(f in e)e[f]&&(n&&(n+=" "),n+=f);return n}function clsx(){for(var e,t,f=0,n="",o=arguments.length;f<o;f++)(e=arguments[f])&&(t=r(e))&&(n&&(n+=" "),n+=t);return n}/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (clsx);
 
 /***/ }),
 

@@ -4,20 +4,30 @@ import {
 	InspectorControls,
 	InnerBlocks,
 } from "@wordpress/block-editor";
-import { PanelBody } from "@wordpress/components";
+import { PanelBody, Button } from "@wordpress/components";
 import OverlayMenuIcon from "./overlay-menu-icon"; // Import the OverlayMenuIcon component
 import OverlayMenuPreview from "./overlay-menu-preview"; // Import the OverlayMenuPreview component
-import ResponsiveWrapper from "./responsive-wrapper";
-import NavigationInnerBlocks from "./inner-blocks";
+import { useState } from "@wordpress/element"; // Import useState for managing state
 
 const Edit = (props) => {
-	console.log("made it");
-
 	const { attributes, setAttributes } = props;
 	const { hasIcon, icon } = attributes;
-	console.log("attributes", attributes);
+	const [isOverlayOpen, setOverlayOpen] = useState(false); // State to manage overlay visibility
 
 	const blockProps = useBlockProps();
+
+	// Function to open the overlay
+	const openOverlay = () => {
+		setOverlayOpen(true);
+	};
+
+	// Function to close the overlay
+	const closeOverlay = () => {
+		setOverlayOpen(false);
+	};
+
+	
+
 	return (
 		<div {...blockProps}>
 			<InspectorControls>
@@ -32,19 +42,31 @@ const Edit = (props) => {
 				</PanelBody>
 			</InspectorControls>
 
-			<ResponsiveWrapper
-				id={"testnavigation"}//!change this before PR
-				onToggle={()=>{}}
-				hasIcon={hasIcon}
-				icon={icon}
-				isOpen={true}
-				isResponsive={true}
-				isHiddenByDefault={false}
-				overlayBackgroundColor={"white"}
-				overlayTextColor={"black"}
+			<div
+				className="dswp-navigation-overlay-menu-icon-container"
+				onClick={openOverlay}
 			>
-				<NavigationInnerBlocks />
-			</ResponsiveWrapper>
+				{hasIcon && <OverlayMenuIcon icon={icon} />}
+			</div>
+
+			{/* Full-Screen Overlay for Editor */}
+			{isOverlayOpen && (
+				<div className="fullscreen-overlay">
+					<div className="overlay-content">
+						{/* Render InnerBlocks content */}
+						<div className="dswp-navigation-overlay-menu">
+							<InnerBlocks allowedBlocks={["core/navigation-link"]} />
+						</div>
+						<Button className="close-overlay" onClick={closeOverlay}>
+							Close
+						</Button>
+					</div>
+				</div>
+			)}
+
+			<div className="dswp-navigation-overlay-menu">
+				<InnerBlocks allowedBlocks={["core/navigation-link"]} />
+			</div>
 		</div>
 	);
 };

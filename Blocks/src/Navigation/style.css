@@ -1,17 +1,26 @@
-.wp-block-your-plugin-navigation {
-    list-style: none;
-    padding: 0;
-}
-
-.wp-block-your-plugin-navigation li {
-    margin: 5px 0;
-}
-
-.dswp-nav-menu-icon-container {
+.fullscreen-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
     display: flex;
-    align-items: center; /* Center items vertically */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it appears above other content */
 }
 
-.dswp-nav-menu-text {
-    margin-left: 8px; /* Add space between icon and text */
+.overlay-content {
+    color: white;
+    text-align: center;
+}
+
+.close-overlay {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: red;
+    border: none;
+    color: white;
+    cursor: pointer;
 }
