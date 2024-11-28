@@ -1,0 +1,49 @@
+/*!***************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/navigation/editor.scss ***!
+  \***************************************************************************************************************************************************************************************************************************************************/
+.wp-block-your-plugin-navigation {
+  border: 1px dashed #ccc;
+  padding: 10px;
+  background-color: #f9f9f9;
+}
+
+.dswp-block-navigation-container {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  list-style: none;
+  margin: 0;
+  padding-right: 0;
+  gap: 8px;
+}
+
+.dswp-navigation-overlay-menu a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.dswp-nav-mobile-toggle-icon {
+  cursor: pointer;
+  transition: all 0.3s ease; /* Transition for smooth animation */
+}
+
+.dswp-nav-mobile-bar {
+  fill: black; /* Color of the bars */
+  transition: all 0.3s ease; /* Transition for smooth animation */
+}
+
+.dswp-nav-mobile-toggle-icon .dswp-nav-mobile-menu-top-bar-open {
+  transform: rotate(-45deg) translate(-5px, 5px); /* Rotate first bar */
+  transform-origin: center; /* Rotate around the center */
+}
+
+.dswp-nav-mobile-toggle-icon .dswp-nav-mobile-menu-middle-bar-open {
+  opacity: 0; /* Hide the middle bar */
+}
+
+.dswp-nav-mobile-toggle-icon .dswp-nav-mobile-menu-bottom-bar-open {
+  transform: rotate(45deg) translate(1px, -6px); /* Rotate third bar */
+  transform-origin: center; /* Rotate around the center */
+}

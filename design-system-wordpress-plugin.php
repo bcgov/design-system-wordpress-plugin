@@ -44,7 +44,6 @@ function design_system_register_blocks()
 
     // Loop through each block.json file
     foreach ($block_files as $block_file) {
-        error_log($block_file);
         // Register the block type from the metadata in block.json
         register_block_type_from_metadata($block_file);
     }
@@ -52,17 +51,6 @@ function design_system_register_blocks()
 
 // Hook the function into the 'init' action
 add_action('init', 'design_system_register_blocks');
-
-function enqueue_navigation_block_assets() {
-    wp_enqueue_script(
-        'navigation-overlay-script',
-        plugin_dir_url(__FILE__) . './Blocks/src/navigation/front-end.js', // Path to your JS file
-        array(), // Dependencies
-        '1.0.0',
-        true // Load in footer
-    );
-}
-add_action('enqueue_block_assets', 'enqueue_navigation_block_assets');
 
 
 use Bcgov\DesignSystemPlugin\{
@@ -97,3 +85,5 @@ $enque_styles->init();
 // Initialize the enqueueing scripts class.
 $enqueue_scripts = new Script();
 $enqueue_scripts->init();
+
+
