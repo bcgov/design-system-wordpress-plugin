@@ -41,7 +41,6 @@ function design_system_register_blocks()
 
     // Use glob to find all block.json files in the subdirectories of the build folder
     $block_files = glob($build_dir . '*/block.json');
-
     // Loop through each block.json file
     foreach ($block_files as $block_file) {
         // Register the block type from the metadata in block.json

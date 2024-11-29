@@ -63,6 +63,7 @@ function NavigationMenuSelector({
 		canSwitchNavigationMenu,
 	} = useNavigationMenu();
 	
+
 	const [currentTitle] = useEntityProp("postType", "wp_navigation", "title");
 
 	const menuChoices = useMemo(() => {

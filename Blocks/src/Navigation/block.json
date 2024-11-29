@@ -8,14 +8,47 @@
 	"icon": "menu",
 	"description": "Design System navigation block",
 	"supports": {
-		"color": {
-			"background": false,
-			"text": true
+		"listView": {
+			"title": "'Custom List View Title'"
 		},
+		"settings": true, 
+		"styles": true,  
+		"align": [ "wide", "full" ],
+		"ariaLabel": true,
 		"html": false,
+		"inserter": true,
 		"typography": {
-			"fontSize": true
-		}
+			"fontSize": true,
+			"lineHeight": true,
+			"__experimentalFontStyle": true,
+			"__experimentalFontWeight": true,
+			"__experimentalTextTransform": true,
+			"__experimentalFontFamily": true,
+			"__experimentalLetterSpacing": true,
+			"__experimentalTextDecoration": true,
+			"__experimentalSkipSerialization": [ "textDecoration" ],
+			"__experimentalDefaultControls": {
+				"fontSize": true
+			}
+		},
+		"spacing": {
+			"blockGap": true,
+			"units": [ "px", "em", "rem", "vh", "vw" ],
+			"__experimentalDefaultControls": {
+				"blockGap": true
+			}
+		},
+		"layout": {
+			"allowSwitching": false,
+			"allowInheriting": false,
+			"allowVerticalAlignment": false,
+			"allowSizingOnChildren": true,
+			"default": {
+				"type": "flex"
+			}
+		},
+		"interactivity": true,
+		"renaming": false
 	},
 	"allowedBlocks": [
 		"core/navigation-link",

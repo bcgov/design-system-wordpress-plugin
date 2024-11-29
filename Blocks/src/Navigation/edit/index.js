@@ -6,25 +6,27 @@ import {
 	useBlockEditingMode,
 	store as blockEditorStore,
 } from "@wordpress/block-editor";
-import { PanelBody, Button } from "@wordpress/components";
+import {
+	PanelBody,
+	Button,
+	__experimentalToggleGroupControl as ToggleGroupControl,
+	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
+	ToggleControl,
+	Notice,
+	TextControl
+} from "@wordpress/components";
 import OverlayMenuIcon from "./overlay-menu-icon"; // Import the OverlayMenuIcon component
 import OverlayMenuPreview from "./overlay-menu-preview"; // Import the OverlayMenuPreview component
 import NavigationInnerBlocks from "./inner-blocks";
 import NavigationMenuSelector from "./navigation-menu-selector";
 import MenuInspectorControls from "./menu-inspector-controls";
 import useNavigationMenu from "../hooks/use-navigation-menu";
-import {
-	useCallback,
-	useState,
-	useEffect,
-	useRef,
-	Platform,
-} from '@wordpress/element';
+import { useCallback, useState } from "@wordpress/element";
 
-import { useDispatch, useSelect } from '@wordpress/data';
+import { useDispatch } from "@wordpress/data";
 
 const Edit = (props) => {
-	const { attributes, setAttributes, 	clientId} = props;
+	const { attributes, setAttributes, clientId } = props;
 	const { hasIcon, icon } = attributes;
 	const [isOverlayOpen, setOverlayOpen] = useState(false); // State to manage overlay visibility
 
@@ -37,25 +39,24 @@ const Edit = (props) => {
 		[setAttributes]
 	);
 
-	const {
-		selectBlock,
-	} = useDispatch( blockEditorStore );
+	const { selectBlock } = useDispatch(blockEditorStore);
 
 	const blockEditingMode = useBlockEditingMode();
+	console.log("blockEditingMode", blockEditingMode);
 
 	const handleUpdateMenu = useCallback(
-		( menuId, options = { focusNavigationBlock: false } ) => {
+		(menuId, options = { focusNavigationBlock: false }) => {
 			const { focusNavigationBlock } = options;
-			setRef( menuId );
-			if ( focusNavigationBlock ) {
-				selectBlock( clientId );
+			setRef(menuId);
+			if (focusNavigationBlock) {
+				selectBlock(clientId);
 			}
 		},
-		[ selectBlock, clientId, setRef ]
+		[selectBlock, clientId, setRef]
 	);
 
-	const onSelectNavigationMenu = ( menuId ) => {
-		handleUpdateMenu( menuId );
+	const onSelectNavigationMenu = (menuId) => {
+		handleUpdateMenu(menuId);
 	};
 
 	const {
@@ -103,19 +104,16 @@ const Edit = (props) => {
 					actionLabel={"test"}
 					isManageMenusButtonDisabled={false}
 				/>
-				<MenuInspectorControls
-					clientId={"test"}
-					createNavigationMenuIsSuccess={() => {}}
-					createNavigationMenuIsError={() => {}}
-					currentMenuId={9}
-					isNavigationMenuMissing={false}
-					isManageMenusButtonDisabled={false}
-					onCreateNew={() => {}}
-					onSelectClassicMenu={() => {}}
-					onSelectNavigationMenu={onSelectNavigationMenu}
-					isLoading={false}
-					blockEditingMode={true}
-				/>
+				<div>test</div>
+			</InspectorControls>
+			<InspectorControls>
+				<PanelBody title="Block Settings">
+					<TextControl
+						label="Custom Label"
+						value={attributes.content}
+						onChange={(value) => setAttributes({ content: value })}
+					/>
+				</PanelBody>
 			</InspectorControls>
 
 			{/* Full-Screen Overlay for Editor */}

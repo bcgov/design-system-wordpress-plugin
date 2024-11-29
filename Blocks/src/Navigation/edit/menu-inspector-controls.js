@@ -5,41 +5,42 @@ import {
 	privateApis as blockEditorPrivateApis,
 	InspectorControls,
 	store as blockEditorStore,
-} from '@wordpress/block-editor';
+} from "@wordpress/block-editor";
 import {
 	PanelBody,
 	__experimentalHStack as HStack,
 	__experimentalHeading as Heading,
 	Spinner,
-	PrivateListView
-} from '@wordpress/components';
-import { useSelect, useDispatch } from '@wordpress/data';
-import { __, sprintf } from '@wordpress/i18n';
-import {
-    LinkUI,
-    updateAttributes
-} from '@wordpress/block-library/navigation-link';
+	PrivateListView,
+} from "@wordpress/components";
+import { useSelect, useDispatch } from "@wordpress/data";
+import { __, sprintf } from "@wordpress/i18n";
 
-
-console.log('first',  LinkUI, updateAttributes)
 /**
  * Internal dependencies
  */
-import NavigationMenuSelector from './navigation-menu-selector';
-import DeletedNavigationWarning from './deleted-navigation-warning';
-import useNavigationMenu from '../hooks/use-navigation-menu';
-import LeafMoreMenu from './leaf-more-menu';
-
+import NavigationMenuSelector from "./navigation-menu-selector";
+import DeletedNavigationWarning from "./deleted-navigation-warning";
+import useNavigationMenu from "../hooks/use-navigation-menu";
+import LeafMoreMenu from "./leaf-more-menu";
+import LinkUI from "./link-ui"
 
 const actionLabel =
-	/* translators: %s: The name of a menu. */ __( "Switch to '%s'" );
+	/* translators: %s: The name of a menu. */ __("Switch to '%s'");
 const BLOCKS_WITH_LINK_UI_SUPPORT = [
-	'core/navigation-link',
-	'core/navigation-submenu',
+	"core/navigation-link",
+	"core/navigation-submenu",
 ];
 
-function AdditionalBlockContent( { block, insertedBlock, setInsertedBlock } ) {
-	const { updateBlockAttributes } = useDispatch( blockEditorStore );
+function AdditionalBlockContent({
+	block,
+	insertedBlock,
+	setInsertedBlock,
+	setAttributes,
+}) {
+
+	
+	const { updateBlockAttributes } = useDispatch(blockEditorStore);
 
 	const supportsLinkControls = BLOCKS_WITH_LINK_UI_SUPPORT?.includes(
 		insertedBlock?.name
@@ -47,96 +48,95 @@ function AdditionalBlockContent( { block, insertedBlock, setInsertedBlock } ) {
 	const blockWasJustInserted = insertedBlock?.clientId === block.clientId;
 	const showLinkControls = supportsLinkControls && blockWasJustInserted;
 
-	if ( ! showLinkControls ) {
+	if (!showLinkControls) {
 		return null;
 	}
 
 	const setInsertedBlockAttributes =
-		( _insertedBlockClientId ) => ( _updatedAttributes ) => {
-			if ( ! _insertedBlockClientId ) {
+		(_insertedBlockClientId) => (_updatedAttributes) => {
+			if (!_insertedBlockClientId) {
 				return;
 			}
-			updateBlockAttributes( _insertedBlockClientId, _updatedAttributes );
+			updateBlockAttributes(_insertedBlockClientId, _updatedAttributes);
 		};
 
 	return (
 		<LinkUI
-			clientId={ insertedBlock?.clientId }
-			link={ insertedBlock?.attributes }
-			onClose={ () => {
-				setInsertedBlock( null );
-			} }
-			onChange={ ( updatedValue ) => {
-				updateAttributes(
+			clientId={insertedBlock?.clientId}
+			link={insertedBlock?.attributes}
+			onClose={() => {
+				setInsertedBlock(null);
+			}}
+			onChange={(updatedValue) => {
+				setAttributes(
 					updatedValue,
-					setInsertedBlockAttributes( insertedBlock?.clientId ),
+					setInsertedBlockAttributes(insertedBlock?.clientId),
 					insertedBlock?.attributes
 				);
-				setInsertedBlock( null );
-			} }
-			onCancel={ () => {
-				setInsertedBlock( null );
-			} }
+				setInsertedBlock(null);
+			}}
+			onCancel={() => {
+				setInsertedBlock(null);
+			}}
 		/>
 	);
 }
 
-const MainContent = ( {
+const MainContent = ({
 	clientId,
 	currentMenuId,
 	isLoading,
 	isNavigationMenuMissing,
 	onCreateNew,
-} ) => {
+	setAttributes
+}) => {
 	const hasChildren = useSelect(
-		( select ) => {
-			return !! select( blockEditorStore ).getBlockCount( clientId );
+		(select) => {
+			return !!select(blockEditorStore).getBlockCount(clientId);
 		},
-		[ clientId ]
+		[clientId]
 	);
 
-	const { navigationMenu } = useNavigationMenu( currentMenuId );
+	const { navigationMenu } = useNavigationMenu(currentMenuId);
 
-	if ( currentMenuId && isNavigationMenuMissing ) {
-		return (
-			<DeletedNavigationWarning onCreateNew={ onCreateNew } isNotice />
-		);
+	if (currentMenuId && isNavigationMenuMissing) {
+		return <DeletedNavigationWarning onCreateNew={onCreateNew} isNotice />;
 	}
 
-	if ( isLoading ) {
+	if (isLoading) {
 		return <Spinner />;
 	}
 
 	const description = navigationMenu
 		? sprintf(
 				/* translators: %s: The name of a menu. */
-				__( 'Structure for Navigation Menu: %s' ),
-				navigationMenu?.title || __( 'Untitled menu' )
+				__("Structure for Navigation Menu: %s"),
+				navigationMenu?.title || __("Untitled menu")
 		  )
-		: __(
-				'You have not yet created any menus. Displaying a list of your Pages'
-		  );
+		: __("You have not yet created any menus. Displaying a list of your Pages");
 
 	return (
-		<div className="wp-block-navigation__menu-inspector-controls">
-			{ ! hasChildren && (
+		<div className="">
+			{/* {!hasChildren && (
 				<p className="wp-block-navigation__menu-inspector-controls__empty-message">
-					{ __( 'This Navigation Menu is empty.' ) }
+					{__("This Navigation Menu is empty.")}
 				</p>
-			) }
+			)} */}
 			<PrivateListView
-				rootClientId={ clientId }
+				rootClientId={clientId}
 				isExpanded
-				description={ description }
+				description={description}
 				showAppender
-				blockSettingsMenu={ LeafMoreMenu }
-				additionalBlockContent={ AdditionalBlockContent }
+				blockSettingsMenu={LeafMoreMenu}
+				additionalBlockContent={() => {
+					AdditionalBlockContent(setAttributes);
+				}}
 			/>
 		</div>
 	);
 };
 
-const MenuInspectorControls = ( props ) => {
+const MenuInspectorControls = (props) => {
 	const {
 		createNavigationMenuIsSuccess,
 		createNavigationMenuIsError,
@@ -148,36 +148,31 @@ const MenuInspectorControls = ( props ) => {
 		blockEditingMode,
 	} = props;
 
+	
 	return (
 		<InspectorControls group="list">
-			<PanelBody title={ null }>
+			<PanelBody title={null}>
 				<HStack className="wp-block-navigation-off-canvas-editor__header">
 					<Heading
 						className="wp-block-navigation-off-canvas-editor__title"
-						level={ 2 }
+						level={2}
 					>
-						{ __( 'Menu' ) }
+						{__("Menu")}
 					</Heading>
-					{ blockEditingMode === 'default' && (
+					{blockEditingMode === "default" && (
 						<NavigationMenuSelector
-							currentMenuId={ currentMenuId }
-							onSelectClassicMenu={ onSelectClassicMenu }
-							onSelectNavigationMenu={ onSelectNavigationMenu }
-							onCreateNew={ onCreateNew }
-							createNavigationMenuIsSuccess={
-								createNavigationMenuIsSuccess
-							}
-							createNavigationMenuIsError={
-								createNavigationMenuIsError
-							}
-							actionLabel={ actionLabel }
-							isManageMenusButtonDisabled={
-								isManageMenusButtonDisabled
-							}
+							currentMenuId={currentMenuId}
+							onSelectClassicMenu={onSelectClassicMenu}
+							onSelectNavigationMenu={onSelectNavigationMenu}
+							onCreateNew={onCreateNew}
+							createNavigationMenuIsSuccess={createNavigationMenuIsSuccess}
+							createNavigationMenuIsError={createNavigationMenuIsError}
+							actionLabel={actionLabel}
+							isManageMenusButtonDisabled={isManageMenusButtonDisabled}
 						/>
-					) }
+					)}
 				</HStack>
-				<MainContent { ...props } />
+				<MainContent {...props} />
 			</PanelBody>
 		</InspectorControls>
 	);
