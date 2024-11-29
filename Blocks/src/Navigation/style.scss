@@ -84,3 +84,48 @@
         }
     }
 }
+
+
+
+.overlay-content {
+    color: white;
+    text-align: center;
+}
+
+.close-overlay {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: red;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+// .dswp-navigation-overlay-menu {
+//     display: flex;
+// }
+
+
+// .dswp-nav-mobile-toggle-icon {
+// 	cursor: pointer;
+// 	transition: all 0.3s ease; /* Transition for smooth animation */
+// }
+
+// .dswp-nav-mobile-bar {
+// 	fill: black; /* Color of the bars */
+// 	transition: all 0.3s ease; /* Transition for smooth animation */
+// }
+
+// .dswp-nav-mobile-toggle-icon .dswp-nav-mobile-menu-top-bar-open {
+// 	transform: rotate(45deg) translate(5px, 5px); /* Rotate first bar */
+// 	transform-origin: center; /* Rotate around the center */
+// }
+
+// .dswp-nav-mobile-toggle-icon .dswp-nav-mobile-menu-middle-bar-open {
+// 	opacity: 0; /* Hide the middle bar */
+// }
+
+// .dswp-nav-mobile-toggle-icon .dswp-nav-mobile-menu-bottom-bar-open {
+// 	transform: rotate(-45deg) translate(-1px, -6px); /* Rotate third bar */  
+// 	transform-origin: center; /* Rotate around the center */
+// }

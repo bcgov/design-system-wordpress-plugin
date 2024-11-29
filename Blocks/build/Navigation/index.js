@@ -35,8 +35,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+ // Added serialize
 
- // Correct import
 
 function Edit({
   attributes,
@@ -50,9 +50,21 @@ function Edit({
   const {
     replaceInnerBlocks
   } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useDispatch)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.store);
+  // Add these dispatches
+  const {
+    editEntityRecord,
+    saveEditedEntityRecord
+  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useDispatch)(_wordpress_core_data__WEBPACK_IMPORTED_MODULE_5__.store);
   const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useBlockProps)();
 
-  // Get available menus
+  // Add this selector to get current blocks
+  const {
+    currentBlocks
+  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useSelect)(select => ({
+    currentBlocks: select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.store).getBlocks(clientId)
+  }), [clientId]);
+
+  // Your existing menu selectors
   const {
     menus,
     hasResolvedMenus
@@ -70,8 +82,6 @@ function Edit({
       hasResolvedMenus: hasFinishedResolution('getEntityRecords', ['postType', 'wp_navigation', query])
     };
   }, []);
-
-  // Get selected menu content
   const {
     selectedMenu
   } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useSelect)(select => {
@@ -87,25 +97,37 @@ function Edit({
       selectedMenu: getEditedEntityRecord('postType', 'wp_navigation', menuId)
     };
   }, [menuId]);
-  const innerBlocksProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useInnerBlocksProps)({
-    className: 'wp-block-navigation__container'
-  }, {
-    allowedBlocks: ['core/navigation-link', 'core/navigation-submenu'],
-    orientation: 'horizontal',
-    templateLock: false
-  });
+
+  // Add this new effect to handle block updates
+  const handleBlocksUpdate = async blocks => {
+    if (!menuId) return;
+    try {
+      const serializedBlocks = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.serialize)(blocks);
+      await editEntityRecord('postType', 'wp_navigation', menuId, {
+        content: serializedBlocks
+      });
+      await saveEditedEntityRecord('postType', 'wp_navigation', menuId);
+    } catch (error) {
+      console.error('Failed to update navigation menu:', error);
+    }
+  };
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
-    // Clear blocks if no menu is selected or if selected menu has no content
+    if (menuId && currentBlocks) {
+      const timeoutId = setTimeout(() => {
+        handleBlocksUpdate(currentBlocks);
+      }, 1000); // Wait 1 second after changes before saving
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [currentBlocks, menuId]);
+
+  // Your existing effect for loading menu content
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
     if (!selectedMenu || !selectedMenu.content) {
       replaceInnerBlocks(clientId, []);
       return;
     }
-    console.log('Selected Menu Content:', selectedMenu.content);
-
-    // Parse the content string into blocks
     const parsedBlocks = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.parse)(selectedMenu.content);
-
-    // Convert parsed blocks into new blocks
     const processBlocks = blocks => {
       return blocks.map(block => {
         if (block.name === 'core/navigation-link') {
@@ -133,8 +155,16 @@ function Edit({
     };
     const newBlocks = processBlocks(parsedBlocks);
     replaceInnerBlocks(clientId, newBlocks);
-  }, [selectedMenu, clientId]);
-  // Handle menu selection
+  }, [selectedMenu]);
+  const innerBlocksProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useInnerBlocksProps)({
+    className: 'wp-block-navigation__container'
+  }, {
+    allowedBlocks: ['core/navigation-link', 'core/navigation-submenu'],
+    orientation: 'horizontal',
+    templateLock: false
+  });
+
+  // Rest of your component (handleMenuSelect, return statement, etc.)
   const handleMenuSelect = value => {
     const newMenuId = parseInt(value);
     setAttributes({

@@ -40,3 +40,17 @@
 .wp-block-custom-navigation.is-overlay-always .mobile-menu-toggle {
   display: flex;
 }
+
+.overlay-content {
+  color: white;
+  text-align: center;
+}
+
+.close-overlay {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: red;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
