@@ -8,6 +8,11 @@
   "icon": "menu",
   "description": "Custom navigation block",
   "supports": {
+    "__experimentalToolbar": true,
+    "inserter": true,
+    "inspectorGroups": {
+      "list": true
+    },
     "html": false,
     "align": [
       "wide",
@@ -58,16 +63,20 @@
       "type": "string",
       "default": "menu"
     },
-    "hasCustomIcon": {
+    "isMobile": {
       "type": "boolean",
       "default": false
     },
-    "iconColor": {
-      "type": "string",
-      "default": "#000000"
-    },
     "menuId": {
       "type": "number"
+    },
+    "mobileIconStyle": {
+      "type": "string",
+      "default": "threeBar"
+    },
+    "mobileBreakpoint": {
+      "type": "number",
+      "default": 768
     }
   },
   "editorScript": "file:./index.js",
