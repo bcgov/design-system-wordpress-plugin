@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const navBlocks = document.querySelectorAll('.wp-block-navigation-is-mobile-overlay, .wp-block-navigation-is-always-overlay');
   navBlocks.forEach(nav => {
     const mobileNavIcon = nav.querySelector(".dswp-nav-mobile-toggle-icon");
-    const menuContainer = nav.querySelector(".wp-block-navigation__container");
+    const menuContainer = nav.querySelector(".dswp-block-navigation__container");
     const isMobileMode = nav.classList.contains('wp-block-navigation-is-mobile-overlay');
     const isAlwaysMode = nav.classList.contains('wp-block-navigation-is-always-overlay');
     function handleResize() {

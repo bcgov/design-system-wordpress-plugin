@@ -184,7 +184,7 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 	}, [selectedMenu]);
 
 	const innerBlocksProps = useInnerBlocksProps(
-		{ className: "wp-block-navigation__container" },
+		{ className: "dswp-block-navigation__container" },
 		{
 			allowedBlocks: ["core/navigation-link", "core/navigation-submenu"],
 			orientation: "horizontal",

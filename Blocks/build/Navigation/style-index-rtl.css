@@ -42,6 +42,10 @@
   transform-origin: center;
 }
 
+.dswp-block-navigation__container {
+  list-style: none;
+}
+
 .wp-block-navigation-is-always-overlay .dswp-nav-mobile-toggle-icon {
   display: flex;
 }

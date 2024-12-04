@@ -12,7 +12,7 @@ export default function save({ attributes }) {
 	});
 
 	const innerBlocksProps = useInnerBlocksProps.save({
-		className: "wp-block-navigation__container",
+		className: "dswp-block-navigation__container",
 	});
 
 	return (

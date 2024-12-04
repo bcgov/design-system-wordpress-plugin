@@ -195,7 +195,7 @@ function Edit({
     replaceInnerBlocks(clientId, newBlocks);
   }, [selectedMenu]);
   const innerBlocksProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useInnerBlocksProps)({
-    className: "wp-block-navigation__container"
+    className: "dswp-block-navigation__container"
   }, {
     allowedBlocks: ["core/navigation-link", "core/navigation-submenu"],
     orientation: "horizontal",
@@ -390,7 +390,7 @@ function save({
     }
   });
   const innerBlocksProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useInnerBlocksProps.save({
-    className: "wp-block-navigation__container"
+    className: "dswp-block-navigation__container"
   });
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("nav", {
     ...blockProps,
