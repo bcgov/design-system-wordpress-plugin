@@ -44,6 +44,22 @@
 
 .dswp-block-navigation__container {
   list-style: none;
+  height: 100vh;
+  position: absolute;
+  background: white;
+  width: 100vw;
+  z-index: 1;
+  flex-flow: column;
+  align-items: flex-start !important;
+}
+.dswp-block-navigation__container a {
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  display: block;
+  color: inherit;
+}
+.dswp-block-navigation__container a:hover {
+  opacity: 0.8;
 }
 
 .dswp-block-navigation-is-always-overlay .dswp-nav-mobile-toggle-icon {
@@ -52,16 +68,6 @@
 
 .dswp-block-navigation-is-never-overlay .dswp-nav-mobile-toggle-icon {
   display: none;
-}
-
-.wp-block-navigation-item a {
-  text-decoration: none;
-  padding: 0.5rem 1rem;
-  display: block;
-  color: inherit;
-}
-.wp-block-navigation-item a:hover {
-  opacity: 0.8;
 }
 
 .dswp-nav-mobile-toggle-icon:focus-visible {

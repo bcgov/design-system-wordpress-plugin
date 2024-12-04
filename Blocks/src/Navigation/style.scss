@@ -1,73 +1,62 @@
-	// Mobile toggle icon
-	.dswp-nav-mobile-toggle-icon {
-		cursor: pointer;
-		display: none;
-		align-items: center;
-		gap: 5px;
-		padding: 8px;
-		background: none;
-		border: 1px solid currentColor;
-		border-radius: 4px;
-		color: inherit;
+// Mobile toggle icon
+.dswp-nav-mobile-toggle-icon {
+	cursor: pointer;
+	display: none;
+	align-items: center;
+	gap: 5px;
+	padding: 8px;
+	background: none;
+	border: 1px solid currentColor;
+	border-radius: 4px;
+	color: inherit;
+	transition: all 0.3s ease;
+
+	&:hover {
+		background-color: rgba(0, 0, 0, 0.05);
+	}
+
+	svg {
+		width: 24px;
+		height: 19px;
+	}
+
+	.dswp-nav-mobile-menu-icon-text {
+		font-size: 1rem;
+		margin-left: 8px;
+	}
+
+	// Hamburger bars
+	.dswp-nav-mobile-bar {
 		transition: all 0.3s ease;
-
-		&:hover {
-			background-color: rgba(0, 0, 0, 0.05);
-		}
-
-		svg {
-			width: 24px;
-			height: 19px;
-		}
-
-		.dswp-nav-mobile-menu-icon-text {
-			font-size: 1rem;
-			margin-left: 8px;
-		}
-
-		// Hamburger bars
-		.dswp-nav-mobile-bar {
-			transition: all 0.3s ease;
-			stroke: currentColor;
-			stroke-linecap: round;
-		}
-
-		// Animation classes for hamburger
-		.dswp-nav-mobile-menu-top-bar-open {
-			transform: translate(0, 7px) rotate(45deg);
-			transform-origin: center;
-		}
-
-		.dswp-nav-mobile-menu-middle-bar-open {
-			opacity: 0;
-			transform: scaleX(0);
-		}
-
-		.dswp-nav-mobile-menu-bottom-bar-open {
-			transform: translate(0, -5px) rotate(-45deg);
-			transform-origin: center;
-		}
+		stroke: currentColor;
+		stroke-linecap: round;
 	}
-.dswp-block-navigation__container{
-    list-style: none;
-}
-// Always overlay styles
-.dswp-block-navigation-is-always-overlay {//!fix these bby removing them in the code somewhere.
-	.dswp-nav-mobile-toggle-icon {
-		display: flex;
+
+	// Animation classes for hamburger
+	.dswp-nav-mobile-menu-top-bar-open {
+		transform: translate(0, 7px) rotate(45deg);
+		transform-origin: center;
+	}
+
+	.dswp-nav-mobile-menu-middle-bar-open {
+		opacity: 0;
+		transform: scaleX(0);
+	}
+
+	.dswp-nav-mobile-menu-bottom-bar-open {
+		transform: translate(0, -5px) rotate(-45deg);
+		transform-origin: center;
 	}
 }
-
-// Never overlay styles
-.dswp-block-navigation-is-never-overlay {//!fix these bby removing them in the code somewhere.
-	.dswp-nav-mobile-toggle-icon {
-		display: none;
-	}
-}
-
-// Navigation items styles
-.wp-block-navigation-item {
-	//!fix these bby removing them in the code somewhere.
+.dswp-block-navigation__container {
+	list-style: none;
+	height: 100vh;
+	position: absolute;
+	background: white;
+	width: 100vw;
+	z-index: 1;
+	flex-flow: column;
+	align-items: flex-start!important;
 
 	a {
 		text-decoration: none;
@@ -79,7 +68,19 @@
 			opacity: 0.8;
 		}
 	}
+}
+// Always overlay styles
+.dswp-block-navigation-is-always-overlay {
+	.dswp-nav-mobile-toggle-icon {
+		display: flex;
+	}
+}
 
+// Never overlay styles
+.dswp-block-navigation-is-never-overlay {
+	.dswp-nav-mobile-toggle-icon {
+		display: none;
+	}
 }
 
 // Accessibility
