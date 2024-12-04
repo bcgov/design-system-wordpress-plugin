@@ -18,25 +18,24 @@ import { store as blockEditorStore } from "@wordpress/block-editor";
 import { store as coreStore } from "@wordpress/core-data";
 import { createBlock, serialize } from "@wordpress/blocks"; // Added serialize
 import { parse } from "@wordpress/blocks";
-import MobileIconSelector from "./mobile-icon-selector";
 import MobileMenuIcon from "./mobile-menu-icon";
 
 export default function Edit({ attributes, setAttributes, clientId }) {
 	const {
 		menuId,
 		overlayMenu,
-		mobileIconStyle,
-		ref,
-		layout,
-		showSubmenuIcon,
-		icon,
 		isMobile,
-		mobileBreakpoint
+		mobileBreakpoint = 768
 	} = attributes;
 	const { replaceInnerBlocks } = useDispatch(blockEditorStore);
 	// Add these dispatches
 	const { editEntityRecord, saveEditedEntityRecord } = useDispatch(coreStore);
-	const blockProps = useBlockProps();
+	const blockProps = useBlockProps({
+		className: `wp-block-navigation-is-${overlayMenu}-overlay`,
+		style: {
+			'--mobile-breakpoint': mobileBreakpoint
+		}
+	});
 
 	// Add ref to track updates
 	const isUpdating = useRef(false);
@@ -260,18 +259,17 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 							step={1}
 						/>
 					)}
-					<MobileIconSelector
-						setAttributes={setAttributes}
-						mobileIconStyle={mobileIconStyle}
-					/>
 				</PanelBody>
 			</InspectorControls>
 
 			<nav {...blockProps}>
-				{isMobile !== "always" ? (
-					<div {...innerBlocksProps} />
+				{overlayMenu === "always" ? (
+					<>
+						<MobileMenuIcon />
+						<div {...innerBlocksProps} style={{ display: 'none' }} />
+					</>
 				) : (
-					<MobileMenuIcon mobileIconStyle={mobileIconStyle} />
+					<div {...innerBlocksProps} />
 				)}
 			</nav>
 		</>

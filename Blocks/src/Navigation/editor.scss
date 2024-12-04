@@ -1,10 +1,3 @@
-// Block container
-.wp-block-your-plugin-navigation {
-    border: 1px dashed #ccc;
-    padding: 10px;
-    background-color: #f9f9f9;
-}
-
 // Navigation header layout
 .dswp-navigation-header {
     display: flex;
@@ -75,7 +68,7 @@
     border-radius: 4px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 5px;
 
     &.is-selected {
         position: relative;
@@ -107,7 +100,7 @@
 
 // Animation classes for mobile menu icon
 .dswp-nav-mobile-menu-top-bar-open {
-    transform: rotate(45deg) translate(5px, 5px);
+    transform: rotate(45deg) translate(0px, 7px);
     transform-origin: center;
 }
 
@@ -116,7 +109,7 @@
 }
 
 .dswp-nav-mobile-menu-bottom-bar-open {
-    transform: rotate(-45deg) translate(-1px, -6px);
+    transform: rotate(-45deg) translate(0px, -5px);
     transform-origin: center;
 }
 
@@ -173,11 +166,6 @@
     }
 }
 
-// Editor-specific styles
-.wp-block-navigation__responsive-container-open {
-    display: none;
-}
-
 .block-editor-block-list__layout {
     .dswp-navigation-overlay-menu {
         position: relative;
@@ -201,5 +189,13 @@
     .dswp-nav-mobile-menu-icon-text {
         margin-left: 0;
         margin-right: 8px;
+    }
+}
+
+
+// RTL support in editor
+[dir="rtl"] {
+    .dswp-nav-mobile-menu-icon-text {
+        order: 1;
     }
 }

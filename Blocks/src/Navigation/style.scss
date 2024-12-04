@@ -1,210 +1,104 @@
-// Base navigation container
-.wp-block-navigation-is-mobile-overlay,
-.wp-block-navigation-is-always-overlay,
-.wp-block-navigation-is-never-overlay {
-    position: relative;
-    width: 100%;
-    --mobile-breakpoint: 768px; // Default fallback value
+	// Mobile toggle icon
+	.dswp-nav-mobile-toggle-icon {
+		cursor: pointer;
+		display: none;
+		align-items: center;
+		gap: 5px;
+		padding: 8px;
+		background: none;
+		border: 1px solid currentColor;
+		border-radius: 4px;
+		color: inherit;
+		transition: all 0.3s ease;
 
-    // Navigation container
-    .wp-block-navigation__container {
-        display: flex;
-        gap: 1rem;
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        align-items: center;
-    }
+		&:hover {
+			background-color: rgba(0, 0, 0, 0.05);
+		}
 
-    // Mobile toggle icon
-    .dswp-nav-mobile-toggle-icon {
-        cursor: pointer;
-        display: none;
-        align-items: center;
-        gap: 8px;
-        padding: 8px;
-        background: none;
-        border: none;
-        color: inherit;
+		svg {
+			width: 24px;
+			height: 19px;
+		}
 
-        svg {
-            width: 24px;
-            height: 24px;
-        }
+		.dswp-nav-mobile-menu-icon-text {
+			font-size: 1rem;
+			margin-left: 8px;
+		}
 
-        .dswp-nav-mobile-menu-icon-text {
-            font-size: 1rem;
-            margin-left: 8px;
-        }
+		// Hamburger bars
+		.dswp-nav-mobile-bar {
+			transition: all 0.3s ease;
+			stroke: currentColor;
+			stroke-linecap: round;
+		}
 
-        // Hamburger bars
-        .dswp-nav-mobile-bar {
-            transition: all 0.3s ease;
-            fill: currentColor;
-        }
+		// Animation classes for hamburger
+		.dswp-nav-mobile-menu-top-bar-open {
+			transform: translate(0, 7px) rotate(45deg);
+			transform-origin: center;
+		}
 
-        // Animation classes for hamburger
-        .dswp-nav-mobile-menu-top-bar-open {
-            transform: rotate(45deg) translate(5px, 5px);
-        }
+		.dswp-nav-mobile-menu-middle-bar-open {
+			opacity: 0;
+			transform: scaleX(0);
+		}
 
-        .dswp-nav-mobile-menu-middle-bar-open {
-            opacity: 0;
-        }
-
-        .dswp-nav-mobile-menu-bottom-bar-open {
-            transform: rotate(-45deg) translate(5px, -5px);
-        }
-    }
-}
-
-// Mobile overlay styles
-.wp-block-navigation-is-mobile-overlay {
-    @media screen and (max-width: calc(var(--mobile-breakpoint) * 1px)) {
-        .wp-block-navigation__container {
-            display: none;
-            
-            &.is-menu-open {
-                display: flex;
-                flex-direction: column;
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: white;
-                z-index: 1000;
-                padding: 2rem;
-            }
-        }
-
-        .dswp-nav-mobile-toggle-icon {
-            display: flex !important;
-            z-index: 1001;
-        }
-    }
-
-    @media screen and (min-width: calc(var(--mobile-breakpoint) * 1px + 1px)) {
-        .wp-block-navigation__container {
-            display: flex !important;
-        }
-
-        .dswp-nav-mobile-toggle-icon {
-            display: none !important;
-        }
-    }
-}
+		.dswp-nav-mobile-menu-bottom-bar-open {
+			transform: translate(0, -5px) rotate(-45deg);
+			transform-origin: center;
+		}
+	}
 
 // Always overlay styles
-.wp-block-navigation-is-always-overlay {
-    .wp-block-navigation__container {
-        display: none;
-
-        &.is-menu-open {
-            display: flex;
-        }
-    }
-
-    .dswp-nav-mobile-toggle-icon {
-        display: flex;
-    }
+.wp-block-navigation-is-always-overlay {//!fix these bby removing them in the code somewhere.
+	.dswp-nav-mobile-toggle-icon {
+		display: flex;
+	}
 }
 
 // Never overlay styles
-.wp-block-navigation-is-never-overlay {
-    .dswp-nav-mobile-toggle-icon {
-        display: none;
-    }
-
-    .wp-block-navigation__container {
-        display: flex !important;
-    }
+.wp-block-navigation-is-never-overlay {//!fix these bby removing them in the code somewhere.
+	.dswp-nav-mobile-toggle-icon {
+		display: none;
+	}
 }
 
 // Navigation items styles
 .wp-block-navigation-item {
-    position: relative;
-    margin: 0;
-    padding: 0;
+	//!fix these bby removing them in the code somewhere.
 
-    a {
-        text-decoration: none;
-        padding: 0.5rem 1rem;
-        display: block;
-        color: inherit;
+	a {
+		text-decoration: none;
+		padding: 0.5rem 1rem;
+		display: block;
+		color: inherit;
 
-        &:hover {
-            opacity: 0.8;
-        }
-    }
+		&:hover {
+			opacity: 0.8;
+		}
+	}
 
-    // Submenu handling
-    .wp-block-navigation__submenu-container {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        min-width: 200px;
-        background: white;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        z-index: 100;
-
-        &.is-visible {
-            display: block;
-        }
-    }
-
-    &:hover {
-        > .wp-block-navigation__submenu-container {
-            display: block;
-        }
-    }
-}
-
-// RTL Support
-[dir="rtl"] {
-    .wp-block-navigation-item {
-        .wp-block-navigation__submenu-container {
-            left: auto;
-            right: 0;
-        }
-    }
-
-    .dswp-nav-mobile-menu-icon-text {
-        margin-left: 0;
-        margin-right: 8px;
-    }
 }
 
 // Accessibility
 .dswp-nav-mobile-toggle-icon:focus-visible {
-    outline: 2px solid var(--wp-admin-theme-color);
-    outline-offset: 2px;
+	outline: 2px solid var(--wp-admin-theme-color);
+	outline-offset: 2px;
+	border-color: var(--wp-admin-theme-color);
 }
 
 // Animation
 @keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 .is-menu-open {
-    animation: slideDown 0.3s ease-out;
-}
-
-// Print styles
-@media print {
-    .dswp-nav-mobile-toggle-icon {
-        display: none !important;
-    }
-
-    .wp-block-navigation__container {
-        display: flex !important;
-    }
+	animation: slideDown 0.3s ease-out;
 }
