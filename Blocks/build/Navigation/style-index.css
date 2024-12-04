@@ -46,11 +46,11 @@
   list-style: none;
 }
 
-.wp-block-navigation-is-always-overlay .dswp-nav-mobile-toggle-icon {
+.dswp-block-navigation-is-always-overlay .dswp-nav-mobile-toggle-icon {
   display: flex;
 }
 
-.wp-block-navigation-is-never-overlay .dswp-nav-mobile-toggle-icon {
+.dswp-block-navigation-is-never-overlay .dswp-nav-mobile-toggle-icon {
   display: none;
 }
 

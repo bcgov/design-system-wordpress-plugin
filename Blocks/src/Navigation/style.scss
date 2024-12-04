@@ -52,14 +52,14 @@
     list-style: none;
 }
 // Always overlay styles
-.wp-block-navigation-is-always-overlay {//!fix these bby removing them in the code somewhere.
+.dswp-block-navigation-is-always-overlay {//!fix these bby removing them in the code somewhere.
 	.dswp-nav-mobile-toggle-icon {
 		display: flex;
 	}
 }
 
 // Never overlay styles
-.wp-block-navigation-is-never-overlay {//!fix these bby removing them in the code somewhere.
+.dswp-block-navigation-is-never-overlay {//!fix these bby removing them in the code somewhere.
 	.dswp-nav-mobile-toggle-icon {
 		display: none;
 	}

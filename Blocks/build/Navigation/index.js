@@ -60,7 +60,7 @@ function Edit({
     saveEditedEntityRecord
   } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useDispatch)(_wordpress_core_data__WEBPACK_IMPORTED_MODULE_5__.store);
   const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useBlockProps)({
-    className: `wp-block-navigation-is-${overlayMenu}-overlay`,
+    className: `dswp-block-navigation-is-${overlayMenu}-overlay`,
     style: {
       '--mobile-breakpoint': mobileBreakpoint
     }
@@ -384,7 +384,7 @@ function save({
     mobileBreakpoint = 768
   } = attributes;
   const blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useBlockProps.save({
-    className: `wp-block-navigation-is-${overlayMenu}-overlay`,
+    className: `dswp-block-navigation-is-${overlayMenu}-overlay`,
     style: {
       "--mobile-breakpoint": mobileBreakpoint // Remove the px unit
     }

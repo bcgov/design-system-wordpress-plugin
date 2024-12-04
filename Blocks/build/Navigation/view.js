@@ -3,12 +3,12 @@
   !*** ./src/navigation/view.js ***!
   \********************************/
 document.addEventListener("DOMContentLoaded", function () {
-  const navBlocks = document.querySelectorAll('.wp-block-navigation-is-mobile-overlay, .wp-block-navigation-is-always-overlay');
+  const navBlocks = document.querySelectorAll('.dswp-block-navigation-is-mobile-overlay, .dswp-block-navigation-is-always-overlay');
   navBlocks.forEach(nav => {
     const mobileNavIcon = nav.querySelector(".dswp-nav-mobile-toggle-icon");
     const menuContainer = nav.querySelector(".dswp-block-navigation__container");
-    const isMobileMode = nav.classList.contains('wp-block-navigation-is-mobile-overlay');
-    const isAlwaysMode = nav.classList.contains('wp-block-navigation-is-always-overlay');
+    const isMobileMode = nav.classList.contains('dswp-block-navigation-is-mobile-overlay');
+    const isAlwaysMode = nav.classList.contains('dswp-block-navigation-is-always-overlay');
     function handleResize() {
       if (!isMobileMode) return;
       const breakpoint = parseInt(getComputedStyle(nav).getPropertyValue('--mobile-breakpoint'));

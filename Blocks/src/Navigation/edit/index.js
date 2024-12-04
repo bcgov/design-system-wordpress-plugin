@@ -31,7 +31,7 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 	// Add these dispatches
 	const { editEntityRecord, saveEditedEntityRecord } = useDispatch(coreStore);
 	const blockProps = useBlockProps({
-		className: `wp-block-navigation-is-${overlayMenu}-overlay`,
+		className: `dswp-block-navigation-is-${overlayMenu}-overlay`,
 		style: {
 			'--mobile-breakpoint': mobileBreakpoint
 		}
