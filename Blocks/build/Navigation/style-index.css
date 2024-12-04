@@ -60,13 +60,31 @@
 
 .dswp-block-navigation-is-mobile-overlay .dswp-block-navigation__container.is-menu-open,
 .dswp-block-navigation-is-always-overlay .dswp-block-navigation__container.is-menu-open {
-  height: 100vh;
+  display: flex;
   position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: calc(100vh - 100%);
   background: white;
-  width: 100vw;
-  z-index: 1;
-  flex-flow: column;
-  align-items: flex-start !important;
+  z-index: 1000;
+  flex-direction: column;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.dswp-block-navigation-is-mobile-overlay .is-menu-open,
+.dswp-block-navigation-is-always-overlay .is-menu-open {
+  animation: slideDown 0.2s ease-out;
 }
 
 .dswp-nav-mobile-toggle-icon:focus-visible {
@@ -78,7 +96,7 @@
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-20px);
   }
   to {
     opacity: 1;
