@@ -57,6 +57,62 @@
 .dswp-block-navigation__container a:hover {
   opacity: 0.8;
 }
+.dswp-block-navigation__container .wp-block-navigation-submenu {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.dswp-block-navigation__container .wp-block-navigation-submenu .wp-block-navigation__submenu-container {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  min-width: 200px;
+  padding: 0.5rem 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-5px);
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+.dswp-block-navigation__container .wp-block-navigation-submenu .wp-block-navigation__submenu-container .wp-block-navigation-item {
+  display: flex;
+  width: 100%;
+}
+.dswp-block-navigation__container .wp-block-navigation-submenu .wp-block-navigation__submenu-container .wp-block-navigation-item a {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+.dswp-block-navigation__container .wp-block-navigation-submenu:hover > .wp-block-navigation__submenu-container {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+@media (max-width: 768px) {
+  .dswp-block-navigation__container.is-menu-open {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .dswp-block-navigation__container.is-menu-open .wp-block-navigation-submenu {
+    width: 100%;
+  }
+  .dswp-block-navigation__container.is-menu-open .wp-block-navigation-submenu .wp-block-navigation__submenu-container {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    padding-left: 1rem;
+    box-shadow: none;
+    background: transparent;
+  }
+}
 
 .dswp-block-navigation-is-mobile-overlay .dswp-block-navigation__container.is-menu-open,
 .dswp-block-navigation-is-always-overlay .dswp-block-navigation__container.is-menu-open {
@@ -110,6 +166,16 @@
 }
 .is-menu-open {
   animation: slideDown 0.3s ease-out;
+}
+
+.dswp-block-navigation-is-always-overlay .dswp-nav-mobile-toggle-icon {
+  display: flex;
+}
+
+@media (max-width: 768px) {
+  .dswp-block-navigation-is-mobile-overlay .dswp-nav-mobile-toggle-icon {
+    display: flex;
+  }
 }
 
 /*# sourceMappingURL=style-index.css.map*/
