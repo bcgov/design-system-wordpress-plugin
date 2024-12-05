@@ -60,17 +60,22 @@
 
 .dswp-block-navigation-is-mobile-overlay .dswp-block-navigation__container.is-menu-open,
 .dswp-block-navigation-is-always-overlay .dswp-block-navigation__container.is-menu-open {
-  display: flex;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(10, auto);
   position: absolute;
-  top: 100%;
   left: 0;
   width: 100%;
-  height: calc(100vh - 100%);
   background: white;
   z-index: 1000;
-  flex-direction: column;
   padding: 1rem;
   box-sizing: border-box;
+}
+.dswp-block-navigation-is-mobile-overlay .dswp-block-navigation__container.is-menu-open li,
+.dswp-block-navigation-is-always-overlay .dswp-block-navigation__container.is-menu-open li {
+  -moz-column-break-inside: avoid;
+       break-inside: avoid;
+  display: block;
 }
 @keyframes slideDown {
   from {

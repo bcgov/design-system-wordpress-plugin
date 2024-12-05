@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 mobileNavIconText.innerText = isOpen ? "Close menu" : "Menu";
                 
                 // Show/hide menu
-                menuContainer.style.display = isOpen ? 'flex' : 'none';
+                menuContainer.style.display = isOpen ? 'grid' : 'none';
             });
         }
 
