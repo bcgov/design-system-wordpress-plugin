@@ -1,5 +1,5 @@
 /*!**************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/navigation/style.scss ***!
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/Navigation/style.scss ***!
   \**************************************************************************************************************************************************************************************************************************************************/
 .dswp-nav-mobile-toggle-icon {
   cursor: pointer;
@@ -53,9 +53,7 @@
   padding: 0.5rem 1rem;
   display: block;
   color: inherit;
-}
-.dswp-block-navigation__container a:hover {
-  opacity: 0.8;
+  opacity: 1;
 }
 .dswp-block-navigation__container .wp-block-navigation-submenu {
   display: flex;
@@ -63,37 +61,51 @@
   position: relative;
 }
 .dswp-block-navigation__container .wp-block-navigation-submenu .wp-block-navigation__submenu-container {
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background: white;
-  min-width: 200px;
-  padding: 0.5rem 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-5px);
-  transition: all 0.3s ease;
-  z-index: 100;
-}
-.dswp-block-navigation__container .wp-block-navigation-submenu .wp-block-navigation__submenu-container .wp-block-navigation-item {
-  display: flex;
-  width: 100%;
-}
-.dswp-block-navigation__container .wp-block-navigation-submenu .wp-block-navigation__submenu-container .wp-block-navigation-item a {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 0.5rem 1rem;
-  box-sizing: border-box;
-  white-space: nowrap;
-}
-.dswp-block-navigation__container .wp-block-navigation-submenu:hover > .wp-block-navigation__submenu-container {
+  display: none;
   opacity: 1;
   visibility: visible;
-  transform: translateY(0);
+  transform: none;
+  position: static;
+  box-shadow: none;
+  padding-left: 1.5rem;
+}
+.dswp-block-navigation__container .wp-block-navigation-submenu > .wp-block-navigation-item__content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.dswp-block-navigation__container .wp-block-navigation-submenu > .wp-block-navigation-item__content::after {
+  content: "";
+  width: 0.8em;
+  height: 0.8em;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 0.3s ease;
+}
+.dswp-block-navigation__container .wp-block-navigation-submenu.is-open > .wp-block-navigation-item__content::after {
+  transform: rotate(45deg);
+}
+.dswp-block-navigation__container .wp-block-navigation-submenu.is-open > .wp-block-navigation__submenu-container {
+  display: block;
+}
+.dswp-block-navigation__container .wp-block-navigation-submenu:hover > .wp-block-navigation__submenu-container, .dswp-block-navigation__container .wp-block-navigation-submenu:focus-within > .wp-block-navigation__submenu-container, .dswp-block-navigation__container .wp-block-navigation-submenu:focus > .wp-block-navigation__submenu-container {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  display: none !important;
+  pointer-events: none;
+}
+.dswp-block-navigation__container .wp-block-navigation-submenu > .wp-block-navigation__submenu-container {
+  display: none !important;
+  pointer-events: none;
+}
+.dswp-block-navigation__container .wp-block-navigation-submenu > .wp-block-navigation__submenu-container:hover, .dswp-block-navigation__container .wp-block-navigation-submenu > .wp-block-navigation__submenu-container:focus-within, .dswp-block-navigation__container .wp-block-navigation-submenu > .wp-block-navigation__submenu-container:focus {
+  display: none !important;
+}
+.dswp-block-navigation__container .wp-block-navigation-submenu.is-open > .wp-block-navigation__submenu-container {
+  display: block !important;
+  pointer-events: auto;
 }
 @media (max-width: 768px) {
   .dswp-block-navigation__container.is-menu-open {

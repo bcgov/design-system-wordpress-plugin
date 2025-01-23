@@ -111,5 +111,28 @@ document.addEventListener("DOMContentLoaded", function () {
                 window.removeEventListener('resize', handleResize);
             }
         });
+
+        // Add submenu click handlers
+        const submenuItems = nav.querySelectorAll('.wp-block-navigation-submenu');
+        
+        submenuItems.forEach(submenu => {
+            const link = submenu.querySelector('.wp-block-navigation-item__content');
+            
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Close other open submenus at the same level
+                const parent = submenu.parentElement;
+                const siblings = parent.querySelectorAll('.wp-block-navigation-submenu');
+                siblings.forEach(sibling => {
+                    if (sibling !== submenu) {
+                        sibling.classList.remove('is-open');
+                    }
+                });
+                
+                // Toggle current submenu
+                submenu.classList.toggle('is-open');
+            });
+        });
     });
 });
