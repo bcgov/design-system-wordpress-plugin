@@ -100,7 +100,25 @@
             }
 
             > .wp-block-navigation__submenu-container {
-                display: block;
+                display: block !important;
+                pointer-events: auto;
+
+                // Reset nested submenus when parent is closed
+                .wp-block-navigation-submenu:not(.is-open) > .wp-block-navigation__submenu-container {
+                    display: none !important;
+                    pointer-events: none;
+                }
+            }
+        }
+
+        &:not(.is-open) {
+            > .wp-block-navigation__submenu-container {
+                display: none !important;
+                pointer-events: none;
+            }
+
+            > .wp-block-navigation-item__content::after {
+                transform: rotate(-45deg);
             }
         }
     }

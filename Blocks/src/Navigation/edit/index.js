@@ -150,28 +150,38 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 				.map((block) => {
 					if (block.name === "core/navigation-link") {
 						return createBlock("core/navigation-link", {
-							label: block.attributes.label,
-							url: block.attributes.url,
-							type: block.attributes.type,
-							id: block.attributes.id,
-							kind: block.attributes.kind,
-							opensInNewTab: block.attributes.opensInNewTab || false,
+							...block.attributes,
+							className: block.attributes.className?.replace(/\s*is-open\s*/g, '').trim() || ''
 						});
 					}
 
 					if (block.name === "core/navigation-submenu") {
-						return createBlock(
+						// Process inner blocks first
+						const processedInnerBlocks = block.innerBlocks ? processBlocks(block.innerBlocks) : [];
+						
+						// Create new block with cleaned className
+						const newBlock = createBlock(
 							"core/navigation-submenu",
 							{
-								label: block.attributes.label,
-								url: block.attributes.url,
-								type: block.attributes.type,
-								id: block.attributes.id,
-								kind: block.attributes.kind,
-								opensInNewTab: block.attributes.opensInNewTab || false,
+								...block.attributes,
+								className: block.attributes.className?.replace(/\s*is-open\s*/g, '').trim() || ''
 							},
-							block.innerBlocks ? processBlocks(block.innerBlocks) : []
+							processedInnerBlocks
 						);
+
+						// Clean up submenu container classes if they exist
+						if (newBlock.innerBlocks) {
+							newBlock.innerBlocks = newBlock.innerBlocks.map(innerBlock => {
+								if (innerBlock.attributes?.className) {
+									innerBlock.attributes.className = innerBlock.attributes.className
+										.replace(/\s*is-open\s*/g, '')
+										.trim();
+								}
+								return innerBlock;
+							});
+						}
+
+						return newBlock;
 					}
 
 					return null;

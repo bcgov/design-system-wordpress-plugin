@@ -170,23 +170,30 @@ function Edit({
       return blocks.map(block => {
         if (block.name === "core/navigation-link") {
           return (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.createBlock)("core/navigation-link", {
-            label: block.attributes.label,
-            url: block.attributes.url,
-            type: block.attributes.type,
-            id: block.attributes.id,
-            kind: block.attributes.kind,
-            opensInNewTab: block.attributes.opensInNewTab || false
+            ...block.attributes,
+            className: block.attributes.className?.replace(/\s*is-open\s*/g, '').trim() || ''
           });
         }
         if (block.name === "core/navigation-submenu") {
-          return (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.createBlock)("core/navigation-submenu", {
-            label: block.attributes.label,
-            url: block.attributes.url,
-            type: block.attributes.type,
-            id: block.attributes.id,
-            kind: block.attributes.kind,
-            opensInNewTab: block.attributes.opensInNewTab || false
-          }, block.innerBlocks ? processBlocks(block.innerBlocks) : []);
+          // Process inner blocks first
+          const processedInnerBlocks = block.innerBlocks ? processBlocks(block.innerBlocks) : [];
+
+          // Create new block with cleaned className
+          const newBlock = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.createBlock)("core/navigation-submenu", {
+            ...block.attributes,
+            className: block.attributes.className?.replace(/\s*is-open\s*/g, '').trim() || ''
+          }, processedInnerBlocks);
+
+          // Clean up submenu container classes if they exist
+          if (newBlock.innerBlocks) {
+            newBlock.innerBlocks = newBlock.innerBlocks.map(innerBlock => {
+              if (innerBlock.attributes?.className) {
+                innerBlock.attributes.className = innerBlock.attributes.className.replace(/\s*is-open\s*/g, '').trim();
+              }
+              return innerBlock;
+            });
+          }
+          return newBlock;
         }
         return null;
       }).filter(Boolean);

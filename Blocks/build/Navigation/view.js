@@ -109,23 +109,44 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Add submenu click handlers
-    const submenuItems = nav.querySelectorAll('.wp-block-navigation-submenu');
-    submenuItems.forEach(submenu => {
-      const link = submenu.querySelector('.wp-block-navigation-item__content');
+    const submenuLinks = nav.querySelectorAll('.wp-block-navigation-item__content');
+    submenuLinks.forEach(link => {
       link.addEventListener('click', e => {
         e.preventDefault();
+        e.stopPropagation(); // Stop the event from bubbling up to avoid triggering parent submenu toggles inadvertently.
 
-        // Close other open submenus at the same level
-        const parent = submenu.parentElement;
-        const siblings = parent.querySelectorAll('.wp-block-navigation-submenu');
-        siblings.forEach(sibling => {
-          if (sibling !== submenu) {
+        const submenu = link.closest('.wp-block-navigation-submenu');
+        const submenuContainer = submenu.querySelector('.wp-block-navigation__submenu-container');
+
+        // Toggle the current submenu
+        submenu.classList.toggle('is-open');
+        if (submenuContainer) {
+          submenuContainer.classList.toggle('is-open');
+        }
+
+        // Close other submenus at the same level
+        const siblings = submenu.parentElement.children;
+        Array.from(siblings).forEach(sibling => {
+          if (sibling !== submenu && sibling.classList.contains('wp-block-navigation-submenu')) {
             sibling.classList.remove('is-open');
+            const siblingSubmenuContainer = sibling.querySelector('.wp-block-navigation__submenu-container');
+            if (siblingSubmenuContainer) {
+              siblingSubmenuContainer.classList.remove('is-open');
+            }
           }
         });
 
-        // Toggle current submenu
-        submenu.classList.toggle('is-open');
+        // Close all nested submenus inside the current submenu if it is being closed
+        if (!submenu.classList.contains('is-open')) {
+          const nestedSubmenus = submenu.querySelectorAll('.wp-block-navigation-submenu');
+          nestedSubmenus.forEach(nestedSubmenu => {
+            nestedSubmenu.classList.remove('is-open');
+            const nestedContainer = nestedSubmenu.querySelector('.wp-block-navigation__submenu-container');
+            if (nestedContainer) {
+              nestedContainer.classList.remove('is-open');
+            }
+          });
+        }
       });
     });
   });
