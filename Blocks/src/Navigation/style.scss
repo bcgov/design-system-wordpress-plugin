@@ -64,70 +64,73 @@
     }
 
     .wp-block-navigation-submenu {
-        display: flex;
-        flex-direction: column;
         position: relative;
-        
-        .wp-block-navigation__submenu-container {
+
+        >.wp-block-navigation__submenu-container {
+            list-style: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
             display: none;
-            opacity: 1;
-            visibility: visible;
-            transform: none;
-            position: static;
-            box-shadow: none;
-            padding-left: 1.5rem;
+            z-index: 1000;
+            background: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 0;
+            margin: 0;
         }
 
-        > .wp-block-navigation-item__content {
+        >.wp-block-navigation-item__content {
             display: flex;
             align-items: center;
             gap: 0.5rem;
 
             &::after {
+                place-self: flex-start;
                 content: "";
-                width: 0.8em;
-                height: 0.8em;
+                width: 0.6em;
+                height: 0.6em;
                 border-right: 2px solid currentColor;
                 border-bottom: 2px solid currentColor;
-                transform: rotate(-45deg);
+                transform: rotate(-135deg);
                 transition: transform 0.3s ease;
             }
         }
 
         &.is-open {
-            > .wp-block-navigation-item__content::after {
-                transform: rotate(45deg);
+            >.wp-block-navigation-item__content::after {
+                transform: rotate(-135deg);
             }
 
-            > .wp-block-navigation__submenu-container {
-                display: block !important;
-                pointer-events: auto;
-
-                // Reset nested submenus when parent is closed
-                .wp-block-navigation-submenu:not(.is-open) > .wp-block-navigation__submenu-container {
-                    display: none !important;
-                    pointer-events: none;
-                }
+            >.wp-block-navigation__submenu-container {
+                display: block;
             }
         }
 
         &:not(.is-open) {
-            > .wp-block-navigation__submenu-container {
-                display: none !important;
-                pointer-events: none;
+            >.wp-block-navigation__submenu-container {
+                display: none;
             }
 
-            > .wp-block-navigation-item__content::after {
-                transform: rotate(-45deg);
+            >.wp-block-navigation-item__content::after {
+                transform: rotate(45deg);
+            }
+        }
+
+        // Remove padding from submenu items
+        .wp-block-navigation__submenu-container {
+            .wp-block-navigation-item__content {
+                padding: 0.5rem 1rem;
             }
         }
     }
 
     // Remove all hover effects more aggressively
     .wp-block-navigation-submenu {
-        &:hover > .wp-block-navigation__submenu-container,
-        &:focus-within > .wp-block-navigation__submenu-container,
-        &:focus > .wp-block-navigation__submenu-container {
+
+        &:hover>.wp-block-navigation__submenu-container,
+        &:focus-within>.wp-block-navigation__submenu-container,
+        &:focus>.wp-block-navigation__submenu-container {
             opacity: 1;
             visibility: visible;
             transform: none;
@@ -135,10 +138,10 @@
             pointer-events: none; // Prevent hover interactions
         }
 
-        > .wp-block-navigation__submenu-container {
+        >.wp-block-navigation__submenu-container {
             display: none !important; // Force override
             pointer-events: none; // Prevent hover interactions
-            
+
             &:hover,
             &:focus-within,
             &:focus {
@@ -146,7 +149,7 @@
             }
         }
 
-        &.is-open > .wp-block-navigation__submenu-container {
+        &.is-open>.wp-block-navigation__submenu-container {
             display: block !important; // Show only when explicitly opened
             pointer-events: auto; // Re-enable interactions when open
         }
@@ -166,11 +169,18 @@
                     opacity: 1;
                     visibility: visible;
                     transform: none;
-                    padding-left: 1rem;
                     box-shadow: none;
                     background: transparent;
                 }
             }
+        }
+
+        .wp-block-navigation-submenu>.wp-block-navigation__submenu-container {
+            position: static;
+        }
+
+        .wp-block-navigation__submenu-container {
+            padding-left: 1rem;
         }
     }
 }
@@ -189,7 +199,7 @@
         z-index: 1000;
         padding: 1rem;
         box-sizing: border-box;
-        
+
         // Force items into columns of 10
         li {
             break-inside: avoid;
