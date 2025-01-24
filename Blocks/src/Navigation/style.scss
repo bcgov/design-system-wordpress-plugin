@@ -55,12 +55,25 @@
     gap: 1rem;
     list-style: none;
 
+    // Top level links border separation
+    > .wp-block-navigation-item {
+        border-right: 1px solid #e0e0e0;
+        flex: 1;
+        text-align: center;
+
+        &:last-child {
+            border-right: none;
+            padding-right: 0;
+        }
+    }
+
     a {
         text-decoration: none;
         padding: 0.5rem 1rem;
         display: block;
         color: inherit;
         opacity: 1;
+        white-space: nowrap;
     }
 
     .wp-block-navigation-submenu {
@@ -83,15 +96,15 @@
         >.wp-block-navigation-item__content {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 1rem; // Increased gap between text and arrow
 
             &::after {
-                content: url('data:image/svg+xml;utf8,<svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 3L8 10L15 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+                content: url('./assets/chevron.svg');
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
-                width: 16px;
-                height: 12px;
+                width: 14px;
+                height: 10px;
                 transition: transform 0.2s ease;
             }
         }
@@ -111,7 +124,7 @@
                 }
 
                 &.is-open > .wp-block-navigation-item__content::after {
-                    transform: rotate(180deg);
+                    // transform: rotate(180deg);
                 }
             }
         }
@@ -119,6 +132,8 @@
         &.is-open {
             > .wp-block-navigation-item__content {
                 font-weight: bold;
+                border-radius: 4px;
+                box-shadow: 0px 1.2px 3.6px 0px rgba(0, 0, 0, 0.10), 0px 6.4px 14.4px 0px rgba(0, 0, 0, 0.13);
             }
 
             > .wp-block-navigation-item__content::after {
@@ -203,6 +218,16 @@
 
         .wp-block-navigation__submenu-container {
             padding-left: 1rem;
+        }
+    }
+
+    // For submenu items, reset the flex behavior
+    .wp-block-navigation-submenu {
+        .wp-block-navigation__submenu-container {
+            .wp-block-navigation-item {
+                flex: none;
+                text-align: left;
+            }
         }
     }
 }
