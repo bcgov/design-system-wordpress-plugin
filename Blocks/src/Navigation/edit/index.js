@@ -37,17 +37,6 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 		}
 	});
 
-	// Add ref to track updates
-	const isUpdating = useRef(false);
-	const lastSavedContent = useRef("");
-	// Add this selector to get current blocks
-	const { currentBlocks } = useSelect(
-		(select) => ({
-			currentBlocks: select(blockEditorStore).getBlocks(clientId),
-		}),
-		[clientId]
-	);
-
 	// Add this selector near your other useSelect calls
 	const { canUserEditNavigation } = useSelect(
 		(select) => {
@@ -58,6 +47,8 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 		},
 		[menuId]
 	);
+
+	
 
 	// Your existing menu selectors
 	const { menus, hasResolvedMenus } = useSelect((select) => {
@@ -95,103 +86,20 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 		[menuId]
 	);
 
-	// Handle block updates
-	const handleBlocksUpdate = async (blocks) => {
+	// Add this to handle block updates
+	const handleBlockUpdate = (nextBlocks) => {
 		if (!menuId) return;
-
+		
 		try {
-			const serializedContent = serialize(blocks);
-
-			// Skip if content hasn't changed
-			if (serializedContent === lastSavedContent.current) {
-				return;
-			}
-
-			lastSavedContent.current = serializedContent;
-
-			await editEntityRecord("postType", "wp_navigation", menuId, {
+			const serializedContent = serialize(nextBlocks);
+			editEntityRecord("postType", "wp_navigation", menuId, {
 				content: serializedContent,
-				status: "publish",
+				status: "publish"
 			});
-
-			await saveEditedEntityRecord("postType", "wp_navigation", menuId);
 		} catch (error) {
 			console.error("Failed to update navigation menu:", error);
 		}
 	};
-
-	// Effect for block updates
-	useEffect(() => {
-		if (menuId && currentBlocks && !isUpdating.current) {
-			isUpdating.current = true;
-			const timeoutId = setTimeout(() => {
-				handleBlocksUpdate(currentBlocks).finally(() => {
-					isUpdating.current = false;
-				});
-			}, 1000);
-
-			return () => {
-				clearTimeout(timeoutId);
-				isUpdating.current = false;
-			};
-		}
-	}, [currentBlocks, menuId]);
-
-	// Your existing effect for loading menu content
-	useEffect(() => {
-		if (!selectedMenu || !selectedMenu.content) {
-			replaceInnerBlocks(clientId, []);
-			return;
-		}
-
-		const parsedBlocks = parse(selectedMenu.content);
-		const processBlocks = (blocks) => {
-			return blocks
-				.map((block) => {
-					if (block.name === "core/navigation-link") {
-						return createBlock("core/navigation-link", {
-							...block.attributes,
-							className: block.attributes.className?.replace(/\s*is-open\s*/g, '').trim() || ''
-						});
-					}
-
-					if (block.name === "core/navigation-submenu") {
-						// Process inner blocks first
-						const processedInnerBlocks = block.innerBlocks ? processBlocks(block.innerBlocks) : [];
-						
-						// Create new block with cleaned className
-						const newBlock = createBlock(
-							"core/navigation-submenu",
-							{
-								...block.attributes,
-								className: block.attributes.className?.replace(/\s*is-open\s*/g, '').trim() || ''
-							},
-							processedInnerBlocks
-						);
-
-						// Clean up submenu container classes if they exist
-						if (newBlock.innerBlocks) {
-							newBlock.innerBlocks = newBlock.innerBlocks.map(innerBlock => {
-								if (innerBlock.attributes?.className) {
-									innerBlock.attributes.className = innerBlock.attributes.className
-										.replace(/\s*is-open\s*/g, '')
-										.trim();
-								}
-								return innerBlock;
-							});
-						}
-
-						return newBlock;
-					}
-
-					return null;
-				})
-				.filter(Boolean);
-		};
-
-		const newBlocks = processBlocks(parsedBlocks);
-		replaceInnerBlocks(clientId, newBlocks);
-	}, [selectedMenu]);
 
 	const innerBlocksProps = useInnerBlocksProps(
 		{ className: "dswp-block-navigation__container" },
@@ -199,6 +107,7 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 			allowedBlocks: ["core/navigation-link", "core/navigation-submenu"],
 			orientation: "horizontal",
 			templateLock: false,
+			onChange: handleBlockUpdate
 		}
 	);
 

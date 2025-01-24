@@ -66,16 +66,6 @@ function Edit({
     }
   });
 
-  // Add ref to track updates
-  const isUpdating = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(false);
-  const lastSavedContent = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)("");
-  // Add this selector to get current blocks
-  const {
-    currentBlocks
-  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useSelect)(select => ({
-    currentBlocks: select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.store).getBlocks(clientId)
-  }), [clientId]);
-
   // Add this selector near your other useSelect calls
   const {
     canUserEditNavigation
@@ -122,91 +112,26 @@ function Edit({
     };
   }, [menuId]);
 
-  // Handle block updates
-  const handleBlocksUpdate = async blocks => {
+  // Add this to handle block updates
+  const handleBlockUpdate = nextBlocks => {
     if (!menuId) return;
     try {
-      const serializedContent = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.serialize)(blocks);
-
-      // Skip if content hasn't changed
-      if (serializedContent === lastSavedContent.current) {
-        return;
-      }
-      lastSavedContent.current = serializedContent;
-      await editEntityRecord("postType", "wp_navigation", menuId, {
+      const serializedContent = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.serialize)(nextBlocks);
+      editEntityRecord("postType", "wp_navigation", menuId, {
         content: serializedContent,
         status: "publish"
       });
-      await saveEditedEntityRecord("postType", "wp_navigation", menuId);
     } catch (error) {
       console.error("Failed to update navigation menu:", error);
     }
   };
-
-  // Effect for block updates
-  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
-    if (menuId && currentBlocks && !isUpdating.current) {
-      isUpdating.current = true;
-      const timeoutId = setTimeout(() => {
-        handleBlocksUpdate(currentBlocks).finally(() => {
-          isUpdating.current = false;
-        });
-      }, 1000);
-      return () => {
-        clearTimeout(timeoutId);
-        isUpdating.current = false;
-      };
-    }
-  }, [currentBlocks, menuId]);
-
-  // Your existing effect for loading menu content
-  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
-    if (!selectedMenu || !selectedMenu.content) {
-      replaceInnerBlocks(clientId, []);
-      return;
-    }
-    const parsedBlocks = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.parse)(selectedMenu.content);
-    const processBlocks = blocks => {
-      return blocks.map(block => {
-        if (block.name === "core/navigation-link") {
-          return (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.createBlock)("core/navigation-link", {
-            ...block.attributes,
-            className: block.attributes.className?.replace(/\s*is-open\s*/g, '').trim() || ''
-          });
-        }
-        if (block.name === "core/navigation-submenu") {
-          // Process inner blocks first
-          const processedInnerBlocks = block.innerBlocks ? processBlocks(block.innerBlocks) : [];
-
-          // Create new block with cleaned className
-          const newBlock = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.createBlock)("core/navigation-submenu", {
-            ...block.attributes,
-            className: block.attributes.className?.replace(/\s*is-open\s*/g, '').trim() || ''
-          }, processedInnerBlocks);
-
-          // Clean up submenu container classes if they exist
-          if (newBlock.innerBlocks) {
-            newBlock.innerBlocks = newBlock.innerBlocks.map(innerBlock => {
-              if (innerBlock.attributes?.className) {
-                innerBlock.attributes.className = innerBlock.attributes.className.replace(/\s*is-open\s*/g, '').trim();
-              }
-              return innerBlock;
-            });
-          }
-          return newBlock;
-        }
-        return null;
-      }).filter(Boolean);
-    };
-    const newBlocks = processBlocks(parsedBlocks);
-    replaceInnerBlocks(clientId, newBlocks);
-  }, [selectedMenu]);
   const innerBlocksProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useInnerBlocksProps)({
     className: "dswp-block-navigation__container"
   }, {
     allowedBlocks: ["core/navigation-link", "core/navigation-submenu"],
     orientation: "horizontal",
-    templateLock: false
+    templateLock: false,
+    onChange: handleBlockUpdate
   });
 
   // Rest of your component (handleMenuSelect, return statement, etc.)

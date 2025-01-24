@@ -77,17 +77,22 @@
   gap: 0.5rem;
 }
 .dswp-block-navigation__container .wp-block-navigation-submenu > .wp-block-navigation-item__content::after {
-  place-self: flex-start;
-  content: "";
-  width: 0.6em;
-  height: 0.6em;
-  border-left: 2px solid currentColor;
-  border-bottom: 2px solid currentColor;
-  transform: rotate(135deg);
-  transition: transform 0.3s ease;
+  content: url("data:image/svg+xml;utf8,<svg width=\"16\" height=\"12\" viewBox=\"0 0 16 12\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M1 3L8 10L15 3\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>");
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 12px;
+  transition: transform 0.2s ease;
+}
+.dswp-block-navigation__container .wp-block-navigation-submenu .wp-block-navigation__submenu-container .wp-block-navigation-submenu > .wp-block-navigation-item__content::after {
+  transform: rotate(90deg);
+}
+.dswp-block-navigation__container .wp-block-navigation-submenu .wp-block-navigation__submenu-container .wp-block-navigation-submenu.is-open > .wp-block-navigation-item__content::after {
+  transform: rotate(0deg);
 }
 .dswp-block-navigation__container .wp-block-navigation-submenu.is-open > .wp-block-navigation-item__content::after {
-  transform: rotate(135deg);
+  transform: rotate(180deg);
 }
 .dswp-block-navigation__container .wp-block-navigation-submenu.is-open > .wp-block-navigation__submenu-container {
   display: block;
@@ -96,7 +101,7 @@
   display: none;
 }
 .dswp-block-navigation__container .wp-block-navigation-submenu:not(.is-open) > .wp-block-navigation-item__content::after {
-  transform: rotate(-45deg);
+  transform: rotate(0deg);
 }
 .dswp-block-navigation__container .wp-block-navigation-submenu .wp-block-navigation__submenu-container .wp-block-navigation-item__content {
   padding: 0.5rem 1rem;
