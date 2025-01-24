@@ -294,14 +294,20 @@
             position: static;
         }
 
-        .wp-block-navigation__submenu-container {
-            padding-left: 1rem;
-        }
-
         .wp-block-navigation-submenu {
             >.wp-block-navigation__submenu-container {
                 width: 100% !important;
                 min-width: auto;
+            }
+        }
+
+        .wp-block-navigation-submenu {
+            &.is-open {
+                > .wp-block-navigation-item__content {
+                    font-weight: normal;
+                    border-radius: 0;
+                    box-shadow: none !important;
+                }
             }
         }
     }
