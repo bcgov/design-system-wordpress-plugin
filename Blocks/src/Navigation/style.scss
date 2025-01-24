@@ -238,19 +238,54 @@
 
     // Mobile adjustments
     @media (max-width: 768px) {
+        // Remove top level borders in mobile
+        > .wp-block-navigation-item {
+            border-right: none;
+            flex: none;
+            text-align: left;
+            width: 100%;
+        }
+
         &.is-menu-open {
             flex-direction: column;
             align-items: flex-start;
 
-            .wp-block-navigation-submenu {
+            // Adjust all navigation items
+            .wp-block-navigation-item {
                 width: 100%;
+                text-align: left;
 
-                .wp-block-navigation__submenu-container {
-                    position: static !important;
-                    left: auto !important;
-                    top: auto !important;
-                    box-shadow: none;
-                    padding-left: 1rem;
+                .wp-block-navigation-item__content {
+                    width: 100%;
+                    justify-content: flex-start;
+                    padding: 1rem 0;
+                    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+                }
+
+                &:last-child > .wp-block-navigation-item__content {
+                    border-bottom: none;
+                }
+            }
+
+            // Adjust submenu containers
+            .wp-block-navigation__submenu-container {
+                position: static !important;
+                left: auto !important;
+                top: auto !important;
+                box-shadow: none;
+                padding-left: 1rem;
+                width: 100%;
+                background: transparent;
+                border-radius: 0;
+
+                .wp-block-navigation-item__content {
+                    padding: 0.75rem 0;
+                    justify-content: flex-start;
+                    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+                }
+
+                .wp-block-navigation-item:last-child > .wp-block-navigation-item__content {
+                    border-bottom: none;
                 }
             }
         }
