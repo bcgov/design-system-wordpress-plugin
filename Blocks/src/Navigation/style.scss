@@ -96,21 +96,32 @@
             }
         }
 
-        // Target all submenu items except the top level
+        // Second level and deeper submenus (shoot out to the right)
         .wp-block-navigation__submenu-container {
             .wp-block-navigation-submenu {
-                >.wp-block-navigation-item__content::after {
+                > .wp-block-navigation__submenu-container {
+                    top: 0;
+                    left: 100%;
+                    width: 100%;
+                }
+
+                // Adjust the arrow for right-pointing menus
+                > .wp-block-navigation-item__content::after {
                     transform: rotate(-90deg);
                 }
 
                 &.is-open > .wp-block-navigation-item__content::after {
-                    transform: rotate(-0deg);
+                    transform: rotate(180deg);
                 }
             }
         }
 
         &.is-open {
-            >.wp-block-navigation-item__content::after {
+            > .wp-block-navigation-item__content {
+                font-weight: bold;
+            }
+
+            > .wp-block-navigation-item__content::after {
                 transform: rotate(-180deg);
             }
 
@@ -177,12 +188,11 @@
                 width: 100%;
 
                 .wp-block-navigation__submenu-container {
-                    position: static;
-                    opacity: 1;
-                    visibility: visible;
-                    transform: none;
+                    position: static !important;
+                    left: auto !important;
+                    top: auto !important;
                     box-shadow: none;
-                    background: transparent;
+                    padding-left: 1rem;
                 }
             }
         }
