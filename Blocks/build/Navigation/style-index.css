@@ -219,14 +219,13 @@
   .dswp-block-navigation__container .wp-block-navigation-submenu > .wp-block-navigation__submenu-container {
     position: static;
   }
-  .dswp-block-navigation__container .wp-block-navigation-submenu > .wp-block-navigation__submenu-container {
-    width: 100% !important;
-    min-width: auto;
-  }
   .dswp-block-navigation__container .wp-block-navigation-submenu.is-open > .wp-block-navigation-item__content {
-    font-weight: normal;
+    font-weight: bold !important;
+    box-shadow: none;
     border-radius: 0;
-    box-shadow: none !important;
+  }
+  .dswp-block-navigation__container .wp-block-navigation-submenu.is-open .wp-block-navigation__submenu-container .wp-block-navigation-submenu.is-open > .wp-block-navigation-item__content {
+    font-weight: bold !important;
   }
 }
 .dswp-block-navigation__container .wp-block-navigation-submenu .wp-block-navigation__submenu-container .wp-block-navigation-item {

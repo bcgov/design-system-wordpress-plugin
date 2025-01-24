@@ -299,18 +299,20 @@
         // }
 
         .wp-block-navigation-submenu {
-            >.wp-block-navigation__submenu-container {
-                width: 100% !important;
-                min-width: auto;
-            }
-        }
-
-        .wp-block-navigation-submenu {
             &.is-open {
                 > .wp-block-navigation-item__content {
-                    font-weight: normal;
+                    font-weight: bold !important;
+                    box-shadow: none;
                     border-radius: 0;
-                    box-shadow: none !important;
+                }
+
+                // Make sure nested open submenus also have bold parent links
+                .wp-block-navigation__submenu-container {
+                    .wp-block-navigation-submenu.is-open {
+                        > .wp-block-navigation-item__content {
+                            font-weight: bold !important;
+                        }
+                    }
                 }
             }
         }
