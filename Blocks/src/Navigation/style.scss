@@ -273,7 +273,7 @@
                 left: auto !important;
                 top: auto !important;
                 box-shadow: none;
-                padding-left: 1rem;
+                // padding-left: 1rem;
                 width: 100%;
                 background: transparent;
                 border-radius: 0;
@@ -293,6 +293,10 @@
         .wp-block-navigation-submenu>.wp-block-navigation__submenu-container {
             position: static;
         }
+
+        // .wp-block-navigation__submenu-container {
+        //     padding-left: 1rem;
+        // }
 
         .wp-block-navigation-submenu {
             >.wp-block-navigation__submenu-container {
