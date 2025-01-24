@@ -190,6 +190,23 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
     });
+
+    // Add this after the submenu click handlers
+    document.addEventListener('click', function (event) {
+      // Check if click is outside the navigation
+      const isClickInsideNav = nav.contains(event.target);
+      if (!isClickInsideNav) {
+        // Close all open submenus
+        const openSubmenus = nav.querySelectorAll('.wp-block-navigation-submenu.is-open');
+        openSubmenus.forEach(submenu => {
+          submenu.classList.remove('is-open');
+          const submenuContainer = submenu.querySelector('.wp-block-navigation__submenu-container');
+          if (submenuContainer) {
+            submenuContainer.classList.remove('is-open');
+          }
+        });
+      }
+    });
   });
 });
 /******/ })()
