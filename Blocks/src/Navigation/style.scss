@@ -52,7 +52,6 @@
 .dswp-block-navigation__container {
     display: flex;
     align-items: center;
-    gap: 1rem;
     list-style: none;
 
     // Top level links border separation
@@ -60,7 +59,6 @@
         border-right: 1px solid #e0e0e0;
         flex: 1;
         text-align: center;
-
         &:last-child {
             border-right: none;
             padding-right: 0;
@@ -69,7 +67,7 @@
 
     a {
         text-decoration: none;
-        padding: .5rem 1rem;
+        padding: 1rem 2rem;
         display: block;
         color: inherit;
         opacity: 1;
@@ -96,11 +94,12 @@
         }
 
         >.wp-block-navigation-item__content {
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 1rem;
-
+            
             &::after {
                 content: url('./assets/chevron.svg');
                 display: inline-flex;
@@ -110,6 +109,19 @@
                 height: 10px;
                 transition: transform 0.2s ease;
                 margin-left: auto;
+                pointer-events: none;
+                z-index: 1;
+            }
+            
+            &::before {
+                content: '';
+                position: absolute;
+                right: 0;
+                top: 0;
+                width: 56px;
+                height: 100%;
+                cursor: pointer;
+                z-index: 2;
             }
         }
 
@@ -184,7 +196,12 @@
                     background-color: #f0f0f0;
                 }
 
-                padding: 0.5rem 1rem;
+                padding: 1rem 2rem;
+                border-bottom: 1px solid #ccc;
+                
+                :last-child {
+                    border:none;
+                }
             }
         }
     }
@@ -342,6 +359,71 @@
     .dswp-block-navigation-is-mobile-overlay {
         .dswp-nav-mobile-toggle-icon {
             display: flex;
+        }
+    }
+}
+
+.wp-block-navigation-submenu {
+    .wp-block-navigation__submenu-container {
+        // Default state for all submenus
+        position: absolute;
+        
+        // Alignment classes for nested submenus
+        &.submenu-align-left {
+            left: 100%;
+            right: auto;
+        }
+        
+        &.submenu-align-right {
+            right: 100%;
+            left: auto;
+        }
+    }
+
+    // For top-level submenus only
+    &:not(.wp-block-navigation__submenu-container .wp-block-navigation-submenu) {
+        > .wp-block-navigation__submenu-container {
+            left: 0 !important;
+            right: auto !important;
+            top: 100% !important;
+        }
+    }
+
+    // Adjust arrow direction based on alignment
+    .wp-block-navigation__submenu-container {
+        .wp-block-navigation-submenu {
+            > .wp-block-navigation-item__content::after {
+                transform: rotate(-90deg);
+            }
+            
+            &.submenu-align-right > .wp-block-navigation-item__content::after {
+                transform: rotate(90deg);
+            }
+        }
+    }
+}
+
+// RTL support
+[dir="rtl"] {
+    .wp-block-navigation-submenu {
+        .wp-block-navigation__submenu-container {
+            &.submenu-align-left {
+                right: 100%;
+                left: auto;
+            }
+            
+            &.submenu-align-right {
+                left: 100%;
+                right: auto;
+            }
+        }
+
+        // For top-level submenus in RTL
+        &:not(.wp-block-navigation__submenu-container .wp-block-navigation-submenu) {
+            > .wp-block-navigation__submenu-container {
+                right: 0 !important;
+                left: auto !important;
+            }
         }
     }
 }

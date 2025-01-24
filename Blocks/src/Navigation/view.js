@@ -116,12 +116,55 @@ document.addEventListener("DOMContentLoaded", function () {
         const submenuLinks = nav.querySelectorAll('.wp-block-navigation-item__content');
         
         submenuLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation(); // Stop the event from bubbling up to avoid triggering parent submenu toggles inadvertently.
-
+            link.addEventListener('click', e => {
+                const clickedElement = e.target;
+                const arrowArea = link.querySelector('::after');
+                const beforeElement = link.querySelector('::before');
+                
+                // Check if click is in the arrow area (right side)
+                const rect = link.getBoundingClientRect();
+                const isArrowClick = (e.clientX - rect.left) > (rect.width - 56);
+                
                 const submenu = link.closest('.wp-block-navigation-submenu');
                 const submenuContainer = submenu.querySelector('.wp-block-navigation__submenu-container');
+                const linkHref = link.getAttribute('href');
+
+                // If it's not an arrow click and there's a valid href, let the link work
+                if (!isArrowClick && linkHref && linkHref !== '#') {
+                    return; // Allow default link behavior
+                }
+
+                // Prevent default only for arrow clicks or links without href
+                e.preventDefault();
+                e.stopPropagation();
+
+                if (submenuContainer) {
+                    // First, make the submenu visible but hidden to measure it
+                    submenuContainer.style.visibility = 'hidden';
+                    submenuContainer.style.display = 'block';
+                    
+                    // Get measurements
+                    const submenuRect = submenuContainer.getBoundingClientRect();
+                    const parentRect = submenu.getBoundingClientRect();
+                    const viewportWidth = window.innerWidth;
+                    
+                    // Reset visibility
+                    submenuContainer.style.visibility = '';
+                    submenuContainer.style.display = '';
+
+                    // Remove existing position classes
+                    submenuContainer.classList.remove('submenu-align-left', 'submenu-align-right');
+                    
+                    // For nested submenus (not top level)
+                    if (submenu.closest('.wp-block-navigation__submenu-container')) {
+                        // Check if submenu would overflow on the right
+                        if (parentRect.right + submenuRect.width > viewportWidth) {
+                            submenuContainer.classList.add('submenu-align-right');
+                        } else {
+                            submenuContainer.classList.add('submenu-align-left');
+                        }
+                    }
+                }
 
                 // Toggle the current submenu
                 submenu.classList.toggle('is-open');
