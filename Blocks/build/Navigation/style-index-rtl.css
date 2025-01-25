@@ -227,6 +227,12 @@
   .dswp-block-navigation__container .wp-block-navigation-submenu.is-open .wp-block-navigation__submenu-container .wp-block-navigation-submenu.is-open > .wp-block-navigation-item__content {
     font-weight: bold !important;
   }
+  .dswp-block-navigation__container .wp-block-navigation-submenu > .wp-block-navigation__submenu-container {
+    background-color: rgba(214, 215, 216, 0.2549019608);
+  }
+  .dswp-block-navigation__container .wp-block-navigation-submenu .wp-block-navigation__submenu-container .wp-block-navigation__submenu-container .wp-block-navigation__submenu-container {
+    background-color: rgba(214, 215, 216, 0.2549019608);
+  }
 }
 .dswp-block-navigation__container .wp-block-navigation-submenu .wp-block-navigation__submenu-container .wp-block-navigation-item {
   flex: none;

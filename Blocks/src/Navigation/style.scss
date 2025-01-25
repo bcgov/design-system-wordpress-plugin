@@ -315,6 +315,23 @@
                     }
                 }
             }
+
+            // Level 1 submenu (default is transparent)
+            > .wp-block-navigation__submenu-container {
+                background-color: #d6d7d841;
+            }
+
+            // Level 2 submenu (slightly grey)
+            .wp-block-navigation__submenu-container {
+           
+
+                // Level 3 submenu (slightly darker grey)
+                .wp-block-navigation__submenu-container {
+                    .wp-block-navigation__submenu-container {
+                        background-color: #d6d7d841;
+                    }
+                }
+            }
         }
     }
 
