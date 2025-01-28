@@ -100,43 +100,54 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Add submenu click handlers
-    const submenuLinks = nav.querySelectorAll('.wp-block-navigation-item__content');
+    const submenuLinks = nav.querySelectorAll('.wp-block-navigation-submenu > .wp-block-navigation-item__content');
     submenuLinks.forEach(link => {
-      link.addEventListener('click', e => {
-        // Check if click is in the arrow area (right side)
-        const rect = link.getBoundingClientRect();
-        const isArrowClick = e.clientX - rect.left > rect.width - 56;
-        const submenu = link.closest('.wp-block-navigation-submenu');
-        const submenuContainer = submenu.querySelector('.wp-block-navigation__submenu-container');
-        const linkHref = link.getAttribute('href');
+      // Only create button if parent has submenu
+      const submenu = link.closest('.wp-block-navigation-submenu');
+      const hasSubmenu = submenu?.querySelector('.wp-block-navigation__submenu-container');
+      if (hasSubmenu) {
+        // Create a button for the arrow
+        const arrowButton = document.createElement('button');
+        arrowButton.className = 'dswp-submenu-toggle';
+        arrowButton.setAttribute('aria-expanded', 'false');
+        arrowButton.setAttribute('aria-label', 'Toggle submenu');
 
-        // Allow link to work if it has a submenu arrow
-        if (!isArrowClick && linkHref && linkHref !== '#') {
-          return; // Allow default link behavior
-        }
+        // Insert the button after the link text
+        link.parentNode.insertBefore(arrowButton, link.nextSibling);
 
-        // Prevent default arrow clicks or links without href
-        e.preventDefault();
-        e.stopPropagation();
+        // Move click handler to the arrow button
+        arrowButton.addEventListener('click', e => {
+          e.preventDefault();
+          e.stopPropagation();
+          const submenuContainer = submenu.querySelector('.wp-block-navigation__submenu-container');
+          const isOpen = submenu.classList.contains('is-open');
 
-        // Toggle submenu
-        submenu.classList.toggle('is-open');
-        if (submenuContainer) {
-          submenuContainer.classList.toggle('is-open');
-        }
-
-        // Close submenu if user open another submenu
-        const siblings = submenu.parentElement.children;
-        Array.from(siblings).forEach(sibling => {
-          if (sibling !== submenu && sibling.classList.contains('wp-block-navigation-submenu')) {
-            sibling.classList.remove('is-open');
-            const siblingSubmenuContainer = sibling.querySelector('.wp-block-navigation__submenu-container');
-            if (siblingSubmenuContainer) {
-              siblingSubmenuContainer.classList.remove('is-open');
-            }
+          // Toggle submenu
+          submenu.classList.toggle('is-open');
+          if (submenuContainer) {
+            submenuContainer.classList.toggle('is-open');
           }
+
+          // Update ARIA state
+          arrowButton.setAttribute('aria-expanded', (!isOpen).toString());
+
+          // Close other submenus
+          const siblings = submenu.parentElement.children;
+          Array.from(siblings).forEach(sibling => {
+            if (sibling !== submenu && sibling.classList.contains('wp-block-navigation-submenu')) {
+              sibling.classList.remove('is-open');
+              const siblingSubmenuContainer = sibling.querySelector('.wp-block-navigation__submenu-container');
+              const siblingButton = sibling.querySelector('.dswp-submenu-toggle');
+              if (siblingSubmenuContainer) {
+                siblingSubmenuContainer.classList.remove('is-open');
+              }
+              if (siblingButton) {
+                siblingButton.setAttribute('aria-expanded', 'false');
+              }
+            }
+          });
         });
-      });
+      }
     });
 
     // Add this after the submenu click handlers
@@ -153,6 +164,34 @@ document.addEventListener("DOMContentLoaded", function () {
             submenuContainer.classList.remove('is-open');
           }
         });
+      }
+    });
+
+    // Add keyboard navigation for submenus
+    document.addEventListener('keydown', function (event) {
+      const activeElement = document.activeElement;
+
+      // Handle arrow keys for submenu navigation
+      if (activeElement.classList.contains('wp-block-navigation-item__content') || activeElement.classList.contains('dswp-submenu-toggle')) {
+        const submenu = activeElement.closest('.wp-block-navigation-submenu');
+        const submenuContainer = submenu?.querySelector('.wp-block-navigation__submenu-container');
+        switch (event.key) {
+          case 'Enter':
+          case ' ':
+            if (activeElement.classList.contains('dswp-submenu-toggle')) {
+              event.preventDefault();
+              activeElement.click();
+            }
+            break;
+          case 'Escape':
+            if (submenu?.classList.contains('is-open')) {
+              event.preventDefault();
+              const toggleButton = submenu.querySelector('.dswp-submenu-toggle');
+              toggleButton?.click();
+              toggleButton?.focus();
+            }
+            break;
+        }
       }
     });
   });

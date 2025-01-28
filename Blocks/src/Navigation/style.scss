@@ -98,18 +98,18 @@
             justify-content: space-between;
             gap: 1rem;
             
-            &::after {
-                content: url('./assets/chevron.svg');
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                width: 14px;
-                height: 10px;
-                transition: transform 0.2s ease;
-                margin-left: auto;
-                pointer-events: none;
-                z-index: 1;
-            }
+            // &::after {
+            //     content: url('./assets/chevron.svg');
+            //     display: inline-flex;
+            //     align-items: center;
+            //     justify-content: center;
+            //     width: 14px;
+            //     height: 10px;
+            //     transition: transform 0.2s ease;
+            //     margin-left: auto;
+            //     pointer-events: none;
+            //     z-index: 1;
+            // }
             
             &::before {
                 content: '';
@@ -180,12 +180,10 @@
                     background-color: #f0f0f0;
                 }
 
-                padding: 1rem 2rem;
+                padding-left: 2rem;
                 border-bottom: 1px solid #ccc;
                 
-                :last-child {
-                    border:none;
-                }
+                
             }
         }
     }
@@ -210,7 +208,6 @@
                 .wp-block-navigation-item__content {
                     width: 100%;
                     justify-content: flex-start;
-                    padding: 1rem 0;
                     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
                 }
 
@@ -230,7 +227,6 @@
         }
 
         .wp-block-navigation-submenu {
-
             &.is-open {
                 > .wp-block-navigation-item__content {
                     box-shadow: none;
@@ -239,16 +235,50 @@
 
             // Level 1 submenu
             > .wp-block-navigation__submenu-container {
+           
                 background-color: #d6d7d841;
             }
 
             // Level 2 submenu
             .wp-block-navigation__submenu-container {          
-
+                ul {
+                    a{
+                        padding-left: 1rem;
+                    }
+                }
                 // Level 3 submenu 
                 .wp-block-navigation__submenu-container {
                     .wp-block-navigation__submenu-container {
+                        a{
+                            padding-left: 1rem;
+                        }
                         background-color: #d6d7d841;
+                    }
+                }
+            }
+
+            // Remove the ::before pseudo-element in mobile view
+            > .wp-block-navigation-item__content::before {
+                display: none;
+            }
+
+            // Adjust submenu toggle button positioning for mobile
+            .dswp-submenu-toggle {
+                height: 44px; // Fixed height instead of 100%
+                align-self: center;
+            }
+
+            // Level 2 and deeper submenus
+            .wp-block-navigation__submenu-container {
+                .wp-block-navigation-submenu {
+                    > .wp-block-navigation-item__content {
+                        padding-right: 56px; // Make room for the toggle button
+                    }
+
+                    // Ensure proper arrow positioning for nested levels
+                    .dswp-submenu-toggle {
+                        right: 0;
+                        height: 44px;
                     }
                 }
             }
@@ -279,7 +309,7 @@
         width: 100%;
         background: white;
         z-index: 1000;
-        padding: 1rem;
+        padding-top: 1rem;
         box-sizing: border-box;
 
         // Force items into columns of 10
@@ -292,3 +322,50 @@
 
 //! Need to add Accessibility
 //! Need to dynamically get the width of the block setting for breakpoint or if set to always apply those styles always for mobile.
+
+.dswp-submenu-toggle {
+    background: none;
+    border: none;
+    padding: 0;
+    width: 56px;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    &::after {
+        content: '';
+        display: inline-flex;
+        width: 14px;
+        height: 10px;
+        transition: transform 0.2s ease;
+        background-image: url("./assets/chevron.svg");
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+    
+    &[aria-expanded="true"]::after {
+        transform: rotate(-180deg);
+    }
+    
+    &:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: -2px;
+    }
+}
+
+// Modify the existing submenu styles
+.wp-block-navigation-submenu {
+    > .wp-block-navigation-item__content {
+        padding-right: 56px; // Make room for the button
+        
+        &::after,
+        &::before {
+            display: none; // Remove the old arrow indicators
+        }
+    }
+}
