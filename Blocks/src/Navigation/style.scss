@@ -1,6 +1,6 @@
 // Mobile toggle icon
-.dswp-nav-mobile-toggle-icon {
-    cursor: pointer;
+.dswp-nav-mobile-toggle-icon {  // * Done
+    cursor: pointer;   
     display: none;
     align-items: center;
     gap: 5px;
@@ -11,44 +11,41 @@
     color: inherit;
     transition: all 0.3s ease;
 
-    &:hover {
-        background-color: rgba(0, 0, 0, 0.05);
-    }
-
-    svg {
+    svg { // * Done
         width: 24px;
         height: 19px;
     }
-
-    .dswp-nav-mobile-menu-icon-text {
+     
+    .dswp-nav-mobile-menu-icon-text { // * Done
         font-size: 1rem;
         margin-left: 8px;
     }
 
-    // Hamburger bars
+    // Hamburger bars animation
     .dswp-nav-mobile-bar {
         transition: all 0.3s ease;
         stroke: currentColor;
         stroke-linecap: round;
     }
 
-    // Animation classes for hamburger
+    // Animation classes for hamburger top bar
     .dswp-nav-mobile-menu-top-bar-open {
         transform: translate(0, 7px) rotate(45deg);
         transform-origin: center;
     }
-
+    // Animation classes for hamburger middle bar
     .dswp-nav-mobile-menu-middle-bar-open {
         opacity: 0;
         transform: scaleX(0);
     }
-
+    // Animation classes for hamburger bottom bar
     .dswp-nav-mobile-menu-bottom-bar-open {
         transform: translate(0, -5px) rotate(-45deg);
         transform-origin: center;
     }
 }
 
+// Main navigation container 
 .dswp-block-navigation__container {
     display: flex;
     align-items: center;
@@ -74,9 +71,10 @@
         white-space: nowrap;
     }
 
+    // Submenu
     .wp-block-navigation-submenu {
         position: relative;
-
+        
         >.wp-block-navigation__submenu-container {
             list-style: none;
             position: absolute;
@@ -92,7 +90,7 @@
             padding: 0;
             margin: 0;
         }
-
+        // Arrows to show submenu
         >.wp-block-navigation-item__content {
             position: relative;
             display: flex;
@@ -156,13 +154,9 @@
                 > .wp-block-navigation-item__content::after {
                     transform: rotate(-90deg);
                 }
-
-                &.is-open > .wp-block-navigation-item__content::after {
-                    // transform: rotate(180deg);
-                }
             }
         }
-
+        // When submenu is open
         &.is-open {
             > .wp-block-navigation-item__content {
                 font-weight: bold;
@@ -179,17 +173,7 @@
             }
         }
 
-        &:not(.is-open) {
-            >.wp-block-navigation__submenu-container {
-                display: none;
-            }
-
-            >.wp-block-navigation-item__content::after {
-                transform: rotate(0deg);
-            }
-        }
-
-        // Remove padding from submenu items
+        // Submenu items
         .wp-block-navigation__submenu-container {
             .wp-block-navigation-item__content {
                 &:hover {
@@ -206,55 +190,23 @@
         }
     }
 
-    // Remove all hover effects more aggressively
-    .wp-block-navigation-submenu {
-
-        &:hover>.wp-block-navigation__submenu-container,
-        &:focus-within>.wp-block-navigation__submenu-container,
-        &:focus>.wp-block-navigation__submenu-container {
-            opacity: 1;
-            visibility: visible;
-            transform: none;
-            display: none !important; // Force override
-            pointer-events: none; // Prevent hover interactions
-        }
-
-        >.wp-block-navigation__submenu-container {
-            display: none !important; // Force override
-            pointer-events: none; // Prevent hover interactions
-
-            &:hover,
-            &:focus-within,
-            &:focus {
-                display: none !important; // Force override
-            }
-        }
-
-        &.is-open>.wp-block-navigation__submenu-container {
-            display: block !important; // Show only when explicitly opened
-            pointer-events: auto; // Re-enable interactions when open
-        }
-    }
-
     // Mobile adjustments
     @media (max-width: 768px) {
         // Remove top level borders in mobile
         > .wp-block-navigation-item {
             border-right: none;
-            flex: none;
-            text-align: left;
-            width: 100%;
+
         }
 
         &.is-menu-open {
-            flex-direction: column;
-            align-items: flex-start;
+            // flex-direction: column;
+            // align-items: flex-start;
 
-            // Adjust all navigation items
+            // Sub nav items in mobile view.
             .wp-block-navigation-item {
                 width: 100%;
                 text-align: left;
-
+//! come back to this for mobile alignement background colors
                 .wp-block-navigation-item__content {
                     width: 100%;
                     justify-content: flex-start;
@@ -267,26 +219,9 @@
                 }
             }
 
-            // Adjust submenu containers
+            // Adjust submenu containers.
             .wp-block-navigation__submenu-container {
-                position: static !important;
-                left: auto !important;
-                top: auto !important;
                 box-shadow: none;
-                // padding-left: 1rem;
-                width: 100%;
-                background: transparent;
-                border-radius: 0;
-
-                .wp-block-navigation-item__content {
-                    padding: 0.75rem 0;
-                    justify-content: flex-start;
-                    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-                }
-
-                .wp-block-navigation-item:last-child > .wp-block-navigation-item__content {
-                    border-bottom: none;
-                }
             }
         }
 
@@ -294,38 +229,23 @@
             position: static;
         }
 
-        // .wp-block-navigation__submenu-container {
-        //     padding-left: 1rem;
-        // }
-
         .wp-block-navigation-submenu {
+
             &.is-open {
                 > .wp-block-navigation-item__content {
-                    font-weight: bold !important;
                     box-shadow: none;
-                    border-radius: 0;
-                }
-
-                // Make sure nested open submenus also have bold parent links
-                .wp-block-navigation__submenu-container {
-                    .wp-block-navigation-submenu.is-open {
-                        > .wp-block-navigation-item__content {
-                            font-weight: bold !important;
-                        }
-                    }
-                }
+                }            
             }
 
-            // Level 1 submenu (default is transparent)
+            // Level 1 submenu
             > .wp-block-navigation__submenu-container {
                 background-color: #d6d7d841;
             }
 
-            // Level 2 submenu (slightly grey)
-            .wp-block-navigation__submenu-container {
-           
+            // Level 2 submenu
+            .wp-block-navigation__submenu-container {          
 
-                // Level 3 submenu (slightly darker grey)
+                // Level 3 submenu 
                 .wp-block-navigation__submenu-container {
                     .wp-block-navigation__submenu-container {
                         background-color: #d6d7d841;
@@ -335,14 +255,13 @@
         }
     }
 
-    // For submenu items, reset the flex behavior
+    // For level 3 submenu items, reset the flex behavior for side pop out 
     .wp-block-navigation-submenu {
         .wp-block-navigation__submenu-container {
             .wp-block-navigation-item {
                 flex: none;
                 text-align: left;
                 width: 100%;
-
             }
         }
     }
@@ -369,125 +288,7 @@
             display: block;
         }
     }
-
-    @keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .is-menu-open {
-        animation: slideDown 0.2s ease-out;
-    }
 }
 
-// Accessibility
-.dswp-nav-mobile-toggle-icon:focus-visible {
-    outline: 2px solid var(--wp-admin-theme-color);
-    outline-offset: 2px;
-    border-color: var(--wp-admin-theme-color);
-}
-
-// Animation
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.is-menu-open {
-    animation: slideDown 0.3s ease-out;
-}
-
-// Show toggle icon when "always" overlay is selected
-.dswp-block-navigation-is-always-overlay {
-    .dswp-nav-mobile-toggle-icon {
-        display: flex;
-    }
-}
-
-// Show toggle icon on mobile devices
-@media (max-width: 768px) {
-    .dswp-block-navigation-is-mobile-overlay {
-        .dswp-nav-mobile-toggle-icon {
-            display: flex;
-        }
-    }
-}
-
-.wp-block-navigation-submenu {
-    .wp-block-navigation__submenu-container {
-        // Default state for all submenus
-        position: absolute;
-        
-        // Alignment classes for nested submenus
-        &.submenu-align-left {
-            left: 100%;
-            right: auto;
-        }
-        
-        &.submenu-align-right {
-            right: 100%;
-            left: auto;
-        }
-    }
-
-    // For top-level submenus only
-    &:not(.wp-block-navigation__submenu-container .wp-block-navigation-submenu) {
-        > .wp-block-navigation__submenu-container {
-            left: 0 !important;
-            right: auto !important;
-            top: 100% !important;
-        }
-    }
-
-    // Adjust arrow direction based on alignment
-    .wp-block-navigation__submenu-container {
-        .wp-block-navigation-submenu {
-            > .wp-block-navigation-item__content::after {
-                transform: rotate(-90deg);
-            }
-            
-            &.submenu-align-right > .wp-block-navigation-item__content::after {
-                transform: rotate(90deg);
-            }
-        }
-    }
-}
-
-// RTL support
-[dir="rtl"] {
-    .wp-block-navigation-submenu {
-        .wp-block-navigation__submenu-container {
-            &.submenu-align-left {
-                right: 100%;
-                left: auto;
-            }
-            
-            &.submenu-align-right {
-                left: 100%;
-                right: auto;
-            }
-        }
-
-        // For top-level submenus in RTL
-        &:not(.wp-block-navigation__submenu-container .wp-block-navigation-submenu) {
-            > .wp-block-navigation__submenu-container {
-                right: 0 !important;
-                left: auto !important;
-            }
-        }
-    }
-}
+//! Need to add Accessibility
+//! Need to dynamically get the width of the block setting for breakpoint or if set to always apply those styles always for mobile.

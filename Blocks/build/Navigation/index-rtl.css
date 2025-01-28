@@ -1,0 +1,165 @@
+/*!***************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/Navigation/editor.scss ***!
+  \***************************************************************************************************************************************************************************************************************************************************/
+.dswp-navigation-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.dswp-block-navigation-container {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  list-style: none;
+  margin: 0;
+  padding-right: 0;
+  gap: 8px;
+}
+
+.dswp-navigation-overlay-menu {
+  position: relative;
+  width: 100%;
+}
+.dswp-navigation-overlay-menu.is-overlay-active {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.dswp-navigation-overlay-menu a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.dswp-navigation-overlay-menu-icon-container {
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  position: relative;
+}
+.dswp-navigation-overlay-menu-icon-container:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+.dswp-navigation-overlay-menu-icon-container:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--wp-admin-theme-color);
+}
+
+.dswp-nav-mobile-toggle-icon {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.dswp-nav-mobile-toggle-icon.is-selected {
+  position: relative;
+  z-index: 1;
+  outline: 2px solid var(--wp-admin-theme-color);
+}
+.dswp-nav-mobile-toggle-icon.is-selected:focus {
+  box-shadow: 0 0 0 2px var(--wp-admin-theme-color);
+}
+.dswp-nav-mobile-toggle-icon:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+.dswp-nav-mobile-toggle-icon .dswp-nav-mobile-menu-icon-text {
+  font-size: 14px;
+  font-weight: 500;
+  margin-right: 8px;
+}
+
+.dswp-nav-mobile-bar {
+  fill: currentColor;
+  transition: all 0.3s ease;
+}
+
+.dswp-nav-mobile-menu-top-bar-open {
+  transform: rotate(-45deg) translate(0px, 7px);
+  transform-origin: center;
+}
+
+.dswp-nav-mobile-menu-middle-bar-open {
+  opacity: 0;
+}
+
+.dswp-nav-mobile-menu-bottom-bar-open {
+  transform: rotate(45deg) translate(0px, -5px);
+  transform-origin: center;
+}
+
+.dswp-mobile-icon-selector {
+  width: 100%;
+}
+.dswp-mobile-icon-selector .components-base-control__label {
+  margin-bottom: 8px;
+}
+.dswp-mobile-icon-selector .components-button-group {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+.dswp-mobile-icon-selector .components-button-group .components-button {
+  flex: 1;
+  justify-content: center;
+  height: auto;
+  padding: 8px;
+}
+.dswp-mobile-icon-selector .components-button-group .components-button.is-primary {
+  background-color: var(--wp-admin-theme-color);
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .dswp-block-navigation-container {
+    display: none;
+  }
+  .dswp-navigation-overlay-menu.is-overlay-active .dswp-block-navigation-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  .dswp-navigation-overlay-menu.is-overlay-active .dswp-block-navigation-container a {
+    color: white;
+    font-size: 18px;
+    padding: 10px;
+  }
+  .dswp-navigation-overlay-menu.is-overlay-active .dswp-block-navigation-container a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+.block-editor-block-list__layout .dswp-navigation-overlay-menu {
+  position: relative;
+  background: none;
+}
+.block-editor-block-list__layout .dswp-navigation-overlay-menu .dswp-block-navigation-container {
+  display: flex !important;
+}
+
+.dswp-nav-mobile-toggle-icon:focus-visible,
+.dswp-navigation-overlay-menu-icon-container:focus-visible {
+  outline: 2px solid var(--wp-admin-theme-color);
+  outline-offset: 2px;
+}
+
+[dir=rtl] .dswp-nav-mobile-menu-icon-text {
+  margin-right: 0;
+  margin-left: 8px;
+}
+
+[dir=rtl] .dswp-nav-mobile-menu-icon-text {
+  order: 1;
+}
