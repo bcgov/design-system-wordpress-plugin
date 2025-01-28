@@ -13,16 +13,34 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!isMobileMode) return;
       const breakpoint = parseInt(getComputedStyle(nav).getPropertyValue('--mobile-breakpoint'));
       const isMobileView = window.innerWidth <= (breakpoint || 768);
-      if (isMobileView) {
-        mobileNavIcon.style.display = 'flex';
-        if (!menuContainer.classList.contains('is-menu-open')) {
-          menuContainer.style.display = 'none';
+      const wasMobileView = mobileNavIcon.style.display === 'flex';
+
+      // If we're switching between mobile and desktop views
+      if (isMobileView !== wasMobileView) {
+        // Close all open submenus
+        const openSubmenus = nav.querySelectorAll('.wp-block-navigation-submenu.is-open');
+        openSubmenus.forEach(submenu => {
+          submenu.classList.remove('is-open');
+          const submenuContainer = submenu.querySelector('.wp-block-navigation__submenu-container');
+          const submenuButton = submenu.querySelector('.dswp-submenu-toggle');
+          if (submenuContainer) {
+            submenuContainer.classList.remove('is-open');
+          }
+          if (submenuButton) {
+            submenuButton.setAttribute('aria-expanded', 'false');
+          }
+        });
+        if (isMobileView) {
+          mobileNavIcon.style.display = 'flex';
+          if (!menuContainer.classList.contains('is-menu-open')) {
+            menuContainer.style.display = 'none';
+          }
+        } else {
+          mobileNavIcon.style.display = 'none';
+          menuContainer.style.display = 'flex';
+          menuContainer.classList.remove('is-menu-open');
+          resetMenuState();
         }
-      } else {
-        mobileNavIcon.style.display = 'none';
-        menuContainer.style.display = 'flex';
-        menuContainer.classList.remove('is-menu-open');
-        resetMenuState();
       }
     }
     function resetMenuState() {
@@ -77,6 +95,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Show/hide menu
         menuContainer.style.display = isOpen ? 'grid' : 'none';
+
+        // Close all open submenus when closing the mobile menu
+        if (!isOpen) {
+          const openSubmenus = nav.querySelectorAll('.wp-block-navigation-submenu.is-open');
+          openSubmenus.forEach(submenu => {
+            submenu.classList.remove('is-open');
+            const submenuContainer = submenu.querySelector('.wp-block-navigation__submenu-container');
+            const submenuButton = submenu.querySelector('.dswp-submenu-toggle');
+            if (submenuContainer) {
+              submenuContainer.classList.remove('is-open');
+            }
+            if (submenuButton) {
+              submenuButton.setAttribute('aria-expanded', 'false');
+            }
+          });
+        }
       });
     }
 
@@ -122,7 +156,31 @@ document.addEventListener("DOMContentLoaded", function () {
           const submenuContainer = submenu.querySelector('.wp-block-navigation__submenu-container');
           const isOpen = submenu.classList.contains('is-open');
 
-          // Toggle submenu
+          // First, close all open submenus except the current submenu's ancestors
+          const allOpenSubmenus = nav.querySelectorAll('.wp-block-navigation-submenu.is-open');
+          const currentPath = [];
+          let parent = submenu;
+          while (parent) {
+            if (parent.classList.contains('wp-block-navigation-submenu')) {
+              currentPath.push(parent);
+            }
+            parent = parent.parentElement.closest('.wp-block-navigation-submenu');
+          }
+          allOpenSubmenus.forEach(openSubmenu => {
+            if (!currentPath.includes(openSubmenu)) {
+              openSubmenu.classList.remove('is-open');
+              const container = openSubmenu.querySelector('.wp-block-navigation__submenu-container');
+              const button = openSubmenu.querySelector('.dswp-submenu-toggle');
+              if (container) {
+                container.classList.remove('is-open');
+              }
+              if (button) {
+                button.setAttribute('aria-expanded', 'false');
+              }
+            }
+          });
+
+          // Toggle current submenu
           submenu.classList.toggle('is-open');
           if (submenuContainer) {
             submenuContainer.classList.toggle('is-open');
@@ -130,21 +188,14 @@ document.addEventListener("DOMContentLoaded", function () {
             // Add position adjustment for level 3+ submenus
             const level = getSubmenuLevel(submenu);
             if (level >= 3) {
-              // Initial position check
               adjustSubmenuPosition(submenu);
-
-              // Create ResizeObserver for continuous monitoring
               const resizeObserver = new ResizeObserver(() => {
                 if (submenu.classList.contains('is-open')) {
                   adjustSubmenuPosition(submenu);
                 }
               });
-
-              // Observe both the submenu and the viewport
               resizeObserver.observe(submenu);
               resizeObserver.observe(document.body);
-
-              // Cleanup observer when submenu closes
               const cleanup = () => {
                 if (!submenu.classList.contains('is-open')) {
                   resizeObserver.disconnect();
@@ -157,22 +208,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
           // Update ARIA state
           arrowButton.setAttribute('aria-expanded', (!isOpen).toString());
-
-          // Close other submenus
-          const siblings = submenu.parentElement.children;
-          Array.from(siblings).forEach(sibling => {
-            if (sibling !== submenu && sibling.classList.contains('wp-block-navigation-submenu')) {
-              sibling.classList.remove('is-open');
-              const siblingSubmenuContainer = sibling.querySelector('.wp-block-navigation__submenu-container');
-              const siblingButton = sibling.querySelector('.dswp-submenu-toggle');
-              if (siblingSubmenuContainer) {
-                siblingSubmenuContainer.classList.remove('is-open');
-              }
-              if (siblingButton) {
-                siblingButton.setAttribute('aria-expanded', 'false');
-              }
-            }
-          });
         });
       }
     });
