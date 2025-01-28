@@ -121,11 +121,27 @@ document.addEventListener("DOMContentLoaded", function () {
         document.addEventListener('click', function(event) {
             const isClickInside = nav.contains(event.target);
                 
-                if (!isClickInside && menuContainer.classList.contains('is-menu-open')) {
+            if (!isClickInside) {
+                if (menuContainer.classList.contains('is-menu-open')) {
                     menuContainer.classList.remove('is-menu-open');
                     menuContainer.style.display = 'none';
                     resetMenuState();
                 }
+                
+                // Close all open submenus
+                const openSubmenus = nav.querySelectorAll('.wp-block-navigation-submenu.is-open');
+                openSubmenus.forEach(submenu => {
+                    submenu.classList.remove('is-open');
+                    const submenuContainer = submenu.querySelector('.wp-block-navigation__submenu-container');
+                    const submenuButton = submenu.querySelector('.dswp-submenu-toggle');
+                    if (submenuContainer) {
+                        submenuContainer.classList.remove('is-open');
+                    }
+                    if (submenuButton) {
+                        submenuButton.setAttribute('aria-expanded', 'false');
+                    }
+                });
+            }
         });
 
         // Handle escape key for mobile menu //! Need to add functionality for desktop as well
@@ -246,6 +262,20 @@ document.addEventListener("DOMContentLoaded", function () {
         document.addEventListener('keydown', function(event) {
             const activeElement = document.activeElement;
             
+            if (event.key === 'Escape') {
+                // Close all open submenus
+                const openSubmenus = nav.querySelectorAll('.wp-block-navigation-submenu.is-open');
+                openSubmenus.forEach(submenu => {
+                    submenu.classList.remove('is-open');
+                    const submenuContainer = submenu.querySelector('.wp-block-navigation__submenu-container');
+                    if (submenuContainer) {
+                        submenuContainer.classList.remove('is-open');
+                    }
+                });
+                // Reset all arrow rotations
+                resetArrowRotations(nav);
+            }
+            
             // Handle arrow keys for submenu navigation
             if (activeElement.classList.contains('wp-block-navigation-item__content') || 
                 activeElement.classList.contains('dswp-submenu-toggle')) {
@@ -306,4 +336,11 @@ function getSubmenuLevel(submenu) {
     parent = parent.parentElement;
   }
   return level;
+}
+
+function resetArrowRotations(nav) {
+    const allArrows = nav.querySelectorAll('.dswp-submenu-toggle');
+    allArrows.forEach(arrow => {
+        arrow.setAttribute('aria-expanded', 'false');
+    });
 }
