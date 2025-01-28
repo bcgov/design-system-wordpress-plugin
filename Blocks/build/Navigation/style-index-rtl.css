@@ -108,7 +108,6 @@
 }
 .dswp-block-navigation__container .wp-block-navigation-submenu .wp-block-navigation__submenu-container .wp-block-navigation-submenu > .wp-block-navigation__submenu-container {
   top: 0;
-  right: 100%;
   width: 100%;
   justify-items: center;
 }
@@ -248,4 +247,8 @@
 }
 .wp-block-navigation-submenu > .wp-block-navigation-item__content::after, .wp-block-navigation-submenu > .wp-block-navigation-item__content::before {
   display: none;
+}
+
+.wp-block-navigation__submenu-container .wp-block-navigation-submenu > .wp-block-navigation__submenu-container {
+  transition: right 0.2s ease, left 0.2s ease;
 }

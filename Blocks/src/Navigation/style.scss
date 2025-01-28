@@ -140,12 +140,11 @@
             }
         }
 
-        // Second level and deeper submenus (shoot out to the right)
+        // Second level and deeper submenus
         .wp-block-navigation__submenu-container {
             .wp-block-navigation-submenu {
                 > .wp-block-navigation__submenu-container {
                     top: 0;
-                    left: 100%;
                     width: 100%;
                     justify-items: center;
                 }
@@ -366,6 +365,14 @@
         &::after,
         &::before {
             display: none; // Remove the old arrow indicators
+        }
+    }
+}
+
+.wp-block-navigation__submenu-container {
+    .wp-block-navigation-submenu {
+        > .wp-block-navigation__submenu-container {
+            transition: left 0.2s ease, right 0.2s ease;
         }
     }
 }

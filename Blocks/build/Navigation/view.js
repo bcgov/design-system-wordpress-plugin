@@ -126,6 +126,33 @@ document.addEventListener("DOMContentLoaded", function () {
           submenu.classList.toggle('is-open');
           if (submenuContainer) {
             submenuContainer.classList.toggle('is-open');
+
+            // Add position adjustment for level 3+ submenus
+            const level = getSubmenuLevel(submenu);
+            if (level >= 3) {
+              // Initial position check
+              adjustSubmenuPosition(submenu);
+
+              // Create ResizeObserver for continuous monitoring
+              const resizeObserver = new ResizeObserver(() => {
+                if (submenu.classList.contains('is-open')) {
+                  adjustSubmenuPosition(submenu);
+                }
+              });
+
+              // Observe both the submenu and the viewport
+              resizeObserver.observe(submenu);
+              resizeObserver.observe(document.body);
+
+              // Cleanup observer when submenu closes
+              const cleanup = () => {
+                if (!submenu.classList.contains('is-open')) {
+                  resizeObserver.disconnect();
+                  submenu.removeEventListener('classChange', cleanup);
+                }
+              };
+              submenu.addEventListener('classChange', cleanup);
+            }
           }
 
           // Update ARIA state
@@ -196,6 +223,37 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
+function adjustSubmenuPosition(submenu) {
+  const submenuContainer = submenu.querySelector('.wp-block-navigation__submenu-container');
+  if (!submenuContainer) return;
+
+  // Reset position first
+  submenuContainer.style.left = '100%';
+  submenuContainer.style.right = 'auto';
+
+  // Get updated position after reset
+  const rect = submenuContainer.getBoundingClientRect();
+  const viewportWidth = window.innerWidth;
+
+  // Check if submenu extends beyond right edge
+  if (rect.right > viewportWidth) {
+    submenuContainer.style.left = 'auto';
+    submenuContainer.style.right = '100%';
+  }
+}
+
+// Add this helper function
+function getSubmenuLevel(submenu) {
+  let level = 1;
+  let parent = submenu.parentElement;
+  while (parent) {
+    if (parent.classList.contains('wp-block-navigation-submenu')) {
+      level++;
+    }
+    parent = parent.parentElement;
+  }
+  return level;
+}
 /******/ })()
 ;
 //# sourceMappingURL=view.js.map
