@@ -13,7 +13,7 @@ import {
 } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import { useEffect, useRef } from "@wordpress/element";
-import { useDispatch, useSelect } from "@wordpress/data";
+import { useDispatch, useSelect, useRegistry } from "@wordpress/data";
 import { store as blockEditorStore } from "@wordpress/block-editor";
 import { store as coreStore } from "@wordpress/core-data";
 import { createBlock, serialize, parse } from "@wordpress/blocks";
@@ -28,6 +28,7 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 	} = attributes;
 	const { replaceInnerBlocks } = useDispatch(blockEditorStore);
 	const { editEntityRecord, saveEditedEntityRecord } = useDispatch(coreStore);
+	const registry = useRegistry();
 	const blockProps = useBlockProps({
 		className: `dswp-block-navigation-is-${overlayMenu}-overlay`,
 		style: {
@@ -78,49 +79,65 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 	);
 
 	const lastSavedContent = useRef(null);
-	const isUpdating = useRef(false);
 	const isInitialLoad = useRef(true);
+	const initialBlocksRef = useRef(null);
 
-	const handleBlockUpdate = async (nextBlocks) => {
-		if (!menuId) return;
-		
-		try {
-			const serializedContent = serialize(nextBlocks);
-			
-			if (serializedContent === lastSavedContent.current || isInitialLoad.current) {
-				return;
-			}
-			
-			lastSavedContent.current = serializedContent;
-			
-			await editEntityRecord("postType", "wp_navigation", menuId, {
-				content: serializedContent,
-				status: "publish"
-			});
-			await saveEditedEntityRecord("postType", "wp_navigation", menuId);
-		} catch (error) {
-			console.error("Failed to update navigation menu:", error);
-		}
-	};
+	const { isCurrentPostSaving } = useSelect(
+		(select) => ({
+			isCurrentPostSaving: select('core/editor')?.isSavingPost(),
+		}),
+		[]
+	);
 
 	useEffect(() => {
-		if (!isInitialLoad.current && menuId && currentBlocks && !isUpdating.current) {
-			isUpdating.current = true;
-			const timeoutId = setTimeout(() => {
-				handleBlockUpdate(currentBlocks).finally(() => {
-					isUpdating.current = false;
-				});
-			}, 1000);
-
-			return () => {
-				clearTimeout(timeoutId);
-				isUpdating.current = false;
-			};
+		if (selectedMenu && selectedMenu.content && isInitialLoad.current) {
+			const parsedBlocks = parse(selectedMenu.content);
+			initialBlocksRef.current = serialize(parsedBlocks);
+			lastSavedContent.current = initialBlocksRef.current;
+			
+			registry.dispatch(blockEditorStore).__unstableMarkNextChangeAsNotPersistent();
 		}
-	}, [currentBlocks, menuId]);
+	}, [selectedMenu]);
+
+	useEffect(() => {
+		if (!isInitialLoad.current && currentBlocks) {
+			const serializedContent = serialize(currentBlocks);
+			if (serializedContent === initialBlocksRef.current) {
+				registry.dispatch(blockEditorStore).__unstableMarkNextChangeAsNotPersistent();
+			}
+		}
+	}, [currentBlocks]);
+
+	useEffect(() => {
+		if (isCurrentPostSaving && menuId && currentBlocks) {
+			const saveNavigationChanges = async () => {
+				try {
+					const serializedContent = serialize(currentBlocks);
+					
+					if (serializedContent === lastSavedContent.current || 
+						(isInitialLoad.current && serializedContent === initialBlocksRef.current)) {
+						return;
+					}
+					
+					lastSavedContent.current = serializedContent;
+					
+					await editEntityRecord("postType", "wp_navigation", menuId, {
+						content: serializedContent,
+						status: "publish"
+					});
+					await saveEditedEntityRecord("postType", "wp_navigation", menuId);
+				} catch (error) {
+					console.error("Failed to update navigation menu:", error);
+				}
+			};
+
+			saveNavigationChanges();
+		}
+	}, [isCurrentPostSaving]);
 
 	useEffect(() => {
 		if (!selectedMenu || !selectedMenu.content) {
+			registry.dispatch(blockEditorStore).__unstableMarkNextChangeAsNotPersistent();
 			replaceInnerBlocks(clientId, []);
 			lastSavedContent.current = serialize([]);
 			isInitialLoad.current = false;
@@ -133,6 +150,7 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 				.map((block) => {
 					if (block.name === "core/navigation-link") {
 						return createBlock("core/navigation-link", {
+							...block.attributes,
 							label: block.attributes.label,
 							url: block.attributes.url,
 							type: block.attributes.type,
@@ -146,6 +164,7 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 						return createBlock(
 							"core/navigation-submenu",
 							{
+								...block.attributes,
 								label: block.attributes.label,
 								url: block.attributes.url,
 								type: block.attributes.type,
@@ -164,10 +183,16 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 
 		const newBlocks = processBlocks(parsedBlocks);
 		
+		registry.dispatch(blockEditorStore).__unstableMarkNextChangeAsNotPersistent();
 		replaceInnerBlocks(clientId, newBlocks);
-
-		lastSavedContent.current = serialize(newBlocks);
-		isInitialLoad.current = false;
+		
+		if (isInitialLoad.current) {
+			lastSavedContent.current = serialize(newBlocks);
+			initialBlocksRef.current = lastSavedContent.current;
+			isInitialLoad.current = false;
+			
+			registry.dispatch(blockEditorStore).__unstableMarkNextChangeAsNotPersistent();
+		}
 	}, [selectedMenu]);
 
 	const innerBlocksProps = useInnerBlocksProps(

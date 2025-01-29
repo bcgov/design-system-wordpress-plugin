@@ -57,6 +57,7 @@ function Edit({
     editEntityRecord,
     saveEditedEntityRecord
   } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useDispatch)(_wordpress_core_data__WEBPACK_IMPORTED_MODULE_5__.store);
+  const registry = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useRegistry)();
   const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useBlockProps)({
     className: `dswp-block-navigation-is-${overlayMenu}-overlay`,
     style: {
@@ -101,41 +102,53 @@ function Edit({
     currentBlocks: select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.store).getBlocks(clientId)
   }), [clientId]);
   const lastSavedContent = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(null);
-  const isUpdating = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(false);
   const isInitialLoad = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(true);
-  const handleBlockUpdate = async nextBlocks => {
-    if (!menuId) return;
-    try {
-      const serializedContent = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.serialize)(nextBlocks);
-      if (serializedContent === lastSavedContent.current || isInitialLoad.current) {
-        return;
-      }
-      lastSavedContent.current = serializedContent;
-      await editEntityRecord("postType", "wp_navigation", menuId, {
-        content: serializedContent,
-        status: "publish"
-      });
-      await saveEditedEntityRecord("postType", "wp_navigation", menuId);
-    } catch (error) {
-      console.error("Failed to update navigation menu:", error);
-    }
-  };
+  const initialBlocksRef = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(null);
+  const {
+    isCurrentPostSaving
+  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useSelect)(select => ({
+    isCurrentPostSaving: select('core/editor')?.isSavingPost()
+  }), []);
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
-    if (!isInitialLoad.current && menuId && currentBlocks && !isUpdating.current) {
-      isUpdating.current = true;
-      const timeoutId = setTimeout(() => {
-        handleBlockUpdate(currentBlocks).finally(() => {
-          isUpdating.current = false;
-        });
-      }, 1000);
-      return () => {
-        clearTimeout(timeoutId);
-        isUpdating.current = false;
-      };
+    if (selectedMenu && selectedMenu.content && isInitialLoad.current) {
+      const parsedBlocks = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.parse)(selectedMenu.content);
+      initialBlocksRef.current = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.serialize)(parsedBlocks);
+      lastSavedContent.current = initialBlocksRef.current;
+      registry.dispatch(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.store).__unstableMarkNextChangeAsNotPersistent();
     }
-  }, [currentBlocks, menuId]);
+  }, [selectedMenu]);
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
+    if (!isInitialLoad.current && currentBlocks) {
+      const serializedContent = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.serialize)(currentBlocks);
+      if (serializedContent === initialBlocksRef.current) {
+        registry.dispatch(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.store).__unstableMarkNextChangeAsNotPersistent();
+      }
+    }
+  }, [currentBlocks]);
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
+    if (isCurrentPostSaving && menuId && currentBlocks) {
+      const saveNavigationChanges = async () => {
+        try {
+          const serializedContent = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.serialize)(currentBlocks);
+          if (serializedContent === lastSavedContent.current || isInitialLoad.current && serializedContent === initialBlocksRef.current) {
+            return;
+          }
+          lastSavedContent.current = serializedContent;
+          await editEntityRecord("postType", "wp_navigation", menuId, {
+            content: serializedContent,
+            status: "publish"
+          });
+          await saveEditedEntityRecord("postType", "wp_navigation", menuId);
+        } catch (error) {
+          console.error("Failed to update navigation menu:", error);
+        }
+      };
+      saveNavigationChanges();
+    }
+  }, [isCurrentPostSaving]);
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
     if (!selectedMenu || !selectedMenu.content) {
+      registry.dispatch(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.store).__unstableMarkNextChangeAsNotPersistent();
       replaceInnerBlocks(clientId, []);
       lastSavedContent.current = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.serialize)([]);
       isInitialLoad.current = false;
@@ -146,6 +159,7 @@ function Edit({
       return blocks.map(block => {
         if (block.name === "core/navigation-link") {
           return (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.createBlock)("core/navigation-link", {
+            ...block.attributes,
             label: block.attributes.label,
             url: block.attributes.url,
             type: block.attributes.type,
@@ -156,6 +170,7 @@ function Edit({
         }
         if (block.name === "core/navigation-submenu") {
           return (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.createBlock)("core/navigation-submenu", {
+            ...block.attributes,
             label: block.attributes.label,
             url: block.attributes.url,
             type: block.attributes.type,
@@ -168,9 +183,14 @@ function Edit({
       }).filter(Boolean);
     };
     const newBlocks = processBlocks(parsedBlocks);
+    registry.dispatch(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.store).__unstableMarkNextChangeAsNotPersistent();
     replaceInnerBlocks(clientId, newBlocks);
-    lastSavedContent.current = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.serialize)(newBlocks);
-    isInitialLoad.current = false;
+    if (isInitialLoad.current) {
+      lastSavedContent.current = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.serialize)(newBlocks);
+      initialBlocksRef.current = lastSavedContent.current;
+      isInitialLoad.current = false;
+      registry.dispatch(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.store).__unstableMarkNextChangeAsNotPersistent();
+    }
   }, [selectedMenu]);
   const innerBlocksProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useInnerBlocksProps)({
     className: "dswp-block-navigation__container"
