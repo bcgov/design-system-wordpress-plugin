@@ -15,23 +15,41 @@ document.addEventListener("DOMContentLoaded", function () {
       const isMobileView = window.innerWidth <= (breakpoint || 768);
       const wasMobileView = menuContainer.classList.contains('dswp-is-mobile');
 
-      // If mobile only mode is enabled, always apply mobile class
-      const isMobileOnly = nav.classList.contains('dswp-block-navigation-is-mobile-only');
-
-      // If we're switching between mobile and desktop views or if mobile only is enabled
-      if (isMobileView !== wasMobileView || isMobileOnly) {
-        menuContainer.classList.toggle('dswp-is-mobile', isMobileView || isMobileOnly);
-        if (isMobileView || isMobileOnly) {
-          mobileNavIcon.style.display = 'flex';
-          if (!menuContainer.classList.contains('is-menu-open')) {
-            menuContainer.style.display = 'none';
+      // If we're switching between views (mobile to desktop or vice versa)
+      if (isMobileView !== wasMobileView) {
+        // Close all open submenus
+        const openSubmenus = nav.querySelectorAll('.wp-block-navigation-submenu.is-open');
+        openSubmenus.forEach(submenu => {
+          submenu.classList.remove('is-open');
+          const submenuContainer = submenu.querySelector('.wp-block-navigation__submenu-container');
+          const submenuButton = submenu.querySelector('.dswp-submenu-toggle');
+          if (submenuContainer) {
+            submenuContainer.classList.remove('is-open');
           }
-        } else {
-          mobileNavIcon.style.display = 'none';
-          menuContainer.style.display = 'flex';
+          if (submenuButton) {
+            submenuButton.setAttribute('aria-expanded', 'false');
+          }
+        });
+
+        // Reset mobile menu state if switching from mobile to desktop
+        if (!isMobileView) {
           menuContainer.classList.remove('is-menu-open');
+          menuContainer.style.display = 'flex';
           resetMenuState();
         }
+      }
+
+      // Update mobile classes
+      if (isMobileView) {
+        mobileNavIcon.style.display = 'flex';
+        menuContainer.classList.add('dswp-is-mobile');
+        if (!menuContainer.classList.contains('is-menu-open')) {
+          menuContainer.style.display = 'none';
+        }
+      } else {
+        mobileNavIcon.style.display = 'none';
+        menuContainer.classList.remove('dswp-is-mobile');
+        menuContainer.style.display = 'flex';
       }
     }
     function resetMenuState() {
