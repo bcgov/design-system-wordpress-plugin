@@ -12,10 +12,12 @@ document.addEventListener("DOMContentLoaded", function () {
             
             const breakpoint = parseInt(getComputedStyle(nav).getPropertyValue('--mobile-breakpoint'));
             const isMobileView = window.innerWidth <= (breakpoint || 768);
-            const wasMobileView = mobileNavIcon.style.display === 'flex';
+            const wasMobileView = menuContainer.classList.contains('dswp-is-mobile');
             
             // If we're switching between mobile and desktop views
             if (isMobileView !== wasMobileView) {
+                menuContainer.classList.toggle('dswp-is-mobile', isMobileView);
+                
                 // Close all open submenus
                 const openSubmenus = nav.querySelectorAll('.wp-block-navigation-submenu.is-open');
                 openSubmenus.forEach(submenu => {
@@ -62,6 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (isAlwaysMode) {
             mobileNavIcon.style.display = 'flex';
             menuContainer.style.display = 'none';
+            menuContainer.classList.add('dswp-is-mobile');
         } else if (isMobileMode) {
             handleResize();
         }
