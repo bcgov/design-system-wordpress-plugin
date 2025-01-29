@@ -149,6 +149,13 @@
 .dswp-block-navigation__container.dswp-is-mobile.is-menu-open .wp-block-navigation__submenu-container {
   box-shadow: none;
 }
+.dswp-block-navigation__container.dswp-is-mobile .wp-block-navigation-item.current-menu-item > .wp-block-navigation-item__content, .dswp-block-navigation__container.dswp-is-mobile .wp-block-navigation-item.current-menu-ancestor > .wp-block-navigation-item__content {
+  border-left: 4px solid #003366;
+}
+.dswp-block-navigation__container.dswp-is-mobile .wp-block-navigation-item .wp-block-navigation__submenu-container .current-menu-item > .wp-block-navigation-item__content,
+.dswp-block-navigation__container.dswp-is-mobile .wp-block-navigation-item .wp-block-navigation__submenu-container .current-menu-ancestor > .wp-block-navigation-item__content {
+  border-left: 4px solid #003366;
+}
 .dswp-block-navigation__container.dswp-is-mobile .wp-block-navigation-submenu > .wp-block-navigation__submenu-container {
   position: static;
 }

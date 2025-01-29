@@ -14,25 +14,14 @@ document.addEventListener("DOMContentLoaded", function () {
             const isMobileView = window.innerWidth <= (breakpoint || 768);
             const wasMobileView = menuContainer.classList.contains('dswp-is-mobile');
             
-            // If we're switching between mobile and desktop views
-            if (isMobileView !== wasMobileView) {
-                menuContainer.classList.toggle('dswp-is-mobile', isMobileView);
+            // If mobile only mode is enabled, always apply mobile class
+            const isMobileOnly = nav.classList.contains('dswp-block-navigation-is-mobile-only');
+            
+            // If we're switching between mobile and desktop views or if mobile only is enabled
+            if (isMobileView !== wasMobileView || isMobileOnly) {
+                menuContainer.classList.toggle('dswp-is-mobile', isMobileView || isMobileOnly);
                 
-                // Close all open submenus
-                const openSubmenus = nav.querySelectorAll('.wp-block-navigation-submenu.is-open');
-                openSubmenus.forEach(submenu => {
-                    submenu.classList.remove('is-open');
-                    const submenuContainer = submenu.querySelector('.wp-block-navigation__submenu-container');
-                    const submenuButton = submenu.querySelector('.dswp-submenu-toggle');
-                    if (submenuContainer) {
-                        submenuContainer.classList.remove('is-open');
-                    }
-                    if (submenuButton) {
-                        submenuButton.setAttribute('aria-expanded', 'false');
-                    }
-                });
-
-                if (isMobileView) {
+                if (isMobileView || isMobileOnly) {
                     mobileNavIcon.style.display = 'flex';
                     if (!menuContainer.classList.contains('is-menu-open')) {
                         menuContainer.style.display = 'none';
@@ -61,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // Set initial states
-        if (isAlwaysMode) {
+        if (isAlwaysMode || nav.classList.contains('dswp-block-navigation-is-mobile-only')) {
             mobileNavIcon.style.display = 'flex';
             menuContainer.style.display = 'none';
             menuContainer.classList.add('dswp-is-mobile');

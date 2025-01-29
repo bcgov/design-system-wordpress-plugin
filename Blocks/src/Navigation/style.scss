@@ -216,6 +216,25 @@
             }
         }
 
+        .wp-block-navigation-item {
+            &.current-menu-item,
+            &.current-menu-ancestor {
+                > .wp-block-navigation-item__content {
+                    border-left: 4px solid #003366; // BC Government blue
+                }
+            }
+
+            // For submenu items, adjust the padding
+            .wp-block-navigation__submenu-container {
+                .current-menu-item,
+                .current-menu-ancestor {
+                    > .wp-block-navigation-item__content {
+                        border-left: 4px solid #003366;
+                    }
+                }
+            }
+        }
+
         .wp-block-navigation-submenu {
             >.wp-block-navigation__submenu-container {
                 position: static;
