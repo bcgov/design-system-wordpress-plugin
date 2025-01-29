@@ -112,19 +112,87 @@ function Edit({
     };
   }, [menuId]);
 
-  // Add this to handle block updates
-  const handleBlockUpdate = nextBlocks => {
+  // 1. First, all useSelect hooks including currentBlocks
+  const {
+    currentBlocks
+  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useSelect)(select => ({
+    currentBlocks: select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.store).getBlocks(clientId)
+  }), [clientId]);
+
+  // 2. Then refs
+  const lastSavedContent = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(null);
+  const isUpdating = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(false);
+
+  // 3. Then the handleBlockUpdate function
+  const handleBlockUpdate = async nextBlocks => {
     if (!menuId) return;
     try {
       const serializedContent = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.serialize)(nextBlocks);
-      editEntityRecord("postType", "wp_navigation", menuId, {
+
+      // Skip if content hasn't changed
+      if (serializedContent === lastSavedContent.current) {
+        return;
+      }
+      lastSavedContent.current = serializedContent;
+      await editEntityRecord("postType", "wp_navigation", menuId, {
         content: serializedContent,
         status: "publish"
       });
+      await saveEditedEntityRecord("postType", "wp_navigation", menuId);
     } catch (error) {
       console.error("Failed to update navigation menu:", error);
     }
   };
+
+  // 4. Then the effects
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
+    if (menuId && currentBlocks && !isUpdating.current) {
+      isUpdating.current = true;
+      const timeoutId = setTimeout(() => {
+        handleBlockUpdate(currentBlocks).finally(() => {
+          isUpdating.current = false;
+        });
+      }, 1000);
+      return () => {
+        clearTimeout(timeoutId);
+        isUpdating.current = false;
+      };
+    }
+  }, [currentBlocks, menuId]);
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
+    if (!selectedMenu || !selectedMenu.content) {
+      replaceInnerBlocks(clientId, []);
+      return;
+    }
+    const parsedBlocks = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.parse)(selectedMenu.content);
+    const processBlocks = blocks => {
+      return blocks.map(block => {
+        if (block.name === "core/navigation-link") {
+          return (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.createBlock)("core/navigation-link", {
+            label: block.attributes.label,
+            url: block.attributes.url,
+            type: block.attributes.type,
+            id: block.attributes.id,
+            kind: block.attributes.kind,
+            opensInNewTab: block.attributes.opensInNewTab || false
+          });
+        }
+        if (block.name === "core/navigation-submenu") {
+          return (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.createBlock)("core/navigation-submenu", {
+            label: block.attributes.label,
+            url: block.attributes.url,
+            type: block.attributes.type,
+            id: block.attributes.id,
+            kind: block.attributes.kind,
+            opensInNewTab: block.attributes.opensInNewTab || false
+          }, block.innerBlocks ? processBlocks(block.innerBlocks) : []);
+        }
+        return null;
+      }).filter(Boolean);
+    };
+    const newBlocks = processBlocks(parsedBlocks);
+    replaceInnerBlocks(clientId, newBlocks);
+  }, [selectedMenu]);
   const innerBlocksProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useInnerBlocksProps)({
     className: "dswp-block-navigation__container"
   }, {
