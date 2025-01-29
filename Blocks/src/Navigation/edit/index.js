@@ -16,8 +16,7 @@ import { useEffect, useRef } from "@wordpress/element";
 import { useDispatch, useSelect } from "@wordpress/data";
 import { store as blockEditorStore } from "@wordpress/block-editor";
 import { store as coreStore } from "@wordpress/core-data";
-import { createBlock, serialize } from "@wordpress/blocks"; // Added serialize
-import { parse } from "@wordpress/blocks";
+import { createBlock, serialize, parse } from "@wordpress/blocks";
 import MobileMenuIcon from "./mobile-menu-icon";
 
 export default function Edit({ attributes, setAttributes, clientId }) {
@@ -28,7 +27,6 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 		mobileBreakpoint = 768
 	} = attributes;
 	const { replaceInnerBlocks } = useDispatch(blockEditorStore);
-	// Add these dispatches
 	const { editEntityRecord, saveEditedEntityRecord } = useDispatch(coreStore);
 	const blockProps = useBlockProps({
 		className: `dswp-block-navigation-is-${overlayMenu}-overlay`,
@@ -37,18 +35,6 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 		}
 	});
 
-	// Add this selector near your other useSelect calls
-	const { canUserEditNavigation } = useSelect(
-		(select) => {
-			const { canUser } = select(coreStore);
-			return {
-				canUserEditNavigation: canUser("update", "navigation", menuId),
-			};
-		},
-		[menuId]
-	);
-
-	// Your existing menu selectors
 	const { menus, hasResolvedMenus } = useSelect((select) => {
 		const { getEntityRecords, hasFinishedResolution } = select(coreStore);
 		const query = {
@@ -84,7 +70,6 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 		[menuId]
 	);
 
-	// 1. First, all useSelect hooks including currentBlocks
 	const { currentBlocks } = useSelect(
 		(select) => ({
 			currentBlocks: select(blockEditorStore).getBlocks(clientId),
@@ -92,19 +77,17 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 		[clientId]
 	);
 
-	// 2. Then refs
 	const lastSavedContent = useRef(null);
 	const isUpdating = useRef(false);
+	const isInitialLoad = useRef(true);
 
-	// 3. Then the handleBlockUpdate function
 	const handleBlockUpdate = async (nextBlocks) => {
 		if (!menuId) return;
 		
 		try {
 			const serializedContent = serialize(nextBlocks);
 			
-			// Skip if content hasn't changed
-			if (serializedContent === lastSavedContent.current) {
+			if (serializedContent === lastSavedContent.current || isInitialLoad.current) {
 				return;
 			}
 			
@@ -120,9 +103,8 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 		}
 	};
 
-	// 4. Then the effects
 	useEffect(() => {
-		if (menuId && currentBlocks && !isUpdating.current) {
+		if (!isInitialLoad.current && menuId && currentBlocks && !isUpdating.current) {
 			isUpdating.current = true;
 			const timeoutId = setTimeout(() => {
 				handleBlockUpdate(currentBlocks).finally(() => {
@@ -140,6 +122,8 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 	useEffect(() => {
 		if (!selectedMenu || !selectedMenu.content) {
 			replaceInnerBlocks(clientId, []);
+			lastSavedContent.current = serialize([]);
+			isInitialLoad.current = false;
 			return;
 		}
 
@@ -179,7 +163,11 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 		};
 
 		const newBlocks = processBlocks(parsedBlocks);
+		
 		replaceInnerBlocks(clientId, newBlocks);
+
+		lastSavedContent.current = serialize(newBlocks);
+		isInitialLoad.current = false;
 	}, [selectedMenu]);
 
 	const innerBlocksProps = useInnerBlocksProps(
@@ -188,11 +176,9 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 			allowedBlocks: ["core/navigation-link", "core/navigation-submenu"],
 			orientation: "horizontal",
 			templateLock: false,
-			onChange: handleBlockUpdate
 		}
 	);
 
-	// Rest of your component (handleMenuSelect, return statement, etc.)
 	const handleMenuSelect = (value) => {
 		const newMenuId = parseInt(value);
 		setAttributes({ menuId: newMenuId });

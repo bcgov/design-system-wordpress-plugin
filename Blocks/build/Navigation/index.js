@@ -36,7 +36,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
- // Added serialize
 
 
 
@@ -54,7 +53,6 @@ function Edit({
   const {
     replaceInnerBlocks
   } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useDispatch)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.store);
-  // Add these dispatches
   const {
     editEntityRecord,
     saveEditedEntityRecord
@@ -65,20 +63,6 @@ function Edit({
       '--mobile-breakpoint': mobileBreakpoint
     }
   });
-
-  // Add this selector near your other useSelect calls
-  const {
-    canUserEditNavigation
-  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useSelect)(select => {
-    const {
-      canUser
-    } = select(_wordpress_core_data__WEBPACK_IMPORTED_MODULE_5__.store);
-    return {
-      canUserEditNavigation: canUser("update", "navigation", menuId)
-    };
-  }, [menuId]);
-
-  // Your existing menu selectors
   const {
     menus,
     hasResolvedMenus
@@ -111,26 +95,19 @@ function Edit({
       selectedMenu: getEditedEntityRecord("postType", "wp_navigation", menuId)
     };
   }, [menuId]);
-
-  // 1. First, all useSelect hooks including currentBlocks
   const {
     currentBlocks
   } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useSelect)(select => ({
     currentBlocks: select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.store).getBlocks(clientId)
   }), [clientId]);
-
-  // 2. Then refs
   const lastSavedContent = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(null);
   const isUpdating = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(false);
-
-  // 3. Then the handleBlockUpdate function
+  const isInitialLoad = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(true);
   const handleBlockUpdate = async nextBlocks => {
     if (!menuId) return;
     try {
       const serializedContent = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.serialize)(nextBlocks);
-
-      // Skip if content hasn't changed
-      if (serializedContent === lastSavedContent.current) {
+      if (serializedContent === lastSavedContent.current || isInitialLoad.current) {
         return;
       }
       lastSavedContent.current = serializedContent;
@@ -143,10 +120,8 @@ function Edit({
       console.error("Failed to update navigation menu:", error);
     }
   };
-
-  // 4. Then the effects
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
-    if (menuId && currentBlocks && !isUpdating.current) {
+    if (!isInitialLoad.current && menuId && currentBlocks && !isUpdating.current) {
       isUpdating.current = true;
       const timeoutId = setTimeout(() => {
         handleBlockUpdate(currentBlocks).finally(() => {
@@ -162,6 +137,8 @@ function Edit({
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
     if (!selectedMenu || !selectedMenu.content) {
       replaceInnerBlocks(clientId, []);
+      lastSavedContent.current = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.serialize)([]);
+      isInitialLoad.current = false;
       return;
     }
     const parsedBlocks = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.parse)(selectedMenu.content);
@@ -192,17 +169,16 @@ function Edit({
     };
     const newBlocks = processBlocks(parsedBlocks);
     replaceInnerBlocks(clientId, newBlocks);
+    lastSavedContent.current = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.serialize)(newBlocks);
+    isInitialLoad.current = false;
   }, [selectedMenu]);
   const innerBlocksProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useInnerBlocksProps)({
     className: "dswp-block-navigation__container"
   }, {
     allowedBlocks: ["core/navigation-link", "core/navigation-submenu"],
     orientation: "horizontal",
-    templateLock: false,
-    onChange: handleBlockUpdate
+    templateLock: false
   });
-
-  // Rest of your component (handleMenuSelect, return statement, etc.)
   const handleMenuSelect = value => {
     const newMenuId = parseInt(value);
     setAttributes({
