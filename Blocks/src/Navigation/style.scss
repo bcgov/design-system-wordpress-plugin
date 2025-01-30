@@ -188,20 +188,31 @@
         }
 
         &.is-menu-open {
-
             // Sub nav items in mobile view.
             .wp-block-navigation-item {
                 width: 100%;
                 text-align: left;
 
-                //! come back to this for mobile alignement background colors
                 .wp-block-navigation-item__content {
                     width: 100%;
                     justify-content: flex-start;
+                }
+            }
+
+            // Remove borders from submenu items only
+            .wp-block-navigation__submenu-container {
+                .wp-block-navigation-item__content {
+                    border-bottom: none;
+                }
+            }
+
+            // Keep border for top-level items
+            > .wp-block-navigation-item {
+                > .wp-block-navigation-item__content {
                     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
                 }
 
-                &:last-child>.wp-block-navigation-item__content {
+                &:last-child > .wp-block-navigation-item__content {
                     border-bottom: none;
                 }
             }
@@ -209,6 +220,17 @@
             // Adjust submenu containers.
             .wp-block-navigation__submenu-container {
                 box-shadow: none;
+            }
+
+            // Add border to submenu containers
+            .wp-block-navigation__submenu-container {
+                border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+                box-shadow: none;
+                
+                // Remove the border from the last submenu container
+                &:last-child {
+                    border-bottom: none;
+                }
             }
         }
 
@@ -390,6 +412,7 @@
 
     // Level 2 items (first submenu)
     .wp-block-navigation__submenu-container {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1)!important;
         > .wp-block-navigation-item {
             > .wp-block-navigation-item__content {
                 font-size: 15px;
