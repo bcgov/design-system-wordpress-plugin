@@ -55,14 +55,6 @@
       "type": "string",
       "default": "never"
     },
-    "showSubmenuIcon": {
-      "type": "boolean",
-      "default": true
-    },
-    "icon": {
-      "type": "string",
-      "default": "menu"
-    },
     "isMobile": {
       "type": "boolean",
       "default": false

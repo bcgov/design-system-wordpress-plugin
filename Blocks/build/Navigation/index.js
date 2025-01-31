@@ -426,15 +426,10 @@ function save({
   attributes
 }) {
   const {
-    overlayMenu,
-    mobileIconStyle,
-    mobileBreakpoint = 768
+    overlayMenu
   } = attributes;
   const blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useBlockProps.save({
-    className: `dswp-block-navigation-is-${overlayMenu}-overlay`,
-    style: {
-      "--mobile-breakpoint": mobileBreakpoint // Remove the px unit
-    }
+    className: `dswp-block-navigation-is-${overlayMenu}-overlay`
   });
   const innerBlocksProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useInnerBlocksProps.save({
     className: "dswp-block-navigation__container"
@@ -559,7 +554,7 @@ module.exports = window["wp"]["i18n"];
   \***********************************/
 /***/ ((module) => {
 
-module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"custom/navigation","version":"1.0.0","title":"Custom Navigation","category":"widgets","icon":"menu","description":"Custom navigation block","supports":{"__experimentalToolbar":true,"inserter":true,"inspectorGroups":{"list":true},"html":false,"align":["wide","full"],"typography":{"fontSize":true,"lineHeight":true,"__experimentalFontFamily":true,"__experimentalTextTransform":true},"spacing":{"blockGap":true,"margin":true,"padding":true,"units":["px","em","rem","vh","vw"]},"layout":{"allowSwitching":false,"allowInheriting":false,"default":{"type":"flex"}}},"attributes":{"ref":{"type":"number"},"layout":{"type":"object"},"overlayMenu":{"type":"string","default":"never"},"showSubmenuIcon":{"type":"boolean","default":true},"icon":{"type":"string","default":"menu"},"isMobile":{"type":"boolean","default":false},"menuId":{"type":"number"},"mobileIconStyle":{"type":"string","default":"threeBar"},"mobileBreakpoint":{"type":"number","default":768}},"editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","viewScript":"file:./view.js"}');
+module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"custom/navigation","version":"1.0.0","title":"Custom Navigation","category":"widgets","icon":"menu","description":"Custom navigation block","supports":{"__experimentalToolbar":true,"inserter":true,"inspectorGroups":{"list":true},"html":false,"align":["wide","full"],"typography":{"fontSize":true,"lineHeight":true,"__experimentalFontFamily":true,"__experimentalTextTransform":true},"spacing":{"blockGap":true,"margin":true,"padding":true,"units":["px","em","rem","vh","vw"]},"layout":{"allowSwitching":false,"allowInheriting":false,"default":{"type":"flex"}}},"attributes":{"ref":{"type":"number"},"layout":{"type":"object"},"overlayMenu":{"type":"string","default":"never"},"isMobile":{"type":"boolean","default":false},"menuId":{"type":"number"},"mobileIconStyle":{"type":"string","default":"threeBar"},"mobileBreakpoint":{"type":"number","default":768}},"editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","viewScript":"file:./view.js"}');
 
 /***/ })
 
