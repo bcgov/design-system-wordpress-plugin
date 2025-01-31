@@ -262,7 +262,14 @@ function Edit({
           options: menuOptions,
           onChange: handleMenuSelect
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsxs)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ButtonGroup, {
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)("span", {
+            className: "components-base-control__label",
+            style: {
+              display: 'block',
+              marginBottom: '8px'
+            },
+            children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)("Overlay Menu")
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
             variant: overlayMenu === "mobile" ? "primary" : "secondary",
             onClick: () => setAttributes({
               overlayMenu: "mobile",
@@ -284,15 +291,20 @@ function Edit({
             }),
             children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)("Never")
           })]
-        }), overlayMenu === "mobile" && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.RangeControl, {
-          label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Mobile Breakpoint (px)', 'your-text-domain'),
-          value: mobileBreakpoint,
-          onChange: value => setAttributes({
-            mobileBreakpoint: value
-          }),
-          min: 320,
-          max: 1200,
-          step: 1
+        }), overlayMenu === "mobile" && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)("div", {
+          style: {
+            marginTop: '1rem'
+          },
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.RangeControl, {
+            label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Mobile Breakpoint (px)', 'your-text-domain'),
+            value: mobileBreakpoint,
+            onChange: value => setAttributes({
+              mobileBreakpoint: value
+            }),
+            min: 320,
+            max: 1200,
+            step: 1
+          })
         })]
       })
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)("nav", {

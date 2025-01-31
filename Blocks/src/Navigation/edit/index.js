@@ -35,7 +35,7 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 		isMobile,
 		mobileBreakpoint = 768
 	} = attributes;
-	
+
 	/**
 	 * WordPress dispatch and registry hooks for block manipulation
 	 */
@@ -151,13 +151,13 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 		if (!isCurrentPostSaving || !menuId || !currentBlocks) return;
 
 		const serializedContent = serialize(currentBlocks);
-		if (serializedContent === lastSavedContent.current || 
+		if (serializedContent === lastSavedContent.current ||
 			(isInitialLoad.current && serializedContent === initialBlocksRef.current)) {
 			return;
 		}
 
 		lastSavedContent.current = serializedContent;
-		
+
 		(async () => {
 			try {
 				await editEntityRecord("postType", "wp_navigation", menuId, {
@@ -182,15 +182,15 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 
 		const parsedBlocks = parse(selectedMenu.content);
 		const newBlocks = processBlocks(parsedBlocks);
-		
+
 		registry.dispatch(blockEditorStore).__unstableMarkNextChangeAsNotPersistent();
 		replaceInnerBlocks(clientId, newBlocks);
-		
+
 		if (isInitialLoad.current) {
 			lastSavedContent.current = serialize(newBlocks);
 			initialBlocksRef.current = lastSavedContent.current;
 			isInitialLoad.current = false;
-			
+
 			registry.dispatch(blockEditorStore).__unstableMarkNextChangeAsNotPersistent();
 		}
 	}, [selectedMenu]);
@@ -243,9 +243,12 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 						options={menuOptions}
 						onChange={handleMenuSelect}
 					/>
-					
+
 					{/* Overlay Mode Controls */}
 					<ButtonGroup>
+						<span className="components-base-control__label" style={{ display: 'block', marginBottom: '8px' }}>
+							{__("Overlay Menu")}
+						</span>
 						<Button
 							variant={overlayMenu === "mobile" ? "primary" : "secondary"}
 							onClick={() =>
@@ -277,14 +280,16 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 
 					{/* Conditional Mobile Breakpoint Control */}
 					{overlayMenu === "mobile" && (
-						<RangeControl
-							label={__('Mobile Breakpoint (px)', 'your-text-domain')}
-							value={mobileBreakpoint}
-							onChange={(value) => setAttributes({ mobileBreakpoint: value })}
-							min={320}
-							max={1200}
-							step={1}
-						/>
+						<div style={{ marginTop: '1rem' }}>
+							<RangeControl
+								label={__('Mobile Breakpoint (px)', 'your-text-domain')}
+								value={mobileBreakpoint}
+								onChange={(value) => setAttributes({ mobileBreakpoint: value })}
+								min={320}
+								max={1200}
+								step={1}
+							/>
+						</div>
 					)}
 				</PanelBody>
 			</InspectorControls>
