@@ -12,7 +12,7 @@ import {
 	RangeControl
 } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
-import { useEffect, useRef } from "@wordpress/element";
+import { useEffect, useRef, useCallback } from "@wordpress/element";
 import { useDispatch, useSelect, useRegistry } from "@wordpress/data";
 import { store as blockEditorStore } from "@wordpress/block-editor";
 import { store as coreStore } from "@wordpress/core-data";
@@ -36,65 +36,61 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 		}
 	});
 
-	const { menus, hasResolvedMenus } = useSelect((select) => {
-		const { getEntityRecords, hasFinishedResolution } = select(coreStore);
-		const query = {
-			per_page: -1,
-			status: ["publish", "draft"],
-		};
-
-		return {
-			menus: getEntityRecords("postType", "wp_navigation", query),
-			hasResolvedMenus: hasFinishedResolution("getEntityRecords", [
-				"postType",
-				"wp_navigation",
-				query,
-			]),
-		};
-	}, []);
-
-	const { selectedMenu } = useSelect(
+	const { menus, hasResolvedMenus, selectedMenu, currentBlocks, isCurrentPostSaving } = useSelect(
 		(select) => {
-			if (!menuId) {
-				return { selectedMenu: null };
-			}
+			const { getEntityRecords, hasFinishedResolution, getEditedEntityRecord } = select(coreStore);
+			const query = { per_page: -1, status: ["publish", "draft"] };
 
-			const { getEditedEntityRecord } = select(coreStore);
 			return {
-				selectedMenu: getEditedEntityRecord(
-					"postType",
-					"wp_navigation",
-					menuId
-				),
+				menus: getEntityRecords("postType", "wp_navigation", query),
+				hasResolvedMenus: hasFinishedResolution("getEntityRecords", ["postType", "wp_navigation", query]),
+				selectedMenu: menuId ? getEditedEntityRecord("postType", "wp_navigation", menuId) : null,
+				currentBlocks: select(blockEditorStore).getBlocks(clientId),
+				isCurrentPostSaving: select('core/editor')?.isSavingPost(),
 			};
 		},
-		[menuId]
-	);
-
-	const { currentBlocks } = useSelect(
-		(select) => ({
-			currentBlocks: select(blockEditorStore).getBlocks(clientId),
-		}),
-		[clientId]
+		[menuId, clientId]
 	);
 
 	const lastSavedContent = useRef(null);
 	const isInitialLoad = useRef(true);
 	const initialBlocksRef = useRef(null);
 
-	const { isCurrentPostSaving } = useSelect(
-		(select) => ({
-			isCurrentPostSaving: select('core/editor')?.isSavingPost(),
-		}),
-		[]
-	);
+	const processBlocks = useCallback((blocks) => {
+		return blocks
+			.map((block) => {
+				const commonProps = {
+					...block.attributes,
+					label: block.attributes.label,
+					url: block.attributes.url,
+					type: block.attributes.type,
+					id: block.attributes.id,
+					kind: block.attributes.kind,
+					opensInNewTab: block.attributes.opensInNewTab || false,
+				};
+
+				if (block.name === "core/navigation-link") {
+					return createBlock("core/navigation-link", commonProps);
+				}
+
+				if (block.name === "core/navigation-submenu") {
+					return createBlock(
+						"core/navigation-submenu",
+						commonProps,
+						block.innerBlocks ? processBlocks(block.innerBlocks) : []
+					);
+				}
+
+				return null;
+			})
+			.filter(Boolean);
+	}, []);
 
 	useEffect(() => {
-		if (selectedMenu && selectedMenu.content && isInitialLoad.current) {
+		if (selectedMenu?.content && isInitialLoad.current) {
 			const parsedBlocks = parse(selectedMenu.content);
 			initialBlocksRef.current = serialize(parsedBlocks);
 			lastSavedContent.current = initialBlocksRef.current;
-			
 			registry.dispatch(blockEditorStore).__unstableMarkNextChangeAsNotPersistent();
 		}
 	}, [selectedMenu]);
@@ -109,31 +105,28 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 	}, [currentBlocks]);
 
 	useEffect(() => {
-		if (isCurrentPostSaving && menuId && currentBlocks) {
-			const saveNavigationChanges = async () => {
-				try {
-					const serializedContent = serialize(currentBlocks);
-					
-					if (serializedContent === lastSavedContent.current || 
-						(isInitialLoad.current && serializedContent === initialBlocksRef.current)) {
-						return;
-					}
-					
-					lastSavedContent.current = serializedContent;
-					
-					await editEntityRecord("postType", "wp_navigation", menuId, {
-						content: serializedContent,
-						status: "publish"
-					});
-					await saveEditedEntityRecord("postType", "wp_navigation", menuId);
-				} catch (error) {
-					console.error("Failed to update navigation menu:", error);
-				}
-			};
+		if (!isCurrentPostSaving || !menuId || !currentBlocks) return;
 
-			saveNavigationChanges();
+		const serializedContent = serialize(currentBlocks);
+		if (serializedContent === lastSavedContent.current || 
+			(isInitialLoad.current && serializedContent === initialBlocksRef.current)) {
+			return;
 		}
-	}, [isCurrentPostSaving]);
+
+		lastSavedContent.current = serializedContent;
+		
+		(async () => {
+			try {
+				await editEntityRecord("postType", "wp_navigation", menuId, {
+					content: serializedContent,
+					status: "publish"
+				});
+				await saveEditedEntityRecord("postType", "wp_navigation", menuId);
+			} catch (error) {
+				console.error("Failed to update navigation menu:", error);
+			}
+		})();
+	}, [isCurrentPostSaving, menuId, currentBlocks]);
 
 	useEffect(() => {
 		if (!selectedMenu || !selectedMenu.content) {
@@ -145,42 +138,6 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 		}
 
 		const parsedBlocks = parse(selectedMenu.content);
-		const processBlocks = (blocks) => {
-			return blocks
-				.map((block) => {
-					if (block.name === "core/navigation-link") {
-						return createBlock("core/navigation-link", {
-							...block.attributes,
-							label: block.attributes.label,
-							url: block.attributes.url,
-							type: block.attributes.type,
-							id: block.attributes.id,
-							kind: block.attributes.kind,
-							opensInNewTab: block.attributes.opensInNewTab || false,
-						});
-					}
-
-					if (block.name === "core/navigation-submenu") {
-						return createBlock(
-							"core/navigation-submenu",
-							{
-								...block.attributes,
-								label: block.attributes.label,
-								url: block.attributes.url,
-								type: block.attributes.type,
-								id: block.attributes.id,
-								kind: block.attributes.kind,
-								opensInNewTab: block.attributes.opensInNewTab || false,
-							},
-							block.innerBlocks ? processBlocks(block.innerBlocks) : []
-						);
-					}
-
-					return null;
-				})
-				.filter(Boolean);
-		};
-
 		const newBlocks = processBlocks(parsedBlocks);
 		
 		registry.dispatch(blockEditorStore).__unstableMarkNextChangeAsNotPersistent();

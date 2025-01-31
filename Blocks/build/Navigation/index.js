@@ -66,11 +66,15 @@ function Edit({
   });
   const {
     menus,
-    hasResolvedMenus
+    hasResolvedMenus,
+    selectedMenu,
+    currentBlocks,
+    isCurrentPostSaving
   } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useSelect)(select => {
     const {
       getEntityRecords,
-      hasFinishedResolution
+      hasFinishedResolution,
+      getEditedEntityRecord
     } = select(_wordpress_core_data__WEBPACK_IMPORTED_MODULE_5__.store);
     const query = {
       per_page: -1,
@@ -78,39 +82,37 @@ function Edit({
     };
     return {
       menus: getEntityRecords("postType", "wp_navigation", query),
-      hasResolvedMenus: hasFinishedResolution("getEntityRecords", ["postType", "wp_navigation", query])
+      hasResolvedMenus: hasFinishedResolution("getEntityRecords", ["postType", "wp_navigation", query]),
+      selectedMenu: menuId ? getEditedEntityRecord("postType", "wp_navigation", menuId) : null,
+      currentBlocks: select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.store).getBlocks(clientId),
+      isCurrentPostSaving: select('core/editor')?.isSavingPost()
     };
-  }, []);
-  const {
-    selectedMenu
-  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useSelect)(select => {
-    if (!menuId) {
-      return {
-        selectedMenu: null
-      };
-    }
-    const {
-      getEditedEntityRecord
-    } = select(_wordpress_core_data__WEBPACK_IMPORTED_MODULE_5__.store);
-    return {
-      selectedMenu: getEditedEntityRecord("postType", "wp_navigation", menuId)
-    };
-  }, [menuId]);
-  const {
-    currentBlocks
-  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useSelect)(select => ({
-    currentBlocks: select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.store).getBlocks(clientId)
-  }), [clientId]);
+  }, [menuId, clientId]);
   const lastSavedContent = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(null);
   const isInitialLoad = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(true);
   const initialBlocksRef = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(null);
-  const {
-    isCurrentPostSaving
-  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useSelect)(select => ({
-    isCurrentPostSaving: select('core/editor')?.isSavingPost()
-  }), []);
+  const processBlocks = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useCallback)(blocks => {
+    return blocks.map(block => {
+      const commonProps = {
+        ...block.attributes,
+        label: block.attributes.label,
+        url: block.attributes.url,
+        type: block.attributes.type,
+        id: block.attributes.id,
+        kind: block.attributes.kind,
+        opensInNewTab: block.attributes.opensInNewTab || false
+      };
+      if (block.name === "core/navigation-link") {
+        return (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.createBlock)("core/navigation-link", commonProps);
+      }
+      if (block.name === "core/navigation-submenu") {
+        return (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.createBlock)("core/navigation-submenu", commonProps, block.innerBlocks ? processBlocks(block.innerBlocks) : []);
+      }
+      return null;
+    }).filter(Boolean);
+  }, []);
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
-    if (selectedMenu && selectedMenu.content && isInitialLoad.current) {
+    if (selectedMenu?.content && isInitialLoad.current) {
       const parsedBlocks = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.parse)(selectedMenu.content);
       initialBlocksRef.current = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.serialize)(parsedBlocks);
       lastSavedContent.current = initialBlocksRef.current;
@@ -126,26 +128,24 @@ function Edit({
     }
   }, [currentBlocks]);
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
-    if (isCurrentPostSaving && menuId && currentBlocks) {
-      const saveNavigationChanges = async () => {
-        try {
-          const serializedContent = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.serialize)(currentBlocks);
-          if (serializedContent === lastSavedContent.current || isInitialLoad.current && serializedContent === initialBlocksRef.current) {
-            return;
-          }
-          lastSavedContent.current = serializedContent;
-          await editEntityRecord("postType", "wp_navigation", menuId, {
-            content: serializedContent,
-            status: "publish"
-          });
-          await saveEditedEntityRecord("postType", "wp_navigation", menuId);
-        } catch (error) {
-          console.error("Failed to update navigation menu:", error);
-        }
-      };
-      saveNavigationChanges();
+    if (!isCurrentPostSaving || !menuId || !currentBlocks) return;
+    const serializedContent = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.serialize)(currentBlocks);
+    if (serializedContent === lastSavedContent.current || isInitialLoad.current && serializedContent === initialBlocksRef.current) {
+      return;
     }
-  }, [isCurrentPostSaving]);
+    lastSavedContent.current = serializedContent;
+    (async () => {
+      try {
+        await editEntityRecord("postType", "wp_navigation", menuId, {
+          content: serializedContent,
+          status: "publish"
+        });
+        await saveEditedEntityRecord("postType", "wp_navigation", menuId);
+      } catch (error) {
+        console.error("Failed to update navigation menu:", error);
+      }
+    })();
+  }, [isCurrentPostSaving, menuId, currentBlocks]);
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
     if (!selectedMenu || !selectedMenu.content) {
       registry.dispatch(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.store).__unstableMarkNextChangeAsNotPersistent();
@@ -155,33 +155,6 @@ function Edit({
       return;
     }
     const parsedBlocks = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.parse)(selectedMenu.content);
-    const processBlocks = blocks => {
-      return blocks.map(block => {
-        if (block.name === "core/navigation-link") {
-          return (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.createBlock)("core/navigation-link", {
-            ...block.attributes,
-            label: block.attributes.label,
-            url: block.attributes.url,
-            type: block.attributes.type,
-            id: block.attributes.id,
-            kind: block.attributes.kind,
-            opensInNewTab: block.attributes.opensInNewTab || false
-          });
-        }
-        if (block.name === "core/navigation-submenu") {
-          return (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.createBlock)("core/navigation-submenu", {
-            ...block.attributes,
-            label: block.attributes.label,
-            url: block.attributes.url,
-            type: block.attributes.type,
-            id: block.attributes.id,
-            kind: block.attributes.kind,
-            opensInNewTab: block.attributes.opensInNewTab || false
-          }, block.innerBlocks ? processBlocks(block.innerBlocks) : []);
-        }
-        return null;
-      }).filter(Boolean);
-    };
     const newBlocks = processBlocks(parsedBlocks);
     registry.dispatch(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.store).__unstableMarkNextChangeAsNotPersistent();
     replaceInnerBlocks(clientId, newBlocks);
