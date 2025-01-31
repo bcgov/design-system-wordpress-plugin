@@ -58,15 +58,20 @@
 
     // Top level links border separation
     >.wp-block-navigation-item {
-        border-right: 1px solid #e0e0e0;
+        border-right: 1px solid var(--dswp-surface-color-border-default);
         flex: 1;
         text-align: center;
+
+        &:hover {
+            background-color: var(--dswp-theme-gray-10);
+        }
 
         &:last-child {
             border-right: none;
             padding-right: 0;
         }
     }
+    
 
     a {
         text-decoration: none;
@@ -79,6 +84,7 @@
 
     // Submenu
     .wp-block-navigation-submenu {
+        
         position: relative;
 
         >.wp-block-navigation__submenu-container {
@@ -89,7 +95,7 @@
             width: 100%;
             display: none;
             z-index: 1000;
-            background: #fff;
+            background: var(--dswp-surface-color-background-white);
             border-radius: 4px;
             box-shadow: 0px 1.2px 3.6px 0px rgba(0, 0, 0, 0.1), 0px 6.4px 14.4px 0px rgba(0, 0, 0, 0.13);
             padding: 0;
@@ -98,6 +104,7 @@
 
         // Arrows to show submenu
         >.wp-block-navigation-item__content {
+            
             position: relative;
             display: flex;
             align-items: center;
@@ -154,6 +161,7 @@
             >.wp-block-navigation-item__content {
                 font-weight: bold;
                 border-radius: 4px;
+                background-color: var(--dswp-theme-gray-10);
             }
 
             >.wp-block-navigation-item__content::after {
@@ -169,18 +177,16 @@
         .wp-block-navigation__submenu-container {
             .wp-block-navigation-item__content {
                 &:hover {
-                    background-color: #f0f0f0;
+                    background-color: var(--dswp-theme-gray-10);
                 }
-
                 padding-left: 2rem;
-                border-bottom: 1px solid #ccc;
+                border-bottom: 1px solid var(--dswp-theme-gray-30);
             }
         }
     }
 
     // Mobile adjustments
-    &.dswp-is-mobile {
-        
+    &.dswp-is-mobile {        
 
         // Remove top level borders in mobile
         >.wp-block-navigation-item {
@@ -239,7 +245,7 @@
             &.current-menu-item,
             &.current-menu-ancestor {
                 >.wp-block-navigation-item__content {
-                    border-left: 4px solid #003366; // BC Government blue
+                    border-left: 4px solid var(--dswp-surface-color-border-dark); // BC Government blue
                 }
             }
 
@@ -249,7 +255,7 @@
                 .current-menu-item,
                 .current-menu-ancestor {
                     >.wp-block-navigation-item__content {
-                        border-left: 4px solid #003366;
+                        border-left: 4px solid var(--dswp-surface-color-border-dark);
                     }
                 }
             }
@@ -412,7 +418,7 @@
 
     // Level 2 items (first submenu)
     .wp-block-navigation__submenu-container {
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1)!important;
+        border-bottom: 1px solid var(--dswp-theme-gray-30);
         > .wp-block-navigation-item {
             > .wp-block-navigation-item__content {
                 font-size: 15px;
@@ -435,7 +441,7 @@
     .wp-block-navigation-submenu.is-open {
         > .wp-block-navigation-item__content {
             font-weight: bold !important;
-            border-left: 4px solid #003366;
+            border-left: 4px solid var(--dswp-surface-color-border-dark);
         }
     }
 
