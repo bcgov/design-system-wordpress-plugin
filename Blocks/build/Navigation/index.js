@@ -39,6 +39,16 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+/**
+ * Navigation Block Edit Component
+ * 
+ * @param {Object} props - Component properties
+ * @param {Object} props.attributes - Block attributes
+ * @param {Function} props.setAttributes - Function to update block attributes
+ * @param {string} props.clientId - Unique block identifier
+ * @return {JSX.Element} Navigation block editor interface
+ */
+
 function Edit({
   attributes,
   setAttributes,
@@ -50,6 +60,10 @@ function Edit({
     isMobile,
     mobileBreakpoint = 768
   } = attributes;
+
+  /**
+   * WordPress dispatch and registry hooks for block manipulation
+   */
   const {
     replaceInnerBlocks
   } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useDispatch)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.store);
@@ -58,12 +72,22 @@ function Edit({
     saveEditedEntityRecord
   } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useDispatch)(_wordpress_core_data__WEBPACK_IMPORTED_MODULE_5__.store);
   const registry = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useRegistry)();
+
+  /**
+   * Block props with dynamic className and mobile breakpoint styling
+   * Memoized to prevent unnecessary re-renders
+   */
   const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useBlockProps)({
     className: `dswp-block-navigation-is-${overlayMenu}-overlay`,
     style: {
       '--mobile-breakpoint': mobileBreakpoint
     }
   });
+
+  /**
+   * Combined selector hook for retrieving menu data and block state
+   * Optimized to reduce re-renders by combining multiple selectors
+   */
   const {
     menus,
     hasResolvedMenus,
@@ -88,9 +112,21 @@ function Edit({
       isCurrentPostSaving: select('core/editor')?.isSavingPost()
     };
   }, [menuId, clientId]);
+
+  /**
+   * Refs for tracking content state and initialization
+   */
   const lastSavedContent = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(null);
   const isInitialLoad = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(true);
   const initialBlocksRef = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(null);
+
+  /**
+   * Processes navigation blocks to ensure correct structure and attributes
+   * Memoized to prevent unnecessary recreation on re-renders
+   * 
+   * @param {Array} blocks - Array of block objects to process
+   * @return {Array} Processed blocks with correct structure
+   */
   const processBlocks = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useCallback)(blocks => {
     return blocks.map(block => {
       const commonProps = {
@@ -111,6 +147,10 @@ function Edit({
       return null;
     }).filter(Boolean);
   }, []);
+
+  /**
+   * Effect for handling initial menu content load
+   */
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
     if (selectedMenu?.content && isInitialLoad.current) {
       const parsedBlocks = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.parse)(selectedMenu.content);
@@ -119,6 +159,11 @@ function Edit({
       registry.dispatch(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.store).__unstableMarkNextChangeAsNotPersistent();
     }
   }, [selectedMenu]);
+
+  /**
+   * Effect for handling block content changes
+   * Marks changes as non-persistent when content matches initial state
+   */
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
     if (!isInitialLoad.current && currentBlocks) {
       const serializedContent = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.serialize)(currentBlocks);
@@ -127,6 +172,11 @@ function Edit({
       }
     }
   }, [currentBlocks]);
+
+  /**
+   * Effect for saving menu changes
+   * Handles automatic saving when post is being saved
+   */
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
     if (!isCurrentPostSaving || !menuId || !currentBlocks) return;
     const serializedContent = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_6__.serialize)(currentBlocks);
@@ -165,6 +215,22 @@ function Edit({
       registry.dispatch(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.store).__unstableMarkNextChangeAsNotPersistent();
     }
   }, [selectedMenu]);
+
+  /**
+   * Handles menu selection changes
+   * @param {string} value - The selected menu ID
+   */
+  const handleMenuSelect = value => {
+    const newMenuId = parseInt(value);
+    setAttributes({
+      menuId: newMenuId
+    });
+  };
+
+  /**
+   * Inner blocks configuration for the navigation menu
+   * Restricts allowed blocks to navigation-specific types
+   */
   const innerBlocksProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useInnerBlocksProps)({
     className: "dswp-block-navigation__container"
   }, {
@@ -172,15 +238,13 @@ function Edit({
     orientation: "horizontal",
     templateLock: false
   });
-  const handleMenuSelect = value => {
-    const newMenuId = parseInt(value);
-    setAttributes({
-      menuId: newMenuId
-    });
-  };
+
+  // Early return for loading state
   if (!hasResolvedMenus) {
     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Spinner, {});
   }
+
+  // Transform menu data into select options format
   const menuOptions = [{
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)("Select a menu"),
     value: 0

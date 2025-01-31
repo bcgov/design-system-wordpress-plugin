@@ -19,6 +19,15 @@ import { store as coreStore } from "@wordpress/core-data";
 import { createBlock, serialize, parse } from "@wordpress/blocks";
 import MobileMenuIcon from "./mobile-menu-icon";
 
+/**
+ * Navigation Block Edit Component
+ * 
+ * @param {Object} props - Component properties
+ * @param {Object} props.attributes - Block attributes
+ * @param {Function} props.setAttributes - Function to update block attributes
+ * @param {string} props.clientId - Unique block identifier
+ * @return {JSX.Element} Navigation block editor interface
+ */
 export default function Edit({ attributes, setAttributes, clientId }) {
 	const {
 		menuId,
@@ -26,9 +35,18 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 		isMobile,
 		mobileBreakpoint = 768
 	} = attributes;
+	
+	/**
+	 * WordPress dispatch and registry hooks for block manipulation
+	 */
 	const { replaceInnerBlocks } = useDispatch(blockEditorStore);
 	const { editEntityRecord, saveEditedEntityRecord } = useDispatch(coreStore);
 	const registry = useRegistry();
+
+	/**
+	 * Block props with dynamic className and mobile breakpoint styling
+	 * Memoized to prevent unnecessary re-renders
+	 */
 	const blockProps = useBlockProps({
 		className: `dswp-block-navigation-is-${overlayMenu}-overlay`,
 		style: {
@@ -36,6 +54,10 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 		}
 	});
 
+	/**
+	 * Combined selector hook for retrieving menu data and block state
+	 * Optimized to reduce re-renders by combining multiple selectors
+	 */
 	const { menus, hasResolvedMenus, selectedMenu, currentBlocks, isCurrentPostSaving } = useSelect(
 		(select) => {
 			const { getEntityRecords, hasFinishedResolution, getEditedEntityRecord } = select(coreStore);
@@ -52,10 +74,20 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 		[menuId, clientId]
 	);
 
+	/**
+	 * Refs for tracking content state and initialization
+	 */
 	const lastSavedContent = useRef(null);
 	const isInitialLoad = useRef(true);
 	const initialBlocksRef = useRef(null);
 
+	/**
+	 * Processes navigation blocks to ensure correct structure and attributes
+	 * Memoized to prevent unnecessary recreation on re-renders
+	 * 
+	 * @param {Array} blocks - Array of block objects to process
+	 * @return {Array} Processed blocks with correct structure
+	 */
 	const processBlocks = useCallback((blocks) => {
 		return blocks
 			.map((block) => {
@@ -86,6 +118,9 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 			.filter(Boolean);
 	}, []);
 
+	/**
+	 * Effect for handling initial menu content load
+	 */
 	useEffect(() => {
 		if (selectedMenu?.content && isInitialLoad.current) {
 			const parsedBlocks = parse(selectedMenu.content);
@@ -95,6 +130,10 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 		}
 	}, [selectedMenu]);
 
+	/**
+	 * Effect for handling block content changes
+	 * Marks changes as non-persistent when content matches initial state
+	 */
 	useEffect(() => {
 		if (!isInitialLoad.current && currentBlocks) {
 			const serializedContent = serialize(currentBlocks);
@@ -104,6 +143,10 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 		}
 	}, [currentBlocks]);
 
+	/**
+	 * Effect for saving menu changes
+	 * Handles automatic saving when post is being saved
+	 */
 	useEffect(() => {
 		if (!isCurrentPostSaving || !menuId || !currentBlocks) return;
 
@@ -152,6 +195,19 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 		}
 	}, [selectedMenu]);
 
+	/**
+	 * Handles menu selection changes
+	 * @param {string} value - The selected menu ID
+	 */
+	const handleMenuSelect = (value) => {
+		const newMenuId = parseInt(value);
+		setAttributes({ menuId: newMenuId });
+	};
+
+	/**
+	 * Inner blocks configuration for the navigation menu
+	 * Restricts allowed blocks to navigation-specific types
+	 */
 	const innerBlocksProps = useInnerBlocksProps(
 		{ className: "dswp-block-navigation__container" },
 		{
@@ -161,15 +217,12 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 		}
 	);
 
-	const handleMenuSelect = (value) => {
-		const newMenuId = parseInt(value);
-		setAttributes({ menuId: newMenuId });
-	};
-
+	// Early return for loading state
 	if (!hasResolvedMenus) {
 		return <Spinner />;
 	}
 
+	// Transform menu data into select options format
 	const menuOptions = [
 		{ label: __("Select a menu"), value: 0 },
 		...(menus || []).map((menu) => ({
@@ -181,13 +234,17 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 	return (
 		<>
 			<InspectorControls>
+				{/* Settings Panel */}
 				<PanelBody title={__("Navigation Settings")}>
+					{/* Menu Selection Control */}
 					<SelectControl
 						label={__("Select Menu")}
 						value={menuId || 0}
 						options={menuOptions}
 						onChange={handleMenuSelect}
 					/>
+					
+					{/* Overlay Mode Controls */}
 					<ButtonGroup>
 						<Button
 							variant={overlayMenu === "mobile" ? "primary" : "secondary"}
@@ -217,6 +274,8 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 							{__("Never")}
 						</Button>
 					</ButtonGroup>
+
+					{/* Conditional Mobile Breakpoint Control */}
 					{overlayMenu === "mobile" && (
 						<RangeControl
 							label={__('Mobile Breakpoint (px)', 'your-text-domain')}
@@ -230,6 +289,7 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 				</PanelBody>
 			</InspectorControls>
 
+			{/* Navigation Block Render */}
 			<nav {...blockProps}>
 				{overlayMenu === "always" ? (
 					<>
