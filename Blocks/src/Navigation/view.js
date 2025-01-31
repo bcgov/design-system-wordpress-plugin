@@ -2,75 +2,81 @@ document.addEventListener("DOMContentLoaded", function () {
     const navBlocks = document.querySelectorAll('.dswp-block-navigation-is-mobile-overlay, .dswp-block-navigation-is-always-overlay');
     
     navBlocks.forEach(nav => {
-        const mobileNavIcon = nav.querySelector(".dswp-nav-mobile-toggle-icon");
-        const menuContainer = nav.querySelector(".dswp-block-navigation__container");
+        // Cache frequently used elements
+        const elements = {
+            mobileNavIcon: nav.querySelector(".dswp-nav-mobile-toggle-icon"),
+            menuContainer: nav.querySelector(".dswp-block-navigation__container"),
+            iconText: nav.querySelector(".dswp-nav-mobile-menu-icon-text"),
+            topBar: nav.querySelector(".dswp-nav-mobile-menu-top-bar"),
+            middleBar: nav.querySelector(".dswp-nav-mobile-menu-middle-bar"),
+            bottomBar: nav.querySelector(".dswp-nav-mobile-menu-bottom-bar")
+        };
+
         const isMobileMode = nav.classList.contains('dswp-block-navigation-is-mobile-overlay');
         const isAlwaysMode = nav.classList.contains('dswp-block-navigation-is-always-overlay');
         
+        /**
+         * Closes all submenus within the navigation
+         */
+        function closeAllSubmenus() {
+            const openSubmenus = nav.querySelectorAll('.wp-block-navigation-submenu.is-open');
+            openSubmenus.forEach(submenu => {
+                submenu.classList.remove('is-open');
+                const submenuContainer = submenu.querySelector('.wp-block-navigation__submenu-container');
+                const submenuButton = submenu.querySelector('.dswp-submenu-toggle');
+                if (submenuContainer) submenuContainer.classList.remove('is-open');
+                if (submenuButton) submenuButton.setAttribute('aria-expanded', 'false');
+            });
+        }
+
         function handleResize() {
             if (!isMobileMode) return;
             
             const breakpoint = parseInt(getComputedStyle(nav).getPropertyValue('--mobile-breakpoint'));
             const isMobileView = window.innerWidth <= (breakpoint || 768);
-            const wasMobileView = menuContainer.classList.contains('dswp-is-mobile');
+            const wasMobileView = elements.menuContainer.classList.contains('dswp-is-mobile');
             
             // If we're switching between views (mobile to desktop or vice versa)
             if (isMobileView !== wasMobileView) {
                 // Close all open submenus
-                const openSubmenus = nav.querySelectorAll('.wp-block-navigation-submenu.is-open');
-                openSubmenus.forEach(submenu => {
-                    submenu.classList.remove('is-open');
-                    const submenuContainer = submenu.querySelector('.wp-block-navigation__submenu-container');
-                    const submenuButton = submenu.querySelector('.dswp-submenu-toggle');
-                    if (submenuContainer) {
-                        submenuContainer.classList.remove('is-open');
-                    }
-                    if (submenuButton) {
-                        submenuButton.setAttribute('aria-expanded', 'false');
-                    }
-                });
+                closeAllSubmenus();
 
                 // Reset mobile menu state if switching from mobile to desktop
                 if (!isMobileView) {
-                    menuContainer.classList.remove('is-menu-open');
-                    menuContainer.style.display = 'flex';
+                    elements.menuContainer.classList.remove('is-menu-open');
+                    elements.menuContainer.style.display = 'flex';
                     resetMenuState();
                 }
             }
 
             // Update mobile classes
             if (isMobileView) {
-                mobileNavIcon.style.display = 'flex';
-                menuContainer.classList.add('dswp-is-mobile');
-                if (!menuContainer.classList.contains('is-menu-open')) {
-                    menuContainer.style.display = 'none';
+                elements.mobileNavIcon.style.display = 'flex';
+                elements.menuContainer.classList.add('dswp-is-mobile');
+                if (!elements.menuContainer.classList.contains('is-menu-open')) {
+                    elements.menuContainer.style.display = 'none';
                 }
             } else {
-                mobileNavIcon.style.display = 'none';
-                menuContainer.classList.remove('dswp-is-mobile');
-                menuContainer.style.display = 'flex';
+                elements.mobileNavIcon.style.display = 'none';
+                elements.menuContainer.classList.remove('dswp-is-mobile');
+                elements.menuContainer.style.display = 'flex';
             }
         }
 
         function resetMenuState() {
-            const mobileNavIconText = nav.querySelector(".dswp-nav-mobile-menu-icon-text");
-            const mobileNavTopBar = nav.querySelector(".dswp-nav-mobile-menu-top-bar");
-            const mobileNavMiddleBar = nav.querySelector(".dswp-nav-mobile-menu-middle-bar");
-            const mobileNavBottomBar = nav.querySelector(".dswp-nav-mobile-menu-bottom-bar");
-
-            if (mobileNavIconText) mobileNavIconText.innerText = "Menu";
-            if (mobileNavTopBar) mobileNavTopBar.classList.remove("dswp-nav-mobile-menu-top-bar-open");
-            if (mobileNavMiddleBar) mobileNavMiddleBar.classList.remove("dswp-nav-mobile-menu-middle-bar-open");
-            if (mobileNavBottomBar) mobileNavBottomBar.classList.remove("dswp-nav-mobile-menu-bottom-bar-open");
+            if (elements.iconText) elements.iconText.innerText = "Menu";
+            if (elements.topBar) elements.topBar.classList.remove("dswp-nav-mobile-menu-top-bar-open");
+            if (elements.middleBar) elements.middleBar.classList.remove("dswp-nav-mobile-menu-middle-bar-open");
+            if (elements.bottomBar) elements.bottomBar.classList.remove("dswp-nav-mobile-menu-bottom-bar-open");
             
-            mobileNavIcon.setAttribute('aria-expanded', 'false');
+            elements.mobileNavIcon.setAttribute('aria-expanded', 'false');
         }
 
         // Set initial states
         if (isAlwaysMode || nav.classList.contains('dswp-block-navigation-is-mobile-only')) {
-            mobileNavIcon.style.display = 'flex';
-            menuContainer.style.display = 'none';
-            menuContainer.classList.add('dswp-is-mobile');
+            elements.mobileNavIcon.style.display = 'flex';
+            elements.menuContainer.style.display = 'none';
+            elements.menuContainer.classList.add('dswp-is-mobile');
         } else if (isMobileMode) {
             handleResize();
         }
@@ -81,47 +87,31 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // Mobile menu toggle functionality
-        if (mobileNavIcon) {
-            mobileNavIcon.addEventListener("click", function () {
-                const mobileNavIconText = nav.querySelector(".dswp-nav-mobile-menu-icon-text");
-                const mobileNavTopBar = nav.querySelector(".dswp-nav-mobile-menu-top-bar");
-                const mobileNavMiddleBar = nav.querySelector(".dswp-nav-mobile-menu-middle-bar");
-                const mobileNavBottomBar = nav.querySelector(".dswp-nav-mobile-menu-bottom-bar");
-
+        if (elements.mobileNavIcon) {
+            elements.mobileNavIcon.addEventListener("click", function () {
                 // Toggle menu visibility
-                menuContainer.classList.toggle('is-menu-open');
-                const isOpen = menuContainer.classList.contains('is-menu-open');
+                elements.menuContainer.classList.toggle('is-menu-open');
+                const isOpen = elements.menuContainer.classList.contains('is-menu-open');
                 
                 // Update ARIA state
-                mobileNavIcon.setAttribute('aria-expanded', isOpen.toString());
+                elements.mobileNavIcon.setAttribute('aria-expanded', isOpen.toString());
                 
                 // Toggle hamburger animation
-                mobileNavTopBar.classList.toggle("dswp-nav-mobile-menu-top-bar-open");
-                mobileNavMiddleBar.classList.toggle("dswp-nav-mobile-menu-middle-bar-open");
-                if (mobileNavBottomBar) {
-                    mobileNavBottomBar.classList.toggle("dswp-nav-mobile-menu-bottom-bar-open");
+                elements.topBar.classList.toggle("dswp-nav-mobile-menu-top-bar-open");
+                elements.middleBar.classList.toggle("dswp-nav-mobile-menu-middle-bar-open");
+                if (elements.bottomBar) {
+                    elements.bottomBar.classList.toggle("dswp-nav-mobile-menu-bottom-bar-open");
                 }
 
                 // Update menu text
-                mobileNavIconText.innerText = isOpen ? "Close menu" : "Menu";
+                elements.iconText.innerText = isOpen ? "Close menu" : "Menu";
                 
                 // Show/hide menu
-                menuContainer.style.display = isOpen ? 'grid' : 'none';
+                elements.menuContainer.style.display = isOpen ? 'grid' : 'none';
 
                 // Close all open submenus when closing the mobile menu
                 if (!isOpen) {
-                    const openSubmenus = nav.querySelectorAll('.wp-block-navigation-submenu.is-open');
-                    openSubmenus.forEach(submenu => {
-                        submenu.classList.remove('is-open');
-                        const submenuContainer = submenu.querySelector('.wp-block-navigation__submenu-container');
-                        const submenuButton = submenu.querySelector('.dswp-submenu-toggle');
-                        if (submenuContainer) {
-                            submenuContainer.classList.remove('is-open');
-                        }
-                        if (submenuButton) {
-                            submenuButton.setAttribute('aria-expanded', 'false');
-                        }
-                    });
+                    closeAllSubmenus();
                 }
             });
         }
@@ -131,33 +121,22 @@ document.addEventListener("DOMContentLoaded", function () {
             const isClickInside = nav.contains(event.target);
                 
             if (!isClickInside) {
-                if (menuContainer.classList.contains('is-menu-open')) {
-                    menuContainer.classList.remove('is-menu-open');
-                    menuContainer.style.display = 'none';
+                if (elements.menuContainer.classList.contains('is-menu-open')) {
+                    elements.menuContainer.classList.remove('is-menu-open');
+                    elements.menuContainer.style.display = 'none';
                     resetMenuState();
                 }
                 
                 // Close all open submenus
-                const openSubmenus = nav.querySelectorAll('.wp-block-navigation-submenu.is-open');
-                openSubmenus.forEach(submenu => {
-                    submenu.classList.remove('is-open');
-                    const submenuContainer = submenu.querySelector('.wp-block-navigation__submenu-container');
-                    const submenuButton = submenu.querySelector('.dswp-submenu-toggle');
-                    if (submenuContainer) {
-                        submenuContainer.classList.remove('is-open');
-                    }
-                    if (submenuButton) {
-                        submenuButton.setAttribute('aria-expanded', 'false');
-                    }
-                });
+                closeAllSubmenus();
             }
         });
 
         // Handle escape key for mobile menu //! Need to add functionality for desktop as well
         document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape' && menuContainer.classList.contains('is-menu-open')) {
-                menuContainer.classList.remove('is-menu-open');
-                menuContainer.style.display = 'none';
+            if (event.key === 'Escape' && elements.menuContainer.classList.contains('is-menu-open')) {
+                elements.menuContainer.classList.remove('is-menu-open');
+                elements.menuContainer.style.display = 'none';
                 resetMenuState();
             }
         });
@@ -256,14 +235,7 @@ document.addEventListener("DOMContentLoaded", function () {
             
             if (!isClickInsideNav) {
                 // Close all open submenus
-                const openSubmenus = nav.querySelectorAll('.wp-block-navigation-submenu.is-open');
-                openSubmenus.forEach(submenu => {
-                    submenu.classList.remove('is-open');
-                    const submenuContainer = submenu.querySelector('.wp-block-navigation__submenu-container');
-                    if (submenuContainer) {
-                        submenuContainer.classList.remove('is-open');
-                    }
-                });
+                closeAllSubmenus();
             }
         });
 
@@ -273,14 +245,7 @@ document.addEventListener("DOMContentLoaded", function () {
             
             if (event.key === 'Escape') {
                 // Close all open submenus
-                const openSubmenus = nav.querySelectorAll('.wp-block-navigation-submenu.is-open');
-                openSubmenus.forEach(submenu => {
-                    submenu.classList.remove('is-open');
-                    const submenuContainer = submenu.querySelector('.wp-block-navigation__submenu-container');
-                    if (submenuContainer) {
-                        submenuContainer.classList.remove('is-open');
-                    }
-                });
+                closeAllSubmenus();
                 // Reset all arrow rotations
                 resetArrowRotations(nav);
             }
