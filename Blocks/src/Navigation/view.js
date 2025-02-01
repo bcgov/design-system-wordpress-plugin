@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        // Handle escape key for mobile menu //! Need to add functionality for desktop as well
+        // Handle escape key for mobile menu
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape' && elements.menuContainer.classList.contains('is-menu-open')) {
                 elements.menuContainer.classList.remove('is-menu-open');
@@ -142,92 +142,92 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         // Add submenu click handlers
-        const submenuLinks = nav.querySelectorAll('.wp-block-navigation-submenu > .wp-block-navigation-item__content');
         
-        submenuLinks.forEach(link => {
-            // Only create button if parent has submenu
-            const submenu = link.closest('.wp-block-navigation-submenu');
-            const hasSubmenu = submenu?.querySelector('.wp-block-navigation__submenu-container');
+  // Add submenu click handlers
+const submenuLinks = nav.querySelectorAll('.wp-block-navigation-submenu > .wp-block-navigation-item__content');
+
+submenuLinks.forEach(link => {
+    const submenu = link.closest('.wp-block-navigation-submenu');
+    const hasSubmenu = submenu?.querySelector('.wp-block-navigation__submenu-container');
+    
+    if (hasSubmenu) {
+        // Create a button for the arrow
+        const arrowButton = document.createElement('button');
+        arrowButton.className = 'dswp-submenu-toggle';
+        arrowButton.setAttribute('aria-expanded', 'false');
+        arrowButton.setAttribute('aria-label', 'Toggle submenu');
+        
+        // Insert the button after the link text
+        link.parentNode.insertBefore(arrowButton, link.nextSibling);
+        
+        // Move click handler to the arrow button
+        arrowButton.addEventListener('click', e => {
+            e.preventDefault();
+            e.stopPropagation();
             
-            if (hasSubmenu) {
-                // Create a button for the arrow
-                const arrowButton = document.createElement('button');
-                arrowButton.className = 'dswp-submenu-toggle';
-                arrowButton.setAttribute('aria-expanded', 'false');
-                arrowButton.setAttribute('aria-label', 'Toggle submenu');
-                
-                // Insert the button after the link text
-                link.parentNode.insertBefore(arrowButton, link.nextSibling);
-                
-                // Move click handler to the arrow button
-                arrowButton.addEventListener('click', e => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    const submenuContainer = submenu.querySelector('.wp-block-navigation__submenu-container');
-                    const isOpen = submenu.classList.contains('is-open');
-                    
-                    // First, close all open submenus except the current submenu's ancestors
-                    const allOpenSubmenus = nav.querySelectorAll('.wp-block-navigation-submenu.is-open');
-                    const currentPath = [];
-                    let parent = submenu;
-                    while (parent) {
-                        if (parent.classList.contains('wp-block-navigation-submenu')) {
-                            currentPath.push(parent);
-                        }
-                        parent = parent.parentElement.closest('.wp-block-navigation-submenu');
-                    }
-
-                    allOpenSubmenus.forEach(openSubmenu => {
-                        if (!currentPath.includes(openSubmenu)) {
-                            openSubmenu.classList.remove('is-open');
-                            const container = openSubmenu.querySelector('.wp-block-navigation__submenu-container');
-                            const button = openSubmenu.querySelector('.dswp-submenu-toggle');
-                            if (container) {
-                                container.classList.remove('is-open');
-                            }
-                            if (button) {
-                                button.setAttribute('aria-expanded', 'false');
-                            }
-                        }
-                    });
-
-                    // Toggle current submenu
-                    submenu.classList.toggle('is-open');
-                    if (submenuContainer) {
-                        submenuContainer.classList.toggle('is-open');
-                        
-                        // Add position adjustment for level 3+ submenus
-                        const level = getSubmenuLevel(submenu);
-                        if (level >= 3) {
-                            adjustSubmenuPosition(submenu);
-                            
-                            const resizeObserver = new ResizeObserver(() => {
-                                if (submenu.classList.contains('is-open')) {
-                                    adjustSubmenuPosition(submenu);
-                                }
-                            });
-                            
-                            resizeObserver.observe(submenu);
-                            resizeObserver.observe(document.body);
-                            
-                            const cleanup = () => {
-                                if (!submenu.classList.contains('is-open')) {
-                                    resizeObserver.disconnect();
-                                    submenu.removeEventListener('classChange', cleanup);
-                                }
-                            };
-                            
-                            submenu.addEventListener('classChange', cleanup);
-                        }
-                    }
-                    
-                    // Update ARIA state
-                    arrowButton.setAttribute('aria-expanded', (!isOpen).toString());
-                });
+            const submenuContainer = submenu.querySelector('.wp-block-navigation__submenu-container');
+            const isOpen = submenu.classList.contains('is-open');
+            
+            // First, close all open submenus except the current submenu's ancestors
+            const allOpenSubmenus = nav.querySelectorAll('.wp-block-navigation-submenu.is-open');
+            const currentPath = [];
+            let parent = submenu;
+            while (parent) {
+                if (parent.classList.contains('wp-block-navigation-submenu')) {
+                    currentPath.push(parent);
+                }
+                parent = parent.parentElement.closest('.wp-block-navigation-submenu');
             }
-        });
 
+            allOpenSubmenus.forEach(openSubmenu => {
+                if (!currentPath.includes(openSubmenu)) {
+                    openSubmenu.classList.remove('is-open');
+                    const container = openSubmenu.querySelector('.wp-block-navigation__submenu-container');
+                    const button = openSubmenu.querySelector('.dswp-submenu-toggle');
+                    if (container) {
+                        container.classList.remove('is-open');
+                    }
+                    if (button) {
+                        button.setAttribute('aria-expanded', 'false');
+                    }
+                }
+            });
+
+            // Toggle current submenu
+            submenu.classList.toggle('is-open');
+            if (submenuContainer) {
+                submenuContainer.classList.toggle('is-open');
+
+                // Add position adjustment for level 2 and level 2+ submenus
+                const level = getSubmenuLevel(submenu);
+                if (level >= 2) {
+                    adjustSubmenuPosition(submenu);
+                }
+                
+                const resizeObserver = new ResizeObserver(() => {
+                    if (submenu.classList.contains('is-open')) {
+                        adjustSubmenuPosition(submenu);
+                    }
+                });
+                
+                resizeObserver.observe(submenu);
+                resizeObserver.observe(document.body);
+                
+                const cleanup = () => {
+                    if (!submenu.classList.contains('is-open')) {
+                        resizeObserver.disconnect();
+                        submenu.removeEventListener('classChange', cleanup);
+                    }
+                };
+                
+                submenu.addEventListener('classChange', cleanup);
+            }
+            
+            // Update ARIA state
+            arrowButton.setAttribute('aria-expanded', (!isOpen).toString());
+        });
+    }
+});
         // Add this after the submenu click handlers
         document.addEventListener('click', function(event) {
             // Check if click is outside the navigation
@@ -284,32 +284,43 @@ function adjustSubmenuPosition(submenu) {
     const submenuContainer = submenu.querySelector('.wp-block-navigation__submenu-container');
     if (!submenuContainer) return;
 
+    // Get the level of the submenu
+    const level = getSubmenuLevel(submenu);
+
     // Reset position first
-    submenuContainer.style.left = '100%';
-    submenuContainer.style.right = 'auto';
+    if (level === 1) {
+        submenuContainer.style.left = '0%';
+        submenuContainer.style.right = 'auto'; // Set right to 0% for level 1
+    } else if (level >= 2) {
+        submenuContainer.style.left = '100%';
+        submenuContainer.style.right = 'auto'; // Default for level 2 and deeper
+    }
 
     // Get updated position after reset
     const rect = submenuContainer.getBoundingClientRect();
     const viewportWidth = window.innerWidth;
-    
+
     // Check if submenu extends beyond right edge
-    if (rect.right > viewportWidth) {
+    if (level === 1 && rect.right > viewportWidth) {
         submenuContainer.style.left = 'auto';
-        submenuContainer.style.right = '100%';
+        submenuContainer.style.right = '0%'; // Adjust for level 1 if it overflows
+    } else if (level >=2 && rect.right > viewportWidth) {
+        submenuContainer.style.left = 'auto';
+        submenuContainer.style.right = '100%'; // Adjust for level 2 or deeper
     }
 }
 
 // Add this helper function
 function getSubmenuLevel(submenu) {
-  let level = 1;
-  let parent = submenu.parentElement;
-  while (parent) {
-    if (parent.classList.contains('wp-block-navigation-submenu')) {
-      level++;
+    let level = 1;
+    let parent = submenu.parentElement;
+    while (parent) {
+        if (parent.classList.contains('wp-block-navigation-submenu')) {
+            level++;
+        }
+        parent = parent.parentElement;
     }
-    parent = parent.parentElement;
-  }
-  return level;
+    return level;
 }
 
 function resetArrowRotations(nav) {
