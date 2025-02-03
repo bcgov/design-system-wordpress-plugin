@@ -36,6 +36,11 @@ document.addEventListener("DOMContentLoaded", function () {
       const isMobileView = window.innerWidth <= (breakpoint || 768);
       const wasMobileView = elements.menuContainer.classList.contains('dswp-is-mobile');
 
+      // Check for wrapping
+      const isWrapping = checkIfWrapping(elements.menuContainer);
+      console.log('Navigation is wrapping:', isWrapping);
+      elements.menuContainer.classList.toggle('is-wrapping', isWrapping);
+
       // Only run logic if we're actually switching between views
       if (isMobileView !== wasMobileView) {
         // Close all open submenus
@@ -303,6 +308,30 @@ function resetArrowRotations(nav) {
   allArrows.forEach(arrow => {
     arrow.setAttribute('aria-expanded', 'false');
   });
+}
+
+// Add this helper function
+function checkIfWrapping(container) {
+  const items = container.children;
+  if (items.length < 2) return false;
+
+  // Get the top position of the first item as reference
+  const firstItemTop = items[0].getBoundingClientRect().top;
+
+  // Check if any subsequent item is on a different line
+  for (let i = 1; i < items.length; i++) {
+    const currentTop = items[i].getBoundingClientRect().top;
+    if (currentTop > firstItemTop + 1) {
+      // Adding 1px tolerance
+      console.log('Wrapping detected:', {
+        firstItemTop,
+        currentItemTop: currentTop,
+        element: items[i]
+      });
+      return true;
+    }
+  }
+  return false;
 }
 /******/ })()
 ;
