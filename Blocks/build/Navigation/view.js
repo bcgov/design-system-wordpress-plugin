@@ -32,11 +32,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     function handleResize() {
       if (!isMobileMode) return;
-      const breakpoint = parseInt(getComputedStyle(nav).getPropertyValue('--mobile-breakpoint'));
+      const breakpoint = parseInt(nav.dataset.dswpMobileBreakpoint);
       const isMobileView = window.innerWidth <= (breakpoint || 768);
       const wasMobileView = elements.menuContainer.classList.contains('dswp-is-mobile');
 
-      // If we're switching between views (mobile to desktop or vice versa)
+      // Only run logic if we're actually switching between views
       if (isMobileView !== wasMobileView) {
         // Close all open submenus
         closeAllSubmenus();
@@ -47,19 +47,13 @@ document.addEventListener("DOMContentLoaded", function () {
           elements.menuContainer.style.display = 'flex';
           resetMenuState();
         }
-      }
 
-      // Update mobile classes
-      if (isMobileView) {
-        elements.mobileNavIcon.style.display = 'flex';
-        elements.menuContainer.classList.add('dswp-is-mobile');
-        if (!elements.menuContainer.classList.contains('is-menu-open')) {
+        // Update mobile classes and display
+        elements.mobileNavIcon.style.display = isMobileView ? 'flex' : 'none';
+        elements.menuContainer.classList.toggle('dswp-is-mobile', isMobileView);
+        if (isMobileView && !elements.menuContainer.classList.contains('is-menu-open')) {
           elements.menuContainer.style.display = 'none';
         }
-      } else {
-        elements.mobileNavIcon.style.display = 'none';
-        elements.menuContainer.classList.remove('dswp-is-mobile');
-        elements.menuContainer.style.display = 'flex';
       }
     }
     function resetMenuState() {

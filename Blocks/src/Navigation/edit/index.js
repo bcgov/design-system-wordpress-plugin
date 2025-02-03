@@ -49,9 +49,7 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 	 */
 	const blockProps = useBlockProps({
 		className: `dswp-block-navigation-is-${overlayMenu}-overlay`,
-		style: {
-			'--mobile-breakpoint': mobileBreakpoint
-		}
+		'data-dswp-mobile-breakpoint': mobileBreakpoint
 	});
 
 	/**

@@ -79,9 +79,7 @@ function Edit({
    */
   const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useBlockProps)({
     className: `dswp-block-navigation-is-${overlayMenu}-overlay`,
-    style: {
-      '--mobile-breakpoint': mobileBreakpoint
-    }
+    'data-dswp-mobile-breakpoint': mobileBreakpoint
   });
 
   /**
@@ -426,10 +424,12 @@ function save({
   attributes
 }) {
   const {
-    overlayMenu
+    overlayMenu,
+    mobileBreakpoint
   } = attributes;
   const blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useBlockProps.save({
-    className: `dswp-block-navigation-is-${overlayMenu}-overlay`
+    className: `dswp-block-navigation-is-${overlayMenu}-overlay`,
+    'data-dswp-mobile-breakpoint': mobileBreakpoint
   });
   const innerBlocksProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useInnerBlocksProps.save({
     className: "dswp-block-navigation__container"
