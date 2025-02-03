@@ -3,7 +3,7 @@
   !*** ./src/Navigation/view.js ***!
   \********************************/
 document.addEventListener("DOMContentLoaded", function () {
-  const navBlocks = document.querySelectorAll('.dswp-block-navigation-is-mobile-overlay, .dswp-block-navigation-is-always-overlay');
+  const navBlocks = document.querySelectorAll('.dswp-block-navigation-is-mobile-overlay, .dswp-block-navigation-is-always-overlay, .dswp-block-navigation-is-never-overlay');
   navBlocks.forEach(nav => {
     // Cache frequently used elements
     const elements = {
