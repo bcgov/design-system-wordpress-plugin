@@ -253,7 +253,6 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 							onClick={() =>
 								setAttributes({
 									overlayMenu: "mobile",
-									isMobile: "inMobileMode",
 								})
 							}
 						>
@@ -262,7 +261,7 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 						<Button
 							variant={overlayMenu === "always" ? "primary" : "secondary"}
 							onClick={() =>
-								setAttributes({ overlayMenu: "always", isMobile: "always" })
+								setAttributes({ overlayMenu: "always" })
 							}
 						>
 							{__("Always")}
@@ -270,7 +269,7 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 						<Button
 							variant={overlayMenu === "never" ? "primary" : "secondary"}
 							onClick={() =>
-								setAttributes({ overlayMenu: "never", isMobile: "never" })
+								setAttributes({ overlayMenu: "never" })
 							}
 						>
 							{__("Never")}

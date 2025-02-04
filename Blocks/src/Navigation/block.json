@@ -52,10 +52,6 @@
 			"type": "string",
 			"default": "never"
 		},
-		"isMobile": {
-			"type": "boolean",
-			"default": false
-		},
 		"menuId": {
 			"type": "number"
 		},
