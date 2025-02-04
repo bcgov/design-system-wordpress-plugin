@@ -45,9 +45,6 @@
 		}
 	},
 	"attributes": {
-		"ref": {
-			"type": "number"
-		},
 		"layout": {
 			"type": "object"
 		},
@@ -61,10 +58,6 @@
 		},
 		"menuId": {
 			"type": "number"
-		},
-		"mobileIconStyle": {
-			"type": "string",
-			"default": "threeBar"
 		},
 		"mobileBreakpoint": {
 			"type": "number",

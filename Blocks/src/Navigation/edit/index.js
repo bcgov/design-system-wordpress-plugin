@@ -9,10 +9,10 @@ import {
 	Spinner,
 	ButtonGroup,
 	Button,
-	RangeControl
+	RangeControl,
 } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
-import { useEffect, useRef, useCallback } from "@wordpress/element";
+import { useEffect, useRef, useCallback, useMemo } from "@wordpress/element";
 import { useDispatch, useSelect, useRegistry } from "@wordpress/data";
 import { store as blockEditorStore } from "@wordpress/block-editor";
 import { store as coreStore } from "@wordpress/core-data";
@@ -32,8 +32,7 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 	const {
 		menuId,
 		overlayMenu,
-		isMobile,
-		mobileBreakpoint = 768
+		mobileBreakpoint = 768,
 	} = attributes;
 
 	/**
@@ -143,7 +142,7 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 
 	/**
 	 * Effect for saving menu changes
-	 * Handles automatic saving when post is being saved
+	 * Handles saving when post is being saved
 	 */
 	useEffect(() => {
 		if (!isCurrentPostSaving || !menuId || !currentBlocks) return;
@@ -203,6 +202,17 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 	};
 
 	/**
+	 * Memoize menu options to avoid recalculating on every render
+	 */
+	const menuOptions = useMemo(() => [
+		{ label: __("Select a menu"), value: 0 },
+		...(menus || []).map((menu) => ({
+			label: menu.title.rendered || __("(no title)"),
+			value: menu.id,
+		})),
+	], [menus]);
+
+	/**
 	 * Inner blocks configuration for the navigation menu
 	 * Restricts allowed blocks to navigation-specific types
 	 */
@@ -219,15 +229,6 @@ export default function Edit({ attributes, setAttributes, clientId }) {
 	if (!hasResolvedMenus) {
 		return <Spinner />;
 	}
-
-	// Transform menu data into select options format
-	const menuOptions = [
-		{ label: __("Select a menu"), value: 0 },
-		...(menus || []).map((menu) => ({
-			label: menu.title.rendered || __("(no title)"),
-			value: menu.id,
-		})),
-	];
 
 	return (
 		<>
