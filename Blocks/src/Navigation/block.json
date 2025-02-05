@@ -45,9 +45,6 @@
 		}
 	},
 	"attributes": {
-		"layout": {
-			"type": "object"
-		},
 		"overlayMenu": {
 			"type": "string",
 			"default": "never"
