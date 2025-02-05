@@ -15,7 +15,7 @@
 		"plugin-zip": "wp-scripts plugin-zip",
 		"start": "wp-scripts start",
 		"fix:css": "wp-scripts lint-style 'src/**/*.scss' --fix --allow-empty-input",
-		"fix:js": "wp-scripts lint-js src/scripts --fix",
+		"fix:js": "wp-scripts lint-js --fix",
 		"fix:md": "wp-scripts lint-md-docs --fix",
 		"lint:pkg-json": "wp-scripts lint-pkg-json",
 		"test:e2e": "wp-scripts test-e2e --passWithNoTests",
