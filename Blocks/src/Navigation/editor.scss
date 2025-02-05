@@ -1,48 +1,52 @@
 .wp-block-custom-navigation {
-    .wp-block-navigation-submenu {
-        > .wp-block-navigation-item__content {
-            position: relative;
-            padding-right: 56px;
 
-            &::after {
-                content: '';
-                position: absolute;
-                right: 20px;
-                top: 50%;
-                transform: translateY(-50%);
-                width: 14px;
-                height: 10px;
-                background-image: url("./assets/chevron.svg");
-                background-repeat: no-repeat;
-                background-position: center;
-                opacity: 0.6;
-                pointer-events: none;
-                z-index: 2;
-            }
-        }
+	.wp-block-navigation-submenu {
 
-        &.has-child {
-            > .wp-block-navigation-item__content::after {
-                display: block;
-            }
-        }
+		> .wp-block-navigation-item__content {
+			position: relative;
+			padding-right: 56px;
 
-        &:hover {
-            > .wp-block-navigation-item__content::after {
-                opacity: 1;
-            }
-        }
-    }
+			&::after {
+				content: "";
+				position: absolute;
+				right: 20px;
+				top: 50%;
+				transform: translateY(-50%);
+				width: 14px;
+				height: 10px;
+				background-image: url(./assets/chevron.svg);
+				background-repeat: no-repeat;
+				background-position: center;
+				opacity: 0.6;
+				pointer-events: none;
+				z-index: 2;
+			}
+		}
+
+		&.has-child {
+
+			> .wp-block-navigation-item__content::after {
+				display: block;
+			}
+		}
+
+		&:hover {
+
+			> .wp-block-navigation-item__content::after {
+				opacity: 1;
+			}
+		}
+	}
 }
 
 // Ensure the submenu container appears above the arrow
 .wp-block-navigation__submenu-container {
-    position: relative;
-    z-index: 3;
+	position: relative;
+	z-index: 3;
 }
 
 // Ensure block appender stays on top
 .block-list-appender {
-    position: relative;
-    z-index: 4;
-} 
+	position: relative;
+	z-index: 4;
+}

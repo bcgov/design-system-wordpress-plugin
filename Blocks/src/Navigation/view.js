@@ -162,6 +162,23 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         /**
+         * Determines the nesting level of a submenu and adds appropriate classes
+         * @param {HTMLElement} submenu - The submenu element to check
+         */
+        function initializeSubmenuLevel(submenu) {
+            let level = 1;
+            let parent = submenu.parentElement;
+            while (parent) {
+                if (parent.classList.contains('wp-block-navigation-submenu')) {
+                    level++;
+                }
+                parent = parent.parentElement;
+            }
+            submenu.classList.add(`dswp-level-${level}`);
+            return level;
+        }
+
+        /**
          * Initialization
          */
 
@@ -244,6 +261,9 @@ document.addEventListener("DOMContentLoaded", function () {
             const hasSubmenu = submenu?.querySelector('.wp-block-navigation__submenu-container');
 
             if (hasSubmenu) {
+                // Add level class to submenu
+                initializeSubmenuLevel(submenu);
+
                 // Create submenu toggle button
                 const arrowButton = document.createElement('button');
                 arrowButton.className = 'dswp-submenu-toggle';
