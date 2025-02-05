@@ -1,8 +1,8 @@
 {
-	"name": "mega-menu-nav",
-	"version": "0.1.0",
-	"description": "Example block scaffolded with Create Block tool.",
-	"author": "The WordPress Contributors",
+	"name": "design-system-navigation-block",
+	"version": "1.0.0",
+	"description": "Design System Navigation Block",
+	"author": "govwordpress@gov.bc.ca",
 	"license": "GPL-2.0-or-later",
 	"main": "build/index.js",
 	"scripts": {
