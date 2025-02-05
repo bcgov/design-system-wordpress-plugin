@@ -1,12 +1,12 @@
 {
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
-  "name": "custom/navigation",
+  "name": "design-system-wordpress-plugin/navigation",
   "version": "1.0.0",
-  "title": "Custom Navigation",
+  "title": "Design System Navigation",
   "category": "widgets",
   "icon": "menu",
-  "description": "Custom navigation block",
+  "description": "A Custom navigation block for the design system",
   "supports": {
     "__experimentalToolbar": true,
     "inserter": true,
