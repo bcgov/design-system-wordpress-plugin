@@ -56,7 +56,7 @@
 	display: flex;
 	align-items: center;
 	list-style: none;
-
+	padding-inline-start: 0 !important;
 	// Top level links border separation
 	> .wp-block-navigation-item {
 		border-right: 1px solid var(--dswp-surface-color-border-default);
@@ -82,13 +82,20 @@
 		white-space: nowrap;
 	}
 
-	// Base submenu styles
+	// Submenu
 	.wp-block-navigation-submenu {
 		position: relative;
 
 		> .wp-block-navigation__submenu-container {
+
+			.wp-block-navigation-item {
+				flex: none;
+				text-align: left;
+				width: 100%;
+			}
+
 			list-style: none;
-			position: absolute !important;
+			position: absolute;
 			top: 100%;
 			left: 0;
 			display: none;
@@ -103,12 +110,6 @@
 			width: max-content !important;
 			min-width: 100%;
 			white-space: nowrap;
-
-			.wp-block-navigation-item {
-				flex: none;
-				text-align: left;
-				width: 100%;
-			}
 		}
 
 		// Arrows to show submenu
@@ -130,7 +131,8 @@
 				z-index: 2;
 			}
 		}
-		// For nested submenus (second level and deeper)
+
+		// Second level and deeper submenus
 		.wp-block-navigation__submenu-container {
 
 			.wp-block-navigation-item {
@@ -148,12 +150,12 @@
 			.wp-block-navigation-submenu {
 
 				> .wp-block-navigation__submenu-container {
-					width: max-content !important;
-					min-width: 100%;
 					top: 0;
+					width: 100%;
 					justify-items: center;
 				}
 
+				// Adjust the arrow for right-pointing menus
 				> .wp-block-navigation-item__content::after {
 					transform: rotate(-90deg);
 				}
@@ -178,146 +180,9 @@
 			}
 		}
 	}
-
-	// Mobile adjustments
-	&.dswp-is-mobile {
-
-		* {
-			font-weight: 400 !important;
-		}
-
-		> .wp-block-navigation-item {
-			border-right: none;
-
-			> .wp-block-navigation-item__content {
-				font-size: 16px;
-				padding-left: 1rem;
-			}
-		}
-
-		.wp-block-navigation__submenu-container {
-			border-bottom: 1px solid var(--dswp-surface-color-border-dark);
-
-			> .wp-block-navigation-item > .wp-block-navigation-item__content {
-				font-size: 15px;
-				padding-left: 2rem;
-			}
-
-			.wp-block-navigation__submenu-container > .wp-block-navigation-item {
-
-				> .wp-block-navigation-item__content {
-					font-size: 14px;
-					padding-left: 3rem;
-				}
-			}
-		}
-
-		.wp-block-navigation-submenu.is-open > .wp-block-navigation-item__content {
-			font-weight: 700 !important;
-			border-left: 4px solid var(--dswp-surface-color-border-dark);
-		}
-
-		&.is-menu-open {
-			// Sub nav items in mobile view.
-			.wp-block-navigation-item {
-				width: 100%;
-				text-align: left;
-
-				.wp-block-navigation-item__content {
-					width: 100%;
-					justify-content: flex-start;
-				}
-			}
-
-			// Remove borders from submenu items only
-			.wp-block-navigation__submenu-container {
-				box-shadow: none;
-				border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-
-				// Remove the border from the last submenu container
-				&:last-child {
-					border-bottom: none;
-				}
-
-				.wp-block-navigation-item__content {
-					border-bottom: none;
-				}
-			}
-
-			// Keep border for top-level items
-			> .wp-block-navigation-item {
-
-				> .wp-block-navigation-item__content {
-					border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-				}
-
-				&:last-child > .wp-block-navigation-item__content {
-					border-bottom: none;
-				}
-			}
-		}
-
-		.wp-block-navigation-item {
-
-			&.current-menu-item,
-			&.current-menu-ancestor {
-
-				> .wp-block-navigation-item__content {
-					border-left: 4px solid var(--dswp-surface-color-border-dark); // BC Government blue
-				}
-			}
-
-			// For submenu items, adjust the padding
-			.wp-block-navigation__submenu-container {
-
-				.current-menu-item,
-				.current-menu-ancestor {
-
-					> .wp-block-navigation-item__content {
-						border-left: 4px solid var(--dswp-surface-color-border-dark);
-					}
-				}
-			}
-		}
-
-		.wp-block-navigation-submenu {
-
-			> .wp-block-navigation__submenu-container {
-				position: static;
-			}
-
-			// Remove the ::before pseudo-element in mobile view
-			> .wp-block-navigation-item__content::before {
-				display: none;
-			}
-
-			// Adjust submenu toggle button positioning for mobile
-			.dswp-submenu-toggle {
-				height: 44px; // Fixed height instead of 100%
-				align-self: center;
-			}
-
-			// Level 2 and deeper submenus
-			.wp-block-navigation__submenu-container {
-
-				.wp-block-navigation-submenu {
-
-					> .wp-block-navigation-item__content {
-						padding-right: 56px; // Make room for the toggle button
-					}
-
-					// Ensure proper arrow positioning for nested levels
-					.dswp-submenu-toggle {
-						right: 0;
-						height: 44px;
-					}
-				}
-			}
-		}
-	}
 }
 
-// Overlay styles
+// Mobile styles - only apply when menu is open
 .dswp-block-navigation-is-mobile-overlay,
 .dswp-block-navigation-is-always-overlay {
 
@@ -328,14 +193,15 @@
 		position: absolute;
 		left: 0;
 		width: 100%;
-		background-color: var(--dswp-surface-color-background-white);
+		background: var(--dswp-surface-color-background-white);
 		z-index: 1000;
 		padding-top: 1rem;
 		box-sizing: border-box;
-		padding-inline-start: 0 !important;
 
+		// Force items into columns of 10
 		li {
 			break-inside: avoid;
+			display: block;
 		}
 	}
 }
@@ -374,6 +240,7 @@
 		outline-offset: -2px;
 	}
 }
+
 // Modify the existing submenu styles
 .wp-block-navigation-submenu {
 
@@ -395,4 +262,154 @@
 			transition: left 0.2s ease, right 0.2s ease;
 		}
 	}
+}
+
+.dswp-block-navigation__container.dswp-is-mobile {
+	// Reset ALL font weights to normal
+	* {
+		font-weight: 400 !important;
+	}
+
+	&.is-menu-open {
+		// Sub nav items in mobile view.
+		.wp-block-navigation-item {
+			width: 100%;
+			text-align: left;
+			border-right: none;
+
+			.wp-block-navigation-item__content {
+				width: 100%;
+				justify-content: flex-start;
+				font-size: 16px;
+				padding-left: 1rem;
+			}
+		}
+
+		// Keep border for top-level items
+		> .wp-block-navigation-item {
+
+			> .wp-block-navigation-item__content {
+				border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+			}
+
+			&:last-child > .wp-block-navigation-item__content {
+				border-bottom: none;
+			}
+		}
+
+		// Add border to submenu containers
+		.wp-block-navigation__submenu-container {
+			border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+			box-shadow: none;
+
+			.wp-block-navigation-item__content {
+				border-bottom: none;
+			}
+
+			// Remove the border from the last submenu container
+			&:last-child {
+				border-bottom: none;
+			}
+		}
+	}
+
+	.wp-block-navigation-item {
+		// For submenu items, adjust the padding
+		.wp-block-navigation__submenu-container {
+
+			.current-menu-item,
+			.current-menu-ancestor {
+
+				> .wp-block-navigation-item__content {
+					border-left: 4px solid var(--dswp-surface-color-border-dark);
+				}
+			}
+		}
+	}
+
+	.wp-block-navigation-submenu {
+
+		> .wp-block-navigation__submenu-container {
+			position: static;
+		}
+
+		// Remove the ::before pseudo-element in mobile view
+		> .wp-block-navigation-item__content::before {
+			display: none;
+		}
+
+		// Adjust submenu toggle button positioning for mobile
+		.dswp-submenu-toggle {
+			height: 44px; // Fixed height instead of 100%
+			align-self: center;
+		}
+
+		// Level 2 and deeper submenus
+		.wp-block-navigation__submenu-container {
+
+			.wp-block-navigation-submenu {
+
+				> .wp-block-navigation-item__content {
+					padding-right: 56px; // Make room for the toggle button
+				}
+
+				// Ensure proper arrow positioning for nested levels
+				.dswp-submenu-toggle {
+					right: 0;
+					height: 44px;
+				}
+			}
+		}
+	}
+
+	// Only make it bold if it's current or ancestor
+	.wp-block-navigation-item.current-menu-item,
+	.wp-block-navigation-item.current-menu-ancestor {
+
+		> .wp-block-navigation-item__content {
+			font-weight: 700;
+			border-left: 4px solid var(--dswp-surface-color-border-dark); // BC Government blue
+		}
+	}
+	// Level 2 items (first submenu)
+	.wp-block-navigation__submenu-container {
+		border-bottom: 1px solid var(--dswp-theme-gray-30);
+
+		> .wp-block-navigation-item {
+
+			> .wp-block-navigation-item__content {
+				font-size: 15px;
+				padding-left: 2rem;
+			}
+		}
+
+		// Level 3 items (nested submenu)
+		.wp-block-navigation__submenu-container {
+
+			> .wp-block-navigation-item {
+
+				> .wp-block-navigation-item__content {
+					font-size: 14px;
+					padding-left: 3rem;
+				}
+			}
+		}
+	}
+
+	// Make items bold when their submenu is open
+	.wp-block-navigation-submenu.is-open {
+
+		> .wp-block-navigation-item__content {
+			font-weight: 700 !important;
+			border-left: 4px solid var(--dswp-surface-color-border-dark);
+		}
+	}
+
+	// Adjust padding for active items at different levels
+	> .wp-block-navigation-item.current-menu-ancestor > .wp-block-navigation-item__content {
+		padding-left: calc(1rem - 4px);
+		font-size: 18px;
+	}
+
+
 }
