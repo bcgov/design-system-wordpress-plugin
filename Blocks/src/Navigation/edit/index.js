@@ -152,7 +152,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				.dispatch( blockEditorStore )
 				.__unstableMarkNextChangeAsNotPersistent();
 		}
-	}, [ selectedMenu ] );
+	}, [ selectedMenu, registry ] );
 
 	/**
 	 * Effect for handling block content changes
@@ -167,7 +167,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					.__unstableMarkNextChangeAsNotPersistent();
 			}
 		}
-	}, [ currentBlocks ] );
+	}, [ currentBlocks, registry ] );
 
 	/**
 	 * Effect for saving menu changes
