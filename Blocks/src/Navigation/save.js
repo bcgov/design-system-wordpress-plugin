@@ -16,7 +16,7 @@ export default function save( { attributes } ) {
 	return (
 		<nav { ...blockProps }>
 			<MobileMenuIcon />
-			<div { ...innerBlocksProps } />
+			<ul { ...innerBlocksProps } />
 		</nav>
 	);
 }

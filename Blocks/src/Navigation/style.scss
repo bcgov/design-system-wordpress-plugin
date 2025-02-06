@@ -58,7 +58,7 @@
 	list-style: none;
 
 	// Top level links border separation
-	>.wp-block-navigation-item {
+	> .wp-block-navigation-item {
 		border-right: 1px solid var(--dswp-surface-color-border-default);
 		flex: 1;
 		text-align: center;
@@ -73,7 +73,6 @@
 		}
 	}
 
-
 	a {
 		text-decoration: none;
 		padding: 0.5rem 2rem;
@@ -87,16 +86,18 @@
 	.wp-block-navigation-submenu {
 		position: relative;
 
-		>.wp-block-navigation__submenu-container {
+		> .wp-block-navigation__submenu-container {
 			list-style: none;
-			position: absolute;
+			position: absolute !important;
 			top: 100%;
 			left: 0;
 			display: none;
 			z-index: 1000;
 			background: var(--dswp-surface-color-background-white);
 			border-radius: 4px;
-			box-shadow: 0 1.2px 3.6px 0 rgba(0, 0, 0, 0.1), 0 6.4px 14.4px 0 rgba(0, 0, 0, 0.13);
+			box-shadow:
+				0 1.2px 3.6px 0 rgba(0, 0, 0, 0.1),
+				0 6.4px 14.4px 0 rgba(0, 0, 0, 0.13);
 			padding: 0;
 			margin: 0;
 			width: max-content !important;
@@ -111,7 +112,7 @@
 		}
 
 		// Arrows to show submenu
-		>.wp-block-navigation-item__content {
+		> .wp-block-navigation-item__content {
 			position: relative;
 			display: flex;
 			align-items: center;
@@ -132,25 +133,28 @@
 		// For nested submenus (second level and deeper)
 		.wp-block-navigation__submenu-container {
 
+			.wp-block-navigation-item {
+				border-bottom: 1px solid var(--dswp-theme-gray-30);
+			}
+
 			.wp-block-navigation-item__content {
 
 				&:hover {
 					background-color: var(--dswp-theme-gray-10);
 				}
 				padding-left: 2rem;
-				border-bottom: 1px solid var(--dswp-theme-gray-30);
 			}
 
 			.wp-block-navigation-submenu {
 
-				>.wp-block-navigation__submenu-container {
+				> .wp-block-navigation__submenu-container {
 					width: max-content !important;
 					min-width: 100%;
 					top: 0;
 					justify-items: center;
 				}
 
-				>.wp-block-navigation-item__content::after {
+				> .wp-block-navigation-item__content::after {
 					transform: rotate(-90deg);
 				}
 			}
@@ -159,21 +163,20 @@
 		// When submenu is open - Desktop only
 		&.is-open {
 
-			>.wp-block-navigation-item__content {
+			> .wp-block-navigation-item__content {
 				font-weight: 700;
 				border-radius: 4px;
 				background-color: var(--dswp-theme-gray-10);
 			}
 
-			>.wp-block-navigation-item__content::after {
+			> .wp-block-navigation-item__content::after {
 				transform: rotate(-180deg);
 			}
 
-			>.wp-block-navigation__submenu-container {
+			> .wp-block-navigation__submenu-container {
 				display: block;
 			}
 		}
-
 	}
 
 	// Mobile adjustments
@@ -252,7 +255,6 @@
 					border-bottom: none;
 				}
 			}
-
 		}
 
 		.wp-block-navigation-item {
@@ -260,7 +262,7 @@
 			&.current-menu-item,
 			&.current-menu-ancestor {
 
-				>.wp-block-navigation-item__content {
+				> .wp-block-navigation-item__content {
 					border-left: 4px solid var(--dswp-surface-color-border-dark); // BC Government blue
 				}
 			}
@@ -271,7 +273,7 @@
 				.current-menu-item,
 				.current-menu-ancestor {
 
-					>.wp-block-navigation-item__content {
+					> .wp-block-navigation-item__content {
 						border-left: 4px solid var(--dswp-surface-color-border-dark);
 					}
 				}
@@ -280,12 +282,12 @@
 
 		.wp-block-navigation-submenu {
 
-			>.wp-block-navigation__submenu-container {
+			> .wp-block-navigation__submenu-container {
 				position: static;
 			}
 
 			// Remove the ::before pseudo-element in mobile view
-			>.wp-block-navigation-item__content::before {
+			> .wp-block-navigation-item__content::before {
 				display: none;
 			}
 
@@ -300,7 +302,7 @@
 
 				.wp-block-navigation-submenu {
 
-					>.wp-block-navigation-item__content {
+					> .wp-block-navigation-item__content {
 						padding-right: 56px; // Make room for the toggle button
 					}
 
@@ -330,6 +332,7 @@
 		z-index: 1000;
 		padding-top: 1rem;
 		box-sizing: border-box;
+		padding-inline-start: 0 !important;
 
 		li {
 			break-inside: avoid;
@@ -374,7 +377,7 @@
 // Modify the existing submenu styles
 .wp-block-navigation-submenu {
 
-	>.wp-block-navigation-item__content {
+	> .wp-block-navigation-item__content {
 		padding-right: 56px; // Make room for the button
 
 		&::after,
@@ -388,9 +391,8 @@
 
 	.wp-block-navigation-submenu {
 
-		>.wp-block-navigation__submenu-container {
+		> .wp-block-navigation__submenu-container {
 			transition: left 0.2s ease, right 0.2s ease;
 		}
 	}
 }
-

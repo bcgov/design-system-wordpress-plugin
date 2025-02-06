@@ -345,7 +345,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			</InspectorControls>
 			<nav { ...blockProps }>
 				<MobileMenuIcon />
-				<div { ...innerBlocksProps } />
+				<ul { ...innerBlocksProps } />
 			</nav>
 		</>
 	);

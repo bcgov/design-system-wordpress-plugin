@@ -224,7 +224,6 @@ document.addEventListener( 'DOMContentLoaded', function () {
 				}
 				parent = parent.parentElement;
 			}
-			submenu.classList.add( `dswp-level-${ level }` );
 			return level;
 		}
 
