@@ -1,7 +1,0 @@
-# Changelog
-
-## 1.0.0
-
--  Added new banner functionality ([DSWP-2](https://apps.itsm.gov.bc.ca/jira/browse/DSWP-2))
--  Added content security policy functionality ([DSWP-49](https://apps.itsm.gov.bc.ca/jira/browse/DSWP-49))
--  Added skip navigation functionality ([DSWP-51](https://apps.itsm.gov.bc.ca/jira/browse/DSWP-51))
