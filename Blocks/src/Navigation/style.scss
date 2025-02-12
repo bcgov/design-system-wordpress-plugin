@@ -180,6 +180,67 @@
 			}
 		}
 	}
+
+	// Show arrows in both mobile and desktop
+	.dswp-submenu-toggle {
+		display: flex;
+		width: 56px;
+		height: 100%;
+		position: absolute;
+		right: 0;
+		top: 0;
+		cursor: pointer;
+		background: none;
+		border: none;
+		align-items: center;
+		justify-content: center;
+
+		&::after {
+			content: "";
+			display: inline-flex;
+			width: 14px;
+			height: 10px;
+			transition: transform 0.2s ease;
+			background-image: url(./assets/chevron.svg);
+			background-repeat: no-repeat;
+			background-position: center;
+		}
+	}
+
+	// Desktop hover styles
+	&:not(.dswp-is-mobile) {
+
+		.wp-block-navigation-submenu {
+
+			&:hover {
+
+				> .wp-block-navigation__submenu-container {
+					display: block;
+				}
+
+				// Rotate arrow on hover in desktop mode
+				> .wp-block-navigation-item__content + .dswp-submenu-toggle::after {
+					transform: rotate(-180deg);
+				}
+			}
+
+			// Second level and deeper submenus
+			.wp-block-navigation__submenu-container {
+
+				.wp-block-navigation-submenu:hover {
+
+					> .wp-block-navigation-item__content + .dswp-submenu-toggle::after {
+						transform: rotate(-90deg);
+					}
+				}
+			}
+		}
+	}
+}
+
+
+.dswp-block-navigation-is-mobile-overlay {
+	padding: 1rem !important;
 }
 
 // Mobile styles - only apply when menu is open
@@ -197,6 +258,8 @@
 		z-index: 1000;
 		padding-top: 1rem;
 		box-sizing: border-box;
+		margin-block-start: 0.3rem !important;
+
 
 		// Force items into columns of 10
 		li {
@@ -265,6 +328,15 @@
 }
 
 .dswp-block-navigation__container.dswp-is-mobile {
+
+	.dswp-submenu-toggle {
+		height: 44px;
+
+		&[aria-expanded="true"]::after {
+			transform: rotate(-180deg);
+		}
+	}
+
 	// Reset ALL font weights to normal
 	* {
 		font-weight: 400 !important;
