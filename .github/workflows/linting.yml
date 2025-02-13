@@ -1,10 +1,10 @@
 name: Trigger Linting
 
 on:
-  push:
+  pull_request:
     branches:
       - development
-  workflow_dispatch: true
+  workflow_dispatch:
 
 jobs:
   trigger:
