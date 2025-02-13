@@ -111,42 +111,27 @@ document.addEventListener( 'DOMContentLoaded', function () {
 		 * Handles responsive behavior when window is resized
 		 */
 		function handleResize() {
-			if ( ! isMobileMode ) {
-				return;
-			}
+			const mobileBreakpoint =
+				parseInt( nav.dataset.dswpMobileBreakpoint ) || 768;
+			const isMobileView = window.innerWidth <= mobileBreakpoint;
 
-			const breakpoint = parseInt( nav.dataset.dswpMobileBreakpoint );
-			const isMobileView = window.innerWidth <= ( breakpoint || 768 );
-			const wasMobileView =
-				elements.menuContainer.classList.contains( 'dswp-is-mobile' );
-
-			// Only run logic if we're actually switching between views
-			if ( isMobileView !== wasMobileView ) {
-				closeAllSubmenus();
-
-				// Reset mobile menu state if switching from mobile to desktop
-				if ( ! isMobileView ) {
-					elements.menuContainer.classList.remove( 'is-menu-open' );
-					elements.menuContainer.style.display = 'flex';
-					resetMenuState();
-				}
-
-				// Update mobile classes and display
-				elements.mobileNavIcon.style.display = isMobileView
-					? 'flex'
-					: 'none';
-				elements.menuContainer.classList.toggle(
+			if ( isMobileView ) {
+				elements.mobileNavIcon.style.display = 'flex';
+				elements.menuContainer.style.display = 'none';
+				elements.menuContainer.classList.add( 'dswp-is-mobile' );
+				nav.classList.add( 'dswp-block-navigation-is-mobile-overlay' );
+			} else {
+				elements.mobileNavIcon.style.display = 'none';
+				elements.menuContainer.style.display = 'flex';
+				elements.menuContainer.classList.remove(
 					'dswp-is-mobile',
-					isMobileView
+					'is-menu-open'
 				);
-				if (
-					isMobileView &&
-					! elements.menuContainer.classList.contains(
-						'is-menu-open'
-					)
-				) {
-					elements.menuContainer.style.display = 'none';
-				}
+				nav.classList.remove(
+					'dswp-block-navigation-is-mobile-overlay'
+				);
+				resetMenuState();
+				closeAllSubmenus();
 			}
 		}
 
@@ -344,106 +329,144 @@ document.addEventListener( 'DOMContentLoaded', function () {
 				arrowButton.setAttribute( 'aria-label', 'Toggle submenu' );
 				link.parentNode.insertBefore( arrowButton, link.nextSibling );
 
-				// Handle submenu toggle
-				arrowButton.addEventListener( 'click', () => {
-					const submenuContainer = submenu.querySelector(
-						'.wp-block-navigation__submenu-container'
-					);
-					const isOpen = submenu.classList.contains( 'is-open' );
+				// Handle keyboard interaction
+				arrowButton.addEventListener( 'keydown', ( e ) => {
+					if ( e.key === 'Enter' || e.key === ' ' ) {
+						e.preventDefault();
+						// Trigger the same behavior as click
+						const isMobile =
+							elements.menuContainer.classList.contains(
+								'dswp-is-mobile'
+							);
 
-					// Close other submenus
-					const currentPath = [];
-					let parent = submenu;
-					while ( parent ) {
-						if (
-							parent.classList.contains(
-								'wp-block-navigation-submenu'
-							)
-						) {
-							currentPath.push( parent );
-						}
-						parent = parent.parentElement.closest(
-							'.wp-block-navigation-submenu'
-						);
-					}
-
-					nav.querySelectorAll(
-						'.wp-block-navigation-submenu.is-open'
-					).forEach( ( openSubmenu ) => {
-						if ( ! currentPath.includes( openSubmenu ) ) {
-							openSubmenu.classList.remove( 'is-open' );
-							const container = openSubmenu.querySelector(
+						if ( ! isMobile ) {
+							// Desktop behavior - toggle submenu
+							submenu.classList.toggle( 'is-open' );
+							const submenuContainer = submenu.querySelector(
 								'.wp-block-navigation__submenu-container'
 							);
-							const button = openSubmenu.querySelector(
-								'.dswp-submenu-toggle'
-							);
-							if ( container ) {
-								container.classList.remove( 'is-open' );
+							if ( submenuContainer ) {
+								submenuContainer.classList.toggle( 'is-open' );
+								if ( submenu.classList.contains( 'is-open' ) ) {
+									const level = getSubmenuLevel( submenu );
+									if ( level >= 2 ) {
+										adjustSubmenuPosition( submenu );
+									}
+								}
 							}
-							if ( button ) {
-								button.setAttribute( 'aria-expanded', 'false' );
+							arrowButton.setAttribute(
+								'aria-expanded',
+								submenu.classList.contains( 'is-open' )
+							);
+						} else {
+							// Mobile behavior - use existing click handler logic
+							arrowButton.click();
+						}
+					}
+				} );
+
+				// Handle submenu toggle click (mobile only)
+				arrowButton.addEventListener( 'click', () => {
+					if (
+						elements.menuContainer.classList.contains(
+							'dswp-is-mobile'
+						)
+					) {
+						// Close other submenus
+						const currentPath = [];
+						let parent = submenu;
+						while ( parent ) {
+							if (
+								parent.classList.contains(
+									'wp-block-navigation-submenu'
+								)
+							) {
+								currentPath.push( parent );
+							}
+							parent = parent.parentElement.closest(
+								'.wp-block-navigation-submenu'
+							);
+						}
+
+						nav.querySelectorAll(
+							'.wp-block-navigation-submenu.is-open'
+						).forEach( ( openSubmenu ) => {
+							if ( ! currentPath.includes( openSubmenu ) ) {
+								openSubmenu.classList.remove( 'is-open' );
+								const container = openSubmenu.querySelector(
+									'.wp-block-navigation__submenu-container'
+								);
+								const button = openSubmenu.querySelector(
+									'.dswp-submenu-toggle'
+								);
+								if ( container ) {
+									container.classList.remove( 'is-open' );
+								}
+								if ( button ) {
+									button.setAttribute(
+										'aria-expanded',
+										'false'
+									);
+								}
+							}
+						} );
+
+						// Toggle current submenu
+						submenu.classList.toggle( 'is-open' );
+						if ( submenu.classList.contains( 'is-open' ) ) {
+							arrowButton.setAttribute( 'aria-expanded', 'true' );
+						} else {
+							arrowButton.setAttribute(
+								'aria-expanded',
+								'false'
+							);
+						}
+					}
+				} );
+
+				// Add hover functionality for desktop
+				if (
+					! elements.menuContainer.classList.contains(
+						'dswp-is-mobile'
+					)
+				) {
+					submenu.addEventListener( 'mouseenter', () => {
+						if (
+							! elements.menuContainer.classList.contains(
+								'dswp-is-mobile'
+							)
+						) {
+							submenu.classList.add( 'is-open' );
+							const submenuContainer = submenu.querySelector(
+								'.wp-block-navigation__submenu-container'
+							);
+							if ( submenuContainer ) {
+								submenuContainer.classList.add( 'is-open' );
+								const level = getSubmenuLevel( submenu );
+								if ( level >= 2 ) {
+									adjustSubmenuPosition( submenu );
+								}
 							}
 						}
 					} );
 
-					// Toggle current submenu
-					submenu.classList.toggle( 'is-open' );
-					if ( submenuContainer ) {
-						submenuContainer.classList.toggle( 'is-open' );
-
-						const level = getSubmenuLevel( submenu );
-						if ( level >= 2 ) {
-							adjustSubmenuPosition( submenu );
+					submenu.addEventListener( 'mouseleave', () => {
+						if (
+							! elements.menuContainer.classList.contains(
+								'dswp-is-mobile'
+							)
+						) {
+							submenu.classList.remove( 'is-open' );
+							const submenuContainer = submenu.querySelector(
+								'.wp-block-navigation__submenu-container'
+							);
+							if ( submenuContainer ) {
+								submenuContainer.classList.remove( 'is-open' );
+							}
 						}
-
-						// Watch for size changes
-						const resizeObserver = createObserver( submenu, () => {
-							if ( submenu.classList.contains( 'is-open' ) ) {
-								adjustSubmenuPosition( submenu );
-							}
-						} );
-
-						resizeObserver.observe( document.body );
-
-						const cleanup = () => {
-							if ( ! submenu.classList.contains( 'is-open' ) ) {
-								resizeObserver.disconnect();
-								submenu.removeEventListener(
-									'classChange',
-									cleanup
-								);
-							}
-						};
-
-						submenu.addEventListener( 'classChange', cleanup );
-					}
-
-					arrowButton.setAttribute(
-						'aria-expanded',
-						( ! isOpen ).toString()
-					);
-				} );
+					} );
+				}
 			}
 		} );
 	} );
 } );
-
-// Check if ResizeObserver is supported and create a fallback
-const createObserver = ( submenu, callback ) => {
-	if ( typeof window !== 'undefined' && 'ResizeObserver' in window ) {
-		return new window.ResizeObserver( callback );
-	}
-
-	// Fallback to window resize event
-	const handler = () => {
-		if ( submenu.classList.contains( 'is-open' ) ) {
-			callback();
-		}
-	};
-	window.addEventListener( 'resize', handler );
-	return {
-		observe: () => {},
-		disconnect: () => window.removeEventListener( 'resize', handler ),
-	};
-};
