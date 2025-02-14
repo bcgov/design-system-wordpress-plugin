@@ -7,7 +7,7 @@
     "repositories": [
         {
             "type": "composer",
-            "url": "https://apps.itsm.gov.bc.ca/satis"
+            "url": "https://blog.gov.bc.ca/satis"
         }
     ],
     "require-dev": {
