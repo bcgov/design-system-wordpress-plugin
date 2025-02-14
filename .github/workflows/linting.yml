@@ -1,0 +1,11 @@
+name: Trigger Linting
+
+on:
+  pull_request:
+    branches:
+      - development
+  workflow_dispatch:
+
+jobs:
+  trigger:
+    uses: bcgov/des-git-workflows/.github/workflows/linting.yml@feature/add-linting-workflow

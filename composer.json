@@ -1,13 +1,13 @@
 {
     "name": "bcgov-plugin/design-system-wordpress-plugin",
     "description": "Design System WordPress Plugin",
-    "version": "2.1.0",
+    "version": "2.2.0",
     "type": "wordpress-plugin",
     "license": "Apache-2.0",
     "repositories": [
         {
             "type": "composer",
-            "url": "https://apps.itsm.gov.bc.ca/satis"
+            "url": "https://blog.gov.bc.ca/satis"
         }
     ],
     "require-dev": {
@@ -44,6 +44,9 @@
         ],
         "coverage": [
             "./vendor/bin/phpunit --coverage-html ./coverage/php/"
+        ],
+        "phpcs-allow-todo": [
+            "vendor/bin/phpcs -ps --standard=./vendor/bcgov/wordpress-utils/wordpress.xml  --exclude=Generic.Commenting.Todo --colors --ignore=**/build/** ./"
         ]
     },
     "config": {
