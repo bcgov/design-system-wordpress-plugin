@@ -105,3 +105,9 @@ $enque_styles->init();
 // Initialize the enqueueing scripts class.
 $enqueue_scripts = new Script();
 $enqueue_scripts->init();
+
+// Initialize the AutoAnchorSettings
+if (class_exists('Bcgov\\DesignSystemPlugin\\AutoAnchorSettings')) {
+    $auto_anchor_settings = new \Bcgov\DesignSystemPlugin\AutoAnchorSettings();
+    $auto_anchor_settings->init();
+}
