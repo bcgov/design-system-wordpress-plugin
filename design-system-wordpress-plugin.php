@@ -74,6 +74,7 @@ add_action('enqueue_block_editor_assets', 'enqueue_auto_anchor_heading_script');
 
 
 use Bcgov\DesignSystemPlugin\{
+    DesignSystemSettings,
     NotificationBanner,
     ContentSecurityPolicy,
     SkipNavigation
@@ -85,7 +86,11 @@ use Bcgov\DesignSystemPlugin\Enqueue\{
 };
 
 
-// Initialize the custom banner class.
+// Initialize the main Design System settings page
+$design_system_settings = new DesignSystemSettings();
+$design_system_settings->init();
+
+// Initialize the custom banner class
 $notification_banner = new NotificationBanner();
 $notification_banner->init();
 
