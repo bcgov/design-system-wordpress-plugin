@@ -49,10 +49,10 @@ function design_system_register_blocks() {
         register_block_type_from_metadata( $block_file );
     }
 }
-
-
 // Hook the function into the 'init' action.
 add_action( 'init', 'design_system_register_blocks' );
+
+
 function enqueue_auto_anchor_script() {
     $script_path = plugin_dir_path( __FILE__ ) . 'dist/auto-anchor.js';
     $script_url = plugin_dir_url( __FILE__ ) . 'dist/auto-anchor.js';

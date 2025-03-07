@@ -21,8 +21,7 @@ class Settings {
      * @return void
      */
     public function init() {
-        // Make sure these hooks run at the right time
-        add_action('admin_menu', [$this, 'add_menu'], 20); // Added priority to ensure parent menu exists
+        add_action('admin_menu', [$this, 'add_menu'], 20); 
         add_action('admin_init', [$this, 'register_settings']);
         add_action('rest_api_init', [$this, 'register_rest_field']);
         add_action('admin_enqueue_scripts', [$this, 'add_toggle_styles']);
