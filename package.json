@@ -36,8 +36,8 @@
     "@wordpress/hooks": "^4.19.0"
   },
   "scripts": {
-    "start": "wp-scripts start --webpack-src-dir=src --output-path=dist src/index.js src/auto-add-anchor-heading",
-    "build": "wp-scripts build --webpack-src-dir=src --output-path=dist src/index.js src/auto-add-anchor-heading",
+    "start": "wp-scripts start",
+    "build": "wp-scripts build",
     "lint:css": "wp-scripts lint-style 'src/**/*.scss' --allow-empty-input",
     "fix:css": "wp-scripts lint-style 'src/**/*.scss' --fix --allow-empty-input",
     "lint:js": "wp-scripts lint-js src/scripts",

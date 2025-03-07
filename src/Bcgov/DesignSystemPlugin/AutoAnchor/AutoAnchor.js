@@ -2,7 +2,7 @@ import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { createElement, useEffect } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-import { store as coreStore } from '@wordpress/core-data';
+import './styles.css';  
 
 // Function to create a valid HTML anchor from text
 const createAnchorFromText = (text) => {
