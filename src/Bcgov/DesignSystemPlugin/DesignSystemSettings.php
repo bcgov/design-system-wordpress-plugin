@@ -19,7 +19,7 @@ class DesignSystemSettings {
      * @return void
      */
     public function init() {
-        add_action('admin_menu', [$this, 'add_menu']);
+        add_action( 'admin_menu', [ $this, 'add_menu' ] );
     }
 
     /**
@@ -29,11 +29,11 @@ class DesignSystemSettings {
      */
     public function add_menu() {
         add_menu_page(
-            __('Design System', 'dswp'),
-            __('Design System', 'dswp'),
+            __( 'Design System', 'dswp' ),
+            __( 'Design System', 'dswp' ),
             'manage_options',
             'dswp-admin-menu',
-            [$this, 'render_settings_page'],
+            [ $this, 'render_settings_page' ],
             'dashicons-admin-generic',
             6
         );
@@ -47,9 +47,9 @@ class DesignSystemSettings {
     public function render_settings_page() {
         ?>
         <div class="wrap">
-            <h1><?php esc_html_e('Design System Settings', 'dswp'); ?></h1>
-            <p><?php esc_html_e('Welcome to the BC Government Design System settings. Use the submenu items to configure various components of the design system.', 'dswp'); ?></p>
+            <h1><?php esc_html_e( 'Design System Settings', 'dswp' ); ?></h1>
+            <p><?php esc_html_e( 'Welcome to the BC Government Design System settings. Use the submenu items to configure various components of the design system.', 'dswp' ); ?></p>
         </div>
         <?php
     }
-} 
+}

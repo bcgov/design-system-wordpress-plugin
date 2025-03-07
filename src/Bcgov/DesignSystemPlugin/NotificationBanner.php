@@ -36,12 +36,12 @@ class NotificationBanner {
      */
     public function add_menu() {
         add_submenu_page(
-            'dswp-admin-menu',                 // Parent slug
-            __('Notification Banner', 'dswp'),  // Page title
-            __('Notification Banner', 'dswp'),  // Menu title
-            'manage_options',                   // Capability
-            'dswp-notification-menu',          // Menu slug
-            [$this, 'render_notification_banner_page'] // Callback function
+            'dswp-admin-menu',
+            __( 'Notification Banner', 'dswp' ),
+            __( 'Notification Banner', 'dswp' ),
+            'manage_options',
+            'dswp-notification-menu',
+            [ $this, 'render_notification_banner_page' ]
         );
     }
 
