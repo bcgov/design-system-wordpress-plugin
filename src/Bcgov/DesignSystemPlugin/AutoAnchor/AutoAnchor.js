@@ -14,7 +14,18 @@ const createAnchorFromText = (text) => {
         .replace(/^-+|-+$/g, '');
 };
 
-// Higher-order component to handle the anchor updates
+/**
+ * Higher-order component that adds automatic anchor generation to heading blocks.
+ * 
+ * This component:
+ * - Monitors heading block content changes
+ * - Automatically generates URL-friendly anchor IDs from heading text
+ * - Respects the global auto-anchor setting from WordPress admin
+ * - Cleans up auto-generated anchors when the feature is disabled
+ * 
+ * @param {Function} BlockEdit - The original block edit component
+ * @returns {Function} Enhanced component with auto-anchor functionality
+ */
 const withAutoAnchor = createHigherOrderComponent((BlockEdit) => {
     return (props) => {
         const { name, attributes, setAttributes } = props;
