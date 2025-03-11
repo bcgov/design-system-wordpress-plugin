@@ -35,24 +35,13 @@ class NotificationBanner {
      * Adds the admin menu and submenu.
      */
     public function add_menu() {
-        add_menu_page(
-            __( 'Design System', 'dswp' ),
-            __( 'Design System', 'dswp' ),
-            'manage_options',
-            'dswp-admin-menu',
-            [ $this, 'render_settings_page' ],
-            'dashicons-admin-generic',
-            6
-        );
-
-        // Add the sub-menu page.
         add_submenu_page(
-            'dswp-admin-menu',                 // Parent slug.
-            __( 'Notification Banner', 'dswp' ),         // Page title.
-            __( 'Notification Banner', 'dswp' ),         // Menu title.
-            'manage_options',                          // Capability.
-            'dswp-notification-menu',         // Menu slug.
-            [ $this, 'render_notification_banner_page' ] // Callback function.
+            'dswp-admin-menu',
+            __( 'Notification Banner', 'dswp' ),
+            __( 'Notification Banner', 'dswp' ),
+            'manage_options',
+            'dswp-notification-menu',
+            [ $this, 'render_notification_banner_page' ]
         );
     }
 
@@ -69,17 +58,6 @@ class NotificationBanner {
         add_settings_field( 'banner_enabled', __( 'Enable Banner', 'dswp' ), [ $this, 'render_banner_enabled_field' ], 'dswp-notification-menu', 'dswp_notification_menu_settings_section' );
         add_settings_field( 'banner_content', __( 'Banner Content (HTML allowed)', 'dswp' ), [ $this, 'render_banner_content_field' ], 'dswp-notification-menu', 'dswp_notification_menu_settings_section' );
         add_settings_field( 'banner_color', __( 'Banner Color', 'dswp' ), [ $this, 'render_banner_color_field' ], 'dswp-notification-menu', 'dswp_notification_menu_settings_section' );
-    }
-
-    /**
-     * Renders the settings page for the Design System.
-     */
-    public function render_settings_page() {
-        ?>
-        <div class="wrap">
-            <h1><?php esc_html_e( 'Design System Settings', 'dswp' ); ?></h1>
-        </div>
-		<?php
     }
 
     /**
