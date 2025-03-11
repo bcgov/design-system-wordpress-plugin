@@ -23,7 +23,6 @@ class Settings {
     public function init() {
         add_action( 'admin_menu', [ $this, 'add_menu' ], 20 );
         add_action( 'admin_init', [ $this, 'register_settings' ] );
-        add_action( 'rest_api_init', [ $this, 'register_rest_field' ] );
         add_action( 'admin_enqueue_scripts', [ $this, 'add_toggle_styles' ] );
     }
 
@@ -44,27 +43,6 @@ class Settings {
             plugin_dir_url( __FILE__ ) . 'styles.css',
             [],
             '1.0.0'
-        );
-    }
-
-    /**
-     * Register the REST API field for the auto anchor setting.
-     *
-     * @return void
-     */
-    public function register_rest_field() {
-        register_rest_field(
-            'site',
-            self::OPTION_NAME,
-            [
-				'get_callback' => function () {
-					return get_option( self::OPTION_NAME, '1' );
-				},
-				'schema'       => [
-					'type'        => 'string',
-					'description' => 'Auto anchor heading setting',
-				],
-			]
         );
     }
 

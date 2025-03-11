@@ -54,14 +54,17 @@ add_action( 'init', 'design_system_register_blocks' );
 
 
 /**
- * Enqueues the auto-anchor JavaScript file for the block editor.
- *
- * This function loads the auto-anchor script and its dependencies in the block editor.
- * The script is only enqueued if the file exists in the dist directory.
- * Dependencies and version information are automatically loaded from the generated
- * asset file (auto-anchor.asset.php).
+ * Enqueues the auto-anchor JavaScript file for the block editor if the feature is enabled.
+ * 
+ * This function loads the auto-anchor script and its dependencies in the block editor,
+ * but only if the auto-anchor feature is enabled in settings and the script file exists.
  */
 function enqueue_auto_anchor_script() {
+    // Check if the feature is enabled
+    if ( get_option( 'dswp_auto_anchor_enabled', '1' ) !== '1' ) {
+        return;
+    }
+
     $script_path = plugin_dir_path( __FILE__ ) . 'dist/auto-anchor.js';
     $script_url  = plugin_dir_url( __FILE__ ) . 'dist/auto-anchor.js';
 
