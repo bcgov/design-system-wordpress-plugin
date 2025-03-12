@@ -98,6 +98,35 @@ add_filter( 'block_categories_all', 'dswp_add_new_block_category', 10, 2);
 
 
 
+function enqueue_in_page_nav() {
+    if (is_page()) {
+        $show_nav = get_post_meta(get_the_ID(), 'show_inpage_nav', true);
+        
+        // Only enqueue if the toggle is on
+        if ($show_nav) {
+            wp_enqueue_script(
+                'in-page-nav',
+                plugin_dir_url(__FILE__) . 'dist/in-page-nav.js',
+                array(),
+                '1.0.0',
+                true
+            );
+            wp_enqueue_style(
+                'in-page-nav-styles',
+                plugin_dir_url(__FILE__) . 'dist/style-in-page-nav.css'
+            );
+
+            // Add the setting to the page for JavaScript
+            wp_localize_script('in-page-nav', 'inPageNavSettings', array(
+                'enabled' => true
+            ));
+        }
+    }
+}
+add_action('wp_enqueue_scripts', 'enqueue_in_page_nav');
+
+
+
 use Bcgov\DesignSystemPlugin\{
     DesignSystemSettings,
     NotificationBanner,
@@ -142,3 +171,51 @@ $enqueue_scripts->init();
 // Initialize the AutoAnchorSettings.
 $auto_anchor_settings = new AutoAnchorSettings();
 $auto_anchor_settings->init();
+
+// Register post meta for the toggle
+function register_inpage_nav_meta() {
+    register_post_meta('page', 'show_inpage_nav', array(
+        'show_in_rest' => true,
+        'single' => true,
+        'type' => 'boolean',
+        'default' => false,
+    ));
+}
+add_action('init', 'register_inpage_nav_meta');
+
+function add_inpage_nav_body_class($classes) {
+    if (is_page()) {
+        $show_nav = get_post_meta(get_the_ID(), 'show_inpage_nav', true);
+        if ($show_nav) {
+            $classes[] = 'has-inpage-nav';
+        }
+    }
+    return $classes;
+}
+add_filter('body_class', 'add_inpage_nav_body_class');
+
+function add_inpage_nav_data() {
+    if (is_page()) {
+        $show_nav = get_post_meta(get_the_ID(), 'show_inpage_nav', true);
+        echo ' data-show-inpage-nav="' . ($show_nav ? 'true' : 'false') . '"';
+    }
+}
+add_action('body_class', 'add_inpage_nav_data');
+
+function enqueue_editor_scripts() {
+    wp_enqueue_script(
+        'inpage-nav-editor',
+        plugin_dir_url(__FILE__) . 'dist/in-page-nav-editor.js',
+        array(
+            'wp-plugins',
+            'wp-edit-post',
+            'wp-element',
+            'wp-components',
+            'wp-data',
+            'wp-i18n'
+        ),
+        '1.0.0',
+        true
+    );
+}
+add_action('enqueue_block_editor_assets', 'enqueue_editor_scripts');
