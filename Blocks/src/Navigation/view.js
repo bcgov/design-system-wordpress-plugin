@@ -468,5 +468,18 @@ document.addEventListener( 'DOMContentLoaded', function () {
 				}
 			}
 		} );
+
+		// Add active link highlighting
+		const activePage = window.location.pathname;
+		nav.querySelectorAll('.wp-block-navigation-item__content').forEach(link => {
+			if(new URL(link.href).pathname === activePage){
+				link.classList.add('active');
+				// Add active class to parent item if it exists
+				const parentItem = link.closest('.wp-block-navigation-item');
+				if (parentItem) {
+					parentItem.classList.add('active');
+				}
+			}
+		});
 	} );
 } );

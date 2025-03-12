@@ -8,7 +8,7 @@
  * Requires at least: 6.4.4
  * Tested up to: 6.5
  * Requires PHP: 7.4
- * Version: 2.3.0
+ * Version: 2.4.0
  * License: Apache License Version 2.0
  * License URI: LICENSE
  * Text Domain: design-system-wordpress-plugin
@@ -55,12 +55,12 @@ add_action( 'init', 'design_system_register_blocks' );
 
 /**
  * Enqueues the auto-anchor JavaScript file for the block editor if the feature is enabled.
- * 
+ *
  * This function loads the auto-anchor script and its dependencies in the block editor,
  * but only if the auto-anchor feature is enabled in settings and the script file exists.
  */
 function enqueue_auto_anchor_script() {
-    // Check if the feature is enabled
+    // Check if the feature is enabled.
     if ( get_option( 'dswp_auto_anchor_enabled', '1' ) !== '1' ) {
         return;
     }

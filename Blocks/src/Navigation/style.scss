@@ -71,6 +71,11 @@
 			border-right: none;
 			padding-right: 0;
 		}
+
+		&.active > .wp-block-navigation-item__content {
+			border-left: 4px solid var(--dswp-surface-color-border-default);
+			background: #e1e1e196;
+		}
 	}
 
 	a {
@@ -101,7 +106,6 @@
 			display: none;
 			z-index: 1000;
 			background: var(--dswp-surface-color-background-white);
-			border-radius: 4px;
 			box-shadow:
 				0 1.2px 3.6px 0 rgba(0, 0, 0, 0.1),
 				0 6.4px 14.4px 0 rgba(0, 0, 0, 0.13);
@@ -167,7 +171,6 @@
 
 			> .wp-block-navigation-item__content {
 				font-weight: 700;
-				border-radius: 4px;
 				background-color: var(--dswp-theme-gray-10);
 			}
 
@@ -236,6 +239,14 @@
 			}
 		}
 	}
+
+	// Target any active link at any nesting level
+	.wp-block-navigation-item.active > .wp-block-navigation-item__content,
+	.wp-block-navigation__submenu-container .wp-block-navigation-item.active > .wp-block-navigation-item__content {
+		border-left: 3px solid var(--dswp-surface-color-border-default);
+		background: #e1e1e196;
+		padding-left: calc(2rem - 3px);
+	}
 }
 
 
@@ -259,7 +270,8 @@
 		padding-top: 1rem;
 		box-sizing: border-box;
 		margin-block-start: 0.3rem !important;
-
+		padding-bottom: 5rem;
+		border-bottom: solid 3px #00000096;
 
 		// Force items into columns of 10
 		li {
@@ -385,19 +397,6 @@
 		}
 	}
 
-	.wp-block-navigation-item {
-		// For submenu items, adjust the padding
-		.wp-block-navigation__submenu-container {
-
-			.current-menu-item,
-			.current-menu-ancestor {
-
-				> .wp-block-navigation-item__content {
-					border-left: 4px solid var(--dswp-surface-color-border-dark);
-				}
-			}
-		}
-	}
 
 	.wp-block-navigation-submenu {
 
@@ -440,7 +439,6 @@
 
 		> .wp-block-navigation-item__content {
 			font-weight: 700;
-			border-left: 4px solid var(--dswp-surface-color-border-dark); // BC Government blue
 		}
 	}
 	// Level 2 items (first submenu)
@@ -473,15 +471,33 @@
 
 		> .wp-block-navigation-item__content {
 			font-weight: 700 !important;
-			border-left: 4px solid var(--dswp-surface-color-border-dark);
 		}
 	}
 
-	// Adjust padding for active items at different levels
-	> .wp-block-navigation-item.current-menu-ancestor > .wp-block-navigation-item__content {
-		padding-left: calc(1rem - 4px);
-		font-size: 18px;
+	// Mobile specific styles
+
+	// First level items
+	> .wp-block-navigation-item.active > .wp-block-navigation-item__content {
+		border-left: 3px solid #00000069;
+		background: #e1e1e161;
+		padding-left: calc(1rem - 3px);
 	}
 
+	// Second level items (first submenu)
+	.wp-block-navigation__submenu-container {
+		> .wp-block-navigation-item.active > .wp-block-navigation-item__content {
+			border-left: 3px solid #00000069;
+			background: #e1e1e161;
+			padding-left: calc(2rem - 3px);
+		}
 
+		// Third level items (nested submenu)
+		.wp-block-navigation__submenu-container {
+			> .wp-block-navigation-item.active > .wp-block-navigation-item__content {
+				border-left: 3px solid #00000069;
+				background: #e1e1e161;
+				padding-left: calc(3rem - 3px);
+			}
+		}
+	}
 }
