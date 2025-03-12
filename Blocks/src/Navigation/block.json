@@ -4,7 +4,7 @@
 	"name": "design-system-wordpress-plugin/navigation",
 	"version": "1.0.0",
 	"title": "Design System Navigation",
-	"category": "widgets",
+	"category": "design_system",
 	"icon": "menu",
 	"description": "A Custom navigation block for the design system",
 	"supports": {

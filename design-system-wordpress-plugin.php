@@ -84,6 +84,20 @@ function enqueue_auto_anchor_script() {
 add_action( 'enqueue_block_editor_assets', 'enqueue_auto_anchor_script' );
 
 
+// Adding a new (custom) block category and show that category at the top
+function dswp_add_new_block_category( $categories, $post ) {
+	
+	array_unshift( $categories, array(
+		'slug'	=> 'design_system',
+		'title' => 'Design System'
+	) );
+
+	return $categories;
+}
+add_filter( 'block_categories_all', 'dswp_add_new_block_category', 10, 2);
+
+
+
 use Bcgov\DesignSystemPlugin\{
     DesignSystemSettings,
     NotificationBanner,
@@ -97,6 +111,7 @@ use Bcgov\DesignSystemPlugin\Enqueue\{
 };
 
 use Bcgov\DesignSystemPlugin\AutoAnchor\Settings as AutoAnchorSettings;
+
 
 
 // Initialize the main Design System settings page.
