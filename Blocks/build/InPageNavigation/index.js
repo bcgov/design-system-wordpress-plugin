@@ -32,9 +32,12 @@ function Edit() {
     } = select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.store);
     return getBlocks().filter(block => block.name === 'core/heading' && block.attributes.level === 2 && block.attributes.anchor);
   }, []);
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("nav", {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("nav", {
     ...blockProps,
-    children: headingBlocks.length === 0 ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h6", {
+      className: "in-page-nav-title",
+      children: "On this page"
+    }), headingBlocks.length === 0 ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
       children: "No H2 headings with anchors found. Add anchors to H2 headings to generate navigation."
     }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("ul", {
       children: headingBlocks.map((block, index) => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("li", {
@@ -43,7 +46,7 @@ function Edit() {
           children: block.attributes.content.originalHTML
         })
       }, index))
-    })
+    })]
   });
 }
 
@@ -93,12 +96,15 @@ __webpack_require__.r(__webpack_exports__);
 
 
 function save() {
-  const blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useBlockProps.save();
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("nav", {
+  const blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useBlockProps.save({
+    className: 'wp-block-design-system-wordpress-plugin-in-page-navigation'
+  });
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
     ...blockProps,
-    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("ul", {
-      className: "wp-block-design-system-wordpress-plugin-in-page-navigation-list"
-    })
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h6", {
+      className: "in-page-nav-title",
+      children: "On this page"
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("ul", {})]
   });
 }
 

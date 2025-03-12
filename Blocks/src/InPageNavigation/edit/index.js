@@ -20,6 +20,7 @@ export default function Edit() {
 
 	return (
 		<nav {...blockProps}>
+			<h6 className='in-page-nav-title'>On this page</h6>
 			{headingBlocks.length === 0 ? (
 				<p>No H2 headings with anchors found. Add anchors to H2 headings to generate navigation.</p>
 			) : (
