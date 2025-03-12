@@ -12,52 +12,38 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Edit)
 /* harmony export */ });
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
+/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__);
 
-// import {
-// 	PanelBody,
-// 	SelectControl,
-// 	Spinner,
-// 	ButtonGroup,
-// 	Button,
-// 	RangeControl,
-// } from '@wordpress/components';
-// import { __ } from '@wordpress/i18n';
-// import { useEffect, useRef, useCallback, useMemo } from '@wordpress/element';
-// import { useDispatch, useSelect, useRegistry } from '@wordpress/data';
-// import {
-// 	store as blockEditorStore,
-// 	useBlockProps,
-// 	InspectorControls,
-// 	useInnerBlocksProps,
-// } from '@wordpress/block-editor';
-// import { store as coreStore } from '@wordpress/core-data';
-// import { createBlock, serialize, parse } from '@wordpress/blocks';
-// import MobileMenuIcon from './mobile-menu-icon';
 
-// const ALLOWED_BLOCKS = [
-// 	'core/navigation-link',
-// 	'core/navigation-submenu',
-// 	'core/spacer',
-// ];
 
-function Edit({
-  attributes,
-  setAttributes,
-  clientId
-}) {
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(InspectorControls, {
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(PanelBody, {
-        title: __('Navigation Settings', 'dswp')
-      })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", {
-      ...blockProps,
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("ul", {
-        ...innerBlocksProps
-      })
-    })]
+
+function Edit() {
+  const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useBlockProps)();
+
+  // Get all blocks and filter for H2s with anchors
+  const headingBlocks = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.useSelect)(select => {
+    const {
+      getBlocks
+    } = select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.store);
+    return getBlocks().filter(block => block.name === 'core/heading' && block.attributes.level === 2 && block.attributes.anchor);
+  }, []);
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("nav", {
+    ...blockProps,
+    children: headingBlocks.length === 0 ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+      children: "No H2 headings with anchors found. Add anchors to H2 headings to generate navigation."
+    }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("ul", {
+      children: headingBlocks.map((block, index) => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("li", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
+          href: `#${block.attributes.anchor}`,
+          children: block.attributes.content.originalHTML
+        })
+      }, index))
+    })
   });
 }
 
@@ -83,7 +69,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-(0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__.registerBlockType)(_block_json__WEBPACK_IMPORTED_MODULE_3__.name, {
+(0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__.registerBlockType)('design-system-wordpress-plugin/in-page-navigation', {
   edit: _edit__WEBPACK_IMPORTED_MODULE_1__["default"],
   save: _save__WEBPACK_IMPORTED_MODULE_2__["default"]
 });
@@ -106,19 +92,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__);
 
 
-function save({
-  attributes
-}) {
-  // const { overlayMenu, mobileBreakpoint } = attributes;
-
+function save() {
   const blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useBlockProps.save();
-  const innerBlocksProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useInnerBlocksProps.save({
-    className: 'dswp-block-in-page-navigation__container'
-  });
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("nav", {
     ...blockProps,
     children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("ul", {
-      ...innerBlocksProps
+      className: "wp-block-design-system-wordpress-plugin-in-page-navigation-list"
     })
   });
 }
@@ -179,13 +158,23 @@ module.exports = window["wp"]["blocks"];
 
 /***/ }),
 
+/***/ "@wordpress/data":
+/*!******************************!*\
+  !*** external ["wp","data"] ***!
+  \******************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["data"];
+
+/***/ }),
+
 /***/ "./src/InPageNavigation/block.json":
 /*!*****************************************!*\
   !*** ./src/InPageNavigation/block.json ***!
   \*****************************************/
 /***/ ((module) => {
 
-module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"design-system-wordpress-plugin/in-page-navigation","version":"1.0.0","title":"Design System In-Page Navigation","category":"design_system","icon":"editor-ol","description":"A Custom in-page navigation block for the design system","supports":{"inserter":true,"inspectorGroups":{"list":true},"html":false,"align":["wide","full"],"typography":{"fontSize":true,"lineHeight":true,"__experimentalFontFamily":true,"__experimentalTextTransform":true},"spacing":{"blockGap":true,"margin":true,"padding":true,"units":["px","em","rem","vh","vw"]},"layout":{"allowSwitching":false,"allowInheriting":false,"default":{"type":"flex"}}},"attributes":{},"editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","viewScript":"file:./view.js"}');
+module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"design-system-wordpress-plugin/in-page-navigation","version":"1.0.0","title":"In-Page Navigation","category":"design_system","icon":"editor-ol","description":"A Custom in-page navigation block for the design system","supports":{"inserter":true,"inspectorGroups":{"list":true},"html":false,"align":["wide","full"],"typography":{"fontSize":true,"lineHeight":true,"__experimentalFontFamily":true,"__experimentalTextTransform":true},"spacing":{"blockGap":true,"margin":true,"padding":true,"units":["px","em","rem","vh","vw"]},"layout":{"allowSwitching":false,"allowInheriting":false,"default":{"type":"flex"}}},"attributes":{},"editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","viewScript":"file:./view.js"}');
 
 /***/ })
 

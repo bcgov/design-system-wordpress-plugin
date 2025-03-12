@@ -1,17 +1,11 @@
-import { useInnerBlocksProps, useBlockProps } from '@wordpress/block-editor';
+import { useBlockProps } from '@wordpress/block-editor';
 
-export default function save( { attributes } ) {
-	// const { overlayMenu, mobileBreakpoint } = attributes;
-
+export default function save() {
 	const blockProps = useBlockProps.save();
-
-	const innerBlocksProps = useInnerBlocksProps.save( {
-		className: 'dswp-block-in-page-navigation__container',
-	} );
-
+	
 	return (
-		<div { ...blockProps }>
-			<ul { ...innerBlocksProps } />
-		</div>
+		<nav {...blockProps}>
+			<ul className="wp-block-design-system-wordpress-plugin-in-page-navigation-list"></ul>
+		</nav>
 	);
 }

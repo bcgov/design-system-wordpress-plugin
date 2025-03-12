@@ -3,7 +3,7 @@
 	"apiVersion": 3,
 	"name": "design-system-wordpress-plugin/in-page-navigation",
 	"version": "1.0.0",
-	"title": "Design System In-Page Navigation",
+	"title": "In-Page Navigation",
 	"category": "design_system",
 	"icon": "editor-ol",
 	"description": "A Custom in-page navigation block for the design system",
