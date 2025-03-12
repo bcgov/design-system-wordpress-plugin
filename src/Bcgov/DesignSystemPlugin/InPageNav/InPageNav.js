@@ -4,6 +4,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const navContainer = document.createElement('nav');
     navContainer.classList.add('in-page-nav-container');
 
+    // Create and add the "On this page" heading
+    const heading = document.createElement('h6');
+    heading.textContent = 'On this page';
+    navContainer.appendChild(heading);
+
     // Find all H2s with IDs
     const headings = document.querySelectorAll('h2[id]');
     

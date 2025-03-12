@@ -13,7 +13,7 @@ module.exports = {
             './src/Bcgov/DesignSystemPlugin/InPageNav/style.css',          
         ],
         'in-page-nav-editor': [
-            './src/Bcgov/DesignSystemPlugin/InPageNav/editor-sidebar.js'
+            './src/Bcgov/DesignSystemPlugin/InPageNav/PageSettings.js'
         ]
     },
     output: {
