@@ -102,7 +102,6 @@ function enqueue_in_page_nav() {
     if (is_page()) {
         $show_nav = get_post_meta(get_the_ID(), 'show_inpage_nav', true);
         
-        // Only enqueue if the toggle is on
         if ($show_nav) {
             wp_enqueue_script(
                 'in-page-nav',
@@ -115,17 +114,21 @@ function enqueue_in_page_nav() {
                 'in-page-nav-styles',
                 plugin_dir_url(__FILE__) . 'dist/style-in-page-nav.css'
             );
-
-            // Add the setting to the page for JavaScript
-            wp_localize_script('in-page-nav', 'inPageNavSettings', array(
-                'enabled' => true
-            ));
         }
     }
 }
 add_action('wp_enqueue_scripts', 'enqueue_in_page_nav');
 
-
+// This is necessary - it registers the meta field for the toggle
+function register_inpage_nav_meta() {
+    register_post_meta('page', 'show_inpage_nav', array(
+        'show_in_rest' => true,
+        'single' => true,
+        'type' => 'boolean',
+        'default' => false,
+    ));
+}
+add_action('init', 'register_inpage_nav_meta');
 
 use Bcgov\DesignSystemPlugin\{
     DesignSystemSettings,
@@ -172,35 +175,7 @@ $enqueue_scripts->init();
 $auto_anchor_settings = new AutoAnchorSettings();
 $auto_anchor_settings->init();
 
-// Register post meta for the toggle
-function register_inpage_nav_meta() {
-    register_post_meta('page', 'show_inpage_nav', array(
-        'show_in_rest' => true,
-        'single' => true,
-        'type' => 'boolean',
-        'default' => false,
-    ));
-}
-add_action('init', 'register_inpage_nav_meta');
 
-function add_inpage_nav_body_class($classes) {
-    if (is_page()) {
-        $show_nav = get_post_meta(get_the_ID(), 'show_inpage_nav', true);
-        if ($show_nav) {
-            $classes[] = 'has-inpage-nav';
-        }
-    }
-    return $classes;
-}
-add_filter('body_class', 'add_inpage_nav_body_class');
-
-function add_inpage_nav_data() {
-    if (is_page()) {
-        $show_nav = get_post_meta(get_the_ID(), 'show_inpage_nav', true);
-        echo ' data-show-inpage-nav="' . ($show_nav ? 'true' : 'false') . '"';
-    }
-}
-add_action('body_class', 'add_inpage_nav_data');
 
 function enqueue_editor_scripts() {
     wp_enqueue_script(
