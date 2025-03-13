@@ -6,7 +6,7 @@ import { registerPlugin } from '@wordpress/plugins';
 import { useEffect } from '@wordpress/element';
 import { createRoot } from '@wordpress/element';
 
-function InPageNavSettings() {
+function PageSettings() {
     const { showInPageNav } = useSelect(select => ({
         showInPageNav: select('core/editor').getEditedPostAttribute('meta')?.show_inpage_nav || false,
     }));
@@ -58,5 +58,5 @@ function InPageNavSettings() {
 }
 
 registerPlugin('inpage-nav-settings', {
-    render: InPageNavSettings,
+    render: PageSettings,
 });

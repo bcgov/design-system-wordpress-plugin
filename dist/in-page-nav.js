@@ -1,1 +1,96 @@
-(()=>{var e,n={496:()=>{document.addEventListener("DOMContentLoaded",(function(){const e=document.createElement("nav");e.classList.add("in-page-nav-container");const n=document.createElement("h6");n.textContent="On this page",e.appendChild(n);const t=document.querySelectorAll("h2[id]");if(t.length>0){const n=document.createElement("ul");t.forEach((e=>{const t=document.createElement("li"),r=document.createElement("a");r.href=`#${e.id}`,r.textContent=e.textContent,t.appendChild(r),n.appendChild(t)})),e.appendChild(n),document.body.appendChild(e)}}))},279:()=>{}},t={};function r(e){var o=t[e];if(void 0!==o)return o.exports;var a=t[e]={exports:{}};return n[e](a,a.exports,r),a.exports}r.m=n,e=[],r.O=(n,t,o,a)=>{if(!t){var d=1/0;for(c=0;c<e.length;c++){t=e[c][0],o=e[c][1],a=e[c][2];for(var i=!0,l=0;l<t.length;l++)(!1&a||d>=a)&&Object.keys(r.O).every((e=>r.O[e](t[l])))?t.splice(l--,1):(i=!1,a<d&&(d=a));if(i){e.splice(c--,1);var s=o();void 0!==s&&(n=s)}}return n}a=a||0;for(var c=e.length;c>0&&e[c-1][2]>a;c--)e[c]=e[c-1];e[c]=[t,o,a]},r.o=(e,n)=>Object.prototype.hasOwnProperty.call(e,n),(()=>{var e={502:0,589:0};r.O.j=n=>0===e[n];var n=(n,t)=>{var o,a,d=t[0],i=t[1],l=t[2],s=0;if(d.some((n=>0!==e[n]))){for(o in i)r.o(i,o)&&(r.m[o]=i[o]);if(l)var c=l(r)}for(n&&n(t);s<d.length;s++)a=d[s],r.o(e,a)&&e[a]&&e[a][0](),e[a]=0;return r.O(c)},t=self.webpackChunkdesign_system_wordpress_plugin=self.webpackChunkdesign_system_wordpress_plugin||[];t.forEach(n.bind(null,0)),t.push=n.bind(null,t.push.bind(t))})(),r.O(void 0,[589],(()=>r(496)));var o=r.O(void 0,[589],(()=>r(279)));o=r.O(o)})();
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./src/Bcgov/DesignSystemPlugin/InPageNav/styles.css":
+/*!***********************************************************!*\
+  !*** ./src/Bcgov/DesignSystemPlugin/InPageNav/styles.css ***!
+  \***********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
+(() => {
+/*!*********************************************************!*\
+  !*** ./src/Bcgov/DesignSystemPlugin/InPageNav/index.js ***!
+  \*********************************************************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _styles_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./styles.css */ "./src/Bcgov/DesignSystemPlugin/InPageNav/styles.css");
+
+// in-page-nav.js
+document.addEventListener('DOMContentLoaded', function () {
+  // Create the navigation container
+  const navContainer = document.createElement('nav');
+  navContainer.classList.add('in-page-nav-container');
+
+  // Create and add the "On this page" heading
+  const heading = document.createElement('h6');
+  heading.textContent = 'On this page';
+  navContainer.appendChild(heading);
+
+  // Find all H2s with IDs
+  const headings = document.querySelectorAll('h2[id]');
+  if (headings.length > 0) {
+    const ul = document.createElement('ul');
+    headings.forEach(heading => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = `#${heading.id}`;
+      a.textContent = heading.textContent;
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    navContainer.appendChild(ul);
+    document.body.appendChild(navContainer);
+  }
+});
+})();
+
+/******/ })()
+;
+//# sourceMappingURL=in-page-nav.js.map

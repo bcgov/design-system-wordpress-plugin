@@ -1,3 +1,4 @@
+import './styles.css';  
 // in-page-nav.js
 document.addEventListener('DOMContentLoaded', function() {
     // Create the navigation container
