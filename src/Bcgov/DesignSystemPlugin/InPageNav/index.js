@@ -7,6 +7,17 @@ import './styles.css';
  */
 document.addEventListener('DOMContentLoaded', () => {
     /**
+     * Safely escapes HTML special characters to prevent XSS attacks
+     * @param {string} str - The string to escape
+     * @returns {string} - The escaped HTML string
+     */
+    const escapeHTML = (str) => {
+        const div = document.createElement('div');
+        div.appendChild(document.createTextNode(str));
+        return div.innerHTML;
+    };
+
+    /**
      * Creates and inserts the in-page navigation into the DOM
      * Only creates navigation if H2 elements with IDs exist on the page
      */
@@ -28,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         // Transform each heading into a list item with a link
                         .map(heading => `
                             <li>
-                                <a href="#${heading.id}">${heading.textContent}</a>
+                                <a href="#${heading.id}">${escapeHTML(heading.textContent)}</a>
                             </li>
                         `)
                         // Join all list items into a single string
