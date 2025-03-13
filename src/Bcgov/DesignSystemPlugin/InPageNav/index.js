@@ -1,31 +1,47 @@
+// Import the styles for the in-page navigation
 import './styles.css';  
-// in-page-nav.js
-document.addEventListener('DOMContentLoaded', function() {
-    // Create the navigation container
-    const navContainer = document.createElement('nav');
-    navContainer.classList.add('in-page-nav-container');
 
-    // Create and add the "On this page" heading
-    const heading = document.createElement('h6');
-    heading.textContent = 'On this page';
-    navContainer.appendChild(heading);
+/**
+ * In-page Navigation Script
+ * Creates a navigation menu that links to all H2 headings on the page
+ */
+document.addEventListener('DOMContentLoaded', () => {
+    /**
+     * Creates and inserts the in-page navigation into the DOM
+     * Only creates navigation if H2 elements with IDs exist on the page
+     */
+    const createNavigation = () => {
+        // Convert NodeList to Array for better method access
+        // Only select H2 elements that have an ID attribute
+        const headings = Array.from(document.querySelectorAll('h2[id]'));
 
-    // Find all H2s with IDs
-    const headings = document.querySelectorAll('h2[id]');
-    
-    if (headings.length > 0) {
-        const ul = document.createElement('ul');
-        
-        headings.forEach(heading => {
-            const li = document.createElement('li');
-            const a = document.createElement('a');
-            a.href = `#${heading.id}`;
-            a.textContent = heading.textContent;
-            li.appendChild(a);
-            ul.appendChild(li);
-        });
+        // Don't create navigation if there are no valid headings
+        if (headings.length === 0) return;
 
-        navContainer.appendChild(ul);
-        document.body.appendChild(navContainer);
-    }
+        // Create the navigation HTML structure using template literals
+        // This is more efficient than creating multiple DOM elements
+        const navHTML = `
+            <nav class="in-page-nav-container">
+                <h6>On this page</h6>
+                <ul>
+                    ${headings
+                        // Transform each heading into a list item with a link
+                        .map(heading => `
+                            <li>
+                                <a href="#${heading.id}">${heading.textContent}</a>
+                            </li>
+                        `)
+                        // Join all list items into a single string
+                        .join('')}
+                </ul>
+            </nav>
+        `;
+
+        // Insert the complete navigation HTML at the end of the body
+        // Using insertAdjacentHTML is more efficient than createElement
+        document.body.insertAdjacentHTML('beforeend', navHTML);
+    };
+
+    // Initialize the navigation when the DOM is fully loaded
+    createNavigation();
 });

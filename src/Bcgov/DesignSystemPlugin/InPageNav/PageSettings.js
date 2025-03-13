@@ -18,15 +18,6 @@ function PageSettings() {
         if (editorWrapper) {
             const toggleContainer = document.createElement('div');
             toggleContainer.className = 'inpage-nav-toggle-wrapper';
-            toggleContainer.style.cssText = `
-                padding: 16px;
-                margin: 20px auto;
-                background: #fff;
-                border: 1px solid #e2e4e7;
-                border-radius: 2px;
-                max-width: 840px;
-            `;
-            
             editorWrapper.insertBefore(toggleContainer, editorWrapper.firstChild);
 
             // Create a root and render the toggle

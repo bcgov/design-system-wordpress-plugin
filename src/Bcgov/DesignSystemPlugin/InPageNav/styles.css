@@ -1,3 +1,4 @@
+Toggle button styling for the editor interface
 .in-page-nav-toggle {
     position: fixed;
     top: 20px;
@@ -10,6 +11,7 @@
     cursor: pointer;
 }
 
+/* Main navigation container - fixed positioning with centered alignment */
 .in-page-nav-container {
     position: fixed;
     top: 50%;
@@ -24,38 +26,46 @@
     opacity: 1;
 }
 
+/* Reset list styles for navigation menu */
 .in-page-nav-container ul {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
+/* List item styling with transition effects */
 .in-page-nav-container li {
     margin-bottom: 0.75rem;
     opacity: 1;
     transition: opacity 0.2s ease-in-out;
 }
 
+/* Remove margin from last list item */
 .in-page-nav-container li:last-child {
     margin-bottom: 0;
 }
 
+/* Navigation link styling */
 .in-page-nav-container a {
     color: inherit;
     text-decoration: none;
     display: block;
 }
 
+/* Hover effect for navigation links */
 .in-page-nav-container a:hover {
     text-decoration: underline;
 }
 
+/* Responsive styles for screens below 1785px */
 @media screen and (max-width: 1785px) {
+    /* Hide navigation off-screen but keep slightly visible */
     .in-page-nav-container {
         transform: translateX(-100%) translateY(-50%);
         opacity: 0.7;
     }
 
+    /* Add dots indicator for collapsed navigation */
     .in-page-nav-container::after {
         content: '⋮';
         position: absolute;
@@ -72,16 +82,18 @@
         opacity: 1;
     }
 
+    /* Show navigation on hover */
     .in-page-nav-container:hover {
         transform: translateX(0) translateY(-50%);
         opacity: 1;
     }
 
+    /* Hide dots when navigation is expanded */
     .in-page-nav-container:hover::after {
         opacity: 0;
     }
 
-    /* Manual delay for each list item */
+    /* Staggered animation delays for list items on hover */
     .in-page-nav-container:hover li:nth-child(1) { transition-delay: 0.05s; }
     .in-page-nav-container:hover li:nth-child(2) { transition-delay: 0.10s; }
     .in-page-nav-container:hover li:nth-child(3) { transition-delay: 0.15s; }
@@ -89,28 +101,32 @@
     .in-page-nav-container:hover li:nth-child(5) { transition-delay: 0.25s; }
 }
 
+/* Styles for the toggle wrapper in the editor */
 .inpage-nav-toggle-wrapper {
     position: relative;
-    margin: 0 auto;
+    margin: 20px auto;
     max-width: 840px;
     width: 100%;
     z-index: 100;
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
     background: #fff;
     padding: 16px;
     border: 1px solid #e2e4e7;
+    border-radius: 2px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
+    display: block ;
+    visibility: visible ;
+    opacity: 1 ;
 }
 
+/* Ensure toggle control is always visible in editor */
 .inpage-nav-toggle-wrapper .components-toggle-control {
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
 }
 
+/* Styling for the "On this page" heading */
 .in-page-nav-container h6 {
     margin: 0 0 1rem 0;
     padding: 0;
@@ -118,6 +134,7 @@
     font-weight: 600;
 }
 
+/* Enable smooth scrolling for anchor links */
 html {
     scroll-behavior: smooth;
 }
