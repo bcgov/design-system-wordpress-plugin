@@ -93,11 +93,10 @@ add_action( 'enqueue_block_editor_assets', 'enqueue_auto_anchor_script' );
  *
  * @since 1.0.0
  *
- * @param array   $categories Array of block categories.
- * @param WP_Post $post      Post being loaded.
+ * @param array $categories Array of block categories.
  * @return array   Modified array of block categories.
  */
-function dswp_add_new_block_category( $categories, $post ) {
+function dswp_add_new_block_category( $categories ) {
     array_unshift(
         $categories,
         array(
@@ -147,7 +146,9 @@ function enqueue_in_page_nav() {
             );// Frontend styles.
             wp_enqueue_style(
                 'in-page-nav-styles',
-                plugin_dir_url( __FILE__ ) . 'dist/in-page-nav.css'
+                plugin_dir_url( __FILE__ ) . 'dist/in-page-nav.css',
+                array(),
+                $asset_file['version'],
             );
         }
     }
@@ -220,7 +221,9 @@ function enqueue_editor_scripts() {
 
     wp_enqueue_style(
         'in-page-nav-styles',
-        plugin_dir_url( __FILE__ ) . 'dist/in-page-nav.css'
+        plugin_dir_url( __FILE__ ) . 'dist/in-page-nav.css',
+        array(),
+        $asset_file['version'],
     );
 }
 add_action( 'enqueue_block_editor_assets', 'enqueue_editor_scripts' );
