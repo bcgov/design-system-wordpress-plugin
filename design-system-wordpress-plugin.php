@@ -8,7 +8,7 @@
  * Requires at least: 6.4.4
  * Tested up to: 6.5
  * Requires PHP: 7.4
- * Version: 2.4.0
+ * Version: 2.5.0
  * License: Apache License Version 2.0
  * License URI: LICENSE
  * Text Domain: design-system-wordpress-plugin
@@ -84,6 +84,31 @@ function enqueue_auto_anchor_script() {
 add_action( 'enqueue_block_editor_assets', 'enqueue_auto_anchor_script' );
 
 
+/**
+ * Adds a new block category for Design System blocks
+ *
+ * This function adds a new category to the WordPress block editor (Gutenberg)
+ * that will contain all Design System blocks. The category is added to the
+ * beginning of the categories list using array_unshift.
+ *
+ * @since 1.0.0
+ *
+ * @param array $categories Array of block categories.
+ * @return array   Modified array of block categories.
+ */
+function dswp_add_new_block_category( $categories ) {
+    array_unshift(
+        $categories,
+        array(
+            'slug'  => 'design-system',
+            'title' => 'Design System',
+        )
+    );
+
+    return $categories;
+}
+add_filter( 'block_categories_all', 'dswp_add_new_block_category', 10, 2 );
+
 use Bcgov\DesignSystemPlugin\{
     DesignSystemSettings,
     NotificationBanner,
@@ -96,16 +121,35 @@ use Bcgov\DesignSystemPlugin\Enqueue\{
     Script
 };
 
+use Bcgov\DesignSystemPlugin\InPageNav\{
+    Script as InPageNavScript,
+    Style as InPageNavStyle,
+    Meta as InPageNavMeta
+};
+
 use Bcgov\DesignSystemPlugin\AutoAnchor\Settings as AutoAnchorSettings;
 
+
+/**
+ * Design System settings
+ */
 
 // Initialize the main Design System settings page.
 $design_system_settings = new DesignSystemSettings();
 $design_system_settings->init();
 
+/**
+ * Custom banner
+ */
+
 // Initialize the custom banner class.
 $notification_banner = new NotificationBanner();
 $notification_banner->init();
+
+
+/**
+ * Content security policy
+ */
 
 // Initialize the content security policy class.
 $content_security_policy = new ContentSecurityPolicy();
@@ -116,6 +160,10 @@ $content_security_policy->init();
 $skip_navigation = new SkipNavigation();
 $skip_navigation->init();
 
+/**
+ * Enqueueing scripts and styles.
+ */
+
 // Initialize the enqueueing styles class.
 $enque_styles = new Style();
 $enque_styles->init();
@@ -124,6 +172,26 @@ $enque_styles->init();
 $enqueue_scripts = new Script();
 $enqueue_scripts->init();
 
+/**
+ * AutoAnchor.
+ */
+
 // Initialize the AutoAnchorSettings.
 $auto_anchor_settings = new AutoAnchorSettings();
 $auto_anchor_settings->init();
+
+/**
+ * InPageNav.
+ */
+
+// Initialize the InPageNav feature.
+$in_page_nav = new InPageNavScript();
+$in_page_nav->init();
+
+// Initialize InPageNav styles.
+$inpage_nav_style = new InPageNavStyle();
+$inpage_nav_style->init();
+
+// Initialize InPageNav meta.
+$inpage_nav_meta = new InPageNavMeta();
+$inpage_nav_meta->init();

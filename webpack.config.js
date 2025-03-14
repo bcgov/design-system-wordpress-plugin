@@ -7,6 +7,12 @@ module.exports = {
         'index': ['./src/scripts/index.js', './src/styles/index.scss'],
         'auto-anchor': [
             './src/Bcgov/DesignSystemPlugin/AutoAnchor/AutoAnchor.js',
+        ],
+        'in-page-nav': [
+            './src/Bcgov/DesignSystemPlugin/InPageNav/index.js',
+        ],
+        'in-page-nav-page-settings': [
+            './src/Bcgov/DesignSystemPlugin/InPageNav/PageSettings.js'
         ]
     },
     output: {
