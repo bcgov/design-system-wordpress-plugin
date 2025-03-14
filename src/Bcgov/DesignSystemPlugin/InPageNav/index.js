@@ -6,6 +6,7 @@ import './styles.css';
  * Creates a navigation menu that links to all H2 headings on the page
  */
 document.addEventListener('DOMContentLoaded', () => {
+    
     /**
      * Safely escapes HTML special characters to prevent XSS attacks
      * @param {string} str - The string to escape
