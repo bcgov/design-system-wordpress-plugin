@@ -13,7 +13,8 @@
 .dswp-block-breadcrumb__container a:hover {
   text-decoration: underline;
 }
-.dswp-block-breadcrumb__container .current-page {
+.dswp-block-breadcrumb__container .current-page,
+.dswp-block-breadcrumb__container .current-page-link {
   color: #666;
 }
 .dswp-block-breadcrumb__container .separator {

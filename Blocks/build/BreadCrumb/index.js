@@ -39,7 +39,8 @@ function Edit({
 }) {
   const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.useBlockProps)();
   const {
-    dividerType = 'slash'
+    dividerType = 'slash',
+    currentAsLink = false
   } = attributes;
   const breadcrumbData = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.useSelect)(select => {
     try {
@@ -105,9 +106,9 @@ function Edit({
   };
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.Fragment, {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.InspectorControls, {
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
         title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Breadcrumb Settings'),
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
           className: "dswp-divider-selector",
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("p", {
             className: "dswp-divider-label",
@@ -129,7 +130,14 @@ function Edit({
               children: ">"
             })]
           })]
-        })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.ToggleControl, {
+          label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Current Page as Link'),
+          help: currentAsLink ? 'Current page is shown as a link' : 'Current page is shown as text',
+          checked: currentAsLink,
+          onChange: value => setAttributes({
+            currentAsLink: value
+          })
+        })]
       })
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
       ...blockProps,
@@ -151,10 +159,14 @@ function Edit({
             className: "separator",
             children: getDivider()
           })]
-        }), attributes.currentTitle && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("span", {
+        }), attributes.currentTitle && (currentAsLink && attributes.currentUrl ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("a", {
+          href: attributes.currentUrl,
+          className: "current-page-link",
+          children: attributes.currentTitle
+        }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("span", {
           className: "current-page",
           children: attributes.currentTitle
-        })]
+        }))]
       })
     })]
   });
@@ -210,7 +222,8 @@ function save({
 }) {
   const blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useBlockProps.save();
   const {
-    dividerType = 'slash'
+    dividerType = 'slash',
+    currentAsLink = false
   } = attributes;
   const getDivider = () => {
     switch (dividerType) {
@@ -241,10 +254,14 @@ function save({
           className: "separator",
           children: getDivider()
         })]
-      }), attributes.currentTitle && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+      }), attributes.currentTitle && (currentAsLink && attributes.currentUrl ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("a", {
+        href: attributes.currentUrl,
+        className: "current-page-link",
+        children: attributes.currentTitle
+      }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
         className: "current-page",
         children: attributes.currentTitle
-      })]
+      }))]
     })
   });
 }
@@ -361,7 +378,7 @@ module.exports = window["wp"]["i18n"];
   \***********************************/
 /***/ ((module) => {
 
-module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"design-system-wordpress-plugin/breadcrumb","version":"1.0.0","title":"Design System Breadcrumb","category":"design_system","icon":"menu","description":"A Custom breadcrumb block for the design system","supports":{"__experimentalToolbar":true,"inserter":true,"inspectorGroups":{"list":true},"html":false,"typography":{"fontSize":true,"lineHeight":true,"__experimentalFontFamily":true,"__experimentalTextTransform":true},"layout":{"allowSwitching":false,"allowInheriting":false,"default":{"type":"flex"}}},"editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","viewScript":"file:./view.js","attributes":{"currentTitle":{"type":"string"},"currentUrl":{"type":"string"},"parentTitle":{"type":"string"},"parentUrl":{"type":"string"},"grandParentTitle":{"type":"string"},"grandParentUrl":{"type":"string"},"dividerType":{"type":"string","default":"slash"}}}');
+module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"design-system-wordpress-plugin/breadcrumb","version":"1.0.0","title":"Design System Breadcrumb","category":"design_system","icon":"menu","description":"A Custom breadcrumb block for the design system","supports":{"__experimentalToolbar":true,"inserter":true,"inspectorGroups":{"list":true},"html":false,"typography":{"fontSize":true,"lineHeight":true,"__experimentalFontFamily":true,"__experimentalTextTransform":true},"layout":{"allowSwitching":false,"allowInheriting":false,"default":{"type":"flex"}}},"editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","viewScript":"file:./view.js","attributes":{"currentTitle":{"type":"string"},"currentUrl":{"type":"string"},"parentTitle":{"type":"string"},"parentUrl":{"type":"string"},"grandParentTitle":{"type":"string"},"grandParentUrl":{"type":"string"},"dividerType":{"type":"string","default":"slash"},"currentAsLink":{"type":"boolean","default":false}}}');
 
 /***/ })
 

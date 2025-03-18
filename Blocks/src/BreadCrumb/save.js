@@ -2,7 +2,7 @@ import { useBlockProps } from '@wordpress/block-editor';
 
 export default function save({ attributes }) {
 	const blockProps = useBlockProps.save();
-	const { dividerType = 'slash' } = attributes;
+	const { dividerType = 'slash', currentAsLink = false } = attributes;
 
 	const getDivider = () => {
 		switch (dividerType) {
@@ -33,9 +33,15 @@ export default function save({ attributes }) {
 					</>
 				)}
 				
-				{/* Current page (no link) */}
+				{/* Current page (as link or text based on setting) */}
 				{attributes.currentTitle && (
-					<span className="current-page">{attributes.currentTitle}</span>
+					currentAsLink && attributes.currentUrl ? (
+						<a href={attributes.currentUrl} className="current-page-link">
+							{attributes.currentTitle}
+						</a>
+					) : (
+						<span className="current-page">{attributes.currentTitle}</span>
+					)
 				)}
 			</div>
 		</div>

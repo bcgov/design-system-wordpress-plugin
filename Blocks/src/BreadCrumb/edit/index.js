@@ -1,13 +1,13 @@
 import { useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, ButtonGroup, Button } from '@wordpress/components';
+import { PanelBody, ButtonGroup, Button, ToggleControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useEffect } from '@wordpress/element';
 
 export default function Edit({ attributes, setAttributes }) {
 	const blockProps = useBlockProps();
-	const { dividerType = 'slash' } = attributes;
+	const { dividerType = 'slash', currentAsLink = false } = attributes;
 	
 	const breadcrumbData = useSelect(select => {
 		try {
@@ -104,6 +104,13 @@ export default function Edit({ attributes, setAttributes }) {
 							</Button>
 						</ButtonGroup>
 					</div>
+					
+					<ToggleControl
+						label={__('Current Page as Link')}
+						help={currentAsLink ? 'Current page is shown as a link' : 'Current page is shown as text'}
+						checked={currentAsLink}
+						onChange={(value) => setAttributes({ currentAsLink: value })}
+					/>
 				</PanelBody>
 			</InspectorControls>
 
@@ -125,9 +132,15 @@ export default function Edit({ attributes, setAttributes }) {
 						</>
 					)}
 					
-					{/* Current page (no link) */}
+					{/* Current page (as link or text based on setting) */}
 					{attributes.currentTitle && (
-						<span className="current-page">{attributes.currentTitle}</span>
+						currentAsLink && attributes.currentUrl ? (
+							<a href={attributes.currentUrl} className="current-page-link">
+								{attributes.currentTitle}
+							</a>
+						) : (
+							<span className="current-page">{attributes.currentTitle}</span>
+						)
 					)}
 				</div>
 			</div>
