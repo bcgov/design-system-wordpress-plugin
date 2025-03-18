@@ -18,6 +18,8 @@
 }
 .dswp-block-breadcrumb__container .separator {
   color: #666;
+  display: inline-flex;
+  align-items: center;
 }
 
 /*# sourceMappingURL=style-index.css.map*/

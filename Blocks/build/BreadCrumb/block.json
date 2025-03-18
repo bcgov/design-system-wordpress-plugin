@@ -50,6 +50,10 @@
     },
     "grandParentUrl": {
       "type": "string"
+    },
+    "dividerType": {
+      "type": "string",
+      "default": "slash"
     }
   }
 }

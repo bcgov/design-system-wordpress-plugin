@@ -1,10 +1,13 @@
 import { useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
-import { useBlockProps } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { PanelBody, SelectControl } from '@wordpress/components';
+import { __ } from '@wordpress/i18n';
 import { useEffect } from '@wordpress/element';
 
 export default function Edit({ attributes, setAttributes }) {
 	const blockProps = useBlockProps();
+	const { dividerType = 'slash' } = attributes;
 	
 	const breadcrumbData = useSelect(select => {
 		try {
@@ -68,30 +71,56 @@ export default function Edit({ attributes, setAttributes }) {
 		}
 	}, [breadcrumbData, setAttributes]);
 
+	const getDivider = () => {
+		switch (dividerType) {
+			case 'chevron':
+				return ' > ';
+			case 'slash':
+			default:
+				return ' / ';
+		}
+	};
+
 	return (
-		<div {...blockProps}>
-			<div className="dswp-block-breadcrumb__container">
-				{/* Grandparent link */}
-				{attributes.grandParentTitle && attributes.grandParentUrl && (
-					<>
-						<a href={attributes.grandParentUrl}>{attributes.grandParentTitle}</a>
-						<span className="separator"> / </span>
-					</>
-				)}
-				
-				{/* Parent link */}
-				{attributes.parentTitle && attributes.parentUrl && (
-					<>
-						<a href={attributes.parentUrl}>{attributes.parentTitle}</a>
-						<span className="separator"> / </span>
-					</>
-				)}
-				
-				{/* Current page (no link) */}
-				{attributes.currentTitle && (
-					<span className="current-page">{attributes.currentTitle}</span>
-				)}
+		<>
+			<InspectorControls>
+				<PanelBody title={__('Breadcrumb Settings')}>
+					<SelectControl
+						label={__('Divider Type')}
+						value={dividerType}
+						options={[
+							{ label: 'Slash (/)', value: 'slash' },
+							{ label: 'Chevron (>)', value: 'chevron' }
+						]}
+						onChange={(value) => setAttributes({ dividerType: value })}
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			<div {...blockProps}>
+				<div className="dswp-block-breadcrumb__container">
+					{/* Grandparent link */}
+					{attributes.grandParentTitle && attributes.grandParentUrl && (
+						<>
+							<a href={attributes.grandParentUrl}>{attributes.grandParentTitle}</a>
+							<span className="separator">{getDivider()}</span>
+						</>
+					)}
+					
+					{/* Parent link */}
+					{attributes.parentTitle && attributes.parentUrl && (
+						<>
+							<a href={attributes.parentUrl}>{attributes.parentTitle}</a>
+							<span className="separator">{getDivider()}</span>
+						</>
+					)}
+					
+					{/* Current page (no link) */}
+					{attributes.currentTitle && (
+						<span className="current-page">{attributes.currentTitle}</span>
+					)}
+				</div>
 			</div>
-		</div>
+		</>
 	);
 }
