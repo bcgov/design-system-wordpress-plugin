@@ -4,7 +4,9 @@ import { __ } from '@wordpress/i18n';
 
 export default function Edit({ attributes, setAttributes }) {
 	const { dividerType = 'slash', currentAsLink = false } = attributes;
-	const blockProps = useBlockProps();
+	const blockProps = useBlockProps({
+		className: 'is-editor-preview'
+	});
 
 	return (
 		<>
@@ -40,8 +42,10 @@ export default function Edit({ attributes, setAttributes }) {
 			</InspectorControls>
 
 			<div {...blockProps}>
-				<div className="dswp-block-breadcrumb__container">
-					<em>{__('Breadcrumb - Will display page hierarchy on the frontend')}</em>
+				<div className="dswp-block-breadcrumb__container is-editor">
+					<div className="dswp-breadcrumb-placeholder">
+						<em>{__('Breadcrumb Navigation - Will display page hierarchy on frontend')}</em>
+					</div>
 				</div>
 			</div>
 		</>

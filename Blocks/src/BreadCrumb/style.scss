@@ -1,15 +1,18 @@
 .dswp-block-breadcrumb__container {
-    opacity: 0;
-    transition: opacity 0.3s ease-in;
-    min-height: 24px; // Prevents layout shift
-    
-    &.is-loaded {
-        opacity: 1;
-    }
-
     display: flex;
     align-items: center;
     gap: 4px;
+    min-height: 24px;
+    
+    // Frontend fade-in effect
+    &:not(.is-editor) {
+        opacity: 0;
+        transition: opacity 0.3s ease-in;
+        
+        &.is-loaded {
+            opacity: 1;
+        }
+    }
     
     a {
         color: inherit;
@@ -27,7 +30,5 @@
     
     .separator {
         color: #666;
-        display: inline-flex;
-        align-items: center;
     }
 }

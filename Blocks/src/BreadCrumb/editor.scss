@@ -40,3 +40,55 @@
         font-style: italic;
     }
 }
+
+.dswp-block-breadcrumb__container {
+    position: relative;
+    padding: 12px;
+    background: #f0f0f0;
+    border-radius: 4px;
+
+    .dswp-breadcrumb-editor-note {
+        position: absolute;
+        bottom: 4px;
+        right: 8px;
+        font-size: 0.8em;
+        color: #666;
+        font-style: italic;
+    }
+
+    // Style the preview links
+    a {
+        color: #0073aa;
+        text-decoration: none;
+        pointer-events: none; // Disable clicking in editor
+        
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    .current-page,
+    .current-page-link {
+        color: #666;
+    }
+
+    .separator {
+        color: #666;
+        margin: 0 4px;
+    }
+}
+
+.is-editor-preview {
+    .dswp-block-breadcrumb__container {
+        padding: 12px;
+        background: #f0f0f0;
+        border-radius: 4px;
+        opacity: 1 !important;
+        
+        .dswp-breadcrumb-placeholder {
+            color: #666;
+            font-style: italic;
+            text-align: center;
+        }
+    }
+}
