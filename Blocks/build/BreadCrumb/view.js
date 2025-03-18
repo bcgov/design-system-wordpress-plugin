@@ -36,9 +36,9 @@ document.addEventListener('DOMContentLoaded', function () {
         throw new Error('Invalid page data received');
       }
 
-      // Get settings from data attributes
-      const dividerType = breadcrumb.dataset.dividerType || 'slash';
-      const currentAsLink = breadcrumb.dataset.currentAsLink === 'true';
+      // Get the settings from the block's data attributes
+      const dividerType = breadcrumb.getAttribute('data-divider-type') || 'slash';
+      const currentAsLink = breadcrumb.getAttribute('data-current-as-link') === 'true';
       const divider = dividerType === 'chevron' ? ' > ' : ' / ';
 
       // Build hierarchy
@@ -70,22 +70,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // Build breadcrumb HTML
       container.innerHTML = hierarchy.map((item, index) => {
-        if (!item?.title) return '';
         const isLast = index === hierarchy.length - 1;
-        const title = item.title.replace(/&([^;]+);/g, (s, entity) => {
-          const entities = {
-            'amp': '&',
-            'lt': '<',
-            'gt': '>',
-            'quot': '"',
-            'apos': "'",
-            '#39': "'"
-          };
-          return entities[entity] || s;
-        }).replace(/<[^>]*>/g, '');
+        const title = sanitizeTitle(item.title);
         if (isLast) {
+          // Use the currentAsLink setting
           return currentAsLink ? `<a href="${item.url}" class="current-page-link">${title}</a>` : `<span class="current-page">${title}</span>`;
         }
+
+        // Use the correct divider
         return `
                     <a href="${item.url}">${title}</a>
                     <span class="separator">${divider}</span>
