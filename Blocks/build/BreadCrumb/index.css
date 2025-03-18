@@ -20,4 +20,22 @@
   color: white;
 }
 
+.breadcrumb-template-preview {
+  padding: 8px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  font-style: italic;
+  color: #666;
+}
+
+.dswp-template-preview {
+  background: #f0f0f0;
+  padding: 12px;
+  border-radius: 4px;
+}
+.dswp-template-preview .dswp-template-preview-text {
+  color: #666;
+  font-style: italic;
+}
+
 /*# sourceMappingURL=index.css.map*/

@@ -16,16 +16,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _wordpress_core_data__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/core-data */ "@wordpress/core-data");
 /* harmony import */ var _wordpress_core_data__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_core_data__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
-/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
-/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _wordpress_edit_site__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/edit-site */ "@wordpress/edit-site");
+/* harmony import */ var _wordpress_edit_site__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_edit_site__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _wordpress_editor__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/editor */ "@wordpress/editor");
+/* harmony import */ var _wordpress_editor__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_editor__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
+/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__);
+
 
 
 
@@ -37,91 +40,100 @@ function Edit({
   attributes,
   setAttributes
 }) {
-  const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.useBlockProps)();
+  const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.useBlockProps)();
   const {
     dividerType = 'slash',
     currentAsLink = false
   } = attributes;
-  const breadcrumbData = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.useSelect)(select => {
-    try {
-      if (!select || !select('core/editor')) {
-        return null;
-      }
-      const postId = select('core/editor').getCurrentPostId();
-      const postType = select('core/editor').getCurrentPostType();
-      if (!postId || !postType) {
-        return null;
-      }
 
-      // Get current post
-      const currentPost = select(_wordpress_core_data__WEBPACK_IMPORTED_MODULE_1__.store).getEntityRecord('postType', postType, postId);
-      if (!currentPost) {
-        return null;
+  // Get the current page and its ancestors
+  (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.useSelect)(select => {
+    // Try to get context from site editor first (for template parts)
+    const siteEditor = select(_wordpress_edit_site__WEBPACK_IMPORTED_MODULE_2__.store);
+    const editor = select(_wordpress_editor__WEBPACK_IMPORTED_MODULE_3__.store);
+    const core = select(_wordpress_core_data__WEBPACK_IMPORTED_MODULE_1__.store);
+    let postId, postType;
+
+    // Check if we're in the site editor (template part)
+    if (siteEditor) {
+      const templateContext = siteEditor.getEditedPostContext();
+      if (templateContext) {
+        postId = templateContext.postId;
+        postType = templateContext.postType;
       }
+    }
+    // Fallback to post editor context
+    else if (editor) {
+      postId = editor.getCurrentPostId();
+      postType = editor.getCurrentPostType();
+    }
+    if (!postId || !postType) return;
+    const currentPost = core.getEntityRecord('postType', postType, postId);
+    if (currentPost) {
+      // Set current page data
+      setAttributes({
+        currentTitle: currentPost.title?.rendered || '',
+        currentUrl: currentPost.link || '',
+        currentId: currentPost.id
+      });
 
-      // Get immediate parent
-      const parentPost = currentPost.parent ? select(_wordpress_core_data__WEBPACK_IMPORTED_MODULE_1__.store).getEntityRecord('postType', postType, currentPost.parent) : null;
+      // If there's a parent, get its data
+      if (currentPost.parent) {
+        const parentPost = core.getEntityRecord('postType', postType, currentPost.parent);
+        if (parentPost) {
+          setAttributes({
+            parentTitle: parentPost.title?.rendered || '',
+            parentUrl: parentPost.link || '',
+            parentId: parentPost.id
+          });
 
-      // Get grandparent if parent exists
-      const grandParentPost = parentPost?.parent ? select(_wordpress_core_data__WEBPACK_IMPORTED_MODULE_1__.store).getEntityRecord('postType', postType, parentPost.parent) : null;
-      return {
-        current: {
-          title: currentPost.title?.rendered || '',
-          url: currentPost.link || ''
-        },
-        parent: parentPost ? {
-          title: parentPost.title?.rendered || '',
-          url: parentPost.link || ''
-        } : null,
-        grandParent: grandParentPost ? {
-          title: grandParentPost.title?.rendered || '',
-          url: grandParentPost.link || ''
-        } : null
-      };
-    } catch (error) {
-      console.error('Error fetching breadcrumb data:', error);
-      return null;
+          // If there's a grandparent, get its data
+          if (parentPost.parent) {
+            const grandParentPost = core.getEntityRecord('postType', postType, parentPost.parent);
+            if (grandParentPost) {
+              setAttributes({
+                grandParentTitle: grandParentPost.title?.rendered || '',
+                grandParentUrl: grandParentPost.link || '',
+                grandParentId: grandParentPost.id
+              });
+            }
+          }
+        }
+      }
     }
   }, []);
-  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.useEffect)(() => {
-    if (breadcrumbData) {
-      setAttributes({
-        currentTitle: breadcrumbData.current.title,
-        currentUrl: breadcrumbData.current.url,
-        parentTitle: breadcrumbData.parent?.title || '',
-        parentUrl: breadcrumbData.parent?.url || '',
-        grandParentTitle: breadcrumbData.grandParent?.title || '',
-        grandParentUrl: breadcrumbData.grandParent?.url || ''
-      });
-    }
-  }, [breadcrumbData, setAttributes]);
-  const getDivider = () => {
-    switch (dividerType) {
-      case 'chevron':
-        return ' > ';
-      case 'slash':
-      default:
-        return ' / ';
-    }
-  };
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.Fragment, {
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.InspectorControls, {
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
-        title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Breadcrumb Settings'),
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
+
+  // Show preview message in template editor
+  const isTemplateEditor = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.useSelect)(select => !!select(_wordpress_edit_site__WEBPACK_IMPORTED_MODULE_2__.store), []);
+  if (isTemplateEditor) {
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)("div", {
+      ...blockProps,
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)("div", {
+        className: "dswp-block-breadcrumb__container dswp-template-preview",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)("em", {
+          children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Breadcrumb - Will display page hierarchy on the frontend')
+        })
+      })
+    });
+  }
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.Fragment, {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.InspectorControls, {
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsxs)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.PanelBody, {
+        title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Breadcrumb Settings'),
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsxs)("div", {
           className: "dswp-divider-selector",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("p", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)("p", {
             className: "dswp-divider-label",
-            children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Divider Type')
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.ButtonGroup, {
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Button, {
+            children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Divider Type')
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsxs)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.ButtonGroup, {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.Button, {
               variant: dividerType === 'slash' ? 'primary' : 'secondary',
               onClick: () => setAttributes({
                 dividerType: 'slash'
               }),
               isPressed: dividerType === 'slash',
               children: "/"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Button, {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.Button, {
               variant: dividerType === 'chevron' ? 'primary' : 'secondary',
               onClick: () => setAttributes({
                 dividerType: 'chevron'
@@ -130,8 +142,8 @@ function Edit({
               children: ">"
             })]
           })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.ToggleControl, {
-          label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Current Page as Link'),
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.ToggleControl, {
+          label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Current Page as Link'),
           help: currentAsLink ? 'Current page is shown as a link' : 'Current page is shown as text',
           checked: currentAsLink,
           onChange: value => setAttributes({
@@ -139,31 +151,31 @@ function Edit({
           })
         })]
       })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)("div", {
       ...blockProps,
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsxs)("div", {
         className: "dswp-block-breadcrumb__container",
-        children: [attributes.grandParentTitle && attributes.grandParentUrl && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.Fragment, {
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("a", {
+        children: [attributes.grandParentTitle && attributes.grandParentUrl && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.Fragment, {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)("a", {
             href: attributes.grandParentUrl,
             children: attributes.grandParentTitle
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("span", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)("span", {
             className: "separator",
-            children: getDivider()
+            children: dividerType === 'chevron' ? ' > ' : ' / '
           })]
-        }), attributes.parentTitle && attributes.parentUrl && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.Fragment, {
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("a", {
+        }), attributes.parentTitle && attributes.parentUrl && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.Fragment, {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)("a", {
             href: attributes.parentUrl,
             children: attributes.parentTitle
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("span", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)("span", {
             className: "separator",
-            children: getDivider()
+            children: dividerType === 'chevron' ? ' > ' : ' / '
           })]
-        }), attributes.currentTitle && (currentAsLink && attributes.currentUrl ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("a", {
+        }), attributes.currentTitle && (currentAsLink && attributes.currentUrl ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)("a", {
           href: attributes.currentUrl,
           className: "current-page-link",
           children: attributes.currentTitle
-        }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("span", {
+        }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)("span", {
           className: "current-page",
           children: attributes.currentTitle
         }))]
@@ -222,18 +234,9 @@ function save({
 }) {
   const blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useBlockProps.save();
   const {
-    dividerType = 'slash',
-    currentAsLink = false
+    dividerType,
+    currentAsLink
   } = attributes;
-  const getDivider = () => {
-    switch (dividerType) {
-      case 'chevron':
-        return ' > ';
-      case 'slash':
-      default:
-        return ' / ';
-    }
-  };
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
     ...blockProps,
     children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
@@ -244,7 +247,7 @@ function save({
           children: attributes.grandParentTitle
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
           className: "separator",
-          children: getDivider()
+          children: dividerType === 'chevron' ? ' > ' : ' / '
         })]
       }), attributes.parentTitle && attributes.parentUrl && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.Fragment, {
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("a", {
@@ -252,7 +255,7 @@ function save({
           children: attributes.parentTitle
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
           className: "separator",
-          children: getDivider()
+          children: dividerType === 'chevron' ? ' > ' : ' / '
         })]
       }), attributes.currentTitle && (currentAsLink && attributes.currentUrl ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("a", {
         href: attributes.currentUrl,
@@ -352,13 +355,23 @@ module.exports = window["wp"]["data"];
 
 /***/ }),
 
-/***/ "@wordpress/element":
-/*!*********************************!*\
-  !*** external ["wp","element"] ***!
-  \*********************************/
+/***/ "@wordpress/edit-site":
+/*!**********************************!*\
+  !*** external ["wp","editSite"] ***!
+  \**********************************/
 /***/ ((module) => {
 
-module.exports = window["wp"]["element"];
+module.exports = window["wp"]["editSite"];
+
+/***/ }),
+
+/***/ "@wordpress/editor":
+/*!********************************!*\
+  !*** external ["wp","editor"] ***!
+  \********************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["editor"];
 
 /***/ }),
 
