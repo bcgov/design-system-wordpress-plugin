@@ -6,8 +6,7 @@ import { useEffect } from '@wordpress/element';
 export default function Edit({ attributes, setAttributes }) {
 	const blockProps = useBlockProps();
 	
-	// Separate the data fetching logic
-	const parentPost = useSelect(select => {
+	const breadcrumbData = useSelect(select => {
 		try {
 			if (!select || !select('core/editor')) {
 				return null;
@@ -20,32 +19,79 @@ export default function Edit({ attributes, setAttributes }) {
 				return null;
 			}
 
-			const post = select(coreStore).getEntityRecord('postType', postType, postId);
-			
-			if (!post?.parent) {
+			// Get current post
+			const currentPost = select(coreStore).getEntityRecord('postType', postType, postId);
+			if (!currentPost) {
 				return null;
 			}
 
-			return select(coreStore).getEntityRecord('postType', postType, post.parent);
+			// Get immediate parent
+			const parentPost = currentPost.parent ? 
+				select(coreStore).getEntityRecord('postType', postType, currentPost.parent) : 
+				null;
+
+			// Get grandparent if parent exists
+			const grandParentPost = parentPost?.parent ? 
+				select(coreStore).getEntityRecord('postType', postType, parentPost.parent) : 
+				null;
+
+			return {
+				current: {
+					title: currentPost.title?.rendered || '',
+					url: currentPost.link || ''
+				},
+				parent: parentPost ? {
+					title: parentPost.title?.rendered || '',
+					url: parentPost.link || ''
+				} : null,
+				grandParent: grandParentPost ? {
+					title: grandParentPost.title?.rendered || '',
+					url: grandParentPost.link || ''
+				} : null
+			};
 		} catch (error) {
-			console.error('Error fetching parent post:', error);
+			console.error('Error fetching breadcrumb data:', error);
 			return null;
 		}
 	}, []);
 
-	// Update attributes in a separate effect
 	useEffect(() => {
-		if (parentPost) {
+		if (breadcrumbData) {
 			setAttributes({
-				parentTitle: parentPost.title?.rendered || '',
-				parentUrl: parentPost.link || ''
+				currentTitle: breadcrumbData.current.title,
+				currentUrl: breadcrumbData.current.url,
+				parentTitle: breadcrumbData.parent?.title || '',
+				parentUrl: breadcrumbData.parent?.url || '',
+				grandParentTitle: breadcrumbData.grandParent?.title || '',
+				grandParentUrl: breadcrumbData.grandParent?.url || ''
 			});
 		}
-	}, [parentPost, setAttributes]);
+	}, [breadcrumbData, setAttributes]);
 
 	return (
 		<div {...blockProps}>
-			test
+			<div className="dswp-block-breadcrumb__container">
+				{/* Grandparent link */}
+				{attributes.grandParentTitle && attributes.grandParentUrl && (
+					<>
+						<a href={attributes.grandParentUrl}>{attributes.grandParentTitle}</a>
+						<span className="separator"> / </span>
+					</>
+				)}
+				
+				{/* Parent link */}
+				{attributes.parentTitle && attributes.parentUrl && (
+					<>
+						<a href={attributes.parentUrl}>{attributes.parentTitle}</a>
+						<span className="separator"> / </span>
+					</>
+				)}
+				
+				{/* Current page (no link) */}
+				{attributes.currentTitle && (
+					<span className="current-page">{attributes.currentTitle}</span>
+				)}
+			</div>
 		</div>
 	);
 }

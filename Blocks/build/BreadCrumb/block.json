@@ -33,10 +33,22 @@
   "style": "file:./style-index.css",
   "viewScript": "file:./view.js",
   "attributes": {
+    "currentTitle": {
+      "type": "string"
+    },
+    "currentUrl": {
+      "type": "string"
+    },
     "parentTitle": {
       "type": "string"
     },
     "parentUrl": {
+      "type": "string"
+    },
+    "grandParentTitle": {
+      "type": "string"
+    },
+    "grandParentUrl": {
       "type": "string"
     }
   }

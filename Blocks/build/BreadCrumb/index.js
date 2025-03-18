@@ -32,9 +32,7 @@ function Edit({
   setAttributes
 }) {
   const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.useBlockProps)();
-
-  // Separate the data fetching logic
-  const parentPost = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.useSelect)(select => {
+  const breadcrumbData = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.useSelect)(select => {
     try {
       if (!select || !select('core/editor')) {
         return null;
@@ -44,29 +42,74 @@ function Edit({
       if (!postId || !postType) {
         return null;
       }
-      const post = select(_wordpress_core_data__WEBPACK_IMPORTED_MODULE_1__.store).getEntityRecord('postType', postType, postId);
-      if (!post?.parent) {
+
+      // Get current post
+      const currentPost = select(_wordpress_core_data__WEBPACK_IMPORTED_MODULE_1__.store).getEntityRecord('postType', postType, postId);
+      if (!currentPost) {
         return null;
       }
-      return select(_wordpress_core_data__WEBPACK_IMPORTED_MODULE_1__.store).getEntityRecord('postType', postType, post.parent);
+
+      // Get immediate parent
+      const parentPost = currentPost.parent ? select(_wordpress_core_data__WEBPACK_IMPORTED_MODULE_1__.store).getEntityRecord('postType', postType, currentPost.parent) : null;
+
+      // Get grandparent if parent exists
+      const grandParentPost = parentPost?.parent ? select(_wordpress_core_data__WEBPACK_IMPORTED_MODULE_1__.store).getEntityRecord('postType', postType, parentPost.parent) : null;
+      return {
+        current: {
+          title: currentPost.title?.rendered || '',
+          url: currentPost.link || ''
+        },
+        parent: parentPost ? {
+          title: parentPost.title?.rendered || '',
+          url: parentPost.link || ''
+        } : null,
+        grandParent: grandParentPost ? {
+          title: grandParentPost.title?.rendered || '',
+          url: grandParentPost.link || ''
+        } : null
+      };
     } catch (error) {
-      console.error('Error fetching parent post:', error);
+      console.error('Error fetching breadcrumb data:', error);
       return null;
     }
   }, []);
-
-  // Update attributes in a separate effect
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
-    if (parentPost) {
+    if (breadcrumbData) {
       setAttributes({
-        parentTitle: parentPost.title?.rendered || '',
-        parentUrl: parentPost.link || ''
+        currentTitle: breadcrumbData.current.title,
+        currentUrl: breadcrumbData.current.url,
+        parentTitle: breadcrumbData.parent?.title || '',
+        parentUrl: breadcrumbData.parent?.url || '',
+        grandParentTitle: breadcrumbData.grandParent?.title || '',
+        grandParentUrl: breadcrumbData.grandParent?.url || ''
       });
     }
-  }, [parentPost, setAttributes]);
+  }, [breadcrumbData, setAttributes]);
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
     ...blockProps,
-    children: "test"
+    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+      className: "dswp-block-breadcrumb__container",
+      children: [attributes.grandParentTitle && attributes.grandParentUrl && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("a", {
+          href: attributes.grandParentUrl,
+          children: attributes.grandParentTitle
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
+          className: "separator",
+          children: " / "
+        })]
+      }), attributes.parentTitle && attributes.parentUrl && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("a", {
+          href: attributes.parentUrl,
+          children: attributes.parentTitle
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
+          className: "separator",
+          children: " / "
+        })]
+      }), attributes.currentTitle && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
+        className: "current-page",
+        children: attributes.currentTitle
+      })]
+    })
   });
 }
 
@@ -121,12 +164,28 @@ function save({
   const blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useBlockProps.save();
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
     ...blockProps,
-    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
       className: "dswp-block-breadcrumb__container",
-      children: attributes.parentTitle && attributes.parentUrl && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("a", {
-        href: attributes.parentUrl,
-        children: attributes.parentTitle
-      })
+      children: [attributes.grandParentTitle && attributes.grandParentUrl && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.Fragment, {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("a", {
+          href: attributes.grandParentUrl,
+          children: attributes.grandParentTitle
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+          className: "separator",
+          children: " / "
+        })]
+      }), attributes.parentTitle && attributes.parentUrl && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.Fragment, {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("a", {
+          href: attributes.parentUrl,
+          children: attributes.parentTitle
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+          className: "separator",
+          children: " / "
+        })]
+      }), attributes.currentTitle && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+        className: "current-page",
+        children: attributes.currentTitle
+      })]
     })
   });
 }
@@ -223,7 +282,7 @@ module.exports = window["wp"]["element"];
   \***********************************/
 /***/ ((module) => {
 
-module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"design-system-wordpress-plugin/breadcrumb","version":"1.0.0","title":"Design System Breadcrumb","category":"design_system","icon":"menu","description":"A Custom breadcrumb block for the design system","supports":{"__experimentalToolbar":true,"inserter":true,"inspectorGroups":{"list":true},"html":false,"typography":{"fontSize":true,"lineHeight":true,"__experimentalFontFamily":true,"__experimentalTextTransform":true},"layout":{"allowSwitching":false,"allowInheriting":false,"default":{"type":"flex"}}},"editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","viewScript":"file:./view.js","attributes":{"parentTitle":{"type":"string"},"parentUrl":{"type":"string"}}}');
+module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"design-system-wordpress-plugin/breadcrumb","version":"1.0.0","title":"Design System Breadcrumb","category":"design_system","icon":"menu","description":"A Custom breadcrumb block for the design system","supports":{"__experimentalToolbar":true,"inserter":true,"inspectorGroups":{"list":true},"html":false,"typography":{"fontSize":true,"lineHeight":true,"__experimentalFontFamily":true,"__experimentalTextTransform":true},"layout":{"allowSwitching":false,"allowInheriting":false,"default":{"type":"flex"}}},"editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","viewScript":"file:./view.js","attributes":{"currentTitle":{"type":"string"},"currentUrl":{"type":"string"},"parentTitle":{"type":"string"},"parentUrl":{"type":"string"},"grandParentTitle":{"type":"string"},"grandParentUrl":{"type":"string"}}}');
 
 /***/ })
 
