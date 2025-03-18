@@ -1,0 +1,43 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "design-system-wordpress-plugin/breadcrumb",
+  "version": "1.0.0",
+  "title": "Design System Breadcrumb",
+  "category": "design_system",
+  "icon": "menu",
+  "description": "A Custom breadcrumb block for the design system",
+  "supports": {
+    "__experimentalToolbar": true,
+    "inserter": true,
+    "inspectorGroups": {
+      "list": true
+    },
+    "html": false,
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true,
+      "__experimentalFontFamily": true,
+      "__experimentalTextTransform": true
+    },
+    "layout": {
+      "allowSwitching": false,
+      "allowInheriting": false,
+      "default": {
+        "type": "flex"
+      }
+    }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "viewScript": "file:./view.js",
+  "attributes": {
+    "parentTitle": {
+      "type": "string"
+    },
+    "parentUrl": {
+      "type": "string"
+    }
+  }
+}

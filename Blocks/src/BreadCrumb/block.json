@@ -31,5 +31,13 @@
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css",
-	"viewScript": "file:./view.js"
+	"viewScript": "file:./view.js",
+	"attributes": {
+		"parentTitle": {
+			"type": "string"
+		},
+		"parentUrl": {
+			"type": "string"
+		}
+	}
 }
