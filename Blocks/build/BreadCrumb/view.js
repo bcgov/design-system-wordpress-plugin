@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return '';
   }
   breadcrumbs.forEach(async function (breadcrumb) {
+    const container = breadcrumb.querySelector('.dswp-block-breadcrumb__container');
     try {
       const postId = getPostId();
       if (!postId) {
@@ -68,10 +69,6 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       // Build breadcrumb HTML
-      const container = breadcrumb.querySelector('.dswp-block-breadcrumb__container');
-      if (!container) {
-        throw new Error('Breadcrumb container not found');
-      }
       container.innerHTML = hierarchy.map((item, index) => {
         if (!item?.title) return '';
         const isLast = index === hierarchy.length - 1;
@@ -94,13 +91,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     <span class="separator">${divider}</span>
                 `;
       }).join('');
+
+      // After content is rendered, add the loaded class
+      container.classList.add('is-loaded');
     } catch (error) {
       console.error('Error building breadcrumb:', error);
-      // Optionally show a fallback UI
-      const container = breadcrumb.querySelector('.dswp-block-breadcrumb__container');
-      if (container) {
-        container.innerHTML = '<span class="breadcrumb-error">Navigation</span>';
-      }
+      container.classList.add('is-loaded'); // Still add class even on error
+      container.innerHTML = '<span class="breadcrumb-error">Navigation</span>';
     }
   });
 });

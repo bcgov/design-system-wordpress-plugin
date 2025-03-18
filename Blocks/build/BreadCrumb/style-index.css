@@ -2,9 +2,15 @@
   !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/BreadCrumb/style.scss ***!
   \**************************************************************************************************************************************************************************************************************************************************/
 .dswp-block-breadcrumb__container {
+  opacity: 0;
+  transition: opacity 0.3s ease-in;
+  min-height: 24px;
   display: flex;
   align-items: center;
   gap: 4px;
+}
+.dswp-block-breadcrumb__container.is-loaded {
+  opacity: 1;
 }
 .dswp-block-breadcrumb__container a {
   color: inherit;
