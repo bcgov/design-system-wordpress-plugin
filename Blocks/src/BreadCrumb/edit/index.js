@@ -1,7 +1,7 @@
 import { useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, SelectControl } from '@wordpress/components';
+import { PanelBody, ButtonGroup, Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useEffect } from '@wordpress/element';
 
@@ -85,15 +85,25 @@ export default function Edit({ attributes, setAttributes }) {
 		<>
 			<InspectorControls>
 				<PanelBody title={__('Breadcrumb Settings')}>
-					<SelectControl
-						label={__('Divider Type')}
-						value={dividerType}
-						options={[
-							{ label: 'Slash (/)', value: 'slash' },
-							{ label: 'Chevron (>)', value: 'chevron' }
-						]}
-						onChange={(value) => setAttributes({ dividerType: value })}
-					/>
+					<div className="dswp-divider-selector">
+						<p className="dswp-divider-label">{__('Divider Type')}</p>
+						<ButtonGroup>
+							<Button 
+								variant={dividerType === 'slash' ? 'primary' : 'secondary'}
+								onClick={() => setAttributes({ dividerType: 'slash' })}
+								isPressed={dividerType === 'slash'}
+							>
+								/
+							</Button>
+							<Button 
+								variant={dividerType === 'chevron' ? 'primary' : 'secondary'}
+								onClick={() => setAttributes({ dividerType: 'chevron' })}
+								isPressed={dividerType === 'chevron'}
+							>
+								&gt;
+							</Button>
+						</ButtonGroup>
+					</div>
 				</PanelBody>
 			</InspectorControls>
 
