@@ -26,38 +26,11 @@
 			"default": {
 				"type": "flex"
 			}
-		}
+		},
+		"interactivity":true
 	},
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css",
-	"viewScript": "file:./view.js",
-	"attributes": {
-		"currentTitle": {
-			"type": "string"
-		},
-		"currentUrl": {
-			"type": "string"
-		},
-		"parentTitle": {
-			"type": "string"
-		},
-		"parentUrl": {
-			"type": "string"
-		},
-		"grandParentTitle": {
-			"type": "string"
-		},
-		"grandParentUrl": {
-			"type": "string"
-		},
-		"dividerType": {
-			"type": "string",
-			"default": "slash"
-		},
-		"currentAsLink": {
-			"type": "boolean",
-			"default": false
-		}
-	}
+	"render": "file:./render.php"
 }
