@@ -1,34 +1,74 @@
+/**
+ * Breadcrumb Block Frontend Styles
+ * 
+ * Defines the visual presentation and layout of the breadcrumb navigation
+ * for both editor and frontend contexts
+ */
+
 .dswp-block-breadcrumb__container {
+    // Flexbox layout for horizontal navigation
     display: flex;
     align-items: center;
-    gap: 4px;
-    min-height: 24px;
+    gap: 4px; // Small spacing between breadcrumb items
+    min-height: 24px; // Minimum height for consistent layout
     
-    // Frontend fade-in effect
+    // Frontend fade-in effect for smooth loading
     &:not(.is-editor) {
-        opacity: 0;
-        transition: opacity 0.3s ease-in;
+        opacity: 0; // Initially hidden
+        transition: opacity 0.3s ease-in; // Smooth transition
         
+        // Fully visible when loaded
         &.is-loaded {
             opacity: 1;
         }
     }
     
+    // Link styling within breadcrumb
     a {
-        color: inherit;
-        text-decoration: none;
+        color: inherit; // Inherit text color from parent
+        text-decoration: none; // Remove underline by default
         
+        // Underline on hover for interactive feedback
         &:hover {
             text-decoration: underline;
         }
     }
     
+    // Styling for current page (last item in breadcrumb)
     .current-page,
     .current-page-link {
-        color: #666;
+        color: #666; // Muted color for current page
     }
     
-    .separator {
-        color: #666;
+    // Separator styling
+    .dswp-breadcrumb-separator {
+        color: #666; // Muted color for separators
+    }
+}
+
+/**
+ * Breadcrumb Block Separator Icons
+ * 
+ * Custom styling for separator icons using Dashicons
+ * Ensures consistent sizing and alignment across different contexts
+ */
+.wp-block-design-system-wordpress-plugin-breadcrumb {
+    .dswp-breadcrumb-separator {
+        // Dashicon base styling
+        .dashicons {
+            font-size: 16px; // Consistent icon size
+            width: auto;
+            height: auto;
+            vertical-align: middle; // Vertical alignment
+            line-height: 1;
+            
+            // Special styling for forward slash icon
+            &.dswp-forward-slash {
+                transform: rotate(120deg) scaleX(1.5); // Rotate and stretch
+                position: relative;
+                top: -1px; // Fine-tune vertical positioning
+                display: inline-block;
+            }
+        }
     }
 }

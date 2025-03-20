@@ -1,94 +1,113 @@
+/**
+ * Divider Selector Styles
+ * Defines the appearance of the divider type selection buttons in the block inspector
+ */
 .dswp-divider-selector {
     margin-bottom: 16px;
 
-    .dswp-divider-label {
-        margin-bottom: 8px;
-        margin-top: 0;
-    }
 
     .components-button-group {
         .components-button {
             height: 36px;
-            min-width: 36px;
+            min-width: 7rem;
             padding: 6px 12px;
             justify-content: center;
             font-size: 16px;
-            
+
             &.is-pressed {
-                background: var(--wp-admin-theme-color);
+                background: #000;
                 color: white;
             }
         }
     }
 }
 
-.breadcrumb-template-preview {
-    padding: 8px;
-    background: #f0f0f0;
-    border-radius: 4px;
-    font-style: italic;
-    color: #666;
-}
+/**
+ * Dashicons Styling
+ * Custom styling for separator icons used in breadcrumb navigation
+ */
+.dashicons {
+    font-size: 16px;
+    width: auto;
+    height: auto;
+    vertical-align: middle;
+    line-height: 1;
 
-.dswp-template-preview {
-    background: #f0f0f0;
-    padding: 12px;
-    border-radius: 4px;
-    
-    .dswp-template-preview-text {
-        color: #666;
-        font-style: italic;
+    &.dswp-forward-slash {
+        transform: rotate(120deg) scaleX(1.5);
+        position: relative;
+        top: -1px;
+        display: inline-block;
     }
 }
 
+/**
+ * Current Page Link Toggle Styles
+ * Adjusts the appearance of the toggle control in the inspector
+ */
+.dswp-current-page-as-link {
+    margin: 2rem 0;
+
+    .components-toggle-control__help {
+        margin-inline-start: 0px;
+    }
+}
+
+/**
+ * Breadcrumb Container Styles for Editor Preview
+ * Defines the appearance of the breadcrumb in the block editor
+ */
 .dswp-block-breadcrumb__container {
     position: relative;
     padding: 12px;
-    background: #f0f0f0;
     border-radius: 4px;
 
-    .dswp-breadcrumb-editor-note {
-        position: absolute;
-        bottom: 4px;
-        right: 8px;
-        font-size: 0.8em;
-        color: #666;
-        font-style: italic;
-    }
-
-    // Style the preview links
-    a {
-        color: #0073aa;
-        text-decoration: none;
-        pointer-events: none; // Disable clicking in editor
-        
-        &:hover {
-            text-decoration: underline;
-        }
-    }
-
-    .current-page,
-    .current-page-link {
-        color: #666;
-    }
-
-    .separator {
+    .dswp-breadcrumb-separator {
         color: #666;
         margin: 0 4px;
     }
 }
 
+/**
+ * Editor Preview Specific Styles
+ * Ensures proper display and visibility in the block editor
+ */
 .is-editor-preview {
     .dswp-block-breadcrumb__container {
         padding: 12px;
-        background: #f0f0f0;
         border-radius: 4px;
         opacity: 1 !important;
-        
+
         .dswp-breadcrumb-placeholder {
             color: #666;
-            font-style: italic;
             text-align: center;
         }
     }
+}
+
+/**
+ * Editor block version displayed in the block settings sidebar
+ */
+ .dswp-block-version {
+    font-size: 12px;
+    color: #666;
+    background: #0000001f;
+    padding: 1rem;
+}
+
+/**
+ * Editor block setting labels
+ */
+.dswp-block-setting-label {
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.4;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: calc(8px);
+    padding: 0px;
+}
+
+.dswp-block-setting-warning{
+    margin-bottom: 2rem;
 }
