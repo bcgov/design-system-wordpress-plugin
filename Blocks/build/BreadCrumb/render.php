@@ -29,7 +29,7 @@ $divider = 'chevron' === $divider_type ? $chevron_svg : $slash_svg;
  * Build Page Hierarchy
  * Constructs an array representing the page's ancestral path
  */
-$hierarchy = array();
+$hierarchy = [];
 $ancestors = get_post_ancestors( $current_page_id );
 
 // Add ancestors to the hierarchy in correct order.
