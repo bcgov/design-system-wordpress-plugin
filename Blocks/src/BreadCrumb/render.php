@@ -8,6 +8,9 @@
  * @subpackage Breadcrumb
  */
 
+
+namespace DesignSystemWordPressPlugin\Breadcrumb;
+
 // Get current page context.
 $current_page_id = get_the_ID();
 
