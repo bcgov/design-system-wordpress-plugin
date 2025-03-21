@@ -1,7 +1,7 @@
 {
-	"name": "design-system-navigation-block",
-	"version": "1.2.0",
-	"description": "Design System Navigation Block",
+	"name": "design-system-blocks",
+	"version": "1.3.0",
+	"description": "Design System Blocks",
 	"author": "govwordpress@gov.bc.ca",
 	"license": "GPL-2.0-or-later",
 	"main": "build/index.js",
