@@ -1,1 +1,179 @@
-.in-page-nav-toggle{background:#fff;border:1px solid #ddd;border-radius:4px;cursor:pointer;padding:10px;position:fixed;left:20px;top:20px;z-index:1000}.in-page-nav-container{background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.1);right:0;max-width:250px;opacity:1;padding:.5rem;position:fixed;top:50%;transform:translateY(-50%);transition:transform .3s ease-in-out,opacity .3s ease-in-out;z-index:100}.in-page-nav-container ul{list-style:none;margin:0;padding:0}.in-page-nav-container li{margin-bottom:.75rem;opacity:1;transition:opacity .2s ease-in-out}.in-page-nav-container li:last-child{margin-bottom:0}.in-page-nav-container a{color:inherit;display:block;text-decoration:none}.in-page-nav-container a:hover{text-decoration:underline}@media screen and (max-width:1785px){.in-page-nav-container{opacity:.7;transform:translateX(100%) translateY(-50%)}.in-page-nav-container:after{background:#fff;box-shadow:-2px 0 4px rgba(0,0,0,.1);content:"⋮";cursor:pointer;font-size:56px;line-height:1;opacity:1;padding:.5rem 0;position:absolute;left:-21px;top:50%;transform:translateY(-50%);transition:opacity .3s ease-in-out}.in-page-nav-container:hover{opacity:1;transform:translateX(0) translateY(-50%)}.in-page-nav-container:hover:after{opacity:0}.in-page-nav-container:hover li:first-child{transition-delay:.05s}.in-page-nav-container:hover li:nth-child(2){transition-delay:.1s}.in-page-nav-container:hover li:nth-child(3){transition-delay:.15s}.in-page-nav-container:hover li:nth-child(4){transition-delay:.2s}.in-page-nav-container:hover li:nth-child(5){transition-delay:.25s}}.inpage-nav-toggle-wrapper{background:#fff;border:1px solid #e2e4e7;border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.1);display:block;margin:20px auto;max-width:840px;opacity:1;padding:16px;position:relative;visibility:visible;width:100%;z-index:100}.inpage-nav-toggle-wrapper .components-toggle-control{display:block!important;opacity:1!important;visibility:visible!important}.in-page-nav-container h6{font-size:1rem;font-weight:600;margin:0 0 1rem;padding:0}html{scroll-behavior:smooth}
+/*!*******************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./src/Bcgov/DesignSystemPlugin/InPageNav/styles.css ***!
+  \*******************************************************************************************************************************************************************************************************/
+/* Toggle button styling for the editor interface */
+.in-page-nav-toggle {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Main container for in-page navigation and content */
+.dswp-in-page-nav-container {
+    display: none;
+}
+
+/* In-page navigation sidebar */
+.dswp-in-page-nav {
+    width: 250px;
+    padding: 0.75rem;
+    background-color: #fff;
+    z-index: 50;
+    position: sticky;
+    top: 2rem;
+}
+
+/* Navigation title container with heading and toggle button */
+.nav-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+/* Title for in-page navigation */
+.dswp-in-page-nav h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+/* Toggle button for mobile */
+.nav-toggle {
+    display: none;
+}
+
+.arrow-icon {
+    font-size: 0.75rem;
+}
+
+/* Navigation list - always visible */
+.dswp-in-page-nav .nav-links {
+    display: block;
+}
+
+/* List items - always visible */
+.dswp-in-page-nav li {
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+/* Show active link on desktop */
+.dswp-in-page-nav li a.dswp-current {
+    display: block;
+}
+
+/* Show all links when parent is hovered on desktop */
+.dswp-in-page-nav:hover li {
+    display: block;
+}
+
+/* Navigation links */
+.dswp-in-page-nav a {
+    color: #1b1b1b;
+    text-decoration: none;
+    display: block;
+    padding: 0.25rem 0;
+    font-size: 0.9rem;
+}
+
+/* Hover effect */
+.dswp-in-page-nav a:hover {
+    color: #005ea2;
+    text-decoration: underline;
+}
+
+/* Active link styling */
+.dswp-in-page-nav a.dswp-current {
+    font-weight: bold;
+    color: #005ea2;
+    display: block;
+}
+
+/* Focus state */
+.dswp-in-page-nav a:focus {
+    outline: 2px solid #005ea2;
+    outline-offset: 2px;
+}
+
+/* Clear floats inside main content if needed */
+#main-content::after,
+main::after,
+.content-area::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Main content area styling */
+.dswp-in-page-nav-container main,
+.dswp-in-page-nav-container .content-area {
+    flex: 1 1 auto;
+}
+
+/* Desktop behavior */
+@media screen and (min-width: 1801px) {
+    .dswp-in-page-nav {
+        float: left;
+        margin-right: 2rem;
+        margin-bottom: 1rem;
+        border-right: 0.25rem solid #e6e6e6;
+    }
+}
+
+/* Mobile behavior */
+@media screen and (max-width: 1800px) {
+    .dswp-in-page-nav {
+        float: none;
+        margin: auto;
+        padding: 1rem 0.75rem;
+        border-bottom: 0.25rem solid #e6e6e6;
+        position: sticky;
+        top: 1rem;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        width: var(--dswp-layout-content-size);
+    }
+
+    /* Adjust padding for the content within */
+    .nav-title, .nav-links {
+        padding-right: 0.75rem;
+        padding-left: 0.75rem;
+    }
+}
+
+/* Styles for the toggle wrapper in the editor */
+.inpage-nav-toggle-wrapper {
+    position: relative;
+    margin: 20px auto;
+    max-width: 840px;
+    width: 100%;
+    z-index: 100;
+    background: #fff;
+    padding: 16px;
+    border: 1px solid #e2e4e7;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    display: block;
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Ensure toggle control is always visible in editor */
+.inpage-nav-toggle-wrapper .components-toggle-control {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Enable smooth scrolling for anchor links */
+html {
+    scroll-behavior: smooth;
+}

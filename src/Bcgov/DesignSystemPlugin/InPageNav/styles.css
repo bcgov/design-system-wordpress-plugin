@@ -11,94 +11,138 @@
     cursor: pointer;
 }
 
-/* Main navigation container - fixed positioning with centered alignment */
-.in-page-nav-container {
-    position: fixed;
-    top: 50%;
-    left: 0px;
-    transform: translateY(-50%);
-    max-width: 250px;
-    z-index: 100;
-    background: white;
-    padding: 0.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-    opacity: 1;
+/* Main container for in-page navigation and content */
+.dswp-in-page-nav-container {
+    display: none;
 }
 
-/* Reset list styles for navigation menu */
-.in-page-nav-container ul {
-    list-style: none;
-    padding: 0;
+/* In-page navigation sidebar */
+.dswp-in-page-nav {
+    width: 250px;
+    padding: 0.75rem;
+    background-color: #fff;
+    z-index: 50;
+    position: sticky;
+    top: 2rem;
+}
+
+/* Navigation title container with heading and toggle button */
+.nav-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+/* Title for in-page navigation */
+.dswp-in-page-nav h4 {
     margin: 0;
+    font-size: 1rem;
+    font-weight: bold;
 }
 
-/* List item styling with transition effects */
-.in-page-nav-container li {
-    margin-bottom: 0.75rem;
-    opacity: 1;
-    transition: opacity 0.2s ease-in-out;
+/* Toggle button for mobile */
+.nav-toggle {
+    display: none;
 }
 
-/* Remove margin from last list item */
-.in-page-nav-container li:last-child {
-    margin-bottom: 0;
+.arrow-icon {
+    font-size: 0.75rem;
 }
 
-/* Navigation link styling */
-.in-page-nav-container a {
-    color: inherit;
-    text-decoration: none;
+/* Navigation list - always visible */
+.dswp-in-page-nav .nav-links {
     display: block;
 }
 
-/* Hover effect for navigation links */
-.in-page-nav-container a:hover {
+/* List items - always visible */
+.dswp-in-page-nav li {
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+/* Show active link on desktop */
+.dswp-in-page-nav li a.dswp-current {
+    display: block;
+}
+
+/* Show all links when parent is hovered on desktop */
+.dswp-in-page-nav:hover li {
+    display: block;
+}
+
+/* Navigation links */
+.dswp-in-page-nav a {
+    color: #1b1b1b;
+    text-decoration: none;
+    display: block;
+    padding: 0.25rem 0;
+    font-size: 0.9rem;
+}
+
+/* Hover effect */
+.dswp-in-page-nav a:hover {
+    color: #005ea2;
     text-decoration: underline;
 }
 
-/* Responsive styles for screens below 1785px */
-@media screen and (max-width: 1785px) {
-    /* Hide navigation off-screen but keep slightly visible */
-    .in-page-nav-container {
-        transform: translateX(-100%) translateY(-50%);
-        opacity: 0.7;
+/* Active link styling */
+.dswp-in-page-nav a.dswp-current {
+    font-weight: bold;
+    color: #005ea2;
+    display: block;
+}
+
+/* Focus state */
+.dswp-in-page-nav a:focus {
+    outline: 2px solid #005ea2;
+    outline-offset: 2px;
+}
+
+/* Clear floats inside main content if needed */
+#main-content::after,
+main::after,
+.content-area::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Main content area styling */
+.dswp-in-page-nav-container main,
+.dswp-in-page-nav-container .content-area {
+    flex: 1 1 auto;
+}
+
+/* Desktop behavior */
+@media screen and (min-width: 1801px) {
+    .dswp-in-page-nav {
+        float: right;
+        margin-left: 2rem;
+        margin-bottom: 1rem;
+        border-left: 0.25rem solid #e6e6e6;
+    }
+}
+
+/* Mobile behavior */
+@media screen and (max-width: 1800px) {
+    .dswp-in-page-nav {
+        float: none;
+        margin: auto;
+        padding: 1rem 0.75rem;
+        border-bottom: 0.25rem solid #e6e6e6;
+        position: sticky;
+        top: 1rem;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        width: var(--dswp-layout-content-size);
     }
 
-    /* Add dots indicator for collapsed navigation */
-    .in-page-nav-container::after {
-        content: '⋮';
-        position: absolute;
-        right: -21px;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 56px;
-        line-height: 1;
-        cursor: pointer;
-        background: white;
-        padding: 0.5rem 0;
-        box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
-        transition: opacity 0.3s ease-in-out;
-        opacity: 1;
+    /* Adjust padding for the content within */
+    .nav-title, .nav-links {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
     }
-
-    /* Show navigation on hover */
-    .in-page-nav-container:hover {
-        transform: translateX(0) translateY(-50%);
-        opacity: 1;
-    }
-
-    /* Hide dots when navigation is expanded */
-    .in-page-nav-container:hover::after {
-        opacity: 0;
-    }
-
-    /* Staggered animation delays for list items on hover */
-    .in-page-nav-container:hover li:nth-child(1) { transition-delay: 0.05s; }
-    .in-page-nav-container:hover li:nth-child(2) { transition-delay: 0.10s; }
-    .in-page-nav-container:hover li:nth-child(3) { transition-delay: 0.15s; }
-    .in-page-nav-container:hover li:nth-child(4) { transition-delay: 0.20s; }
-    .in-page-nav-container:hover li:nth-child(5) { transition-delay: 0.25s; }
 }
 
 /* Styles for the toggle wrapper in the editor */
@@ -114,9 +158,9 @@
     border-radius: 2px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
-    display: block ;
-    visibility: visible ;
-    opacity: 1 ;
+    display: block;
+    visibility: visible;
+    opacity: 1;
 }
 
 /* Ensure toggle control is always visible in editor */
@@ -124,14 +168,6 @@
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
-}
-
-/* Styling for the "On this page" heading */
-.in-page-nav-container h6 {
-    margin: 0 0 1rem 0;
-    padding: 0;
-    font-size: 1rem;
-    font-weight: 600;
 }
 
 /* Enable smooth scrolling for anchor links */
