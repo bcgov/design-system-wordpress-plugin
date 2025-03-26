@@ -9,7 +9,7 @@
 
 .dswp-in-page-nav {
     position: sticky;
-    top: 0;
+    top: 2rem;
     width: var(--dswp-layout-content-size);
     margin: auto;
     padding: 1rem 0.75rem;

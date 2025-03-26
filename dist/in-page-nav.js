@@ -59,6 +59,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const updateActiveLink = () => {
     const navHeight = nav.offsetHeight + 8;
     const scrollPosition = window.scrollY + navHeight + window.innerHeight * 0.2;
+
+    // Only check for mobile view and top position
+    if (window.innerWidth <= 768 && window.scrollY < 50) {
+      nav.classList.add('is-expanded');
+      navToggle.setAttribute('aria-expanded', 'true');
+    } else {
+      // Always collapse unless manually expanded
+      if (!nav.hasAttribute('data-manual-expanded')) {
+        nav.classList.remove('is-expanded');
+        navToggle.setAttribute('aria-expanded', 'false');
+      }
+    }
+
+    // Find current heading
     let currentHeading = null;
     for (const heading of headings) {
       if (heading.getBoundingClientRect().top + window.scrollY < scrollPosition) {
@@ -75,13 +89,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
-  // Toggle navigation
+  // Toggle navigation - simplified
   const navToggle = nav.querySelector('.nav-toggle');
   navToggle.addEventListener('click', e => {
-    e.stopPropagation(); // Prevent event from bubbling to navHeader
-    if (window.innerWidth <= 768) {
-      const isExpanded = nav.classList.toggle('is-expanded');
-      navToggle.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+    e.stopPropagation();
+    const isExpanded = nav.classList.toggle('is-expanded');
+    navToggle.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+    if (isExpanded) {
+      nav.setAttribute('data-manual-expanded', '');
+    } else {
+      nav.removeAttribute('data-manual-expanded');
     }
   });
 
@@ -99,7 +116,8 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       history.pushState(null, null, `#${targetId}`);
 
-      // Collapse the navigation after clicking a link
+      // Also remove manual expand marker when clicking a link
+      nav.removeAttribute('data-manual-expanded');
       nav.classList.remove('is-expanded');
     });
   });
