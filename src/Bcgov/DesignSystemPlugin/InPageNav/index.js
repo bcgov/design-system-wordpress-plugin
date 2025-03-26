@@ -8,17 +8,29 @@ document.addEventListener('DOMContentLoaded', () => {
     // Create navigation structure
     const nav = document.createElement('aside');
     nav.className = 'dswp-in-page-nav';
+    nav.setAttribute('role', 'navigation');
+    nav.setAttribute('aria-label', 'On this page');
     nav.innerHTML = `
         <div class="nav-header">
             <div class="nav-title">
-                <h4>On this page</h4>
+                <h4 id="nav-title">On this page:</h4>
             </div>
-            <button type="button" class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false"></button>
+            <button type="button" 
+                class="nav-toggle" 
+                aria-label="Toggle section navigation" 
+                aria-expanded="false"
+                aria-controls="nav-links">
+            </button>
         </div>
-        <ul class="nav-links">
+        <ul id="nav-links" 
+            class="nav-links" 
+            role="list" 
+            aria-labelledby="nav-title">
             ${headings.map(heading => `
                 <li>
-                    <a href="#${heading.id}" data-heading-id="${heading.id}">
+                    <a href="#${heading.id}" 
+                       data-heading-id="${heading.id}"
+                       aria-current="false">
                         ${heading.textContent}
                     </a>
                 </li>
@@ -62,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
         nav.querySelectorAll('a').forEach(link => {
             const isCurrent = currentHeading && link.getAttribute('data-heading-id') === currentHeading.id;
             link.classList.toggle('dswp-current', isCurrent);
+            link.setAttribute('aria-current', isCurrent ? 'true' : 'false');
             const listItem = link.closest('li');
             listItem.classList.toggle('current', isCurrent);
         });
@@ -109,6 +122,14 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', () => {
         if (scrollTimeout) window.cancelAnimationFrame(scrollTimeout);
         scrollTimeout = window.requestAnimationFrame(updateActiveLink);
+    });
+
+    // Add keyboard navigation for the toggle button
+    navToggle.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            navToggle.click();
+        }
     });
 
     // Initial check

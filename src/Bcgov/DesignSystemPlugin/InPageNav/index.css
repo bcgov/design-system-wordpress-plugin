@@ -3,14 +3,19 @@
     max-width: var(--dswp-layout-content-size);
     margin: 0 auto;
 }
+.dswp-in-page-nav .nav-links .current {
+    border-left: solid 5px #005ea2;
+}
 
 .dswp-in-page-nav {
+    padding-right: var(--wp--style--root--padding-right);
+    padding-left: var(--wp--style--root--padding-left);
     position: sticky;
     top: 2rem;
     width: var(--dswp-layout-content-size);
     margin: auto;
-    padding: 1rem 0.75rem;
-    background-color: #fff;
+    padding-top: 1rem;
+    background-color: #f3f3f3;
     z-index: 50;
     border-bottom: 0.25rem solid #e6e6e6;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -56,18 +61,19 @@
 /* Navigation links container */
 .dswp-in-page-nav .nav-links {
     list-style: none;
-    padding: 0;
-    margin: 0.5rem 0 0;
+    padding: 1rem 2rem;
 }
 
 .dswp-in-page-nav .nav-links li {
-    margin-bottom: 0.75rem;
+    padding-left: 2rem;
+    border-left: solid 1px;
+    padding-bottom: .75rem;
 }
 
 /* Mobile styles */
 @media screen and (max-width: 768px) {
     .dswp-in-page-nav {
-        padding: 0.75rem;
+        padding: 1.75rem;
         width: 100%;
         box-sizing: border-box;
     }
@@ -118,6 +124,8 @@
         transform: translateY(0);
     }
 
+  
+
     /* Expanded state */
     .dswp-in-page-nav.is-expanded .nav-links {
         height: auto;
@@ -128,14 +136,13 @@
         position: relative;
         opacity: 1;
         transform: none;
-        margin-bottom: 0.75rem;
     }
 }
 
 /* Keep existing styles */
 .dswp-in-page-nav h4 {
     margin: 0;
-    font-size: 1rem;
+    font-size: 1.6rem;
     font-weight: bold;
 }
 
@@ -144,7 +151,7 @@
     text-decoration: none;
     display: block;
     padding: 0.25rem 0;
-    font-size: 0.9rem;
+    font-size: 1.2rem;
 }
 
 .dswp-in-page-nav a:hover {
@@ -155,4 +162,5 @@
 .dswp-in-page-nav a.dswp-current {
     font-weight: bold;
     color: #005ea2;
+
 } 
