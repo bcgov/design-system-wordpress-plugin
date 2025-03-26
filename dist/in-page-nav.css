@@ -1,81 +1,107 @@
-/*!*******************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./src/Bcgov/DesignSystemPlugin/InPageNav/styles.css ***!
-  \*******************************************************************************************************************************************************************************************************/
-/* Toggle button styling for the editor interface */
-.in-page-nav-toggle {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-    padding: 10px;
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+/*!******************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./src/Bcgov/DesignSystemPlugin/InPageNav/index.css ***!
+  \******************************************************************************************************************************************************************************************************/
+.dswp-nav-content-container {
+    position: relative;
+    max-width: var(--dswp-layout-content-size);
+    margin: 0 auto;
+}
+
+.dswp-in-page-nav {
+    position: sticky;
+    top: 0;
+    width: var(--dswp-layout-content-size);
+    margin: auto;
+    padding: 1rem 0.75rem;
+    background-color: #fff;
+    z-index: 50;
+    border-bottom: 0.25rem solid #e6e6e6;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Add styles for the nav header */
+.dswp-in-page-nav .nav-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     cursor: pointer;
 }
 
-/* Main container for in-page navigation and content */
-.dswp-in-page-nav-container {
-    display: none;
-}
-
-/* In-page navigation sidebar */
-.dswp-in-page-nav {
-    width: 250px;
-    padding: 0.75rem;
-    background-color: #fff;
-    z-index: 50;
-    position: sticky;
-    top: 2rem;
-}
-
-/* Navigation title container with heading and toggle button */
-.nav-title {
+/* Add styles for the chevron button */
+.dswp-in-page-nav .nav-toggle {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.5rem;
+    justify-content: center;
 }
 
-/* Title for in-page navigation */
+.dswp-in-page-nav .nav-toggle::after {
+    content: '';
+    width: 12px;
+    height: 12px;
+    border-right: 2px solid #1b1b1b;
+    border-bottom: 2px solid #1b1b1b;
+    transform: rotate(45deg);
+    transition: transform 0.3s ease;
+}
+
+.dswp-in-page-nav.is-collapsed .nav-toggle::after {
+    transform: rotate(-135deg);
+}
+
+/* Mobile collapsed state */
+@media screen and (max-width: 768px) {
+    .dswp-in-page-nav {
+        padding: 0.75rem;
+    }
+
+    .dswp-in-page-nav .nav-title {
+        margin: 0;
+    }
+
+    .dswp-in-page-nav .nav-links {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+    }
+
+    .dswp-in-page-nav.is-collapsed .nav-links {
+        max-height: 0;
+    }
+
+    .dswp-in-page-nav:not(.is-collapsed) .nav-links {
+        max-height: 500px; /* Adjust based on your content */
+    }
+
+    .dswp-in-page-nav.is-collapsed .nav-links li:not(.current) {
+        display: none;
+    }
+
+    .dswp-in-page-nav.is-collapsed .nav-links li.current {
+        margin: 0;
+    }
+}
+
+/* Keep existing styles */
 .dswp-in-page-nav h4 {
     margin: 0;
     font-size: 1rem;
     font-weight: bold;
 }
 
-/* Toggle button for mobile */
-.nav-toggle {
-    display: none;
-}
-
-.arrow-icon {
-    font-size: 0.75rem;
-}
-
-/* Navigation list - always visible */
 .dswp-in-page-nav .nav-links {
-    display: block;
-    padding-inline-start: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0;
 }
 
-/* List items - always visible */
 .dswp-in-page-nav li {
     margin-bottom: 0.75rem;
-    display: block;
 }
 
-/* Show active link on desktop */
-.dswp-in-page-nav li a.dswp-current {
-    display: block;
-}
-
-/* Show all links when parent is hovered on desktop */
-.dswp-in-page-nav:hover li {
-    display: block;
-}
-
-/* Navigation links */
 .dswp-in-page-nav a {
     color: #1b1b1b;
     text-decoration: none;
@@ -84,93 +110,14 @@
     font-size: 0.9rem;
 }
 
-/* Hover effect */
 .dswp-in-page-nav a:hover {
     color: #005ea2;
     text-decoration: underline;
 }
 
-/* Active link styling */
 .dswp-in-page-nav a.dswp-current {
     font-weight: bold;
     color: #005ea2;
-    display: block;
-}
-
-/* Focus state */
-.dswp-in-page-nav a:focus {
-    outline: 2px solid #005ea2;
-    outline-offset: 2px;
-}
-
-/* Clear floats inside main content if needed */
-#main-content::after,
-main::after,
-.content-area::after {
-    content: "";
-    display: table;
-    clear: both;
-}
-
-/* Main content area styling */
-.dswp-in-page-nav-container main,
-.dswp-in-page-nav-container .content-area {
-    flex: 1 1 auto;
-}
-
-/* Desktop behavior */
-@media screen and (min-width: 1801px) {
-    .dswp-in-page-nav {
-        float: right;
-        margin-left: 1rem;
-        margin-bottom: 1rem;
-        border-left: 0.25rem solid #e6e6e6;
-    }
-}
-
-/* Mobile behavior */
-@media screen and (max-width: 1800px) {
-    .dswp-in-page-nav {
-        float: none;
-        margin: auto;
-        padding: 1rem 0.75rem;
-        border-bottom: 0.25rem solid #e6e6e6;
-        position: sticky;
-        background-color: #fff;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        width: var(--dswp-layout-content-size);
-    }
-
-}
-
-/* Styles for the toggle wrapper in the editor */
-.inpage-nav-toggle-wrapper {
-    position: relative;
-    margin: 20px auto;
-    max-width: 840px;
-    width: 100%;
-    z-index: 100;
-    background: #fff;
-    padding: 16px;
-    border: 1px solid #e2e4e7;
-    border-radius: 2px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-    display: block;
-    visibility: visible;
-    opacity: 1;
-}
-
-/* Ensure toggle control is always visible in editor */
-.inpage-nav-toggle-wrapper .components-toggle-control {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-}
-
-/* Enable smooth scrolling for anchor links */
-html {
-    scroll-behavior: smooth;
-}
+} 
 
 /*# sourceMappingURL=in-page-nav.css.map*/
