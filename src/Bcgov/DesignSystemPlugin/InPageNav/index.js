@@ -7,13 +7,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Create navigation structure
     const nav = document.createElement('aside');
-    nav.className = 'dswp-in-page-nav is-collapsed';
+    nav.className = 'dswp-in-page-nav';
     nav.innerHTML = `
         <div class="nav-header">
             <div class="nav-title">
                 <h4>On this page</h4>
             </div>
-            <button class="nav-toggle" aria-label="Toggle navigation menu"></button>
+            <button type="button" class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false"></button>
         </div>
         <ul class="nav-links">
             ${headings.map(heading => `
@@ -49,14 +49,19 @@ document.addEventListener('DOMContentLoaded', () => {
         nav.querySelectorAll('a').forEach(link => {
             const isCurrent = currentHeading && link.getAttribute('data-heading-id') === currentHeading.id;
             link.classList.toggle('dswp-current', isCurrent);
-            link.closest('li').classList.toggle('current', isCurrent);
+            const listItem = link.closest('li');
+            listItem.classList.toggle('current', isCurrent);
         });
     };
 
     // Toggle navigation
-    const navHeader = nav.querySelector('.nav-header');
-    navHeader.addEventListener('click', () => {
-        nav.classList.toggle('is-collapsed');
+    const navToggle = nav.querySelector('.nav-toggle');
+    navToggle.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent event from bubbling to navHeader
+        if (window.innerWidth <= 768) {
+            const isExpanded = nav.classList.toggle('is-expanded');
+            navToggle.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+        }
     });
 
     // Smooth scroll to heading
@@ -77,9 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
             history.pushState(null, null, `#${targetId}`);
             
             // Collapse the navigation after clicking a link
-            if (window.innerWidth <= 768) {
-                nav.classList.add('is-collapsed');
-            }
+            nav.classList.remove('is-expanded');
         });
     });
 
