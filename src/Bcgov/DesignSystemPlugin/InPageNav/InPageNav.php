@@ -2,7 +2,7 @@
 
 namespace Bcgov\DesignSystemPlugin\InPageNav;
 
-class Settings {
+class InPageNav {
     
     private $version;
 
@@ -47,7 +47,7 @@ class Settings {
         // Enqueue styles
         wp_enqueue_style(
             'dswp-in-page-nav',
-            $plugin_url . '/dist/in-page-nav.css',
+            $plugin_url . '/dist/style-in-page-nav.css',
             [],
             $this->version
         );

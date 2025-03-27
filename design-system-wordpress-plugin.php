@@ -121,7 +121,7 @@ use Bcgov\DesignSystemPlugin\Enqueue\{
     Script
 };
 
-use Bcgov\DesignSystemPlugin\InPageNav\Settings as InPageNavSettings;
+use Bcgov\DesignSystemPlugin\InPageNav\InPageNav;
 
 use Bcgov\DesignSystemPlugin\AutoAnchor\Settings as AutoAnchorSettings;
 
@@ -181,4 +181,4 @@ $auto_anchor_settings->init();
  */
 
 // Initialize InPageNav
-$in_page_nav = new InPageNavSettings();
+$in_page_nav = new InPageNav();

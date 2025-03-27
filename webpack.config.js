@@ -9,9 +9,9 @@ module.exports = {
             './src/Bcgov/DesignSystemPlugin/AutoAnchor/AutoAnchor.js',
         ],
         'in-page-nav': [
-            './src/Bcgov/DesignSystemPlugin/InPageNav/index.js', './src/Bcgov/DesignSystemPlugin/InPageNav/styles.css'
+            './src/Bcgov/DesignSystemPlugin/InPageNav/view.js', './src/Bcgov/DesignSystemPlugin/InPageNav/style.css'
         ],
-        'in-page-nav-editor': './src/Bcgov/DesignSystemPlugin/InPageNav/settings.js'
+        'in-page-nav-editor': './src/Bcgov/DesignSystemPlugin/InPageNav/edit.js'
     },
     output: {
         path: path.resolve(__dirname, 'dist'),

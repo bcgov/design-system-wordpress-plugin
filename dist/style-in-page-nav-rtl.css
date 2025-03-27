@@ -1,0 +1,169 @@
+/*!******************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./src/Bcgov/DesignSystemPlugin/InPageNav/style.css ***!
+  \******************************************************************************************************************************************************************************************************/
+.dswp-nav-content-container {
+    position: relative;
+    max-width: var(--dswp-layout-content-size);
+    margin: 0 auto;
+}
+.dswp-in-page-nav .nav-links .current {
+    border-right: solid 5px #005ea2;
+}
+
+.dswp-in-page-nav {
+    padding-left: var(--wp--style--root--padding-right);
+    padding-right: var(--wp--style--root--padding-left);
+    position: sticky;
+    top: 2rem;
+    width: var(--dswp-layout-content-size);
+    margin: auto;
+    padding-top: 1rem;
+    background-color: #f3f3f3;
+    z-index: 50;
+    border-bottom: 0.25rem solid #e6e6e6;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Add styles for the nav header */
+.dswp-in-page-nav .nav-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+/* Add styles for the expand button */
+.dswp-in-page-nav .nav-toggle {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    display: none;
+    width: 32px;
+    height: 32px;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+}
+
+.dswp-in-page-nav .nav-toggle::after {
+    content: '';
+    display: block;
+    width: 10px;
+    height: 10px;
+    border-left: 2px solid #1b1b1b;
+    border-bottom: 2px solid #1b1b1b;
+    transform: rotate(-45deg);
+    transition: transform 0.3s ease;
+}
+
+.dswp-in-page-nav.is-expanded .nav-toggle::after {
+    transform: rotate(135deg);
+}
+
+/* Navigation links container */
+.dswp-in-page-nav .nav-links {
+    list-style: none;
+    padding: 1rem 2rem;
+}
+
+.dswp-in-page-nav .nav-links li {
+    padding-right: 2rem;
+    border-right: solid 1px;
+    padding-bottom: .75rem;
+}
+
+/* Mobile styles */
+@media screen and (max-width: 768px) {
+    .dswp-in-page-nav {
+        padding: 1.75rem;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .dswp-in-page-nav .nav-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0;
+        gap: 1rem;
+        width: 100%;
+    }
+
+    .dswp-in-page-nav .nav-title {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .dswp-in-page-nav .nav-toggle {
+        display: flex;
+        flex-shrink: 0;
+        margin-right: auto;
+    }
+
+    .dswp-in-page-nav.is-expanded .nav-toggle::after {
+        transform: rotate(135deg);
+    }
+
+    .dswp-in-page-nav .nav-links {
+        position: relative;
+        height: 2rem;
+        overflow: hidden;
+        transition: height 0.3s ease;
+        width: 100%;
+    }
+
+    .dswp-in-page-nav .nav-links li {
+        position: absolute;
+        width: 100%;
+        opacity: 0;
+        transform: translateY(100%);
+        transition: transform 0.3s ease, opacity 0.3s ease;
+        margin: 0;
+    }
+
+    .dswp-in-page-nav .nav-links li.current {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+  
+
+    /* Expanded state */
+    .dswp-in-page-nav.is-expanded .nav-links {
+        height: auto;
+        position: static;
+    }
+
+    .dswp-in-page-nav.is-expanded .nav-links li {
+        position: relative;
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* Keep existing styles */
+.dswp-in-page-nav h4 {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: bold;
+}
+
+.dswp-in-page-nav a {
+    color: #1b1b1b;
+    text-decoration: none;
+    display: block;
+    padding: 0.25rem 0;
+    font-size: 1.2rem;
+}
+
+.dswp-in-page-nav a:hover {
+    color: #005ea2;
+    text-decoration: underline;
+}
+
+.dswp-in-page-nav a.dswp-current {
+    font-weight: bold;
+    color: #005ea2;
+
+} 
