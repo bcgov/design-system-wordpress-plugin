@@ -1,8 +1,9 @@
 <?php
 
-namespace Bcgov\DesignSystemPlugin;
+namespace Bcgov\DesignSystemPlugin\InPageNav;
 
-class InPageNav {
+class Settings {
+    
     private $version;
 
     public function __construct() {
@@ -39,10 +40,14 @@ class InPageNav {
         $show_nav = get_post_meta(get_the_ID(), 'show_inpage_nav', true);
         if (!$show_nav) return;
 
+        // Get plugin root directory
+        $plugin_dir = WP_PLUGIN_DIR . '/design-system-wordpress-plugin';
+        $plugin_url = plugins_url('', $plugin_dir . '/design-system-wordpress-plugin.php');
+
         // Enqueue styles
         wp_enqueue_style(
             'dswp-in-page-nav',
-            plugin_dir_url(__FILE__) . '../../../dist/in-page-nav.css',
+            $plugin_url . '/dist/in-page-nav.css',
             [],
             $this->version
         );
@@ -50,8 +55,8 @@ class InPageNav {
         // Enqueue script
         wp_enqueue_script(
             'dswp-in-page-nav',
-            plugin_dir_url(__FILE__) . '../../../dist/in-page-nav.js',
-            [],
+            $plugin_url . '/dist/in-page-nav.js',
+            ['wp-element'],
             $this->version,
             true
         );
@@ -67,17 +72,28 @@ class InPageNav {
     }
 
     public function enqueue_editor_assets() {
-        $asset_file = include plugin_dir_path(__FILE__) . '../../../dist/in-page-nav-editor.asset.php';
+        // Get the main plugin file path/url (similar to auto-anchor script)
+        $script_path = plugin_dir_path(dirname(dirname(dirname(__DIR__)))) . 'dist/in-page-nav-editor.js';
+        $script_url = plugin_dir_url(dirname(dirname(dirname(__DIR__)))) . 'dist/in-page-nav-editor.js';
+
+        $asset_file_path = plugin_dir_path(dirname(dirname(dirname(__DIR__)))) . 'dist/in-page-nav-editor.asset.php';
         
-        wp_enqueue_script(
-            'dswp-in-page-nav-editor',
-            plugin_dir_url(__FILE__) . '../../../dist/in-page-nav-editor.js',
-            array_merge(
+        // Default dependencies if asset file is missing
+        $asset_file = file_exists($asset_file_path) 
+            ? include $asset_file_path
+            : [
+                'dependencies' => ['wp-plugins', 'wp-edit-post', 'wp-element', 'wp-components', 'wp-data'],
+                'version' => $this->version
+            ];
+
+        if (file_exists($script_path)) {
+            wp_enqueue_script(
+                'dswp-in-page-nav-editor',
+                $script_url,
                 $asset_file['dependencies'],
-                ['wp-plugins', 'wp-edit-post', 'wp-element', 'wp-components', 'wp-data']
-            ),
-            $this->version,
-            true
-        );
+                $asset_file['version'],
+                true
+            );
+        }
     }
 } 
