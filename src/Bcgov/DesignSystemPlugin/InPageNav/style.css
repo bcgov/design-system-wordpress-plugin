@@ -41,6 +41,7 @@
     position: relative;
     align-items: center;
     justify-content: center;
+    transition: display 0.3s ease, opacity 0.3s ease;
 }
 
 .dswp-in-page-nav .nav-toggle::after {
@@ -96,6 +97,8 @@
         display: flex;
         flex-shrink: 0;
         margin-left: auto;
+        opacity: 1;
+        transition: opacity 0.2s ease;
     }
 
     .dswp-in-page-nav.is-expanded .nav-toggle::after {
@@ -123,8 +126,6 @@
         opacity: 1;
         transform: translateY(0);
     }
-
-  
 
     /* Expanded state */
     .dswp-in-page-nav.is-expanded .nav-links {
@@ -162,5 +163,4 @@
 .dswp-in-page-nav a.dswp-current {
     font-weight: bold;
     color: #005ea2;
-
 } 

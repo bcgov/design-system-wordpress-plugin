@@ -49,16 +49,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateActiveLink = () => {
         const navHeight = nav.offsetHeight + 8;
         const scrollPosition = window.scrollY + navHeight + (window.innerHeight * 0.2);
+        const navToggle = nav.querySelector('.nav-toggle');
         
-        // Only check for mobile view and top position
-        if (window.innerWidth <= 768 && window.scrollY < 50) {
-            nav.classList.add('is-expanded');
-            navToggle.setAttribute('aria-expanded', 'true');
+        // Always hide toggle in desktop view, handle mobile behavior separately
+        if (window.innerWidth > 768) {
+            navToggle.style.display = 'none'; // Always hide in desktop
+            nav.classList.add('is-expanded'); // Always expanded in desktop
         } else {
-            // Always collapse unless manually expanded
-            if (!nav.hasAttribute('data-manual-expanded')) {
-                nav.classList.remove('is-expanded');
-                navToggle.setAttribute('aria-expanded', 'false');
+            // Mobile-specific behavior
+            if (window.scrollY < 50) {
+                // At top of page on mobile: expand nav and hide toggle
+                nav.classList.add('is-expanded');
+                navToggle.setAttribute('aria-expanded', 'true');
+                navToggle.style.display = 'none';
+            } else {
+                // Show toggle button when scrolling
+                navToggle.style.display = 'flex';
+                // Only collapse if not manually expanded
+                if (!nav.hasAttribute('data-manual-expanded')) {
+                    nav.classList.remove('is-expanded');
+                    navToggle.setAttribute('aria-expanded', 'false');
+                }
             }
         }
         
