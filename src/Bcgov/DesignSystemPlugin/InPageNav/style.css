@@ -1,0 +1,186 @@
+/**
+ * In-Page Navigation Styles
+ *
+ * Provides styles for the in-page navigation component with responsive
+ * behavior and smooth transitions. Follows BC Government design patterns.
+ */
+
+/* Container Layout
+   ========================================================================== */
+.dswp-nav-content-container {
+    position: relative;
+    max-width: var(--dswp-layout-content-size);
+    margin: 0 auto;
+}
+
+/* Navigation Base Styles
+   ========================================================================== */
+.dswp-in-page-nav {
+    padding-right: var(--wp--style--root--padding-right);
+    padding-left: var(--wp--style--root--padding-left);
+    position: sticky;
+    top: 0;
+    width: var(--dswp-layout-content-size);
+    margin: auto;
+    padding-top: 1rem;
+    background-color: #f3f3f3;
+    z-index: 50;
+    border-bottom: 0.25rem solid #e6e6e6;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Navigation Header
+   ========================================================================== */
+.dswp-in-page-nav .nav-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.dswp-in-page-nav h4 {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: bold;
+}
+
+/* Toggle Button Styles
+   ========================================================================== */
+.dswp-in-page-nav .nav-toggle {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    display: none; /* Hidden by default, shown in mobile */
+    width: 32px;
+    height: 32px;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    transition: display 0.3s ease, opacity 0.3s ease;
+}
+
+/* Toggle button arrow indicator */
+.dswp-in-page-nav .nav-toggle::after {
+    content: '';
+    display: block;
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid #1b1b1b;
+    border-bottom: 2px solid #1b1b1b;
+    transform: rotate(45deg);
+    transition: transform 0.3s ease;
+}
+
+.dswp-in-page-nav.is-expanded .nav-toggle::after {
+    transform: rotate(-135deg);
+}
+
+/* Navigation Links
+   ========================================================================== */
+.dswp-in-page-nav .nav-links {
+    list-style: none;
+    padding: 1rem 2rem;
+}
+
+.dswp-in-page-nav .nav-links li {
+    padding-left: 2rem;
+    border-left: solid 1px;
+    padding-bottom: .75rem;
+}
+
+/* Active state indicator */
+.dswp-in-page-nav .nav-links .current {
+    border-left: solid 5px #005ea2;
+}
+
+/* Link Styles */
+.dswp-in-page-nav a {
+    color: #1b1b1b;
+    text-decoration: none;
+    display: block;
+    padding: 0.25rem 0;
+    font-size: 1.2rem;
+}
+
+.dswp-in-page-nav a:hover {
+    color: #005ea2;
+    text-decoration: underline;
+}
+
+.dswp-in-page-nav a.dswp-current {
+    font-weight: bold;
+    color: #005ea2;
+}
+
+/* Responsive Mobile Styles
+   ========================================================================== */
+@media screen and (max-width: 768px) {
+    /* Mobile container adjustments */
+    .dswp-in-page-nav {
+        padding: 1.75rem;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Mobile header layout */
+    .dswp-in-page-nav .nav-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0;
+        gap: 1rem;
+        width: 100%;
+    }
+
+    .dswp-in-page-nav .nav-title {
+        flex: 1;
+        min-width: 0;
+    }
+
+    /* Mobile toggle button visibility */
+    .dswp-in-page-nav .nav-toggle {
+        display: flex;
+        flex-shrink: 0;
+        margin-left: auto;
+        opacity: 1;
+        transition: opacity 0.2s ease;
+    }
+
+    /* Mobile navigation links animation setup */
+    .dswp-in-page-nav .nav-links {
+        position: relative;
+        height: 2rem;
+        overflow: hidden;
+        transition: height 0.3s ease;
+        width: 100%;
+    }
+
+    /* Mobile link item animations */
+    .dswp-in-page-nav .nav-links li {
+        position: absolute;
+        width: 100%;
+        opacity: 0;
+        transform: translateY(100%);
+        transition: transform 0.3s ease, opacity 0.3s ease;
+        margin: 0;
+    }
+
+    /* Current link visibility in collapsed state */
+    .dswp-in-page-nav .nav-links li.current {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Expanded state styles */
+    .dswp-in-page-nav.is-expanded .nav-links {
+        height: auto;
+        position: static;
+    }
+
+    .dswp-in-page-nav.is-expanded .nav-links li {
+        position: relative;
+        opacity: 1;
+        transform: none;
+    }
+}

@@ -8,7 +8,7 @@
  * Requires at least: 6.4.4
  * Tested up to: 6.5
  * Requires PHP: 7.4
- * Version: 2.6.0
+ * Version: 2.7.0
  * License: Apache License Version 2.0
  * License URI: LICENSE
  * Text Domain: design-system-wordpress-plugin
@@ -121,11 +121,7 @@ use Bcgov\DesignSystemPlugin\Enqueue\{
     Script
 };
 
-use Bcgov\DesignSystemPlugin\InPageNav\{
-    Script as InPageNavScript,
-    Style as InPageNavStyle,
-    Meta as InPageNavMeta
-};
+use Bcgov\DesignSystemPlugin\InPageNav\InPageNav;
 
 use Bcgov\DesignSystemPlugin\AutoAnchor\Settings as AutoAnchorSettings;
 
@@ -184,14 +180,5 @@ $auto_anchor_settings->init();
  * InPageNav.
  */
 
-// Initialize the InPageNav feature.
-$in_page_nav = new InPageNavScript();
-$in_page_nav->init();
-
-// Initialize InPageNav styles.
-$inpage_nav_style = new InPageNavStyle();
-$inpage_nav_style->init();
-
-// Initialize InPageNav meta.
-$inpage_nav_meta = new InPageNavMeta();
-$inpage_nav_meta->init();
+// Initialize InPageNav.
+$in_page_nav = new InPageNav();
