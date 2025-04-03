@@ -1,0 +1,15 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "design-system-wordpress-plugin/search",
+  "version": "1.0.0",
+  "title": "Design System Search",
+  "category": "design_system",
+  "icon": "search",
+  "description": "A modular search block that connects to the search page template",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "viewStyle": "file:./view.css",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php"
+}

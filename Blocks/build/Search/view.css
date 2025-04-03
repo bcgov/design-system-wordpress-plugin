@@ -1,0 +1,90 @@
+/*!*********************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/Search/view.scss ***!
+  \*********************************************************************************************************************************************************************************************************************************************/
+/**
+ * Search Block Frontend Styles
+ * 
+ * Styles for the public-facing search block.
+ * Uses BEM naming convention for class names.
+ * Base class follows WordPress's block naming pattern.
+ */
+.wp-block-design-system-wordpress-plugin-search {
+  /**
+   * Search Input Container
+   * Creates a flexible layout for search form elements
+   */
+  /**
+   * Search Input Field
+   * Styles for the main search input element
+   */
+  /**
+   * Search Button
+   * Styles for the submit button with variants
+   */
+}
+.wp-block-design-system-wordpress-plugin-search .dswp-search__input-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 1em 0;
+}
+.wp-block-design-system-wordpress-plugin-search .dswp-search__input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  min-width: 200px;
+  transition: border-color 0.2s;
+}
+.wp-block-design-system-wordpress-plugin-search .dswp-search__input:focus {
+  outline: none;
+  border-color: #007bff;
+}
+.wp-block-design-system-wordpress-plugin-search .dswp-search__button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s;
+  /**
+   * Primary Button Style
+   * Main action button with hover state
+   */
+  /**
+   * Secondary Button Style
+   * Alternative button style for secondary actions
+   */
+  /**
+   * Right Alignment Modifier
+   * Pushes button to the right of its container
+   */
+  /**
+   * Full-width Modifier
+   * Makes button span full width of container
+   */
+}
+.wp-block-design-system-wordpress-plugin-search .dswp-search__button--primary {
+  background-color: #007bff;
+  color: white;
+}
+.wp-block-design-system-wordpress-plugin-search .dswp-search__button--primary:hover {
+  background-color: #0056b3;
+}
+.wp-block-design-system-wordpress-plugin-search .dswp-search__button--secondary {
+  background-color: #6c757d;
+  color: white;
+}
+.wp-block-design-system-wordpress-plugin-search .dswp-search__button--secondary:hover {
+  background-color: #545b62;
+}
+.wp-block-design-system-wordpress-plugin-search .dswp-search__button--right {
+  margin-left: auto;
+}
+.wp-block-design-system-wordpress-plugin-search .dswp-search__button--below {
+  width: 100%;
+  margin-top: 10px;
+}
+
+/*# sourceMappingURL=view.css.map*/
