@@ -3,9 +3,9 @@
   "apiVersion": 3,
   "name": "design-system-wordpress-plugin/breadcrumb",
   "version": "1.0.0",
-  "title": "Design System Breadcrumb",
-  "category": "design_system",
-  "icon": "menu",
+  "title": "Breadcrumb",
+  "category": "design-system",
+  "icon": "ellipsis",
   "description": "A Custom breadcrumb block for the design system",
   "supports": {
     "typography": {

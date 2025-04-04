@@ -3,8 +3,8 @@
   "apiVersion": 3,
   "name": "design-system-wordpress-plugin/navigation",
   "version": "1.0.0",
-  "title": "Design System Navigation",
-  "category": "design_system",
+  "title": "Navigation",
+  "category": "design-system",
   "icon": "menu",
   "description": "A Custom navigation block for the design system",
   "supports": {
