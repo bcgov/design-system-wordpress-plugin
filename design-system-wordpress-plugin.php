@@ -17,14 +17,6 @@
  * @package DesignSystemPlugin
  */
 
-// Load the AJAX handler after WordPress is fully loaded
-add_action('init', function() {
-    $ajax_handler = plugin_dir_path(__FILE__) . 'Blocks/src/SearchPostFilter/ajax-handler.php';
-    if (file_exists($ajax_handler)) {
-        require_once $ajax_handler;
-    }
-});
-
 /**
  * Loads the autoloader.
  */
