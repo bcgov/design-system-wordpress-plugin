@@ -6,9 +6,9 @@ import { useSelect } from '@wordpress/data';
 import '../editor.scss'; 
 
 /**
- * Search Post Filter Block Editor Component
+ * Search Post Type Filter Block Editor Component
  * 
- * Renders the editor interface for the Search Post Filter block.
+ * Renders the editor interface for the Search Post Type Filter block.
  * This component displays a preview of how the post type filter buttons
  * will appear on the frontend, using actual post types from the site.
  * 
@@ -31,11 +31,11 @@ export default function Edit() {
 
     return (
         <div {...blockProps}>
-            <div className="dswp-search-post-filter__container dswp-search-post-filter__container--editor">
+            <div className="dswp-search-post-type-filter__container dswp-search-post-type-filter__container--editor">
                 {postTypes.map((postType) => (
                     <button 
                         key={postType.slug}
-                        className="dswp-search-post-filter__button"
+                        className="dswp-search-post-type-filter__button"
                         onClick={(e) => e.preventDefault()}
                         disabled
                     >

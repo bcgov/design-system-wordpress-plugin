@@ -1,16 +1,16 @@
 <?php
 /**
- * Search Post Filter Block - Frontend Render
+ * Search Post Type Filter Block - Frontend Render
  *
- * Renders the frontend interface for the Search Post Filter block.
+ * Renders the frontend interface for the Search Post Type Filter block.
  * This file handles the server-side rendering of the post type filter buttons,
  * managing the active states and URL generation for filtering.
  *
  * @package DesignSystemWordPressPlugin
- * @subpackage SearchPostFilter
+ * @subpackage SearchPosTypetFilter
  */
 
-namespace DesignSystemWordPressPlugin\SearchPostFilter;
+namespace DesignSystemWordPressPlugin\SearchPosTypetFilter;
 
 /**
  * Fetch all available public post types from WordPress
@@ -39,10 +39,10 @@ if ( isset( $_GET['post_type'] ) &&
 }
 ?>
 
-<div class="wp-block-design-system-wordpress-plugin-search-post-filter">
-    <div class="dswp-search-post-filter__container">
+<div class="wp-block-design-system-wordpress-plugin-search-post-type-filter">
+    <div class="dswp-search-post-type-filter__container">
         <?php
-        $filter_nonce = wp_create_nonce( 'search_post_filter' );
+        $filter_nonce = wp_create_nonce( 'search_post_type_filter' );
 
         /**
          * Loop through each public post type and create a filter button
@@ -53,9 +53,9 @@ if ( isset( $_GET['post_type'] ) &&
          */
         foreach ( $post_types as $current_post_type_object ) :
             $is_active    = $current_post_type === $current_post_type_object->name;
-            $button_class = 'dswp-search-post-filter__button';
+            $button_class = 'dswp-search-post-type-filter__button';
             if ( $is_active ) {
-                $button_class .= ' dswp-search-post-filter__button--active';
+                $button_class .= ' dswp-search-post-type-filter__button--active';
             }
 			?>
             <a 
