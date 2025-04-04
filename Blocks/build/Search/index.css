@@ -1,1 +1,90 @@
-.wp-block-design-system-wordpress-plugin-search .dswp-search__input-container{align-items:center;display:flex;gap:10px;margin:1em 0}.wp-block-design-system-wordpress-plugin-search .dswp-search__container{background:hsla(0,0%,89%,.961)}.wp-block-design-system-wordpress-plugin-search .dswp-search__input{border:1px solid #ddd;border-radius:4px;flex:1;font-size:16px;min-width:200px;padding:8px 12px;transition:border-color .2s}.wp-block-design-system-wordpress-plugin-search .dswp-search__input:focus{border-color:#007bff;outline:none}.wp-block-design-system-wordpress-plugin-search .dswp-search__button{border:none;border-radius:4px;cursor:pointer;font-size:16px;padding:8px 16px;transition:all .2s}.wp-block-design-system-wordpress-plugin-search .dswp-search__button--primary{background-color:rgba(69,69,69,.349);color:#fff}.wp-block-design-system-wordpress-plugin-search .dswp-search__button--secondary{background-color:#6c757d;color:#fff}.wp-block-design-system-wordpress-plugin-search .dswp-search__button--right{margin-left:auto}.wp-block-design-system-wordpress-plugin-search .dswp-search__button--below{margin-top:10px;width:100%}
+/*!***********************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/Search/editor.scss ***!
+  \***********************************************************************************************************************************************************************************************************************************************/
+/**
+ * Search Block Editor Styles
+ * 
+ * These styles are specifically for the block editor interface.
+ * The base class follows WordPress's block naming convention.
+ */
+.wp-block-design-system-wordpress-plugin-search {
+  /**
+   * Input Container
+   * Creates a flex layout for the search input and button
+   */
+  /**
+   * Editor Container
+   * Adds a distinct background to indicate editor preview mode
+   */
+  /**
+   * Search Input Field
+   * Styles for the search input element
+   */
+  /**
+   * Search Button
+   * Styles for the search submit button
+   */
+}
+.wp-block-design-system-wordpress-plugin-search .dswp-search__input-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 1em 0;
+}
+.wp-block-design-system-wordpress-plugin-search .dswp-search__container {
+  background: rgba(227, 227, 227, 0.9607843137);
+}
+.wp-block-design-system-wordpress-plugin-search .dswp-search__input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  min-width: 200px;
+  transition: border-color 0.2s;
+}
+.wp-block-design-system-wordpress-plugin-search .dswp-search__input:focus {
+  outline: none;
+  border-color: #007bff; /* Blue highlight on focus */
+}
+.wp-block-design-system-wordpress-plugin-search .dswp-search__button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s;
+  /**
+   * Primary Button Variant
+   * Used for the main search button
+   */
+  /**
+   * Secondary Button Variant
+   * Alternative button style (unused in current implementation)
+   */
+  /**
+   * Right-aligned Button Modifier
+   * Pushes button to the right of container
+   */
+  /**
+   * Full-width Button Modifier
+   * Makes button span full width below input
+   */
+}
+.wp-block-design-system-wordpress-plugin-search .dswp-search__button--primary {
+  background-color: rgba(69, 69, 69, 0.3490196078); /* Semi-transparent gray for editor */
+  color: white;
+}
+.wp-block-design-system-wordpress-plugin-search .dswp-search__button--secondary {
+  background-color: #6c757d;
+  color: white;
+}
+.wp-block-design-system-wordpress-plugin-search .dswp-search__button--right {
+  margin-left: auto;
+}
+.wp-block-design-system-wordpress-plugin-search .dswp-search__button--below {
+  width: 100%;
+  margin-top: 10px;
+}
+
+/*# sourceMappingURL=index.css.map*/

@@ -1,0 +1,17 @@
+.dswp-search-post-filter {
+    &__container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    &__button {
+        padding: 8px 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background: #fff;
+        cursor: pointer;
+        text-decoration: none;
+        color: #333;
+    }
+}

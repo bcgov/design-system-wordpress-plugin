@@ -1,0 +1,20 @@
+.dswp-search-post-filter {
+
+
+    &__button {
+
+        &:hover {
+            background: #f0f0f0;
+        }
+        
+        &--active {
+            background: #0073aa;
+            color: #fff;
+            border-color: #0073aa;
+            
+            &:hover {
+                background: #005d8c;
+            }
+        }
+    }
+}
