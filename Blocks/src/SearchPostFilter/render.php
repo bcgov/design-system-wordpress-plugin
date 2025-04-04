@@ -42,6 +42,9 @@ if ( isset( $_GET['post_type'] ) &&
 <div class="wp-block-design-system-wordpress-plugin-search-post-filter">
     <div class="dswp-search-post-filter__container">
         <?php
+        // Generate nonce once before the loop
+        $filter_nonce = wp_create_nonce('search_post_filter');
+        
         /**
          * Loop through each public post type and create a filter button
          * Each button includes:
@@ -63,7 +66,7 @@ if ( isset( $_GET['post_type'] ) &&
                     add_query_arg(
                         [
                             'post_type' => $current_post_type_object->name,
-                            '_wpnonce'  => wp_create_nonce( 'search_post_filter' ),
+                            '_wpnonce'  => $filter_nonce, // Use the pre-generated nonce
                         ]
                     )
                 );
