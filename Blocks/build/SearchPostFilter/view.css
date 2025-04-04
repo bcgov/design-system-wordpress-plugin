@@ -1,16 +1,1 @@
-/*!*******************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/SearchPostFilter/view.scss ***!
-  \*******************************************************************************************************************************************************************************************************************************************************/
-.dswp-search-post-filter__button:hover {
-  background: #f0f0f0;
-}
-.dswp-search-post-filter__button--active {
-  background: #0073aa;
-  color: #fff;
-  border-color: #0073aa;
-}
-.dswp-search-post-filter__button--active:hover {
-  background: #005d8c;
-}
-
-/*# sourceMappingURL=view.css.map*/
+.dswp-search-post-filter__button:hover{background:#f0f0f0}.dswp-search-post-filter__button--active{background:#0073aa;border-color:#0073aa;color:#fff}.dswp-search-post-filter__button--active:hover{background:#005d8c}

@@ -6,7 +6,7 @@
 	"title": "Design System Search - Post Filter",
 	"category": "design_system",
 	"icon": "filter",
-	"description": "A modular search block that connects to the search page template",
+	"description": "A modular search post filter block that connects to the search page template",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"viewStyle": "file:./view.css",
