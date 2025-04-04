@@ -1,0 +1,23 @@
+/* Search Post Type Filter Frontend Styles */
+.dswp-search-post-type-filter {
+
+    /* Button interactive states and modifiers */
+    &__button {
+        /* Hover state for default button */
+        &:hover {
+            background: #f0f0f0;
+        }
+        
+        /* Active/selected button state */
+        &--active {
+            background: #0073aa; /* WordPress blue */
+            color: #fff;
+            border-color: #0073aa;
+            
+            /* Darker blue on hover for active state */
+            &:hover {
+                background: #005d8c;
+            }
+        }
+    }
+}

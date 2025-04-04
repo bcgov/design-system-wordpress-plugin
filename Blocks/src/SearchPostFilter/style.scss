@@ -1,0 +1,20 @@
+/* Search Post Type Filter Component Styles for both editor and frontend. */
+.dswp-search-post-type-filter {
+    /* Container for the filter buttons */
+    &__container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px; /* Spacing between filter buttons */
+    }
+
+    /* Individual filter button styling */
+    &__button {
+        padding: 8px 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background: #fff;
+        cursor: pointer;
+        text-decoration: none;
+        color: #333;
+    }
+}
