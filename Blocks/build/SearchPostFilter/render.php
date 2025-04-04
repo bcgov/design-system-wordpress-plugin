@@ -26,11 +26,17 @@ $post_types = get_post_types(
 
 /**
  * Get the currently selected post type from URL parameters
- * Defaults to 'any' if no post type is specified
+ * Defaults to 'any' if no post type is specified or if nonce verification fails
  *
  * @var string Sanitized post type name
  */
-$current_post_type = isset( $_GET['post_type'] ) ? sanitize_key( $_GET['post_type'] ) : 'any';
+$current_post_type = 'any';
+if ( isset( $_GET['post_type'] ) &&
+    isset( $_GET['_wpnonce'] ) &&
+    wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'search_post_filter' )
+) {
+    $current_post_type = sanitize_key( $_GET['post_type'] );
+}
 ?>
 
 <div class="wp-block-design-system-wordpress-plugin-search-post-filter">
@@ -51,7 +57,18 @@ $current_post_type = isset( $_GET['post_type'] ) ? sanitize_key( $_GET['post_typ
             }
 			?>
             <a 
-                href="<?php echo esc_url( add_query_arg( 'post_type', $current_post_type_object->name ) ); ?>" 
+                href="
+                <?php
+                echo esc_url(
+                    add_query_arg(
+                        [
+                            'post_type' => $current_post_type_object->name,
+                            '_wpnonce'  => wp_create_nonce( 'search_post_filter' ),
+                        ]
+                    )
+                );
+				?>
+                " 
                 class="<?php echo esc_attr( $button_class ); ?>"
             >
                 <?php echo esc_html( $current_post_type_object->labels->name ); ?>
