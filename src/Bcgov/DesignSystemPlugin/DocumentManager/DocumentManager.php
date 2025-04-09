@@ -3,15 +3,22 @@
 namespace Bcgov\DesignSystemPlugin\DocumentManager;
 
 use \WP_Query;
+use Bcgov\DesignSystemPlugin\DocumentManager\Service\DocumentPostType;
+use Bcgov\DesignSystemPlugin\DocumentManager\Config\DocumentManagerConfig;
 
 class DocumentManager {
+    private $config;
+    private $postType;
     
     public function __construct() {
-        add_action('init', array($this, 'register_document_post_type'));
+        $this->config = new DocumentManagerConfig();
+        $this->postType = new DocumentPostType();
+        
+        // Admin menu and scripts
         add_action('admin_menu', array($this, 'add_documents_menu'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
         
-        // Add both logged in and logged out AJAX actions
+        // AJAX handlers
         add_action('wp_ajax_handle_document_upload', array($this, 'handle_document_upload'));
         add_action('wp_ajax_nopriv_handle_document_upload', array($this, 'handle_unauthorized_access'));
         add_action('admin_menu', array($this, 'add_column_settings_submenu'));
@@ -20,40 +27,6 @@ class DocumentManager {
         add_action('wp_ajax_save_document_metadata', array($this, 'save_document_metadata'));
         add_action('wp_ajax_delete_document', array($this, 'delete_document'));
         add_action('wp_ajax_save_bulk_edit', array($this, 'save_bulk_edit'));
-    }
-
-    /**
-     * Register the Document custom post type
-     */
-    public function register_document_post_type() {
-        $labels = array(
-            'name'               => 'Documents',
-            'singular_name'      => 'Document',
-            'menu_name'          => 'Documents',
-            'add_new'           => 'Add New',
-            'add_new_item'      => 'Add New Document',
-            'edit_item'         => 'Edit Document',
-            'new_item'          => 'New Document',
-            'view_item'         => 'View Document',
-            'search_items'      => 'Search Documents',
-            'not_found'         => 'No documents found',
-            'not_found_in_trash'=> 'No documents found in Trash'
-        );
-
-        $args = array(
-            'labels'              => $labels,
-            'public'              => true,
-            'show_ui'             => true,
-            'show_in_menu'        => false, // We'll add our own menu
-            'capability_type'     => 'post',
-            'hierarchical'        => false,
-            'supports'            => array('title', 'author'),
-            'has_archive'         => true,
-            'rewrite'             => array('slug' => 'documents'),
-            'show_in_rest'        => true,
-        );
-
-        register_post_type('document', $args);
     }
 
     /**
