@@ -1,0 +1,502 @@
+.document-upload-section {
+    background: #fff;
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#document-upload-form {
+    max-width: 800px;
+}
+
+.drag-drop-zone {
+    border: 2px dashed #b4b9be;
+    border-radius: 4px;
+    padding: 40px 20px;
+    text-align: center;
+    background: #f9f9f9;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.drag-drop-zone.drag-over {
+    border-color: #0073aa;
+    background: #f0f6fc;
+}
+
+.drag-drop-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.drag-drop-content .dashicons {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: #666;
+}
+
+.drag-drop-content p {
+    margin: 0;
+    color: #666;
+}
+
+.drag-drop-or {
+    font-style: italic;
+    color: #999 !important;
+}
+
+.file-input-hidden {
+    display: none;
+}
+
+.selected-file-name {
+    margin-top: 10px;
+    color: #0073aa;
+}
+
+.selected-files-list {
+    list-style: none;
+    margin: 10px 0 0 0;
+    padding: 0;
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.selected-files-list li {
+    padding: 8px 12px;
+    border-bottom: 1px solid #eee;
+    margin: 0;
+    font-size: 13px;
+}
+
+.selected-files-list li:last-child {
+    border-bottom: none;
+}
+
+.selected-files-list li:nth-child(odd) {
+    background: #f9f9f9;
+}
+
+/* Upload Modal Styles */
+#upload-metadata-modal .metadata-modal-content {
+    max-width: 600px;
+}
+
+#upload-metadata-form {
+    margin-top: 20px;
+}
+
+#upload-metadata-form .form-section {
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #eee;
+}
+
+#upload-metadata-form .form-section:last-child {
+    margin-bottom: 24px;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+#upload-metadata-form .custom-field {
+    margin-bottom: 16px;
+}
+
+#upload-metadata-form .custom-field:last-child {
+    margin-bottom: 0;
+}
+
+#upload-metadata-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+#upload-metadata-form input[type="text"],
+#upload-metadata-form input[type="number"],
+#upload-metadata-form input[type="date"],
+#upload-metadata-form select,
+#upload-metadata-form textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+}
+
+#upload-metadata-form textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+#upload-metadata-form .button {
+    margin-right: 10px;
+}
+
+#upload-metadata-form .description {
+    color: #666;
+    font-style: italic;
+    margin: 4px 0 0;
+    font-size: 13px;
+}
+
+.document-template {
+    background: #f9f9f9;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.document-template h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #23282d;
+}
+
+.document-details {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#document-upload-form input[type="text"],
+#document-upload-form textarea {
+    width: 100%;
+    padding: 8px;
+}
+
+#document-upload-form textarea {
+    min-height: 100px;
+}
+
+.document-library-section {
+    margin-top: 30px;
+}
+
+.wp-list-table th {
+    font-weight: 600;
+}
+
+.wp-list-table td {
+    vertical-align: middle;
+}
+
+.wp-list-table .button {
+    margin-right: 5px;
+}
+
+.column-manager-section {
+    background: #fff;
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.custom-field {
+    margin: 15px 0;
+}
+
+.custom-field label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.select-options-row textarea {
+    width: 100%;
+    min-height: 100px;
+}
+
+.existing-columns-section {
+    margin-top: 30px;
+}
+
+/* Modal Styles */
+.metadata-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.metadata-modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 800px;
+    border-radius: 4px;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.close-modal {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.close-modal:hover,
+.close-modal:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#edit-metadata-form {
+    margin-top: 20px;
+}
+
+#edit-metadata-form .custom-field {
+    margin-bottom: 15px;
+}
+
+#edit-metadata-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+#edit-metadata-form input[type="text"],
+#edit-metadata-form input[type="number"],
+#edit-metadata-form input[type="date"],
+#edit-metadata-form select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#edit-metadata-form button[type="submit"] {
+    margin-top: 15px;
+}
+
+.form-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.form-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.form-section h3 {
+    margin: 0 0 20px 0;
+    padding: 0;
+    font-size: 1.2em;
+    color: #23282d;
+}
+
+#edit-metadata-form textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.description {
+    color: #666;
+    font-style: italic;
+    margin: 5px 0 0 0;
+    font-size: 13px;
+}
+
+.button-link-delete {
+    color: #dc3232 !important;
+    border-color: #dc3232 !important;
+}
+
+.button-link-delete:hover {
+    color: #fff !important;
+    background: #dc3232 !important;
+}
+
+.table-actions {
+    margin-bottom: 15px;
+}
+
+.table-actions .button {
+    margin-right: 10px;
+}
+
+/* Bulk Edit Styles */
+.bulk-edit-mode .editable {
+    position: relative;
+    padding: 0 !important;
+}
+
+.bulk-edit-mode .view-mode {
+    display: none;
+}
+
+.bulk-edit-mode .edit-mode {
+    display: block !important;
+    width: 100%;
+    margin: 0;
+    padding: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    box-sizing: border-box;
+    font-size: inherit;
+    font-family: inherit;
+    line-height: inherit;
+}
+
+.bulk-edit-mode .edit-mode:hover,
+.bulk-edit-mode .edit-mode:focus {
+    border-color: #0073aa;
+    background: #fff;
+    outline: none;
+}
+
+.bulk-edit-mode textarea.edit-mode {
+    min-height: 60px;
+    resize: vertical;
+}
+
+.bulk-edit-mode select.edit-mode {
+    height: 34px;
+}
+
+/* Highlight changed fields */
+.bulk-edit-mode .edit-mode.changed {
+    background-color: #fff8e5;
+    border-color: #dba617;
+}
+
+/* Save indicator */
+.saving-changes {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.saving-changes::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7);
+    z-index: 1;
+}
+
+/* Error state */
+.edit-error {
+    border-color: #dc3232 !important;
+    background-color: #ffeaea !important;
+}
+
+/* Notification System */
+.notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 16px 24px;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 14px;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.notification.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.notification.success {
+    background-color: #46b450;
+}
+
+.notification.error {
+    background-color: #dc3232;
+}
+
+.notification .close-notification {
+    background: none;
+    border: none;
+    color: white;
+    padding: 0;
+    margin-left: 16px;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.notification .close-notification:hover {
+    opacity: 1;
+}
+
+/* Success checkmark animation */
+.notification .success-icon {
+    width: 20px;
+    height: 20px;
+    position: relative;
+}
+
+.notification .success-icon::before,
+.notification .success-icon::after {
+    content: '';
+    position: absolute;
+    background: white;
+}
+
+.notification .success-icon::before {
+    width: 2px;
+    height: 10px;
+    left: 10px;
+    top: 2px;
+    transform: rotate(45deg);
+}
+
+.notification .success-icon::after {
+    width: 2px;
+    height: 16px;
+    left: 4px;
+    top: 0;
+    transform: rotate(-45deg);
+}
+
+/* Column Settings Styles */
+.existing-columns-section tr.deleting {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.existing-columns-section .delete-column {
+    color: #dc3232;
+    border-color: #dc3232;
+}
+
+.existing-columns-section .delete-column:hover {
+    color: #fff;
+    background-color: #dc3232;
+    border-color: #dc3232;
+} 

@@ -125,6 +125,7 @@ use Bcgov\DesignSystemPlugin\InPageNav\InPageNav;
 
 use Bcgov\DesignSystemPlugin\AutoAnchor\Settings as AutoAnchorSettings;
 
+use Bcgov\DesignSystemPlugin\DocumentManager\DocumentManager;
 
 /**
  * Design System settings
@@ -176,9 +177,14 @@ $enqueue_scripts->init();
 $auto_anchor_settings = new AutoAnchorSettings();
 $auto_anchor_settings->init();
 
+
 /**
  * InPageNav.
  */
 
 // Initialize InPageNav.
 $in_page_nav = new InPageNav();
+
+// Initialize the DocumentManager.
+$document_manager = new DocumentManager();
+

@@ -1,1 +1,31 @@
-.admin-form-inputs{width:50%!important}.dswp-skip-nav{background:#fff;color:#000;right:-9999px;padding:8px;position:absolute;transition:right .3s;z-index:1000}.dswp-skip-nav:focus{right:0}.dswp-skip-nav:active,.dswp-skip-nav:focus-visible{right:0}.dswp-skip-nav-list{list-style:none;margin:0;padding:0}
+/*!**********************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/styles/index.scss ***!
+  \**********************************************************************************************************************************************************************************************************************************************/
+.admin-form-inputs {
+  width: 50% !important;
+}
+
+.dswp-skip-nav {
+  position: absolute; /* Position off-screen */
+  right: -9999px; /* Move off-screen */
+  background: #fff; /* Background color */
+  color: #000; /* Text color */
+  padding: 8px;
+  z-index: 1000; /* Ensure it is above other content */
+  transition: right 0.3s; /* Smooth transition */
+}
+
+.dswp-skip-nav:focus {
+  right: 0; /* Bring into view when focused */
+}
+
+.dswp-skip-nav:active,
+.dswp-skip-nav:focus-visible {
+  right: 0; /* Keep it in view when active or focused */
+}
+
+.dswp-skip-nav-list {
+  list-style: none;
+  margin: 0; /* Remove default margin */
+  padding: 0; /* Remove default padding */
+}
