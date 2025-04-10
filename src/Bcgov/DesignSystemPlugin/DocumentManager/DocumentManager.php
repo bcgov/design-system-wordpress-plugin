@@ -573,43 +573,43 @@ class DocumentManager {
             error_log('Delete column request received');
             error_log('POST data: ' . print_r($_POST, true));
 
-            // Check nonce
-            if (!check_ajax_referer($this->config->get('nonce_key'), 'nonce', false)) {
+            // Check nonce using 'security' parameter
+            if (!check_ajax_referer('document_upload_nonce', 'security', false)) {
                 throw new DocumentException('Security check failed.');
             }
 
             // Check permissions
-        if (!current_user_can('manage_options')) {
+            if (!current_user_can('manage_options')) {
                 throw new DocumentException('You do not have permission to delete columns.');
-        }
+            }
 
             // Get meta key
             $meta_key = isset($_POST['meta_key']) ? sanitize_key($_POST['meta_key']) : '';
-        if (empty($meta_key)) {
+            if (empty($meta_key)) {
                 throw new DocumentException('No column key provided.');
-        }
+            }
 
             // Get existing columns
-        $custom_columns = get_option('document_custom_columns', array());
+            $custom_columns = get_option('document_custom_columns', array());
 
-        // Check if column exists
-        if (!isset($custom_columns[$meta_key])) {
+            // Check if column exists
+            if (!isset($custom_columns[$meta_key])) {
                 throw new DocumentException('Column not found.');
-        }
+            }
 
             // Delete the column
-        unset($custom_columns[$meta_key]);
+            unset($custom_columns[$meta_key]);
 
             // Update the option
-        if (update_option('document_custom_columns', $custom_columns)) {
+            if (update_option('document_custom_columns', $custom_columns)) {
                 // Delete all metadata for this column
                 global $wpdb;
                 $wpdb->delete($wpdb->postmeta, array('meta_key' => $meta_key));
 
-            wp_send_json_success(array(
+                wp_send_json_success(array(
                     'message' => 'Column deleted successfully.'
-            ));
-        } else {
+                ));
+            } else {
                 throw new DocumentException('Failed to delete column.');
             }
 
@@ -745,12 +745,12 @@ class DocumentManager {
             if (isset($_POST['meta']) && is_array($_POST['meta'])) {
                 foreach ($_POST['meta'] as $meta_key => $value) {
                     update_post_meta($post_id, $meta_key, sanitize_text_field($value));
+                }
             }
-        }
 
-        wp_send_json_success(array(
-            'message' => 'Document updated successfully.'
-        ));
+            wp_send_json_success(array(
+                'message' => 'Document updated successfully.'
+            ));
 
         } catch (DocumentException $e) {
             error_log('Document metadata save error: ' . $e->getMessage());
@@ -794,18 +794,18 @@ class DocumentManager {
 
             // Delete the post
             $result = wp_delete_post($post_id, true);
-        if (!$result) {
+            if (!$result) {
                 throw new DocumentException('Failed to delete document.');
-        }
+            }
 
-        wp_send_json_success(array(
-            'message' => 'Document deleted successfully.'
-        ));
+            wp_send_json_success(array(
+                'message' => 'Document deleted successfully.'
+            ));
         } catch (DocumentException $e) {
             error_log('Document deletion error: ' . $e->getMessage());
             wp_send_json_error(array(
                 'message' => $e->getMessage()
-        ));
+            ));
         }
     }
 
@@ -853,8 +853,8 @@ class DocumentManager {
                     // Verify post exists and is correct type
                     $post = get_post($post_id);
                     if (!$post || $post->post_type !== $this->config->get('post_type')) {
-                continue;
-            }
+                        continue;
+                    }
 
                     // Collect title updates
                     if (isset($data['title'])) {

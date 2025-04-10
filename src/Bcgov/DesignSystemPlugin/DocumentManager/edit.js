@@ -69,28 +69,7 @@ jQuery(document).ready(function($) {
         return true;
     }
 
-    // Add this function after the validateFiles function
-    function checkForDuplicateNames(files) {
-        // Get all existing document titles from the table
-        var existingTitles = [];
-        $('.wp-list-table tbody tr').each(function() {
-            var title = $(this).find('td:first').text().trim();
-            existingTitles.push(title.toLowerCase());
-        });
-
-        // Check each file
-        for (var i = 0; i < files.length; i++) {
-            // Get filename without extension
-            var fileName = files[i].name.replace(/\.[^/.]+$/, "").toLowerCase();
-            if (existingTitles.includes(fileName)) {
-                showNotification('A document with the name "' + files[i].name + '" already exists. Please choose a different name.', 'error');
-                return false;
-            }
-        }
-        return true;
-    }
-
-    // Add this function to check for existing documents
+    // Function to get existing document titles
     function getExistingDocumentTitles() {
         const existingTitles = new Map(); // Using Map to store both lowercase and original titles
         $('.wp-list-table tbody tr').each(function() {
@@ -102,13 +81,34 @@ jQuery(document).ready(function($) {
         return existingTitles;
     }
 
+    // Function to check for duplicates
+    function checkForDuplicates(files) {
+        const existingTitles = getExistingDocumentTitles();
+        const duplicates = [];
+
+        for (let i = 0; i < files.length; i++) {
+            // Get filename without extension
+            const fileName = files[i].name.replace(/\.[^/.]+$/, "");
+            const fileNameLower = fileName.toLowerCase();
+
+            if (existingTitles.has(fileNameLower)) {
+                duplicates.push({
+                    fileName: files[i].name,
+                    existingTitle: existingTitles.get(fileNameLower)
+                });
+            }
+        }
+
+        return duplicates;
+    }
+
     // Update the file handling code
     function handleFiles(files) {
         if (!files || files.length === 0) {
             return;
         }
 
-        // Validate file types first
+        // First validate file types
         if (!validateFiles(files)) {
             $fileInput.val(''); // Clear the file input
             $fileNameDisplay.empty();
@@ -116,31 +116,21 @@ jQuery(document).ready(function($) {
             return;
         }
 
-        // Get existing document titles
-        const existingTitles = getExistingDocumentTitles();
-        let hasDuplicates = false;
-        let duplicateNames = [];
-
-        // Check each file for duplicates
-        for (let i = 0; i < files.length; i++) {
-            // Get filename without extension
-            const fileName = files[i].name.replace(/\.[^/.]+$/, "");
-            const fileNameLower = fileName.toLowerCase();
-
-            // Check for exact match (case-insensitive)
-            if (existingTitles.has(fileNameLower)) {
-                hasDuplicates = true;
-                duplicateNames.push(`"${files[i].name}" (conflicts with "${existingTitles.get(fileNameLower)}")`);
-            }
-        }
-
-        // If duplicates found, show error and stop
-        if (hasDuplicates) {
+        // Check for duplicates
+        const duplicates = checkForDuplicates(files);
+        if (duplicates.length > 0) {
+            // Create detailed error message
+            const duplicateMessages = duplicates.map(d => 
+                `"${d.fileName}" (conflicts with existing document "${d.existingTitle}")`
+            );
+            
             showNotification(
-                `Cannot upload duplicate document${duplicateNames.length > 1 ? 's' : ''}: ${duplicateNames.join(', ')}`, 
+                `Cannot upload duplicate document${duplicates.length > 1 ? 's' : ''}: ${duplicateMessages.join(', ')}`, 
                 'error'
             );
-            $fileInput.val(''); // Clear the file input
+            
+            // Clear the input and selection
+            $fileInput.val('');
             $fileNameDisplay.empty();
             selectedFiles = null;
             return;
@@ -453,18 +443,14 @@ jQuery(document).ready(function($) {
     // Handle column deletion
     $(document).on('click', '.delete-column', function(e) {
         e.preventDefault();
-        console.log('Delete column clicked');
-
-        var $button = $(this);
-        var metaKey = $button.data('meta-key');
-        var $row = $button.closest('tr');
         
         if (!confirm('Are you sure you want to delete this column? This will remove all associated metadata from documents.')) {
             return;
         }
 
-        // Show loading state
-        $button.prop('disabled', true).text('Deleting...');
+        const $button = $(this);
+        const metaKey = $button.data('meta-key');
+        const $row = $button.closest('tr');
         
         $.ajax({
             url: documentManager.ajaxurl,
@@ -474,33 +460,25 @@ jQuery(document).ready(function($) {
                 security: documentManager.nonce,
                 meta_key: metaKey
             },
+            beforeSend: function() {
+                $button.prop('disabled', true);
+                $row.addClass('deleting');
+            },
             success: function(response) {
-                console.log('Delete response:', response);
                 if (response.success) {
-                    // Remove the row with animation
                     $row.fadeOut(400, function() {
                         $(this).remove();
-                        
-                        // If no columns left, show message
-                        if ($('.existing-columns-section tbody tr').length === 0) {
-                            $('.existing-columns-section tbody').append(
-                                '<tr><td colspan="4">No custom columns found.</td></tr>'
-                            );
-                        }
                     });
-                    
-                    showNotification('Column deleted successfully.', 'success');
                 } else {
-                    showNotification(response.data.message || 'Error deleting column.', 'error');
-                    // Reset button state
-                    $button.prop('disabled', false).text('Delete');
+                    alert('Error: ' + (response.data || 'Failed to delete column'));
+                    $row.removeClass('deleting');
+                    $button.prop('disabled', false);
                 }
             },
             error: function(xhr, status, error) {
-                console.error('Delete error:', {xhr, status, error});
-                showNotification('Error deleting column. Please try again.', 'error');
-                // Reset button state
-                $button.prop('disabled', false).text('Delete');
+                alert('Error: ' + error);
+                $row.removeClass('deleting');
+                $button.prop('disabled', false);
             }
         });
     });
