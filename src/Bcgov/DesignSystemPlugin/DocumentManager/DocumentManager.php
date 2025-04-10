@@ -92,6 +92,7 @@ class DocumentManager {
         $nonce = wp_create_nonce($nonce_key);
         
         // Add debug output
+        error_log('Enqueuing scripts for bulk edit');
         error_log('Nonce Key: ' . $nonce_key);
         error_log('Generated Nonce: ' . $nonce);
 
@@ -137,7 +138,13 @@ class DocumentManager {
                             <p>Drag and drop your documents here</p>
                             <p class="drag-drop-or">or</p>
                             <label for="document_file" class="button">Choose Files</label>
-                            <input type="file" name="document_file[]" id="document_file" class="file-input-hidden" multiple required>
+                            <input type="file" 
+                                   name="document_file[]" 
+                                   id="document_file" 
+                                   class="file-input-hidden" 
+                                   multiple 
+                                   required 
+                                   accept=".pdf,application/pdf">
                             <p class="selected-file-name"></p>
                         </div>
                     </div>
@@ -155,11 +162,6 @@ class DocumentManager {
                         <div class="form-section">
                             <h3>Document Details</h3>
                             <div class="custom-field">
-                                <label for="document_title">Title Base</label>
-                                <input type="text" name="document_title" id="document_title" required>
-                                <p class="description">Individual numbers will be added for multiple files</p>
-                            </div>
-                            <div class="custom-field">
                                 <label for="document_description">Description</label>
                                 <textarea name="document_description" id="document_description"></textarea>
                             </div>
@@ -171,18 +173,16 @@ class DocumentManager {
                                 <div class="custom-field">
                                     <label for="<?php echo esc_attr($meta_key); ?>"><?php echo esc_html($column['label']); ?></label>
                                     <?php if ($column['type'] === 'select'): ?>
-                                        <select name="<?php echo esc_attr($meta_key); ?>" id="<?php echo esc_attr($meta_key); ?>">
+                                        <select name="meta[<?php echo esc_attr($meta_key); ?>]" id="<?php echo esc_attr($meta_key); ?>">
                                             <option value="">Select <?php echo esc_html($column['label']); ?></option>
                                             <?php foreach ($column['options'] as $option): ?>
                                                 <option value="<?php echo esc_attr($option); ?>"><?php echo esc_html($option); ?></option>
                                             <?php endforeach; ?>
                                         </select>
-                                    <?php elseif ($column['type'] === 'date'): ?>
-                                        <input type="date" name="<?php echo esc_attr($meta_key); ?>" id="<?php echo esc_attr($meta_key); ?>">
-                                    <?php elseif ($column['type'] === 'number'): ?>
-                                        <input type="number" name="<?php echo esc_attr($meta_key); ?>" id="<?php echo esc_attr($meta_key); ?>">
                                     <?php else: ?>
-                                        <input type="text" name="<?php echo esc_attr($meta_key); ?>" id="<?php echo esc_attr($meta_key); ?>">
+                                        <input type="<?php echo esc_attr($column['type']); ?>" 
+                                               name="meta[<?php echo esc_attr($meta_key); ?>]" 
+                                               id="<?php echo esc_attr($meta_key); ?>">
                                     <?php endif; ?>
                                 </div>
                             <?php endforeach; ?>
@@ -211,6 +211,7 @@ class DocumentManager {
                         <table class="wp-list-table widefat fixed striped">
                             <thead>
                                 <tr>
+                                    <th class="column-icon" style="width: 30px;"></th>
                                     <th>Title</th>
                                     <th>Description</th>
                                     <th>File Type</th>
@@ -227,12 +228,33 @@ class DocumentManager {
                                     $file_type = get_post_meta(get_the_ID(), '_document_file_type', true);
                                 ?>
                                     <tr data-id="<?php echo get_the_ID(); ?>">
+                                        <td class="column-icon">
+                                            <?php 
+                                            $icon_class = 'dashicons ';
+                                            switch ($file_type) {
+                                                case 'application/pdf':
+                                                    $icon_class .= 'dashicons-pdf';
+                                                    break;
+                                                case 'application/msword':
+                                                case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+                                                    $icon_class .= 'dashicons-media-document';
+                                                    break;
+                                                case 'application/vnd.ms-excel':
+                                                case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+                                                    $icon_class .= 'dashicons-spreadsheet';
+                                                    break;
+                                                default:
+                                                    $icon_class .= 'dashicons-media-default';
+                                            }
+                                            ?>
+                                            <span class="<?php echo esc_attr($icon_class); ?>"></span>
+                                        </td>
                                         <td class="editable" data-field="title">
                                             <span class="view-mode"><?php the_title(); ?></span>
                                             <input type="text" class="edit-mode" value="<?php echo esc_attr(get_the_title()); ?>" style="display: none;">
                                         </td>
                                         <td class="editable" data-field="description">
-                                            <span class="view-mode"><?php echo get_the_excerpt(); ?></span>
+                                            <span class="view-mode"><?php echo esc_html(get_the_excerpt()); ?></span>
                                             <textarea class="edit-mode" style="display: none;"><?php echo esc_textarea(get_the_excerpt()); ?></textarea>
                                         </td>
                                         <td><?php echo esc_html($file_type); ?></td>
@@ -241,7 +263,7 @@ class DocumentManager {
                                             $value = get_post_meta(get_the_ID(), $meta_key, true);
                                         ?>
                                             <td class="editable" data-field="<?php echo esc_attr($meta_key); ?>">
-                                                <span class="view-mode"><?php echo esc_html($value); ?></span>
+                                                <span class="view-mode"><?php echo esc_html($value ?: '—'); ?></span>
                                                 <?php if ($column['type'] === 'select'): ?>
                                                     <select class="edit-mode" style="display: none;">
                                                         <option value="">Select <?php echo esc_html($column['label']); ?></option>
@@ -313,10 +335,12 @@ class DocumentManager {
                             <div class="custom-field">
                                 <label for="edit_document_title">Title</label>
                                 <input type="text" name="title" id="edit_document_title" required>
+                                <p class="description">The name of your document</p>
                             </div>
                             <div class="custom-field">
                                 <label for="edit_document_description">Description</label>
                                 <textarea name="description" id="edit_document_description"></textarea>
+                                <p class="description">A brief description of the document (optional)</p>
                             </div>
                         </div>
 
@@ -339,6 +363,9 @@ class DocumentManager {
                                     <?php else: ?>
                                         <input type="text" name="meta[<?php echo esc_attr($meta_key); ?>]" id="edit_<?php echo esc_attr($meta_key); ?>">
                                     <?php endif; ?>
+                                    <?php if (!empty($column['description'])): ?>
+                                        <p class="description"><?php echo esc_html($column['description']); ?></p>
+                                    <?php endif; ?>
                                 </div>
                             <?php endforeach; ?>
                         </div>
@@ -359,14 +386,14 @@ class DocumentManager {
     public function handle_document_upload() {
         try {
             $nonce_key = $this->config->get('nonce_key');
-            $received_nonce = $_REQUEST['nonce'] ?? 'no_nonce';
+            $received_nonce = $_REQUEST['security'] ?? 'no_nonce';
             
             // Add debug output
             error_log('Received Nonce: ' . $received_nonce);
             error_log('Nonce Key Used: ' . $nonce_key);
             error_log('Nonce Verification Result: ' . (wp_verify_nonce($received_nonce, $nonce_key) ? 'true' : 'false'));
 
-            if (!check_ajax_referer($nonce_key, 'nonce', false)) {
+            if (!check_ajax_referer($nonce_key, 'security', false)) {
                 throw new DocumentException('Invalid security token. Please refresh the page and try again.');
             }
 
@@ -375,10 +402,17 @@ class DocumentManager {
             }
 
             $files = $_FILES['document_file'];
-            $metadata = $_POST['metadata'] ?? [];
+            $metadata = isset($_POST['metadata']) ? json_decode(stripslashes($_POST['metadata']), true) : [];
+            
+            // Ensure metadata is an array even if json_decode fails
+            if (!is_array($metadata)) {
+                error_log('Failed to parse metadata JSON: ' . ($_POST['metadata'] ?? 'none'));
+                $metadata = [];
+            }
+
             $results = [];
 
-            // Handle multiple file uploads
+        // Handle multiple file uploads
             for ($i = 0; $i < count($files['name']); $i++) {
                 $file = array(
                     'name' => $files['name'][$i],
@@ -393,6 +427,7 @@ class DocumentManager {
 
             wp_send_json_success($results);
         } catch (DocumentException $e) {
+            error_log('Document upload error: ' . $e->getMessage());
             wp_send_json_error(['message' => $e->getMessage()]);
         }
     }
@@ -433,28 +468,11 @@ class DocumentManager {
                             <th><label for="column_label">Column Label</label></th>
                             <td>
                                 <input type="text" id="column_label" name="column_label" class="regular-text" required>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th><label for="column_type">Field Type</label></th>
-                            <td>
-                                <select id="column_type" name="column_type" required>
-                                    <option value="text">Text</option>
-                                    <option value="date">Date</option>
-                                    <option value="number">Number</option>
-                                    <option value="select">Dropdown</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr class="select-options-row" style="display: none;">
-                            <th><label for="select_options">Options</label></th>
-                            <td>
-                                <textarea id="select_options" name="select_options" 
-                                    placeholder="Enter options, one per line"></textarea>
-                                <p class="description">Enter one option per line</p>
+                                <p class="description">Enter a label for your new column</p>
                             </td>
                         </tr>
                     </table>
+                    <input type="hidden" name="column_type" value="text">
                     <button type="submit" class="button button-primary">Add Column</button>
                 </form>
             </div>
@@ -465,7 +483,6 @@ class DocumentManager {
                     <thead>
                         <tr>
                             <th>Column Label</th>
-                            <th>Field Type</th>
                             <th>Meta Key</th>
                             <th>Actions</th>
                         </tr>
@@ -474,7 +491,6 @@ class DocumentManager {
                         <?php foreach ($custom_columns as $meta_key => $column): ?>
                         <tr>
                             <td><?php echo esc_html($column['label']); ?></td>
-                            <td><?php echo esc_html($column['type']); ?></td>
                             <td><?php echo esc_html($meta_key); ?></td>
                             <td>
                                 <button class="button button-small delete-column" 
@@ -495,6 +511,10 @@ class DocumentManager {
      * Save column settings via AJAX
      */
     public function save_column_settings() {
+        // Debug logging
+        error_log('Save column settings request received');
+        error_log('POST data: ' . print_r($_POST, true));
+
         // Verify nonce
         if (!check_ajax_referer('document_upload_nonce', 'security', false)) {
             wp_send_json_error('Invalid security token.', 403);
@@ -509,21 +529,9 @@ class DocumentManager {
 
         // Validate and sanitize input
         $label = isset($_POST['column_label']) ? sanitize_text_field($_POST['column_label']) : '';
-        $type = isset($_POST['column_type']) ? sanitize_text_field($_POST['column_type']) : '';
-        $options = isset($_POST['select_options']) ? array_map('trim', array_filter(explode("\n", sanitize_textarea_field($_POST['select_options'])))) : array();
 
         if (empty($label)) {
             wp_send_json_error('Column label is required.');
-            return;
-        }
-
-        if (empty($type) || !in_array($type, array('text', 'number', 'select', 'date'))) {
-            wp_send_json_error('Invalid column type.');
-            return;
-        }
-
-        if ($type === 'select' && empty($options)) {
-            wp_send_json_error('Options are required for select type columns.');
             return;
         }
 
@@ -539,11 +547,10 @@ class DocumentManager {
             return;
         }
 
-        // Add new column
+        // Add new column (always as text type)
         $custom_columns[$meta_key] = array(
             'label' => $label,
-            'type' => $type,
-            'options' => $options
+            'type' => 'text'
         );
 
         // Update custom columns option
@@ -558,59 +565,125 @@ class DocumentManager {
     }
 
     /**
-     * Delete column via AJAX
+     * Handle column deletion
      */
     public function delete_column() {
-        // Verify nonce
-        if (!check_ajax_referer('document_upload_nonce', 'security', false)) {
-            wp_send_json_error(array(
-                'message' => 'Invalid security token.'
-            ), 403);
-            return;
-        }
+        try {
+            // Debug logging
+            error_log('Delete column request received');
+            error_log('POST data: ' . print_r($_POST, true));
 
-        // Check user capabilities
+            // Check nonce
+            if (!check_ajax_referer($this->config->get('nonce_key'), 'nonce', false)) {
+                throw new DocumentException('Security check failed.');
+            }
+
+            // Check permissions
         if (!current_user_can('manage_options')) {
-            wp_send_json_error(array(
-                'message' => 'You do not have permission to delete columns.'
-            ), 403);
-            return;
+                throw new DocumentException('You do not have permission to delete columns.');
         }
 
-        // Validate and sanitize input
-        $meta_key = isset($_POST['meta_key']) ? sanitize_text_field($_POST['meta_key']) : '';
-
+            // Get meta key
+            $meta_key = isset($_POST['meta_key']) ? sanitize_key($_POST['meta_key']) : '';
         if (empty($meta_key)) {
-            wp_send_json_error(array(
-                'message' => 'Column meta key is required.'
-            ), 400);
-            return;
+                throw new DocumentException('No column key provided.');
         }
 
-        // Get custom columns
+            // Get existing columns
         $custom_columns = get_option('document_custom_columns', array());
 
         // Check if column exists
         if (!isset($custom_columns[$meta_key])) {
-            wp_send_json_error(array(
-                'message' => 'Column not found.'
-            ), 404);
-            return;
+                throw new DocumentException('Column not found.');
         }
 
-        // Remove column from custom columns
+            // Delete the column
         unset($custom_columns[$meta_key]);
 
-        // Update custom columns option
+            // Update the option
         if (update_option('document_custom_columns', $custom_columns)) {
+                // Delete all metadata for this column
+                global $wpdb;
+                $wpdb->delete($wpdb->postmeta, array('meta_key' => $meta_key));
+
             wp_send_json_success(array(
-                'message' => 'Column deleted successfully'
+                    'message' => 'Column deleted successfully.'
             ));
         } else {
+                throw new DocumentException('Failed to delete column.');
+            }
+
+        } catch (DocumentException $e) {
+            error_log('Column deletion error: ' . $e->getMessage());
             wp_send_json_error(array(
-                'message' => 'Failed to delete column.'
+                'message' => $e->getMessage()
             ));
         }
+    }
+
+    /**
+     * Rename a document file
+     *
+     * @param int $post_id Post ID
+     * @param string $new_title New title
+     * @return bool|string New file URL on success, false on failure
+     */
+    private function rename_document_file($post_id, $new_title) {
+        // Get current file URL
+        $current_file_url = get_post_meta($post_id, '_document_file_url', true);
+        if (!$current_file_url) {
+            return false;
+        }
+
+        // Get file info
+        $upload_dir = wp_upload_dir();
+        $current_file_path = str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $current_file_url);
+        $file_info = pathinfo($current_file_path);
+        
+        // Create new filename
+        $new_filename = sanitize_file_name($new_title . '.' . $file_info['extension']);
+        $new_file_path = $file_info['dirname'] . '/' . $new_filename;
+        
+        // Don't rename if the file already exists
+        if (file_exists($new_file_path) && $new_file_path !== $current_file_path) {
+            return false;
+        }
+        
+        // Rename the file
+        if (!rename($current_file_path, $new_file_path)) {
+            return false;
+        }
+        
+        // Return new URL
+        return str_replace($upload_dir['basedir'], $upload_dir['baseurl'], $new_file_path);
+    }
+
+    /**
+     * Update document title and file
+     *
+     * @param int $post_id Post ID
+     * @param string $new_title New title
+     * @return bool Success status
+     */
+    private function update_document_title($post_id, $new_title) {
+        // Update post title
+        $update_result = wp_update_post([
+            'ID' => $post_id,
+            'post_title' => sanitize_text_field($new_title)
+        ]);
+        
+        if (is_wp_error($update_result)) {
+            return false;
+        }
+        
+        // Rename the file
+        $new_file_url = $this->rename_document_file($post_id, $new_title);
+        if ($new_file_url) {
+            // Update file URL in metadata
+            update_post_meta($post_id, '_document_file_url', $new_file_url);
+        }
+        
+        return true;
     }
 
     /**
@@ -621,9 +694,11 @@ class DocumentManager {
             // Debug logging
             error_log('Save metadata request received');
             error_log('POST data: ' . print_r($_POST, true));
+            error_log('Security token received: ' . ($_REQUEST['security'] ?? 'no_nonce'));
+            error_log('Nonce key used: ' . $this->config->get('nonce_key'));
+            error_log('Nonce verification result: ' . (wp_verify_nonce($_REQUEST['security'] ?? '', $this->config->get('nonce_key')) ? 'true' : 'false'));
             
-            // Check nonce
-            if (!check_ajax_referer($this->config->get('nonce_key'), 'nonce', false)) {
+            if (!check_ajax_referer($this->config->get('nonce_key'), 'security', false)) {
                 throw new DocumentException('Security check failed.');
             }
 
@@ -650,7 +725,10 @@ class DocumentManager {
             );
 
             if (isset($_POST['title'])) {
-                $update_data['post_title'] = sanitize_text_field($_POST['title']);
+                $new_title = sanitize_text_field($_POST['title']);
+                if (!$this->update_document_title($post_id, $new_title)) {
+                    throw new DocumentException('Failed to update document title.');
+                }
             }
 
             if (isset($_POST['description'])) {
@@ -667,12 +745,12 @@ class DocumentManager {
             if (isset($_POST['meta']) && is_array($_POST['meta'])) {
                 foreach ($_POST['meta'] as $meta_key => $value) {
                     update_post_meta($post_id, $meta_key, sanitize_text_field($value));
-                }
             }
+        }
 
-            wp_send_json_success(array(
-                'message' => 'Document updated successfully.'
-            ));
+        wp_send_json_success(array(
+            'message' => 'Document updated successfully.'
+        ));
 
         } catch (DocumentException $e) {
             error_log('Document metadata save error: ' . $e->getMessage());
@@ -689,10 +767,12 @@ class DocumentManager {
         try {
             // Debug logging
             error_log('Delete document request received');
-            error_log('Nonce received: ' . ($_REQUEST['nonce'] ?? 'no_nonce'));
+            error_log('POST data: ' . print_r($_POST, true));
+            error_log('Nonce received: ' . ($_REQUEST['security'] ?? 'no_nonce'));
+            error_log('Nonce key used: ' . $this->config->get('nonce_key'));
             
             // Check nonce and capabilities
-            if (!check_ajax_referer($this->config->get('nonce_key'), 'nonce', false)) {
+            if (!check_ajax_referer($this->config->get('nonce_key'), 'security', false)) {
                 throw new DocumentException('Security check failed.');
             }
 
@@ -714,18 +794,18 @@ class DocumentManager {
 
             // Delete the post
             $result = wp_delete_post($post_id, true);
-            if (!$result) {
+        if (!$result) {
                 throw new DocumentException('Failed to delete document.');
-            }
+        }
 
-            wp_send_json_success(array(
-                'message' => 'Document deleted successfully.'
-            ));
+        wp_send_json_success(array(
+            'message' => 'Document deleted successfully.'
+        ));
         } catch (DocumentException $e) {
             error_log('Document deletion error: ' . $e->getMessage());
             wp_send_json_error(array(
                 'message' => $e->getMessage()
-            ));
+        ));
         }
     }
 
@@ -734,18 +814,15 @@ class DocumentManager {
      */
     public function save_bulk_edit() {
         try {
-            // Enhanced debug logging
+            global $wpdb;
+            
+            // Debug logging
             error_log('Bulk edit request received');
             error_log('POST data: ' . print_r($_POST, true));
+            error_log('Security token received: ' . ($_REQUEST['security'] ?? 'no_nonce'));
             
-            $nonce_key = $this->config->get('nonce_key');
-            $received_nonce = $_REQUEST['nonce'] ?? 'no_nonce';
-            
-            error_log('Nonce Key: ' . $nonce_key);
-            error_log('Received Nonce: ' . $received_nonce);
-            error_log('Nonce Verification Result: ' . (wp_verify_nonce($received_nonce, $nonce_key) ? 'true' : 'false'));
-
-            if (!check_ajax_referer($nonce_key, 'nonce', false)) {
+            // Security checks - Change 'nonce' to 'security'
+            if (!check_ajax_referer($this->config->get('nonce_key'), 'security', false)) {
                 throw new DocumentException('Invalid security token. Please refresh the page and try again.');
             }
 
@@ -758,49 +835,102 @@ class DocumentManager {
                 throw new DocumentException('No valid update data received.');
             }
 
-            error_log('Updates data: ' . print_r($updates, true));
+            // Start transaction
+            $wpdb->query('START TRANSACTION');
+            
+            try {
+                $success = true;
+                $updated_posts = [];
 
-            $results = [];
-            foreach ($updates as $post_id => $data) {
-                // Verify post exists and is correct type
-                $post = get_post($post_id);
-                if (!$post || $post->post_type !== $this->config->get('post_type')) {
-                    error_log("Invalid post: $post_id");
-                    continue;
+                // Prepare bulk queries
+                $title_updates = [];
+                $excerpt_updates = [];
+                $meta_updates = [];
+
+                foreach ($updates as $post_id => $data) {
+                    $post_id = intval($post_id);
+                    
+                    // Verify post exists and is correct type
+                    $post = get_post($post_id);
+                    if (!$post || $post->post_type !== $this->config->get('post_type')) {
+                continue;
+            }
+
+                    // Collect title updates
+                    if (isset($data['title'])) {
+                        $title_updates[] = $wpdb->prepare(
+                            "(%d, %s)",
+                            $post_id,
+                            sanitize_text_field($data['title'])
+                        );
+                    }
+
+                    // Collect description updates
+                    if (isset($data['description'])) {
+                        $excerpt_updates[] = $wpdb->prepare(
+                            "(%d, %s)",
+                            $post_id,
+                            sanitize_textarea_field($data['description'])
+                        );
+                    }
+
+                    // Collect metadata updates
+                    if (isset($data['meta']) && is_array($data['meta'])) {
+                        foreach ($data['meta'] as $meta_key => $value) {
+                            $meta_updates[] = [
+                                'post_id' => $post_id,
+                                'meta_key' => sanitize_key($meta_key),
+                                'meta_value' => sanitize_text_field($value)
+                            ];
+                        }
+                    }
+
+                    $updated_posts[] = $post_id;
                 }
 
-                // Update post title if provided
-                if (isset($data['title'])) {
-                    wp_update_post([
-                        'ID' => $post_id,
-                        'post_title' => sanitize_text_field($data['title'])
-                    ]);
+                // Execute bulk title updates
+                if (!empty($title_updates)) {
+                    $query = "INSERT INTO $wpdb->posts (ID, post_title) VALUES " . 
+                            implode(', ', $title_updates) . 
+                            " ON DUPLICATE KEY UPDATE post_title = VALUES(post_title)";
+                    $success = $success && ($wpdb->query($query) !== false);
                 }
 
-                // Update post excerpt/description if provided
-                if (isset($data['description'])) {
-                    wp_update_post([
-                        'ID' => $post_id,
-                        'post_excerpt' => sanitize_textarea_field($data['description'])
-                    ]);
+                // Execute bulk excerpt updates
+                if (!empty($excerpt_updates)) {
+                    $query = "INSERT INTO $wpdb->posts (ID, post_excerpt) VALUES " . 
+                            implode(', ', $excerpt_updates) . 
+                            " ON DUPLICATE KEY UPDATE post_excerpt = VALUES(post_excerpt)";
+                    $success = $success && ($wpdb->query($query) !== false);
                 }
 
-                // Update custom fields
-                if (isset($data['meta']) && is_array($data['meta'])) {
-                    foreach ($data['meta'] as $meta_key => $value) {
-                        update_post_meta($post_id, $meta_key, sanitize_text_field($value));
+                // Execute bulk meta updates
+                if (!empty($meta_updates)) {
+                    foreach ($meta_updates as $meta) {
+                        update_post_meta($meta['post_id'], $meta['meta_key'], $meta['meta_value']);
                     }
                 }
 
-                $results[$post_id] = true;
-            }
+                if ($success) {
+                    $wpdb->query('COMMIT');
+                    
+                    // Clear caches for updated posts
+                    foreach ($updated_posts as $post_id) {
+                        clean_post_cache($post_id);
+                    }
 
-            error_log('Bulk edit completed successfully');
-            wp_send_json_success([
-                'message' => 'Changes saved successfully.',
-                'results' => $results
-            ]);
-        } catch (DocumentException $e) {
+                    wp_send_json_success([
+                        'message' => 'Changes saved successfully.',
+                        'updated' => $updated_posts
+                    ]);
+                } else {
+                    throw new DocumentException('Failed to save some changes.');
+                }
+            } catch (Exception $e) {
+                $wpdb->query('ROLLBACK');
+                throw $e;
+            }
+        } catch (Exception $e) {
             error_log('Bulk edit error: ' . $e->getMessage());
             wp_send_json_error(['message' => $e->getMessage()]);
         }

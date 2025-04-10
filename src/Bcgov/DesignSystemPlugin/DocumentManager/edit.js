@@ -2,73 +2,159 @@ jQuery(document).ready(function($) {
     // Add console log to check if script is loading
     console.log('Document Manager script loaded');
 
-    // Drag and drop functionality
-    var dropZone = $('#drag-drop-zone');
-    var fileInput = $('#document_file');
-    var fileNameDisplay = $('.selected-file-name');
-    var uploadModal = $('#upload-metadata-modal');
+    // Only initialize drag and drop if the upload zone exists
+    var $dropZone = $('#drag-drop-zone');
+    var $fileInput = $('#document_file');
+    var $fileNameDisplay = $('.selected-file-name');
+    var $uploadModal = $('#upload-metadata-modal');
     var selectedFiles = null;
 
+    if ($dropZone.length) {
     // Prevent default drag behaviors
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dropZone[0].addEventListener(eventName, preventDefaults, false);
-        document.body.addEventListener(eventName, preventDefaults, false);
+            $(document).on(eventName, '#drag-drop-zone', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+            
+            $(document).on(eventName, 'body', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            });
     });
 
     // Highlight drop zone when dragging over it
     ['dragenter', 'dragover'].forEach(eventName => {
-        dropZone[0].addEventListener(eventName, highlight, false);
+            $(document).on(eventName, '#drag-drop-zone', function() {
+                $dropZone.addClass('drag-over');
+            });
     });
 
     ['dragleave', 'drop'].forEach(eventName => {
-        dropZone[0].addEventListener(eventName, unhighlight, false);
+            $(document).on(eventName, '#drag-drop-zone', function() {
+                $dropZone.removeClass('drag-over');
+            });
     });
 
     // Handle dropped files
-    dropZone[0].addEventListener('drop', handleDrop, false);
+        $(document).on('drop', '#drag-drop-zone', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            $dropZone.removeClass('drag-over');
+            
+            var files = e.originalEvent.dataTransfer.files;
+            handleFiles(files);
+        });
 
     // Handle file input change
-    fileInput.on('change', function(e) {
-        handleFiles(e.target.files);
-    });
+        $fileInput.on('change', function(e) {
+            handleFiles(this.files);
+        });
 
-    // Click anywhere in drop zone to trigger file input
-    dropZone.on('click', function(e) {
-        if (e.target !== fileInput[0]) {
-            fileInput.trigger('click');
+        // Replace the dropzone click handler with a button-specific handler
+        $('.button[for="document_file"]').on('click', function(e) {
+            e.preventDefault();
+            $fileInput.trigger('click');
+        });
+    }
+
+    // Add this function to validate file types
+    function validateFiles(files) {
+        for (var i = 0; i < files.length; i++) {
+            if (files[i].type !== 'application/pdf') {
+                showNotification('Only PDF files are allowed.', 'error');
+                return false;
+            }
         }
-    });
-
-    function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
+        return true;
     }
 
-    function highlight(e) {
-        dropZone.addClass('drag-over');
+    // Add this function after the validateFiles function
+    function checkForDuplicateNames(files) {
+        // Get all existing document titles from the table
+        var existingTitles = [];
+        $('.wp-list-table tbody tr').each(function() {
+            var title = $(this).find('td:first').text().trim();
+            existingTitles.push(title.toLowerCase());
+        });
+
+        // Check each file
+        for (var i = 0; i < files.length; i++) {
+            // Get filename without extension
+            var fileName = files[i].name.replace(/\.[^/.]+$/, "").toLowerCase();
+            if (existingTitles.includes(fileName)) {
+                showNotification('A document with the name "' + files[i].name + '" already exists. Please choose a different name.', 'error');
+                return false;
+            }
+        }
+        return true;
     }
 
-    function unhighlight(e) {
-        dropZone.removeClass('drag-over');
+    // Add this function to check for existing documents
+    function getExistingDocumentTitles() {
+        const existingTitles = new Map(); // Using Map to store both lowercase and original titles
+        $('.wp-list-table tbody tr').each(function() {
+            const title = $(this).find('td.column-title .view-mode').text().trim();
+            if (title) {
+                existingTitles.set(title.toLowerCase(), title);
+            }
+        });
+        return existingTitles;
     }
 
-    function handleDrop(e) {
-        var dt = e.dataTransfer;
-        var files = dt.files;
-        handleFiles(files);
-    }
-
+    // Update the file handling code
     function handleFiles(files) {
-        if (files.length > 0) {
+        if (!files || files.length === 0) {
+            return;
+        }
+
+        // Validate file types first
+        if (!validateFiles(files)) {
+            $fileInput.val(''); // Clear the file input
+            $fileNameDisplay.empty();
+            selectedFiles = null;
+            return;
+        }
+
+        // Get existing document titles
+        const existingTitles = getExistingDocumentTitles();
+        let hasDuplicates = false;
+        let duplicateNames = [];
+
+        // Check each file for duplicates
+        for (let i = 0; i < files.length; i++) {
+            // Get filename without extension
+            const fileName = files[i].name.replace(/\.[^/.]+$/, "");
+            const fileNameLower = fileName.toLowerCase();
+
+            // Check for exact match (case-insensitive)
+            if (existingTitles.has(fileNameLower)) {
+                hasDuplicates = true;
+                duplicateNames.push(`"${files[i].name}" (conflicts with "${existingTitles.get(fileNameLower)}")`);
+            }
+        }
+
+        // If duplicates found, show error and stop
+        if (hasDuplicates) {
+            showNotification(
+                `Cannot upload duplicate document${duplicateNames.length > 1 ? 's' : ''}: ${duplicateNames.join(', ')}`, 
+                'error'
+            );
+            $fileInput.val(''); // Clear the file input
+            $fileNameDisplay.empty();
+            selectedFiles = null;
+            return;
+        }
+
+        // If we get here, no duplicates were found
             selectedFiles = files;
             updateFileList(files);
             showUploadModal();
-        }
     }
 
     function updateFileList(files) {
         if (files.length === 0) {
-            fileNameDisplay.empty();
+            $fileNameDisplay.empty();
             return;
         }
 
@@ -77,19 +163,143 @@ jQuery(document).ready(function($) {
             fileList.append($('<li></li>').text(files[i].name));
         }
 
-        fileNameDisplay
+        $fileNameDisplay
             .empty()
             .append($('<strong></strong>').text('Selected Files (' + files.length + '):'))
             .append(fileList);
     }
 
     function showUploadModal() {
-        uploadModal.show();
+        if ($uploadModal.length) {
+            $uploadModal.show();
         // Reset form
         $('#upload-metadata-form')[0].reset();
     }
+    }
 
-    // Handle upload metadata form submission
+    // Helper function to format the date
+    function formatDate(date) {
+        return new Date(date).toLocaleDateString();
+    }
+
+    // Helper function to format empty values
+    function formatDisplayValue(value) {
+        if (value === null || value === undefined || value === '') {
+            return '—';  // Use em dash for empty values
+        }
+        return value;
+    }
+
+    // Helper function to get custom column configuration
+    function getCustomColumns() {
+        var columns = [];
+        $('.wp-list-table thead th').each(function(index) {
+            var $th = $(this);
+            // Skip non-metadata columns (icon, title, description, file type, date, actions)
+            if (index > 4 && !$th.is(':last-child')) {
+                columns.push({
+                    label: $th.text().trim(),
+                    key: $th.attr('data-meta-key') || ('doc_' + $th.text().trim().toLowerCase().replace(/[^a-z0-9]/g, '_'))
+                });
+            }
+        });
+        return columns;
+    }
+
+    // Update the createDocumentRow function
+    function createDocumentRow(document) {
+        console.log('Creating row with document data:', document);
+        
+        // Get the icon class based on file type
+        let iconClass = 'dashicons ';
+        switch (document.file_type) {
+            case 'application/pdf':
+                iconClass += 'dashicons-pdf';
+                break;
+            case 'application/msword':
+            case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+                iconClass += 'dashicons-media-document';
+                break;
+            case 'application/vnd.ms-excel':
+            case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+                iconClass += 'dashicons-spreadsheet';
+                break;
+            default:
+                iconClass += 'dashicons-media-default';
+        }
+        
+        // Start the row HTML with the icon column
+        let row = `<tr data-id="${document.post_id}">
+            <td class="column-icon">
+                <span class="${iconClass}"></span>
+            </td>
+            <td class="title column-title editable" data-field="title">
+                <span class="view-mode">${document.title}</span>
+                <input type="text" class="edit-mode" value="${document.title}" style="display: none;">
+            </td>
+            <td class="description column-description editable" data-field="description">
+                <span class="view-mode">${formatDisplayValue(document.description)}</span>
+                <textarea class="edit-mode" style="display: none;">${document.description || ''}</textarea>
+            </td>
+            <td class="filetype column-filetype">${document.file_type}</td>
+            <td class="date column-date">${new Date().toLocaleDateString()}</td>`;
+
+        // Get all custom columns by counting header cells and subtracting standard columns
+        const headerCells = $('.wp-list-table thead tr th').length;
+        const standardColumns = 7; // icon, title, description, file type, date, actions
+        const customColumnCount = headerCells - standardColumns;
+
+        // Get the custom column headers (skipping the standard columns)
+        const customColumns = [];
+        $('.wp-list-table thead tr th').each(function(index) {
+            // Skip standard columns (icon, title, description, file type, date)
+            if (index > 4 && index < headerCells - 1) { // -1 to skip actions column
+                customColumns.push({
+                    key: $(this).text().trim().toLowerCase().replace(/\s+/g, '_'),
+                    label: $(this).text().trim()
+                });
+            }
+        });
+
+        console.log('Custom columns found:', customColumns);
+
+        // Add cells for all custom columns (always as text type)
+        customColumns.forEach(column => {
+            document.meta = document.meta || {};
+            const value = document.meta[column.key] || '';
+            
+            row += `
+                <td class="column-${column.key} editable" data-field="${column.key}">
+                    <span class="view-mode">${formatDisplayValue(value)}</span>
+                    <input type="text" class="edit-mode" value="${value}" style="display: none;">
+                </td>`;
+        });
+
+        // Add action buttons
+        row += `
+            <td class="actions column-actions">
+                <a href="${document.file_url}" class="button button-small" target="_blank">Download</a>
+                <button type="button" 
+                        class="button button-small edit-metadata" 
+                        data-id="${document.post_id}"
+                        data-title="${document.title}"
+                        data-description="${document.description || ''}"
+                        data-metadata='${JSON.stringify(document.meta || {})}'>
+                    Edit
+                </button>
+                <button type="button" 
+                        class="button button-small button-link-delete delete-document" 
+                        data-post-id="${document.post_id}"
+                        data-title="${document.title}">
+                    Delete
+                </button>
+            </td>
+        </tr>`;
+
+        return row;
+    }
+
+    // Update the form submission handler
     $('#upload-metadata-form').on('submit', function(e) {
         e.preventDefault();
         
@@ -100,10 +310,23 @@ jQuery(document).ready(function($) {
 
         var formData = new FormData();
         
-        // Add metadata
-        $(this).serializeArray().forEach(function(item) {
-            formData.append(item.name, item.value);
+        // Structure the metadata properly
+        var metadata = {
+            description: $('#document_description').val(),
+            meta: {}
+        };
+        
+        // Add custom fields to metadata
+        $(this).find('[name^="meta["]').each(function() {
+            var $field = $(this);
+            var key = $field.attr('name').match(/meta\[(.*?)\]/)[1];
+            metadata.meta[key] = $field.val();
         });
+        
+        console.log('Sending metadata:', metadata);
+        
+        // Add structured metadata to form data
+        formData.append('metadata', JSON.stringify(metadata));
         
         // Add files
         for (var i = 0; i < selectedFiles.length; i++) {
@@ -111,7 +334,7 @@ jQuery(document).ready(function($) {
         }
         
         formData.append('action', 'handle_document_upload');
-        formData.append('nonce', documentManager.nonce);
+        formData.append('security', documentManager.nonce);
         
         $.ajax({
             url: documentManager.ajaxurl,
@@ -125,18 +348,37 @@ jQuery(document).ready(function($) {
                     .text('Uploading...');
             },
             success: function(response) {
+                console.log('Upload response:', response);
                 if (response.success) {
-                    showNotification(response.data.message);
-                    window.location.reload();
-                } else {
-                    var errorMessage = response.data.message || 'Unknown error occurred';
-                    if (response.data.errors && response.data.errors.length > 0) {
-                        errorMessage += '\n\nDetails:\n' + response.data.errors.join('\n');
+                    var $tbody = $('.wp-list-table tbody');
+                    
+                    // Remove "No documents found" message if it exists
+                    if ($tbody.find('tr td:contains("No documents found")').length) {
+                        $tbody.empty();
                     }
-                    showNotification(errorMessage, 'error');
+
+                    // Add each uploaded document to the table
+                    response.data.forEach(function(document) {
+                        console.log('Creating row for document:', document);
+                        var newRowHtml = createDocumentRow(document);
+                        var $newRow = $(newRowHtml);
+                        $tbody.prepend($newRow);
+                        highlightUpdatedRow($newRow);
+                    });
+
+                    $('#upload-metadata-modal').hide();
+                    $('#upload-metadata-form')[0].reset();
+                    $fileInput.val('');
+                    $fileNameDisplay.empty();
+                    selectedFiles = null;
+
+                    showNotification('Documents uploaded successfully.');
+                } else {
+                    showNotification(response.data.message || 'Error uploading documents.', 'error');
                 }
             },
             error: function(xhr, status, error) {
+                console.error('Upload error:', {xhr, status, error});
                 showNotification('Error: ' + error, 'error');
             },
             complete: function() {
@@ -148,13 +390,13 @@ jQuery(document).ready(function($) {
     });
 
     // Handle modal close
-    $('.close-modal, .cancel-upload').on('click', function() {
+    $(document).on('click', '.close-modal, .cancel-upload', function() {
         var $modal = $(this).closest('.metadata-modal');
         $modal.hide();
         if ($modal.is('#upload-metadata-modal')) {
             // Reset file selection
-            fileInput.val('');
-            fileNameDisplay.empty();
+            $fileInput.val('');
+            $fileNameDisplay.empty();
             selectedFiles = null;
         }
     });
@@ -164,19 +406,10 @@ jQuery(document).ready(function($) {
             event.target.style.display = 'none';
             if (event.target.id === 'upload-metadata-modal') {
                 // Reset file selection
-                fileInput.val('');
-                fileNameDisplay.empty();
+                $fileInput.val('');
+                $fileNameDisplay.empty();
                 selectedFiles = null;
             }
-        }
-    });
-
-    // Show/hide select options based on field type
-    $('#column_type').on('change', function() {
-        if ($(this).val() === 'select') {
-            $('.select-options-row').show();
-        } else {
-            $('.select-options-row').hide();
         }
     });
 
@@ -186,7 +419,7 @@ jQuery(document).ready(function($) {
         
         var formData = new FormData(this);
         formData.append('action', 'save_column_settings');
-        formData.append('nonce', documentManager.nonce);
+        formData.append('security', documentManager.nonce);
         
         $.ajax({
             url: documentManager.ajaxurl,
@@ -217,33 +450,36 @@ jQuery(document).ready(function($) {
         });
     });
 
-    // Handle deleting column
-    $('.delete-column').on('click', function(e) {
+    // Handle column deletion
+    $(document).on('click', '.delete-column', function(e) {
         e.preventDefault();
+        console.log('Delete column clicked');
+
+        var $button = $(this);
+        var metaKey = $button.data('meta-key');
+        var $row = $button.closest('tr');
         
         if (!confirm('Are you sure you want to delete this column? This will remove all associated metadata from documents.')) {
             return;
         }
 
-        var metaKey = $(this).data('meta-key');
-        var $row = $(this).closest('tr');
+        // Show loading state
+        $button.prop('disabled', true).text('Deleting...');
         
         $.ajax({
             url: documentManager.ajaxurl,
             type: 'POST',
             data: {
                 action: 'delete_column',
-                meta_key: metaKey,
-                nonce: documentManager.nonce
-            },
-            beforeSend: function() {
-                $row.addClass('deleting');
+                security: documentManager.nonce,
+                meta_key: metaKey
             },
             success: function(response) {
+                console.log('Delete response:', response);
                 if (response.success) {
+                    // Remove the row with animation
                     $row.fadeOut(400, function() {
                         $(this).remove();
-                        showNotification(response.data.message);
                         
                         // If no columns left, show message
                         if ($('.existing-columns-section tbody tr').length === 0) {
@@ -252,98 +488,177 @@ jQuery(document).ready(function($) {
                             );
                         }
                     });
+                    
+                    showNotification('Column deleted successfully.', 'success');
                 } else {
-                    showNotification(response.data.message, 'error');
-                    $row.removeClass('deleting');
+                    showNotification(response.data.message || 'Error deleting column.', 'error');
+                    // Reset button state
+                    $button.prop('disabled', false).text('Delete');
                 }
             },
             error: function(xhr, status, error) {
-                showNotification('Error: ' + error, 'error');
-                $row.removeClass('deleting');
+                console.error('Delete error:', {xhr, status, error});
+                showNotification('Error deleting column. Please try again.', 'error');
+                // Reset button state
+                $button.prop('disabled', false).text('Delete');
             }
         });
     });
 
-    // Handle edit button click
-    $(document).on('click', '.edit-metadata', function(e) {
-        console.log('Edit button clicked');
-        e.preventDefault();
+    // Helper function to ensure metadata consistency
+    function updateRowMetadata($row, updates) {
+        console.log('Updating row metadata:', updates);
         
-        var $button = $(this);
-        var postId = $button.data('id');
-        var title = $button.data('title');
-        var description = $button.data('description');
-        var metadata = $button.data('metadata');
+        var $editButton = $row.find('.edit-metadata');
+        var currentMetadata = {};
         
-        console.log('Raw metadata:', metadata); // Debug log
-        
-        // Check if metadata is already an object
-        if (typeof metadata === 'string') {
-            try {
-                metadata = JSON.parse(metadata);
-            } catch (e) {
-                console.error('Error parsing metadata:', e);
-                metadata = {};
-            }
+        try {
+            // Always get the current metadata from the attribute, not jQuery data
+            currentMetadata = JSON.parse($editButton.attr('data-metadata') || '{}');
+            console.log('Current metadata:', currentMetadata);
+        } catch (e) {
+            console.error('Error parsing current metadata:', e);
+            currentMetadata = {};
         }
-        
-        console.log('Processed metadata:', metadata); // Debug log
 
-        // Populate the modal form
-        $('#edit-post-id').val(postId);
-        $('#edit_document_title').val(title);
-        $('#edit_document_description').val(description);
+        // Update the metadata
+        var newMetadata = { ...currentMetadata, ...updates };
+        console.log('New metadata:', newMetadata);
+
+        // Update the edit button attributes
+        $editButton.attr('data-metadata', JSON.stringify(newMetadata));
+
+        // Update both view and edit mode fields
+        Object.keys(newMetadata).forEach(function(key) {
+            var value = newMetadata[key];
+            var $field = $row.find('[data-field="' + key + '"]');
+            
+            if ($field.length) {
+                // Update view mode
+                $field.find('.view-mode').text(formatDisplayValue(value));
+                
+                // Update edit mode
+                var $editMode = $field.find('.edit-mode');
+                $editMode.val(value);
+            }
+        });
+
+        return newMetadata;
+    }
+
+    // Update the bulk edit save handler
+    $('.save-bulk-edit').on('click', function() {
+        var $saveButton = $(this);
+        var updates = {};
         
-        // Populate metadata fields
-        if (metadata && typeof metadata === 'object') {
-            Object.keys(metadata).forEach(function(key) {
-                var $field = $('#edit_' + key);
-                if ($field.length) {
-                    $field.val(metadata[key]);
+        // Collect all changes
+        $('.wp-list-table tbody tr').each(function() {
+            var $row = $(this);
+            var postId = $row.data('id');
+            var hasChanges = false;
+            var rowData = {
+                meta: {}
+            };
+
+            // Check each editable field in the row
+            $row.find('.editable').each(function() {
+                var $field = $(this);
+                var fieldName = $field.data('field');
+                var $input = $field.find('.edit-mode');
+                var $viewMode = $field.find('.view-mode');
+                var newValue = $input.val().trim();
+                var oldValue = $viewMode.text().trim() === '—' ? '' : $viewMode.text().trim();
+
+                if (newValue !== oldValue) {
+                    hasChanges = true;
+                    if (fieldName === 'title' || fieldName === 'description') {
+                        rowData[fieldName] = newValue;
+                    } else {
+                        rowData.meta[fieldName] = newValue;
+                    }
                 }
             });
+
+            if (hasChanges) {
+                updates[postId] = rowData;
+            }
+        });
+
+        // If no changes, don't make the request
+        if (Object.keys(updates).length === 0) {
+            showNotification('No changes to save.', 'info');
+            exitBulkEditMode();
+            hasUnsavedChanges = false;
+            return;
         }
-        
-        // Before showing modal
-        console.log('Modal element exists:', $('#edit-document-modal').length > 0);
-        console.log('Current modal display:', $('#edit-document-modal').css('display'));
-        
-        // Show the modal
-        $('#edit-document-modal').show();
-        
-        // After showing modal
-        console.log('Modal display after show:', $('#edit-document-modal').css('display'));
+
+        // Show saving state
+        $saveButton.prop('disabled', true).text('Saving...');
+        showNotification('Saving changes...', 'info');
+
+        // Make the AJAX request
+        $.ajax({
+            url: documentManager.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'save_bulk_edit',
+                security: documentManager.nonce,
+                updates: JSON.stringify(updates)
+            },
+            success: function(response) {
+                if (response.success) {
+                    Object.keys(updates).forEach(function(postId) {
+                        var data = updates[postId];
+                        var $row = $('tr[data-id="' + postId + '"]');
+                        
+                        // Update all metadata at once
+                        if (data.meta) {
+                            updateRowMetadata($row, data.meta);
+                        }
+
+                        // Update title and description if changed
+                        if (data.title) {
+                            $row.find('.edit-metadata').attr('data-title', data.title);
+                            updateField($row, 'title', data.title);
+                        }
+                        if (data.description) {
+                            $row.find('.edit-metadata').attr('data-description', data.description);
+                            updateField($row, 'description', data.description);
+                        }
+                        
+                        highlightUpdatedRow($row);
+                    });
+
+                    exitBulkEditMode();
+                    hasUnsavedChanges = false;
+                    showNotification('Changes saved successfully!', 'success');
+                } else {
+                    showNotification(response.data.message || 'Error saving changes.', 'error');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Save error:', {xhr, status, error});
+                showNotification('Error saving changes. Please try again.', 'error');
+            },
+            complete: function() {
+                $saveButton.prop('disabled', false).text('Save Changes');
+            }
+        });
     });
 
-    // Handle modal close
-    $('.close-modal, .cancel-edit').on('click', function() {
-        $('#edit-document-modal').hide();
-    });
-
-    // Close modal when clicking outside
-    $(window).on('click', function(event) {
-        if ($(event.target).hasClass('metadata-modal')) {
-            $(event.target).hide();
-        }
-    });
-
-    // Handle form submission
+    // Update the edit form submission handler
     $('#edit-document-form').on('submit', function(e) {
         e.preventDefault();
-        console.log('Form submitted');
         
         var $form = $(this);
         var $submitButton = $form.find('button[type="submit"]');
         var postId = $('#edit-post-id').val();
         
-        // Show saving state
-        $submitButton.prop('disabled', true).text('Saving...');
-        
         // Collect form data
         var formData = {
             action: 'save_document_metadata',
             post_id: postId,
-            nonce: documentManager.nonce,
+            security: documentManager.nonce,
             title: $('#edit_document_title').val(),
             description: $('#edit_document_description').val(),
             meta: {}
@@ -356,7 +671,8 @@ jQuery(document).ready(function($) {
             formData.meta[key] = $field.val();
         });
         
-        console.log('Sending form data:', formData);
+        // Show saving state
+        $submitButton.prop('disabled', true).text('Saving...');
         
         // Make the AJAX request
         $.ajax({
@@ -364,31 +680,24 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: formData,
             success: function(response) {
-                console.log('Save response:', response);
                 if (response.success) {
-                    // Update the row in the table
                     var $row = $('tr[data-id="' + postId + '"]');
                     
+                    // Update all metadata at once
+                    updateRowMetadata($row, formData.meta);
+
                     // Update title and description
-                    $row.find('[data-field="title"] .view-mode').text(formData.title);
-                    $row.find('[data-field="description"] .view-mode').text(formData.description);
-                    
-                    // Update metadata fields
-                    Object.keys(formData.meta).forEach(function(key) {
-                        $row.find('[data-field="' + key + '"] .view-mode').text(formData.meta[key]);
+                    var $editButton = $row.find('.edit-metadata');
+                    $editButton.attr({
+                        'data-title': formData.title,
+                        'data-description': formData.description
                     });
                     
-                    // Update the edit button data
-                    var $editButton = $row.find('.edit-metadata');
-                    $editButton.data('title', formData.title);
-                    $editButton.data('description', formData.description);
-                    $editButton.data('metadata', formData.meta);
+                    updateField($row, 'title', formData.title);
+                    updateField($row, 'description', formData.description);
                     
-                    // Close modal and show success message
                     $('#edit-document-modal').hide();
                     showNotification('Document updated successfully!', 'success');
-                    
-                    // Highlight the updated row
                     highlightUpdatedRow($row);
                 } else {
                     showNotification(response.data.message || 'Error updating document.', 'error');
@@ -404,12 +713,69 @@ jQuery(document).ready(function($) {
         });
     });
 
+    // Handle edit button click
+    $(document).on('click', '.edit-metadata', function(e) {
+        e.preventDefault();
+        
+        var $button = $(this);
+        var postId = $button.data('id');
+        var title = $button.attr('data-title'); // Use attr instead of data
+        var description = $button.attr('data-description'); // Use attr instead of data
+        var metadata = $button.attr('data-metadata'); // Use attr instead of data
+        
+        console.log('Edit button clicked');
+        console.log('Raw metadata from attribute:', metadata);
+        
+        try {
+            metadata = JSON.parse(metadata || '{}');
+        } catch (e) {
+            console.error('Error parsing metadata:', e);
+            metadata = {};
+        }
+        
+        console.log('Parsed metadata:', metadata);
+
+        // Populate the form
+        $('#edit-post-id').val(postId);
+        $('#edit_document_title').val(title);
+        $('#edit_document_description').val(description);
+        
+        // Populate metadata fields
+        if (metadata && typeof metadata === 'object') {
+            Object.keys(metadata).forEach(function(key) {
+                var $field = $('#edit_' + key);
+                if ($field.length) {
+                    $field.val(metadata[key] || '');
+                }
+            });
+        }
+        
+        $('#edit-document-modal').show();
+    });
+
+    // Handle modal close
+    $(document).on('click', '.close-modal, .cancel-edit', function() {
+        $(this).closest('.metadata-modal').hide();
+    });
+
+    // Close modal when clicking outside
+    $(window).on('click', function(event) {
+        if ($(event.target).hasClass('metadata-modal')) {
+            $(event.target).hide();
+        }
+    });
+
     // Handle document deletion
-    $('.delete-document').on('click', function(e) {
+    $(document).on('click', '.delete-document', function(e) {
         e.preventDefault();
         
         var $button = $(this);
         var postId = $button.data('post-id');
+        
+        // Debug logging
+        console.log('Delete button clicked');
+        console.log('Post ID:', postId);
+        console.log('Nonce:', documentManager.nonce);
         
         if (!confirm(documentManager.messages.deleteConfirm)) {
             return;
@@ -421,7 +787,7 @@ jQuery(document).ready(function($) {
             data: {
                 action: 'delete_document',
                 post_id: postId,
-                nonce: documentManager.nonce
+                security: documentManager.nonce
             },
             beforeSend: function() {
                 $button.prop('disabled', true);
@@ -477,129 +843,40 @@ jQuery(document).ready(function($) {
                 return;
             }
         }
-        resetBulkEditMode();
+        exitBulkEditMode();
+        hasUnsavedChanges = false; // Reset the changes flag
     });
 
-    // Handle bulk edit save
-    $('.save-bulk-edit').on('click', function() {
-        var $saveButton = $(this);
-        var updates = {};
+    // Helper function to update a field in the table
+    function updateField($row, fieldName, newValue) {
+        console.log('Updating field:', fieldName, 'with value:', newValue);
         
-        // Collect all changes
-        $('.wp-list-table tbody tr').each(function() {
-            var $row = $(this);
-            var postId = $row.data('id');
-            var hasChanges = false;
-            var rowData = {
-                meta: {}
-            };
-
-            // Check each editable field in the row
-            $row.find('.editable').each(function() {
-                var $field = $(this);
-                var fieldName = $field.data('field');
-                var $input = $field.find('.edit-mode');
-                var $viewMode = $field.find('.view-mode');
-                var newValue = $input.val().trim();
-                var oldValue = $viewMode.text().trim();
-
-                if (newValue !== oldValue) {
-                    hasChanges = true;
-                    if (fieldName === 'title' || fieldName === 'description') {
-                        rowData[fieldName] = newValue;
-                    } else {
-                        rowData.meta[fieldName] = newValue;
-                    }
-                }
-            });
-
-            if (hasChanges) {
-                updates[postId] = rowData;
-            }
-        });
-
-        // If no changes, don't make the request
-        if (Object.keys(updates).length === 0) {
-            showNotification('No changes to save.', 'info');
+        var $field = $row.find('[data-field="' + fieldName + '"]');
+        if (!$field.length) {
+            console.log('Field not found:', fieldName);
             return;
         }
 
-        // Show saving state
-        $saveButton.prop('disabled', true).text('Saving...');
-        showNotification('Saving changes...', 'info');
-
-        // Make the AJAX request
-        $.ajax({
-            url: documentManager.ajaxurl,
-            type: 'POST',
-            data: {
-                action: 'save_bulk_edit',
-                nonce: documentManager.nonce,
-                updates: JSON.stringify(updates)
-            },
-            success: function(response) {
-                if (response.success) {
-                    // Update the UI with new values
-                    Object.keys(updates).forEach(function(postId) {
-                        var data = updates[postId];
-                        var $row = $('tr[data-id="' + postId + '"]');
-                        
-                        // Update fields
-                        if (data.title) {
-                            updateField($row, 'title', data.title);
-                        }
-                        if (data.description) {
-                            updateField($row, 'description', data.description);
-                        }
-                        if (data.meta) {
-                            Object.keys(data.meta).forEach(function(metaKey) {
-                                updateField($row, metaKey, data.meta[metaKey]);
-                            });
-                        }
-                        
-                        highlightUpdatedRow($row);
-                    });
-
-                    // Make sure we exit bulk edit mode
-                    exitBulkEditMode();
-                    showNotification('Changes saved successfully!', 'success');
-                } else {
-                    showNotification(response.data.message || 'Error saving changes.', 'error');
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Save error:', {xhr, status, error});
-                showNotification('Error saving changes. Please try again.', 'error');
-            },
-            complete: function() {
-                $saveButton.prop('disabled', false).text('Save Changes');
-                // Also ensure we exit bulk edit mode even if there was an error
-                exitBulkEditMode();
-            }
-        });
-    });
-
-    // Helper function to update a single field
-    function updateField($row, fieldName, newValue) {
-        var $field = $row.find('[data-field="' + fieldName + '"]');
-        
         // Update the view mode text
-        $field.find('.view-mode')
-            .text(newValue)
-            .show(); // Make sure view mode is visible
-        
-        // Update the edit mode value and hide it
-        $field.find('.edit-mode')
-            .val(newValue)
-            .hide(); // Make sure edit mode is hidden
+        var $viewMode = $field.find('.view-mode');
+        var displayValue = formatDisplayValue(newValue);
+        $viewMode.text(displayValue);
+        console.log('Updated view mode:', fieldName, 'to:', displayValue);
+
+        // Update the edit mode value
+        var $editMode = $field.find('.edit-mode');
+        $editMode.val(newValue);
+        console.log('Updated edit mode:', fieldName, 'to:', newValue);
+
+        // Show/hide appropriate elements
+        $viewMode.show();
+        $editMode.hide();
     }
 
     // Helper function to highlight updated row
     function highlightUpdatedRow($row) {
-        $row.addClass('updated-row');
-        setTimeout(function() {
-            $row.removeClass('updated-row');
-        }, 2000);
+        $row.css('background-color', '#f7fcfe')
+            .animate({ backgroundColor: 'transparent' }, 2000);
     }
 
     // Helper function to exit bulk edit mode
@@ -620,6 +897,9 @@ jQuery(document).ready(function($) {
         
         // Remove any edit mode classes
         $('.bulk-edit-mode').removeClass('bulk-edit-mode');
+        
+        // Reset the changes flag
+        hasUnsavedChanges = false;
     }
 
     // Helper function to show notifications (replace any existing notification)
@@ -662,7 +942,7 @@ jQuery(document).ready(function($) {
     }
 
     // Warn user about unsaved changes when leaving page
-    $(window).on('beforeunload', function() {
+    $(window).on('beforeunload', function(e) {
         if (hasUnsavedChanges) {
             return 'You have unsaved changes. Are you sure you want to leave?';
         }
@@ -688,6 +968,33 @@ jQuery(document).ready(function($) {
         }
         .bulk-edit-mode .view-mode {
             display: none;
+        }
+        .wp-list-table {
+            table-layout: fixed;
+            width: 100%;
+        }
+        .wp-list-table th,
+        .wp-list-table td {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        .wp-list-table .column-icon {
+            width: 30px;
+        }
+        .wp-list-table .column-actions {
+            width: 200px;
+        }
+        .wp-list-table .column-title {
+            width: 20%;
+        }
+        .wp-list-table .column-description {
+            width: 25%;
+        }
+        .wp-list-table .column-filetype {
+            width: 10%;
+        }
+        .wp-list-table .column-date {
+            width: 10%;
         }
     `;
     document.head.appendChild(style);

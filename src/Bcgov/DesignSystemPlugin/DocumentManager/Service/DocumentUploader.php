@@ -37,13 +37,36 @@ class DocumentUploader {
             throw new DocumentException('File type not allowed.');
         }
 
-        // Prepare upload directory
+        // Get the filename without extension for title comparison
+        $title = pathinfo($file['name'], PATHINFO_FILENAME);
+        
+        // Debug log
+        error_log('Checking for duplicate document with title: ' . $title);
+        
+        // Check if a document with this title already exists
+        $existing_docs = get_posts([
+            'post_type' => $this->config->get('post_type'),
+            'post_status' => 'publish',
+            'posts_per_page' => -1,
+            'title' => $title
+        ]);
+
+        // Debug log
+        error_log('Found existing docs: ' . print_r($existing_docs, true));
+
+        foreach ($existing_docs as $doc) {
+            if (strtolower($doc->post_title) === strtolower($title)) {
+                throw new DocumentException('A document with the name "' . $title . '" already exists. Please choose a different name.');
+            }
+        }
+
+        // Set up upload directory
         $upload_dir = wp_upload_dir();
         $document_dir = $upload_dir['basedir'] . '/documents/' . date('Y/m');
         wp_mkdir_p($document_dir);
-
-        // Generate unique filename
-        $filename = wp_unique_filename($document_dir, $file['name']);
+        
+        // Use original filename without modification
+        $filename = sanitize_file_name($file['name']);
         $file_path = $document_dir . '/' . $filename;
 
         // Move uploaded file
@@ -53,10 +76,14 @@ class DocumentUploader {
 
         // Create post
         $post_data = array(
-            'post_title' => !empty($metadata['title']) ? $metadata['title'] : $filename,
+            'post_title' => $title,
             'post_status' => 'publish',
-            'post_type' => $this->config->get('post_type')
+            'post_type' => $this->config->get('post_type'),
+            'post_excerpt' => isset($metadata['description']) ? sanitize_textarea_field($metadata['description']) : ''
         );
+
+        // Debug logging for post data
+        error_log('Creating post with data: ' . print_r($post_data, true));
 
         $post_id = wp_insert_post($post_data);
         if (is_wp_error($post_id)) {
@@ -68,10 +95,40 @@ class DocumentUploader {
         update_post_meta($post_id, '_document_file_url', $file_url);
         update_post_meta($post_id, '_document_file_type', $file_type['type']);
 
+        // Get all custom columns
+        $custom_columns = get_option('document_custom_columns', array());
+        $all_meta = array();
+
+        // Initialize all custom columns with empty values
+        foreach ($custom_columns as $meta_key => $column) {
+            $all_meta[$meta_key] = '';
+        }
+
+        // Update with provided metadata
+        if (isset($metadata['meta']) && is_array($metadata['meta'])) {
+            foreach ($metadata['meta'] as $meta_key => $value) {
+                if (array_key_exists($meta_key, $custom_columns)) {
+                    $value = sanitize_text_field($value);
+                    $all_meta[$meta_key] = $value;
+                    update_post_meta($post_id, $meta_key, $value);
+                }
+            }
+        }
+
+        // Save empty values for any remaining metadata fields
+        foreach ($all_meta as $meta_key => $value) {
+            if (!isset($metadata['meta'][$meta_key])) {
+                update_post_meta($post_id, $meta_key, '');
+            }
+        }
+
         return [
             'post_id' => $post_id,
             'file_url' => $file_url,
-            'file_type' => $file_type['type']
+            'title' => $title,
+            'description' => $post_data['post_excerpt'],
+            'file_type' => $file_type['type'],
+            'meta' => $all_meta
         ];
     }
 

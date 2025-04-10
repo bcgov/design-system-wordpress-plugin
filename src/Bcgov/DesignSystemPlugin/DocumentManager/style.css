@@ -219,7 +219,7 @@
     margin-top: 30px;
 }
 
-/* Modal Styles */
+/* Modal styles */
 .metadata-modal {
     display: none;
     position: fixed;
@@ -231,45 +231,86 @@
     background-color: rgba(0,0,0,0.5);
     padding: 20px;
     box-sizing: border-box;
+    /* Add scroll if content is too long */
+    overflow-y: auto;
 }
 
 .metadata-modal-content {
     background-color: #fff;
-    margin: 5% auto;
-    padding: 20px;
+    /* Change margin-top to position higher */
+    margin: 32px auto;
+    padding: 25px;
     border: 1px solid #ddd;
     width: 90%;
     max-width: 600px;
     position: relative;
     border-radius: 4px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    /* Add max-height and scroll for long content */
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
 }
 
+/* Improve modal scrollbar appearance */
+.metadata-modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.metadata-modal-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.metadata-modal-content::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.metadata-modal-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Ensure modal header stays at top */
+.metadata-modal-content h2 {
+    margin-top: 0;
+    padding-right: 30px; /* Make room for close button */
+}
+
+/* Improve close button positioning */
 .close-modal {
     position: absolute;
-    right: 10px;
-    top: 10px;
+    right: 15px;
+    top: 15px;
     font-size: 24px;
     font-weight: bold;
     cursor: pointer;
     color: #666;
     line-height: 1;
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
 }
 
 .close-modal:hover {
     color: #000;
+    background-color: #f0f0f0;
 }
 
+/* Form section styling */
 .form-section {
     margin-bottom: 20px;
 }
 
 .form-section h3 {
-    margin-bottom: 15px;
-    padding-bottom: 5px;
+    margin: 0 0 15px 0;
+    padding-bottom: 8px;
     border-bottom: 1px solid #eee;
+    font-size: 1.1em;
 }
 
+/* Form field styling */
 .custom-field {
     margin-bottom: 15px;
 }
@@ -289,6 +330,15 @@
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
+    transition: border-color 0.2s ease;
+}
+
+.custom-field input:focus,
+.custom-field select:focus,
+.custom-field textarea:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+    outline: none;
 }
 
 .custom-field textarea {
@@ -296,6 +346,7 @@
     resize: vertical;
 }
 
+/* Form actions styling */
 .form-actions {
     margin-top: 20px;
     padding-top: 20px;
@@ -334,6 +385,7 @@
 .bulk-edit-mode .editable {
     position: relative;
     padding: 0 !important;
+    background-color: #f8f9fa;
 }
 
 .bulk-edit-mode .view-mode {
@@ -345,18 +397,23 @@
     width: 100%;
     margin: 0;
     padding: 8px;
-    border: 1px solid transparent;
-    background: transparent;
+    border: 2px solid #ddd;
+    background-color: #fff;
     box-sizing: border-box;
     font-size: inherit;
     font-family: inherit;
     line-height: inherit;
+    transition: all 0.2s ease;
 }
 
-.bulk-edit-mode .edit-mode:hover,
+.bulk-edit-mode .edit-mode:hover {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #f0f0f1;
+}
+
 .bulk-edit-mode .edit-mode:focus {
-    border-color: #0073aa;
-    background: #fff;
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
     outline: none;
 }
 
@@ -367,12 +424,22 @@
 
 .bulk-edit-mode select.edit-mode {
     height: 34px;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><path d="M5 6l5 5 5-5 2 1-7 7-7-7 2-1z" fill="%23555"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 5px top 55%;
+    background-size: 16px 16px;
+    padding-right: 24px;
 }
 
-/* Highlight changed fields */
+/* Add visual feedback for changed fields */
 .bulk-edit-mode .edit-mode.changed {
-    background-color: #fff8e5;
-    border-color: #dba617;
+    background-color: #f0f6fc;
+    border-color: #2271b1;
+}
+
+/* Add table cell padding in bulk edit mode */
+.bulk-edit-mode td {
+    padding: 8px !important;
 }
 
 /* Save indicator */
@@ -475,20 +542,19 @@
 }
 
 /* Column Settings Styles */
+.existing-columns-section tr {
+    transition: opacity 0.4s ease-out;
+}
+
 .existing-columns-section tr.deleting {
     opacity: 0.5;
-    pointer-events: none;
 }
 
-.existing-columns-section .delete-column {
-    color: #dc3232;
-    border-color: #dc3232;
-}
-
-.existing-columns-section .delete-column:hover {
-    color: #fff;
-    background-color: #dc3232;
-    border-color: #dc3232;
+/* Style for empty state */
+.existing-columns-section tbody tr td[colspan] {
+    text-align: center;
+    padding: 20px;
+    color: #666;
 }
 
 /* Add visual feedback for edit mode */
@@ -527,3 +593,95 @@
 .edit-mode:focus {
     border-color: #2271b1;
     box-shadow: 0 0 0 
+
+/* Responsive adjustments */
+@media screen and (max-height: 800px) {
+    .metadata-modal-content {
+        margin: 20px auto;
+        max-height: calc(100vh - 40px);
+    }
+}
+
+@media screen and (max-width: 782px) {
+    .metadata-modal-content {
+        width: 95%;
+        padding: 15px;
+    }
+    
+    .form-actions {
+        text-align: center;
+    }
+    
+    .form-actions button {
+        width: 100%;
+        margin: 5px 0;
+    }
+}
+
+/* Add this to your existing CSS */
+.custom-field .description {
+    margin: 5px 0 0;
+    font-size: 12px;
+    color: #666;
+    font-style: italic;
+}
+
+/* Document search result styles */
+.search-results article.type-document {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.search-results article.type-document .entry-title {
+    margin-bottom: 10px;
+}
+
+.search-results article.type-document .entry-summary {
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.search-results article.type-document .document-type {
+    color: #0073aa;
+    font-weight: 500;
+}
+
+.search-results article.type-document .document-description {
+    color: #666;
+}
+
+/* Document table icon column styles */
+.column-icon {
+    width: 30px;
+    text-align: center;
+}
+
+.column-icon .dashicons {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: #666;
+}
+
+/* Specific icon colors */
+.column-icon .dashicons-pdf {
+    color: #dc3545;
+}
+
+.column-icon .dashicons-media-document {
+    color: #0073aa;
+}
+
+.column-icon .dashicons-spreadsheet {
+    color: #28a745;
+}
+
+/* Ensure icon column doesn't get too wide in bulk edit mode */
+.bulk-edit-mode .column-icon {
+    width: 30px;
+    min-width: 30px;
+    max-width: 30px;
+} 
