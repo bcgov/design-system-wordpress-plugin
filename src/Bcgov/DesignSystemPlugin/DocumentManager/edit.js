@@ -1,4 +1,7 @@
 jQuery(document).ready(function($) {
+    // Add console log to check if script is loading
+    console.log('Document Manager script loaded');
+
     // Drag and drop functionality
     var dropZone = $('#drag-drop-zone');
     var fileInput = $('#document_file');
@@ -108,7 +111,7 @@ jQuery(document).ready(function($) {
         }
         
         formData.append('action', 'handle_document_upload');
-        formData.append('security', documentManager.nonce);
+        formData.append('nonce', documentManager.nonce);
         
         $.ajax({
             url: documentManager.ajaxurl,
@@ -183,7 +186,7 @@ jQuery(document).ready(function($) {
         
         var formData = new FormData(this);
         formData.append('action', 'save_column_settings');
-        formData.append('security', documentManager.nonce);
+        formData.append('nonce', documentManager.nonce);
         
         $.ajax({
             url: documentManager.ajaxurl,
@@ -231,7 +234,7 @@ jQuery(document).ready(function($) {
             data: {
                 action: 'delete_column',
                 meta_key: metaKey,
-                security: documentManager.nonce
+                nonce: documentManager.nonce
             },
             beforeSend: function() {
                 $row.addClass('deleting');
@@ -261,87 +264,154 @@ jQuery(document).ready(function($) {
         });
     });
 
-    // Handle metadata modal
-    var modal = $('#edit-metadata-modal');
-    var closeBtn = $('.close-modal');
+    // Handle edit button click
+    $(document).on('click', '.edit-metadata', function(e) {
+        console.log('Edit button clicked');
+        e.preventDefault();
+        
+        var $button = $(this);
+        var postId = $button.data('id');
+        var title = $button.data('title');
+        var description = $button.data('description');
+        var metadata = $button.data('metadata');
+        
+        console.log('Raw metadata:', metadata); // Debug log
+        
+        // Check if metadata is already an object
+        if (typeof metadata === 'string') {
+            try {
+                metadata = JSON.parse(metadata);
+            } catch (e) {
+                console.error('Error parsing metadata:', e);
+                metadata = {};
+            }
+        }
+        
+        console.log('Processed metadata:', metadata); // Debug log
 
-    // Open modal when clicking Edit Document button
-    $('.edit-metadata').on('click', function() {
-        var documentId = $(this).data('id');
-        var metadata = $(this).data('metadata');
+        // Populate the modal form
+        $('#edit-post-id').val(postId);
+        $('#edit_document_title').val(title);
+        $('#edit_document_description').val(description);
         
-        // Set document ID in form
-        $('#document_id').val(documentId);
+        // Populate metadata fields
+        if (metadata && typeof metadata === 'object') {
+            Object.keys(metadata).forEach(function(key) {
+                var $field = $('#edit_' + key);
+                if ($field.length) {
+                    $field.val(metadata[key]);
+                }
+            });
+        }
         
-        // Set core document fields
-        $('#edit_title').val($(this).data('title'));
-        $('#edit_description').val($(this).data('description'));
-        $('#edit_slug').val($(this).data('slug'));
+        // Before showing modal
+        console.log('Modal element exists:', $('#edit-document-modal').length > 0);
+        console.log('Current modal display:', $('#edit-document-modal').css('display'));
         
-        // Fill form with current metadata values
-        Object.keys(metadata).forEach(function(key) {
-            $('#edit_' + key).val(metadata[key]);
-        });
+        // Show the modal
+        $('#edit-document-modal').show();
         
-        // Show modal
-        modal.show();
+        // After showing modal
+        console.log('Modal display after show:', $('#edit-document-modal').css('display'));
     });
 
-    // Close modal when clicking close button or outside modal
-    closeBtn.on('click', function() {
-        modal.hide();
+    // Handle modal close
+    $('.close-modal, .cancel-edit').on('click', function() {
+        $('#edit-document-modal').hide();
     });
 
+    // Close modal when clicking outside
     $(window).on('click', function(event) {
-        if (event.target == modal[0]) {
-            modal.hide();
+        if ($(event.target).hasClass('metadata-modal')) {
+            $(event.target).hide();
         }
     });
 
-    // Handle metadata form submission
-    $('#edit-metadata-form').on('submit', function(e) {
+    // Handle form submission
+    $('#edit-document-form').on('submit', function(e) {
         e.preventDefault();
+        console.log('Form submitted');
         
-        var formData = new FormData(this);
-        formData.append('action', 'save_document_metadata');
-        formData.append('security', documentManager.nonce);
+        var $form = $(this);
+        var $submitButton = $form.find('button[type="submit"]');
+        var postId = $('#edit-post-id').val();
         
+        // Show saving state
+        $submitButton.prop('disabled', true).text('Saving...');
+        
+        // Collect form data
+        var formData = {
+            action: 'save_document_metadata',
+            post_id: postId,
+            nonce: documentManager.nonce,
+            title: $('#edit_document_title').val(),
+            description: $('#edit_document_description').val(),
+            meta: {}
+        };
+        
+        // Collect metadata
+        $form.find('[name^="meta["]').each(function() {
+            var $field = $(this);
+            var key = $field.attr('name').match(/meta\[(.*?)\]/)[1];
+            formData.meta[key] = $field.val();
+        });
+        
+        console.log('Sending form data:', formData);
+        
+        // Make the AJAX request
         $.ajax({
             url: documentManager.ajaxurl,
             type: 'POST',
             data: formData,
-            processData: false,
-            contentType: false,
-            beforeSend: function() {
-                $('#edit-metadata-form button[type="submit"]')
-                    .prop('disabled', true)
-                    .text('Saving...');
-            },
             success: function(response) {
+                console.log('Save response:', response);
                 if (response.success) {
-                    window.location.reload();
+                    // Update the row in the table
+                    var $row = $('tr[data-id="' + postId + '"]');
+                    
+                    // Update title and description
+                    $row.find('[data-field="title"] .view-mode').text(formData.title);
+                    $row.find('[data-field="description"] .view-mode').text(formData.description);
+                    
+                    // Update metadata fields
+                    Object.keys(formData.meta).forEach(function(key) {
+                        $row.find('[data-field="' + key + '"] .view-mode').text(formData.meta[key]);
+                    });
+                    
+                    // Update the edit button data
+                    var $editButton = $row.find('.edit-metadata');
+                    $editButton.data('title', formData.title);
+                    $editButton.data('description', formData.description);
+                    $editButton.data('metadata', formData.meta);
+                    
+                    // Close modal and show success message
+                    $('#edit-document-modal').hide();
+                    showNotification('Document updated successfully!', 'success');
+                    
+                    // Highlight the updated row
+                    highlightUpdatedRow($row);
                 } else {
-                    alert('Error: ' + (response.data || 'Unknown error occurred'));
+                    showNotification(response.data.message || 'Error updating document.', 'error');
                 }
             },
             error: function(xhr, status, error) {
-                alert('Error: ' + error);
+                console.error('Save error:', {xhr, status, error});
+                showNotification('Error saving changes. Please try again.', 'error');
             },
             complete: function() {
-                $('#edit-metadata-form button[type="submit"]')
-                    .prop('disabled', false)
-                    .text('Save Changes');
+                $submitButton.prop('disabled', false).text('Save Changes');
             }
         });
     });
 
     // Handle document deletion
-    $('.delete-document').on('click', function() {
-        var button = $(this);
-        var documentId = button.data('id');
-        var documentTitle = button.data('title');
+    $('.delete-document').on('click', function(e) {
+        e.preventDefault();
         
-        if (!confirm('Are you sure you want to delete "' + documentTitle + '"? This action cannot be undone.')) {
+        var $button = $(this);
+        var postId = $button.data('post-id');
+        
+        if (!confirm(documentManager.messages.deleteConfirm)) {
             return;
         }
         
@@ -350,35 +420,27 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'delete_document',
-                document_id: documentId,
-                security: documentManager.nonce
+                post_id: postId,
+                nonce: documentManager.nonce
             },
             beforeSend: function() {
-                button.prop('disabled', true)
-                    .text('Deleting...');
+                $button.prop('disabled', true);
             },
             success: function(response) {
                 if (response.success) {
-                    // Remove the row from the table
-                    button.closest('tr').fadeOut(400, function() {
+                    $button.closest('tr').fadeOut(400, function() {
                         $(this).remove();
-                        
-                        // Check if there are any documents left
-                        if ($('.wp-list-table tbody tr').length === 0) {
-                            // Replace table with "No documents found" message
-                            $('.wp-list-table').replaceWith('<p>No documents found.</p>');
-                        }
                     });
+                    showNotification(response.data.message);
                 } else {
-                    alert('Error: ' + (response.data || 'Failed to delete document'));
-                    button.prop('disabled', false)
-                        .text('Delete');
+                    showNotification(response.data.message, 'error');
                 }
             },
             error: function(xhr, status, error) {
-                alert('Error: ' + error);
-                button.prop('disabled', false)
-                    .text('Delete');
+                showNotification('Error: ' + error, 'error');
+            },
+            complete: function() {
+                $button.prop('disabled', false);
             }
         });
     });
@@ -418,127 +480,185 @@ jQuery(document).ready(function($) {
         resetBulkEditMode();
     });
 
-    // Initialize notification system
-    function showNotification(message, type = 'success') {
-        // Remove any existing notification
-        $('.notification').remove();
+    // Handle bulk edit save
+    $('.save-bulk-edit').on('click', function() {
+        var $saveButton = $(this);
+        var updates = {};
+        
+        // Collect all changes
+        $('.wp-list-table tbody tr').each(function() {
+            var $row = $(this);
+            var postId = $row.data('id');
+            var hasChanges = false;
+            var rowData = {
+                meta: {}
+            };
 
-        // Create new notification
-        const $notification = $(`
-            <div class="notification ${type}">
-                ${type === 'success' ? '<div class="success-icon"></div>' : ''}
-                <span>${message}</span>
-                <button class="close-notification">&times;</button>
-            </div>
-        `).appendTo('body');
+            // Check each editable field in the row
+            $row.find('.editable').each(function() {
+                var $field = $(this);
+                var fieldName = $field.data('field');
+                var $input = $field.find('.edit-mode');
+                var $viewMode = $field.find('.view-mode');
+                var newValue = $input.val().trim();
+                var oldValue = $viewMode.text().trim();
 
-        // Show notification
-        setTimeout(() => $notification.addClass('show'), 10);
+                if (newValue !== oldValue) {
+                    hasChanges = true;
+                    if (fieldName === 'title' || fieldName === 'description') {
+                        rowData[fieldName] = newValue;
+                    } else {
+                        rowData.meta[fieldName] = newValue;
+                    }
+                }
+            });
 
-        // Auto hide after 3 seconds
-        const hideTimeout = setTimeout(() => {
-            $notification.removeClass('show');
-            setTimeout(() => $notification.remove(), 300);
-        }, 3000);
-
-        // Handle manual close
-        $notification.find('.close-notification').on('click', () => {
-            clearTimeout(hideTimeout);
-            $notification.removeClass('show');
-            setTimeout(() => $notification.remove(), 300);
-        });
-    }
-
-    // Save bulk edit changes
-    $saveChangesBtn.on('click', function(e) {
-        e.preventDefault();
-        const $button = $(this);
-        const changes = {};
-
-        // Collect all changed fields
-        $('.edit-mode.changed').each(function() {
-            const $field = $(this);
-            const $row = $field.closest('tr');
-            const $cell = $field.closest('td.editable');
-            const postId = $row.data('id');
-            const fieldName = $cell.data('field');
-            
-            if (!changes[postId]) {
-                changes[postId] = {};
+            if (hasChanges) {
+                updates[postId] = rowData;
             }
-            changes[postId][fieldName] = $field.val();
         });
 
-        if (Object.keys(changes).length === 0) {
-            showNotification('No changes to save.', 'error');
+        // If no changes, don't make the request
+        if (Object.keys(updates).length === 0) {
+            showNotification('No changes to save.', 'info');
             return;
         }
 
-        // Disable buttons and show loading state
-        $button.prop('disabled', true);
-        $table.addClass('saving-changes');
+        // Show saving state
+        $saveButton.prop('disabled', true).text('Saving...');
+        showNotification('Saving changes...', 'info');
 
-        // Send AJAX request
+        // Make the AJAX request
         $.ajax({
             url: documentManager.ajaxurl,
             type: 'POST',
             data: {
                 action: 'save_bulk_edit',
-                security: documentManager.nonce,
-                changes: JSON.stringify(changes)
+                nonce: documentManager.nonce,
+                updates: JSON.stringify(updates)
             },
             success: function(response) {
                 if (response.success) {
-                    // Update view mode values
-                    Object.entries(changes).forEach(([postId, fields]) => {
-                        const $row = $table.find(`tr[data-id="${postId}"]`);
-                        Object.entries(fields).forEach(([fieldName, value]) => {
-                            const $viewField = $row.find(`td[data-field="${fieldName}"] .view-mode`);
-                            const $editField = $row.find(`td[data-field="${fieldName}"] .edit-mode`);
-                            
-                            // Update both view and edit mode values
-                            $viewField.text(value);
-                            if ($editField.is('textarea, input[type="text"]')) {
-                                $editField.val(value);
-                            } else if ($editField.is('select')) {
-                                $editField.find('option').prop('selected', false);
-                                $editField.find(`option[value="${value}"]`).prop('selected', true);
-                            }
-                        });
+                    // Update the UI with new values
+                    Object.keys(updates).forEach(function(postId) {
+                        var data = updates[postId];
+                        var $row = $('tr[data-id="' + postId + '"]');
+                        
+                        // Update fields
+                        if (data.title) {
+                            updateField($row, 'title', data.title);
+                        }
+                        if (data.description) {
+                            updateField($row, 'description', data.description);
+                        }
+                        if (data.meta) {
+                            Object.keys(data.meta).forEach(function(metaKey) {
+                                updateField($row, metaKey, data.meta[metaKey]);
+                            });
+                        }
+                        
+                        highlightUpdatedRow($row);
                     });
-                    
-                    resetBulkEditMode();
-                    showNotification('Changes saved successfully!');
+
+                    // Make sure we exit bulk edit mode
+                    exitBulkEditMode();
+                    showNotification('Changes saved successfully!', 'success');
                 } else {
                     showNotification(response.data.message || 'Error saving changes.', 'error');
-                    $('.edit-mode.changed').addClass('edit-error');
                 }
             },
             error: function(xhr, status, error) {
-                console.error('AJAX Error:', {
-                    status: status,
-                    error: error,
-                    response: xhr.responseText
-                });
+                console.error('Save error:', {xhr, status, error});
                 showNotification('Error saving changes. Please try again.', 'error');
-                $('.edit-mode.changed').addClass('edit-error');
             },
             complete: function() {
-                $button.prop('disabled', false);
-                $table.removeClass('saving-changes');
+                $saveButton.prop('disabled', false).text('Save Changes');
+                // Also ensure we exit bulk edit mode even if there was an error
+                exitBulkEditMode();
             }
         });
     });
 
-    // Helper function to reset bulk edit mode
-    function resetBulkEditMode() {
-        $table.removeClass('bulk-edit-mode');
-        $('.view-mode').show();
-        $('.edit-mode').hide().removeClass('changed edit-error');
-        $bulkEditBtn.show();
-        $saveChangesBtn.hide();
-        $cancelBulkEditBtn.hide();
-        hasUnsavedChanges = false;
+    // Helper function to update a single field
+    function updateField($row, fieldName, newValue) {
+        var $field = $row.find('[data-field="' + fieldName + '"]');
+        
+        // Update the view mode text
+        $field.find('.view-mode')
+            .text(newValue)
+            .show(); // Make sure view mode is visible
+        
+        // Update the edit mode value and hide it
+        $field.find('.edit-mode')
+            .val(newValue)
+            .hide(); // Make sure edit mode is hidden
+    }
+
+    // Helper function to highlight updated row
+    function highlightUpdatedRow($row) {
+        $row.addClass('updated-row');
+        setTimeout(function() {
+            $row.removeClass('updated-row');
+        }, 2000);
+    }
+
+    // Helper function to exit bulk edit mode
+    function exitBulkEditMode() {
+        // First hide all edit mode inputs
+        $('.edit-mode').each(function() {
+            $(this).hide();
+        });
+        
+        // Then show all view mode spans
+        $('.view-mode').each(function() {
+            $(this).show();
+        });
+        
+        // Reset button states
+        $('.toggle-bulk-edit').show();
+        $('.save-bulk-edit, .cancel-bulk-edit').hide();
+        
+        // Remove any edit mode classes
+        $('.bulk-edit-mode').removeClass('bulk-edit-mode');
+    }
+
+    // Helper function to show notifications (replace any existing notification)
+    function showNotification(message, type = 'success') {
+        // Remove any existing notifications first
+        $('.notice').remove();
+        
+        var notificationClass = 'notice notice-' + type + ' is-dismissible';
+        var notification = $('<div class="' + notificationClass + '"><p>' + message + '</p></div>');
+        
+        // Add the notification at the top of the page
+        $('.wrap > h1').after(notification);
+        
+        // Auto dismiss success messages after 5 seconds
+        if (type === 'success') {
+            setTimeout(function() {
+                notification.fadeOut(400, function() {
+                    $(this).remove();
+                });
+            }, 5000);
+        }
+    }
+
+    // Handle entering bulk edit mode
+    $('.toggle-bulk-edit').on('click', function() {
+        enterBulkEditMode();
+    });
+
+    // Handle canceling bulk edit
+    $('.cancel-bulk-edit').on('click', function() {
+        exitBulkEditMode();
+    });
+
+    // Helper function to enter bulk edit mode
+    function enterBulkEditMode() {
+        $('.view-mode').hide();
+        $('.edit-mode').show();
+        $('.toggle-bulk-edit').hide();
+        $('.save-bulk-edit, .cancel-bulk-edit').show();
     }
 
     // Warn user about unsaved changes when leaving page
@@ -547,4 +667,28 @@ jQuery(document).ready(function($) {
             return 'You have unsaved changes. Are you sure you want to leave?';
         }
     });
+
+    // Add CSS to ensure proper display
+    var style = document.createElement('style');
+    style.textContent = `
+        .edit-mode {
+            display: none;
+            width: 100%;
+            padding: 5px;
+            margin: 2px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .view-mode {
+            display: block;
+            padding: 5px;
+        }
+        .bulk-edit-mode .edit-mode {
+            display: block;
+        }
+        .bulk-edit-mode .view-mode {
+            display: none;
+        }
+    `;
+    document.head.appendChild(style);
 }); 

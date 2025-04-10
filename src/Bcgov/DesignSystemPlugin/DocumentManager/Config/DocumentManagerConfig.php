@@ -7,6 +7,7 @@ class DocumentManagerConfig {
         'allowed_file_types' => ['pdf', 'doc', 'docx', 'txt', 'csv', 'xls', 'xlsx'],
         'max_file_size' => 10485760, // 10MB in bytes
         'nonce_key' => 'document_upload_nonce',
+        'post_type' => 'document'
     ];
 
     /**

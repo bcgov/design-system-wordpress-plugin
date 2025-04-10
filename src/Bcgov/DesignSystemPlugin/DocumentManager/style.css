@@ -223,103 +223,93 @@
 .metadata-modal {
     display: none;
     position: fixed;
-    z-index: 1000;
+    z-index: 999999;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(0,0,0,0.5);
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .metadata-modal-content {
-    background-color: #fefefe;
+    background-color: #fff;
     margin: 5% auto;
     padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-    max-width: 800px;
-    border-radius: 4px;
+    border: 1px solid #ddd;
+    width: 90%;
+    max-width: 600px;
     position: relative;
-    max-height: 90vh;
-    overflow-y: auto;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 .close-modal {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    font-size: 24px;
     font-weight: bold;
     cursor: pointer;
+    color: #666;
     line-height: 1;
 }
 
-.close-modal:hover,
-.close-modal:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-#edit-metadata-form {
-    margin-top: 20px;
-}
-
-#edit-metadata-form .custom-field {
-    margin-bottom: 15px;
-}
-
-#edit-metadata-form label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 600;
-}
-
-#edit-metadata-form input[type="text"],
-#edit-metadata-form input[type="number"],
-#edit-metadata-form input[type="date"],
-#edit-metadata-form select {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-#edit-metadata-form button[type="submit"] {
-    margin-top: 15px;
+.close-modal:hover {
+    color: #000;
 }
 
 .form-section {
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #eee;
-}
-
-.form-section:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
+    margin-bottom: 20px;
 }
 
 .form-section h3 {
-    margin: 0 0 20px 0;
-    padding: 0;
-    font-size: 1.2em;
-    color: #23282d;
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #eee;
 }
 
-#edit-metadata-form textarea {
+.custom-field {
+    margin-bottom: 15px;
+}
+
+.custom-field label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.custom-field input[type="text"],
+.custom-field input[type="date"],
+.custom-field input[type="number"],
+.custom-field select,
+.custom-field textarea {
     width: 100%;
-    min-height: 100px;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
 }
 
-.description {
-    color: #666;
-    font-style: italic;
-    margin: 5px 0 0 0;
-    font-size: 13px;
+.custom-field textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.form-actions {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    text-align: right;
+}
+
+.form-actions button {
+    margin-left: 10px;
+}
+
+/* Make sure modal is above WP admin menu */
+#wpwrap {
+    z-index: auto !important;
 }
 
 .button-link-delete {
@@ -499,4 +489,41 @@
     color: #fff;
     background-color: #dc3232;
     border-color: #dc3232;
-} 
+}
+
+/* Add visual feedback for edit mode */
+.edit-mode {
+    display: none;
+    width: 100%;
+    padding: 5px;
+    margin: 2px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.view-mode {
+    display: block;
+    padding: 5px;
+}
+
+.updated-row {
+    background-color: #f0f9ff !important;
+    transition: background-color 1s ease;
+}
+
+/* Button visibility states */
+.save-bulk-edit,
+.cancel-bulk-edit {
+    display: none;
+}
+
+/* Notification positioning */
+.notice {
+    margin: 15px 0;
+    position: relative;
+    padding: 1px 12px;
+}
+
+.edit-mode:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 

@@ -2,11 +2,13 @@
 
 namespace Bcgov\DesignSystemPlugin\DocumentManager\Service;
 
-class DocumentPostType {
-    // Add constants for repeated values
-    public const POST_TYPE = 'document';
+use Bcgov\DesignSystemPlugin\DocumentManager\Config\DocumentManagerConfig;
 
-    public function __construct() {
+class DocumentPostType {
+    private $config;
+
+    public function __construct(DocumentManagerConfig $config) {
+        $this->config = $config;
         add_action('init', array($this, 'register'));
     }
 
@@ -41,6 +43,6 @@ class DocumentPostType {
             'show_in_rest'        => true,
         );
 
-        register_post_type(self::POST_TYPE, $args);
+        register_post_type($this->config->get('post_type'), $args);
     }
 }

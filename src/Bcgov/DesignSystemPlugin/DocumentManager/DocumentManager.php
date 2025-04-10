@@ -5,20 +5,26 @@ namespace Bcgov\DesignSystemPlugin\DocumentManager;
 use \WP_Query;
 use Bcgov\DesignSystemPlugin\DocumentManager\Service\DocumentPostType;
 use Bcgov\DesignSystemPlugin\DocumentManager\Config\DocumentManagerConfig;
+use Bcgov\DesignSystemPlugin\DocumentManager\Service\DocumentUploader;
+use Bcgov\DesignSystemPlugin\DocumentManager\Exception\DocumentException;
 
 class DocumentManager {
+    private const NONCE_KEY = 'document_upload_nonce';
+    private const POST_TYPE = 'document';
+    
     private $config;
     private $postType;
+    private $uploader;
     
     public function __construct() {
         $this->config = new DocumentManagerConfig();
-        $this->postType = new DocumentPostType();
+        $this->postType = new DocumentPostType($this->config);
+        $this->uploader = new DocumentUploader($this->config);
         
-        // Admin menu and scripts
         add_action('admin_menu', array($this, 'add_documents_menu'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
         
-        // AJAX handlers
+        // Add both logged in and logged out AJAX actions
         add_action('wp_ajax_handle_document_upload', array($this, 'handle_document_upload'));
         add_action('wp_ajax_nopriv_handle_document_upload', array($this, 'handle_unauthorized_access'));
         add_action('admin_menu', array($this, 'add_column_settings_submenu'));
@@ -48,25 +54,69 @@ class DocumentManager {
      * Enqueue necessary scripts and styles
      */
     public function enqueue_admin_scripts($hook) {
-        // Check if we're on either the main document page or column settings page
-        if (!in_array($hook, array('toplevel_page_document-manager', 'documents_page_document-columns'))) {
+        $valid_pages = array('toplevel_page_document-manager', 'documents_page_document-columns');
+        if (!in_array($hook, $valid_pages)) {
             return;
         }
 
-        wp_enqueue_style('document-manager-styles', plugin_dir_url(__FILE__) . './style.css');
-        wp_enqueue_script('document-manager-script', plugin_dir_url(__FILE__) . './edit.js', array('jquery'), '1.0.0', true);
+        // Get the correct plugin directory path and URL
+        $plugin_dir = plugin_dir_path(dirname(dirname(dirname(__FILE__))));
+        $plugin_url = plugin_dir_url(dirname(dirname(dirname(__FILE__))));
         
-        // Add more specific data to the localized script
+        // Remove the extra 'src' from the paths
+        $relative_path = 'Bcgov/DesignSystemPlugin/DocumentManager/';
+        
+        // Construct file paths
+        $style_path = $plugin_dir . $relative_path . 'style.css';
+        $js_path = $plugin_dir . $relative_path . 'edit.js';
+        
+        // Construct URLs
+        $style_url = $plugin_url . $relative_path . 'style.css';
+        $js_url = $plugin_url . $relative_path . 'edit.js';
+
+        // Get file versions
+        $style_version = file_exists($style_path) ? filemtime($style_path) : '1.0';
+        $js_version = file_exists($js_path) ? filemtime($js_path) : '1.0';
+
+        // Debug information
+        error_log('Style path: ' . $style_path);
+        error_log('Style URL: ' . $style_url);
+        error_log('JS path: ' . $js_path);
+        error_log('JS URL: ' . $js_url);
+
+        wp_enqueue_style('document-manager-styles', $style_url, array(), $style_version);
+        wp_enqueue_script('document-manager-script', $js_url, array('jquery'), $js_version, true);
+        
+        // Generate nonce and store it for debugging
+        $nonce_key = $this->config->get('nonce_key');
+        $nonce = wp_create_nonce($nonce_key);
+        
+        // Add debug output
+        error_log('Nonce Key: ' . $nonce_key);
+        error_log('Generated Nonce: ' . $nonce);
+
         wp_localize_script('document-manager-script', 'documentManager', array(
             'ajaxurl' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('document_upload_nonce'),
+            'nonce' => $nonce,
             'isAdmin' => current_user_can('manage_options'),
-            'messages' => array(
-                'unauthorized' => 'You do not have permission to perform this action.',
-                'uploadError' => 'Error uploading file.',
-                'success' => 'Document uploaded successfully.'
-            )
+            'messages' => $this->getLocalizedMessages()
         ));
+    }
+
+    /**
+     * Get localized messages for JavaScript
+     *
+     * @return array
+     */
+    private function getLocalizedMessages() {
+        return array(
+            'unauthorized' => __('You do not have permission to perform this action.', 'design-system'),
+            'uploadError' => __('Error uploading file.', 'design-system'),
+            'success' => __('Document uploaded successfully.', 'design-system'),
+            'deleteConfirm' => __('Are you sure you want to delete this document?', 'design-system'),
+            'saving' => __('Saving changes...', 'design-system'),
+            'saved' => __('Changes saved successfully.', 'design-system'),
+        );
     }
 
     /**
@@ -225,11 +275,11 @@ class DocumentManager {
                                                         }
                                                         echo esc_attr(json_encode($metadata));
                                                     ?>">
-                                                Edit Document
+                                                Edit
                                             </button>
                                             <button type="button" 
                                                     class="button button-small button-link-delete delete-document" 
-                                                    data-id="<?php echo get_the_ID(); ?>"
+                                                    data-post-id="<?php echo get_the_ID(); ?>"
                                                     data-title="<?php echo esc_attr(get_the_title()); ?>">
                                                 Delete
                                             </button>
@@ -238,7 +288,10 @@ class DocumentManager {
                                 <?php endwhile; ?>
                             </tbody>
                         </table>
-                        <?php wp_nonce_field('document_upload_nonce', 'bulk_edit_nonce'); ?>
+                        <?php 
+                        // Change this line from using 'document_upload_nonce' to using the config nonce key
+                        wp_nonce_field($this->config->get('nonce_key'), 'bulk_edit_nonce'); 
+                        ?>
                     </form>
                 <?php else : ?>
                     <p>No documents found.</p>
@@ -246,201 +299,101 @@ class DocumentManager {
                 wp_reset_postdata();
                 ?>
             </div>
+
+            <!-- Single Document Edit Modal -->
+            <div id="edit-document-modal" class="metadata-modal">
+                <div class="metadata-modal-content">
+                    <span class="close-modal">&times;</span>
+                    <h2>Edit Document</h2>
+                    <form id="edit-document-form">
+                        <input type="hidden" name="post_id" id="edit-post-id">
+                        
+                        <div class="form-section">
+                            <h3>Document Details</h3>
+                            <div class="custom-field">
+                                <label for="edit_document_title">Title</label>
+                                <input type="text" name="title" id="edit_document_title" required>
+                            </div>
+                            <div class="custom-field">
+                                <label for="edit_document_description">Description</label>
+                                <textarea name="description" id="edit_document_description"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Additional Information</h3>
+                            <?php foreach ($custom_columns as $meta_key => $column): ?>
+                                <div class="custom-field">
+                                    <label for="edit_<?php echo esc_attr($meta_key); ?>"><?php echo esc_html($column['label']); ?></label>
+                                    <?php if ($column['type'] === 'select'): ?>
+                                        <select name="meta[<?php echo esc_attr($meta_key); ?>]" id="edit_<?php echo esc_attr($meta_key); ?>">
+                                            <option value="">Select <?php echo esc_html($column['label']); ?></option>
+                                            <?php foreach ($column['options'] as $option): ?>
+                                                <option value="<?php echo esc_attr($option); ?>"><?php echo esc_html($option); ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    <?php elseif ($column['type'] === 'date'): ?>
+                                        <input type="date" name="meta[<?php echo esc_attr($meta_key); ?>]" id="edit_<?php echo esc_attr($meta_key); ?>">
+                                    <?php elseif ($column['type'] === 'number'): ?>
+                                        <input type="number" name="meta[<?php echo esc_attr($meta_key); ?>]" id="edit_<?php echo esc_attr($meta_key); ?>">
+                                    <?php else: ?>
+                                        <input type="text" name="meta[<?php echo esc_attr($meta_key); ?>]" id="edit_<?php echo esc_attr($meta_key); ?>">
+                                    <?php endif; ?>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="button button-primary">Save Changes</button>
+                            <button type="button" class="button cancel-edit">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
         <?php
     }
 
     /**
-     * Handle document upload via AJAX
+     * Handle document upload AJAX action
      */
     public function handle_document_upload() {
-        // First check if user is logged in
-        if (!is_user_logged_in()) {
-            wp_send_json_error('You must be logged in to upload documents.', 403);
-            return;
-        }
-
-        // Verify nonce
-        if (!check_ajax_referer('document_upload_nonce', 'security', false)) {
-            wp_send_json_error('Invalid security token.', 403);
-            return;
-        }
-
-        // Check user capabilities
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error('You do not have permission to upload documents.', 403);
-            return;
-        }
-
-        // Check if files were uploaded
-        if (!isset($_FILES['document_file'])) {
-            wp_send_json_error('No files were uploaded.', 400);
-            return;
-        }
-
-        // Validate and sanitize input
-        $base_title = isset($_POST['document_title']) ? sanitize_text_field($_POST['document_title']) : '';
-        $description = isset($_POST['document_description']) ? sanitize_textarea_field($_POST['document_description']) : '';
-
-        if (empty($base_title)) {
-            wp_send_json_error('Document title is required.', 400);
-            return;
-        }
-
-        // Get custom columns for metadata
-        $custom_columns = get_option('document_custom_columns', array());
-        $metadata = array();
-        foreach ($custom_columns as $meta_key => $column) {
-            if (isset($_POST[$meta_key])) {
-                $value = $_POST[$meta_key];
-                
-                // Sanitize based on field type
-                switch ($column['type']) {
-                    case 'number':
-                        $value = floatval($value);
-                        break;
-                    case 'date':
-                        $value = sanitize_text_field($value);
-                        break;
-                    case 'select':
-                        if (!in_array($value, $column['options'])) {
-                            $value = ''; // Invalid option
-                        }
-                        break;
-                    default:
-                        $value = sanitize_text_field($value);
-                }
-                
-                $metadata[$meta_key] = $value;
-            }
-        }
-
-        // Handle multiple file uploads
-        $uploaded_files = $_FILES['document_file'];
-        $success_count = 0;
-        $error_messages = array();
-        $uploaded_documents = array();
-
-        // Reorganize files array if multiple files
-        $files = array();
-        $file_count = is_array($uploaded_files['name']) ? count($uploaded_files['name']) : 1;
-        
-        for ($i = 0; $i < $file_count; $i++) {
-            $files[$i] = array(
-                'name' => is_array($uploaded_files['name']) ? $uploaded_files['name'][$i] : $uploaded_files['name'],
-                'type' => is_array($uploaded_files['type']) ? $uploaded_files['type'][$i] : $uploaded_files['type'],
-                'tmp_name' => is_array($uploaded_files['tmp_name']) ? $uploaded_files['tmp_name'][$i] : $uploaded_files['tmp_name'],
-                'error' => is_array($uploaded_files['error']) ? $uploaded_files['error'][$i] : $uploaded_files['error'],
-                'size' => is_array($uploaded_files['size']) ? $uploaded_files['size'][$i] : $uploaded_files['size']
-            );
-        }
-
-        require_once(ABSPATH . 'wp-admin/includes/file.php');
-        require_once(ABSPATH . 'wp-admin/includes/media.php');
-        require_once(ABSPATH . 'wp-admin/includes/image.php');
-
-        foreach ($files as $index => $file) {
-            // Skip if there was an upload error
-            if ($file['error'] !== UPLOAD_ERR_OK) {
-                $error_messages[] = "Error uploading file {$file['name']}: " . $this->get_upload_error_message($file['error']);
-                continue;
-            }
-
-            // Prepare file for upload
-            $_FILES['document_file'] = $file;
-
-            // Handle the file upload
-            $file_id = media_handle_upload('document_file', 0);
-
-            if (is_wp_error($file_id)) {
-                $error_messages[] = "Error processing file {$file['name']}: " . $file_id->get_error_message();
-                continue;
-            }
-
-            // Create document title with index if multiple files
-            $title = $file_count > 1 ? $base_title . ' ' . ($index + 1) : $base_title;
-
-            // Create document post
-            $document_post = array(
-                'post_title'    => $title,
-                'post_content'  => $description,
-                'post_status'   => 'publish',
-                'post_type'     => 'document',
-                'post_author'   => get_current_user_id()
-            );
-
-            $post_id = wp_insert_post($document_post);
-
-            if (is_wp_error($post_id)) {
-                // Clean up the uploaded file if post creation fails
-                wp_delete_attachment($file_id, true);
-                $error_messages[] = "Error creating document post for {$file['name']}: " . $post_id->get_error_message();
-                continue;
-            }
-
-            // Add file metadata
-            $file_url = wp_get_attachment_url($file_id);
-            $file_type = wp_check_filetype(basename($file_url))['ext'];
+        try {
+            $nonce_key = $this->config->get('nonce_key');
+            $received_nonce = $_REQUEST['nonce'] ?? 'no_nonce';
             
-            update_post_meta($post_id, '_document_file_url', $file_url);
-            update_post_meta($post_id, '_document_file_type', $file_type);
-            update_post_meta($post_id, '_document_file_id', $file_id);
+            // Add debug output
+            error_log('Received Nonce: ' . $received_nonce);
+            error_log('Nonce Key Used: ' . $nonce_key);
+            error_log('Nonce Verification Result: ' . (wp_verify_nonce($received_nonce, $nonce_key) ? 'true' : 'false'));
 
-            // Add custom metadata
-            foreach ($metadata as $meta_key => $value) {
-                update_post_meta($post_id, $meta_key, $value);
+            if (!check_ajax_referer($nonce_key, 'nonce', false)) {
+                throw new DocumentException('Invalid security token. Please refresh the page and try again.');
             }
 
-            $success_count++;
-            $uploaded_documents[] = array(
-                'title' => $title,
-                'id' => $post_id
-            );
-        }
+            if (!current_user_can('upload_files')) {
+                throw new DocumentException('You do not have permission to upload files.');
+            }
 
-        // Prepare response
-        if ($success_count === 0) {
-            wp_send_json_error(array(
-                'message' => 'No documents were uploaded successfully.',
-                'errors' => $error_messages
-            ));
-            return;
-        }
+            $files = $_FILES['document_file'];
+            $metadata = $_POST['metadata'] ?? [];
+            $results = [];
 
-        wp_send_json_success(array(
-            'message' => sprintf(
-                '%d document%s uploaded successfully%s', 
-                $success_count,
-                $success_count > 1 ? 's were' : ' was',
-                !empty($error_messages) ? ' with some errors' : ''
-            ),
-            'uploaded_documents' => $uploaded_documents,
-            'errors' => $error_messages,
-            'redirect' => admin_url('admin.php?page=document-manager')
-        ));
-    }
+            // Handle multiple file uploads
+            for ($i = 0; $i < count($files['name']); $i++) {
+                $file = array(
+                    'name' => $files['name'][$i],
+                    'type' => $files['type'][$i],
+                    'tmp_name' => $files['tmp_name'][$i],
+                    'error' => $files['error'][$i],
+                    'size' => $files['size'][$i]
+                );
 
-    /**
-     * Get upload error message
-     */
-    private function get_upload_error_message($error_code) {
-        switch ($error_code) {
-            case UPLOAD_ERR_INI_SIZE:
-                return 'The uploaded file exceeds the upload_max_filesize directive in php.ini';
-            case UPLOAD_ERR_FORM_SIZE:
-                return 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form';
-            case UPLOAD_ERR_PARTIAL:
-                return 'The uploaded file was only partially uploaded';
-            case UPLOAD_ERR_NO_FILE:
-                return 'No file was uploaded';
-            case UPLOAD_ERR_NO_TMP_DIR:
-                return 'Missing a temporary folder';
-            case UPLOAD_ERR_CANT_WRITE:
-                return 'Failed to write file to disk';
-            case UPLOAD_ERR_EXTENSION:
-                return 'A PHP extension stopped the file upload';
-            default:
-                return 'Unknown upload error';
+                $results[] = $this->uploader->uploadSingle($file, $metadata);
+            }
+
+            wp_send_json_success($results);
+        } catch (DocumentException $e) {
+            wp_send_json_error(['message' => $e->getMessage()]);
         }
     }
 
@@ -661,228 +614,195 @@ class DocumentManager {
     }
 
     /**
-     * Save document metadata via AJAX
+     * Handle saving document metadata via AJAX
      */
     public function save_document_metadata() {
-        // Verify nonce
-        if (!check_ajax_referer('document_upload_nonce', 'security', false)) {
-            wp_send_json_error('Invalid security token.', 403);
-            return;
-        }
-
-        // Check user capabilities
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error('You do not have permission to edit document metadata.', 403);
-            return;
-        }
-
-        // Get and validate document ID
-        $document_id = isset($_POST['document_id']) ? intval($_POST['document_id']) : 0;
-        if (!$document_id || get_post_type($document_id) !== 'document') {
-            wp_send_json_error('Invalid document ID.');
-            return;
-        }
-
-        // Update post data
-        $post_data = array(
-            'ID' => $document_id,
-            'post_title' => sanitize_text_field($_POST['document_title']),
-            'post_excerpt' => sanitize_textarea_field($_POST['document_description'])
-        );
-
-        // Only update slug if provided
-        if (!empty($_POST['document_slug'])) {
-            $post_data['post_name'] = sanitize_title($_POST['document_slug']);
-        }
-
-        // Update the post
-        $result = wp_update_post($post_data, true);
-        if (is_wp_error($result)) {
-            wp_send_json_error($result->get_error_message());
-            return;
-        }
-
-        // Get custom columns
-        $custom_columns = get_option('document_custom_columns', array());
-        
-        // Update each meta field
-        foreach ($custom_columns as $meta_key => $column) {
-            if (isset($_POST[$meta_key])) {
-                $value = $_POST[$meta_key];
-                
-                // Sanitize based on field type
-                switch ($column['type']) {
-                    case 'number':
-                        $value = floatval($value);
-                        break;
-                    case 'date':
-                        $value = sanitize_text_field($value);
-                        break;
-                    case 'select':
-                        if (!in_array($value, $column['options'])) {
-                            $value = ''; // Invalid option
-                        }
-                        break;
-                    default:
-                        $value = sanitize_text_field($value);
-                }
-                
-                update_post_meta($document_id, $meta_key, $value);
+        try {
+            // Debug logging
+            error_log('Save metadata request received');
+            error_log('POST data: ' . print_r($_POST, true));
+            
+            // Check nonce
+            if (!check_ajax_referer($this->config->get('nonce_key'), 'nonce', false)) {
+                throw new DocumentException('Security check failed.');
             }
-        }
 
-        wp_send_json_success(array(
-            'message' => 'Document updated successfully.'
-        ));
+            // Check permissions
+            if (!current_user_can('edit_posts')) {
+                throw new DocumentException('You do not have permission to edit documents.');
+            }
+
+            // Get post ID
+            $post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
+            if (!$post_id) {
+                throw new DocumentException('No document ID provided.');
+            }
+
+            // Verify post exists and is correct type
+            $post = get_post($post_id);
+            if (!$post || $post->post_type !== $this->config->get('post_type')) {
+                throw new DocumentException('Invalid document.');
+            }
+
+            // Update title and description
+            $update_data = array(
+                'ID' => $post_id
+            );
+
+            if (isset($_POST['title'])) {
+                $update_data['post_title'] = sanitize_text_field($_POST['title']);
+            }
+
+            if (isset($_POST['description'])) {
+                $update_data['post_excerpt'] = sanitize_textarea_field($_POST['description']);
+            }
+
+            // Update the post
+            $result = wp_update_post($update_data);
+            if (is_wp_error($result)) {
+                throw new DocumentException('Failed to update document.');
+            }
+
+            // Update metadata
+            if (isset($_POST['meta']) && is_array($_POST['meta'])) {
+                foreach ($_POST['meta'] as $meta_key => $value) {
+                    update_post_meta($post_id, $meta_key, sanitize_text_field($value));
+                }
+            }
+
+            wp_send_json_success(array(
+                'message' => 'Document updated successfully.'
+            ));
+
+        } catch (DocumentException $e) {
+            error_log('Document metadata save error: ' . $e->getMessage());
+            wp_send_json_error(array(
+                'message' => $e->getMessage()
+            ));
+        }
     }
 
     /**
-     * Delete document via AJAX
+     * Handle document deletion
      */
     public function delete_document() {
-        // Verify nonce
-        if (!check_ajax_referer('document_upload_nonce', 'security', false)) {
-            wp_send_json_error('Invalid security token.', 403);
-            return;
+        try {
+            // Debug logging
+            error_log('Delete document request received');
+            error_log('Nonce received: ' . ($_REQUEST['nonce'] ?? 'no_nonce'));
+            
+            // Check nonce and capabilities
+            if (!check_ajax_referer($this->config->get('nonce_key'), 'nonce', false)) {
+                throw new DocumentException('Security check failed.');
+            }
+
+            if (!current_user_can('delete_posts')) {
+                throw new DocumentException('You do not have permission to delete documents.');
+            }
+
+            // Get post ID
+            $post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
+            if (!$post_id) {
+                throw new DocumentException('No document ID provided.');
+            }
+
+            // Verify post exists and is correct type
+            $post = get_post($post_id);
+            if (!$post || $post->post_type !== $this->config->get('post_type')) {
+                throw new DocumentException('Invalid document.');
+            }
+
+            // Delete the post
+            $result = wp_delete_post($post_id, true);
+            if (!$result) {
+                throw new DocumentException('Failed to delete document.');
+            }
+
+            wp_send_json_success(array(
+                'message' => 'Document deleted successfully.'
+            ));
+        } catch (DocumentException $e) {
+            error_log('Document deletion error: ' . $e->getMessage());
+            wp_send_json_error(array(
+                'message' => $e->getMessage()
+            ));
         }
-
-        // Check user capabilities
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error('You do not have permission to delete documents.', 403);
-            return;
-        }
-
-        // Get and validate document ID
-        $document_id = isset($_POST['document_id']) ? intval($_POST['document_id']) : 0;
-        if (!$document_id || get_post_type($document_id) !== 'document') {
-            wp_send_json_error('Invalid document ID.');
-            return;
-        }
-
-        // Get associated file ID
-        $file_id = get_post_meta($document_id, '_document_file_id', true);
-
-        // Delete the document post
-        $result = wp_delete_post($document_id, true);
-        if (!$result) {
-            wp_send_json_error('Failed to delete document.');
-            return;
-        }
-
-        // Delete the associated file
-        if ($file_id) {
-            wp_delete_attachment($file_id, true);
-        }
-
-        wp_send_json_success(array(
-            'message' => 'Document deleted successfully.'
-        ));
     }
 
     /**
-     * Save bulk edit changes via AJAX
+     * Handle bulk edit save action
      */
     public function save_bulk_edit() {
-        // Verify nonce
-        if (!check_ajax_referer('document_upload_nonce', 'security', false)) {
-            wp_send_json_error('Invalid security token.', 403);
-            return;
-        }
+        try {
+            // Enhanced debug logging
+            error_log('Bulk edit request received');
+            error_log('POST data: ' . print_r($_POST, true));
+            
+            $nonce_key = $this->config->get('nonce_key');
+            $received_nonce = $_REQUEST['nonce'] ?? 'no_nonce';
+            
+            error_log('Nonce Key: ' . $nonce_key);
+            error_log('Received Nonce: ' . $received_nonce);
+            error_log('Nonce Verification Result: ' . (wp_verify_nonce($received_nonce, $nonce_key) ? 'true' : 'false'));
 
-        // Check user capabilities
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error('You do not have permission to edit documents.', 403);
-            return;
-        }
-
-        // Get and decode changes
-        $raw_changes = isset($_POST['changes']) ? stripslashes($_POST['changes']) : '';
-        $changes = json_decode($raw_changes, true);
-        
-        if (empty($changes) || !is_array($changes)) {
-            wp_send_json_error(array(
-                'message' => 'No valid changes to save.',
-                'debug' => array(
-                    'raw' => $raw_changes,
-                    'decoded' => $changes
-                )
-            ));
-            return;
-        }
-
-        $custom_columns = get_option('document_custom_columns', array());
-        $success_count = 0;
-        $error_messages = array();
-
-        foreach ($changes as $document_id => $fields) {
-            $document_id = intval($document_id);
-            if (!$document_id || get_post_type($document_id) !== 'document') {
-                $error_messages[] = "Invalid document ID: {$document_id}";
-                continue;
+            if (!check_ajax_referer($nonce_key, 'nonce', false)) {
+                throw new DocumentException('Invalid security token. Please refresh the page and try again.');
             }
 
-            $post_data = array('ID' => $document_id);
-            $meta_updates = array();
-
-            foreach ($fields as $field => $value) {
-                if ($field === 'title') {
-                    $post_data['post_title'] = sanitize_text_field($value);
-                } elseif ($field === 'description') {
-                    $post_data['post_excerpt'] = sanitize_textarea_field($value);
-                } elseif (isset($custom_columns[$field])) {
-                    // Sanitize based on field type
-                    switch ($custom_columns[$field]['type']) {
-                        case 'number':
-                            $value = floatval($value);
-                            break;
-                        case 'date':
-                            $value = sanitize_text_field($value);
-                            break;
-                        case 'select':
-                            if (!in_array($value, $custom_columns[$field]['options'])) {
-                                $value = ''; // Invalid option
-                            }
-                            break;
-                        default:
-                            $value = sanitize_text_field($value);
-                    }
-                    $meta_updates[$field] = $value;
-                }
+            if (!current_user_can('edit_posts')) {
+                throw new DocumentException('You do not have permission to edit documents.');
             }
 
-            // Update post if there are changes to core fields
-            if (count($post_data) > 1) {
-                $result = wp_update_post($post_data, true);
-                if (is_wp_error($result)) {
-                    $error_messages[] = "Error updating document {$document_id}: " . $result->get_error_message();
+            $updates = isset($_POST['updates']) ? json_decode(stripslashes($_POST['updates']), true) : null;
+            if (!$updates || !is_array($updates)) {
+                throw new DocumentException('No valid update data received.');
+            }
+
+            error_log('Updates data: ' . print_r($updates, true));
+
+            $results = [];
+            foreach ($updates as $post_id => $data) {
+                // Verify post exists and is correct type
+                $post = get_post($post_id);
+                if (!$post || $post->post_type !== $this->config->get('post_type')) {
+                    error_log("Invalid post: $post_id");
                     continue;
                 }
+
+                // Update post title if provided
+                if (isset($data['title'])) {
+                    wp_update_post([
+                        'ID' => $post_id,
+                        'post_title' => sanitize_text_field($data['title'])
+                    ]);
+                }
+
+                // Update post excerpt/description if provided
+                if (isset($data['description'])) {
+                    wp_update_post([
+                        'ID' => $post_id,
+                        'post_excerpt' => sanitize_textarea_field($data['description'])
+                    ]);
+                }
+
+                // Update custom fields
+                if (isset($data['meta']) && is_array($data['meta'])) {
+                    foreach ($data['meta'] as $meta_key => $value) {
+                        update_post_meta($post_id, $meta_key, sanitize_text_field($value));
+                    }
+                }
+
+                $results[$post_id] = true;
             }
 
-            // Update meta fields
-            foreach ($meta_updates as $meta_key => $value) {
-                update_post_meta($document_id, $meta_key, $value);
-            }
-
-            $success_count++;
+            error_log('Bulk edit completed successfully');
+            wp_send_json_success([
+                'message' => 'Changes saved successfully.',
+                'results' => $results
+            ]);
+        } catch (DocumentException $e) {
+            error_log('Bulk edit error: ' . $e->getMessage());
+            wp_send_json_error(['message' => $e->getMessage()]);
         }
-
-        if ($success_count === 0) {
-            wp_send_json_error(array(
-                'message' => 'Failed to save changes.',
-                'errors' => $error_messages
-            ));
-            return;
-        }
-
-        wp_send_json_success(array(
-            'message' => sprintf(
-                'Successfully updated %d document%s%s',
-                $success_count,
-                $success_count !== 1 ? 's' : '',
-                !empty($error_messages) ? ' with some errors' : ''
-            ),
-            'errors' => $error_messages
-        ));
     }
 } 
