@@ -13,4 +13,4 @@
 //= require upload.js
 //= require edit-document.js
 //= require bulk-edit.js
-//= require columns.js 
+//= require metadata.js 

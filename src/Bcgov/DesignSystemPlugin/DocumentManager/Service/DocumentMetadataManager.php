@@ -180,84 +180,98 @@ class DocumentMetadataManager {
     }
     
     /**
+     * Clear the document list cache when settings change
+     */
+    public function clearDocumentListCache() {
+        // Clear count cache
+        delete_transient('document_manager_count');
+        
+        // Clear all page caches (we don't know which pages exist, so we'll do a SQL query)
+        global $wpdb;
+        $wpdb->query("DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_document_manager_documents_page_%'");
+        
+        error_log('Document Manager: Document list cache cleared');
+    }
+    
+    /**
      * Save column settings
      *
      * @param string $label Column label
-     * @param string $type Column type (text, select, etc.)
+     * @param string $type Column type (text, number, date, select, etc.)
+     * @param array $options Options for select type
      * @return array Updated column settings
-     * @throws \Exception
      */
-    public function saveColumnSettings($label, $type = 'text') {
+    public function saveColumnSettings($label, $type, $options = array()) {
+        // Validate inputs
         if (empty($label)) {
             throw new \Exception('Column label is required.');
         }
 
-        // Generate a unique meta key based on the label
-        $meta_key = 'doc_' . sanitize_key($label);
+        // Sanitize the meta key by creating a slug from the label
+        $meta_key = 'document_' . sanitize_title($label);
 
-        // Get existing columns
-        $custom_columns = $this->getColumnSettings();
+        // Get existing custom columns
+        $custom_columns = get_option('document_custom_columns', array());
 
-        // Check if meta key already exists
-        if (isset($custom_columns[$meta_key])) {
-            throw new \Exception('A column with this name already exists.');
-        }
-
-        // Add new column
+        // Save the new column settings
         $custom_columns[$meta_key] = array(
             'label' => $label,
-            'type' => $type
+            'type' => $type,
         );
 
-        // Update custom columns option
+        if ($type === 'select' && !empty($options)) {
+            $custom_columns[$meta_key]['options'] = $options;
+        } else if ($type === 'select') {
+            // Default options if none provided for select type
+            $custom_columns[$meta_key]['options'] = array('Option 1', 'Option 2', 'Option 3');
+        }
+
+        // Save to database
         if (!update_option('document_custom_columns', $custom_columns)) {
             throw new \Exception('Failed to save column settings.');
         }
         
+        // Clear document list cache
+        $this->clearDocumentListCache();
+        
         // Clear column settings cache
         $this->clearColumnSettingsCache();
-        
-        return array(
-            'message' => 'Column added successfully.',
-            'meta_key' => $meta_key
-        );
+
+        return $custom_columns;
     }
     
     /**
      * Delete a column
      *
-     * @param string $meta_key Column meta key
-     * @return bool Success status
-     * @throws \Exception
+     * @param string $meta_key Meta key to delete
+     * @return bool True if successful
      */
     public function deleteColumn($meta_key) {
-        if (empty($meta_key)) {
-            throw new \Exception('No column key provided.');
-        }
-
-        // Get existing columns
-        $custom_columns = $this->getColumnSettings();
+        // Get existing custom columns
+        $custom_columns = get_option('document_custom_columns', array());
 
         // Check if column exists
         if (!isset($custom_columns[$meta_key])) {
-            throw new \Exception('Column not found.');
+            throw new \Exception('Column does not exist.');
         }
 
-        // Delete the column
+        // Remove the column
         unset($custom_columns[$meta_key]);
 
-        // Update the option
+        // Update database
         if (!update_option('document_custom_columns', $custom_columns)) {
             throw new \Exception('Failed to delete column.');
         }
         
-        // Delete all metadata for this column
-        global $wpdb;
-        $wpdb->delete($wpdb->postmeta, array('meta_key' => $meta_key));
+        // Delete all post meta with this key
+        $this->deleteMetaForAllDocuments($meta_key);
+        
+        // Clear document list cache
+        $this->clearDocumentListCache();
         
         // Clear column settings cache
         $this->clearColumnSettingsCache();
-        
+
         return true;
     }
     
@@ -432,5 +446,36 @@ class DocumentMetadataManager {
         }
         
         return $result;
+    }
+    
+    /**
+     * Delete all metadata for a specific key across all documents
+     * 
+     * @param string $meta_key The meta key to delete
+     * @return int|false Number of rows affected or false on error
+     */
+    protected function deleteMetaForAllDocuments($meta_key) {
+        global $wpdb;
+        
+        // Get all document post IDs
+        $post_ids = get_posts(array(
+            'post_type' => $this->config->get('post_type'),
+            'posts_per_page' => -1,
+            'fields' => 'ids',
+        ));
+        
+        if (empty($post_ids)) {
+            return 0;
+        }
+        
+        // Delete all metadata for the given meta key
+        $count = 0;
+        foreach ($post_ids as $post_id) {
+            if (delete_post_meta($post_id, $meta_key)) {
+                $count++;
+            }
+        }
+        
+        return $count;
     }
 } 

@@ -32,44 +32,41 @@ class DocumentManager {
      * Initialize the DocumentManager plugin
      */
     private function init() {
-        // Register admin menu - requires AdminUIManager
-        add_action('admin_menu', array($this, 'registerAdminMenus'));
-        
-        // Register scripts - requires AdminUIManager
-        add_action('admin_enqueue_scripts', array($this, 'enqueueScripts'));
-        
-        // Register AJAX handlers - requires AjaxHandler
-        $this->registerAjaxHandlers();
-        
-        // Register post type - requires PostType service
-        $this->getPostType();
+        // Register hooks and filters
+        $this->register();
     }
     
     /**
-     * Register admin menus
+     * Register hooks and filters
+     */
+    public function register() {
+        add_action('init', array($this, 'registerPostTypes'));
+        add_action('admin_menu', array($this, 'registerAdminMenus'));
+        add_action('admin_enqueue_scripts', array($this->getAdminUI(), 'enqueue_admin_scripts'));
+        
+        $this->registerAjaxHandlers();
+        $this->registerShortcodes();
+        $this->registerFilters();
+    }
+    
+    /**
+     * Register admin menus and submenus
      */
     public function registerAdminMenus() {
         $this->getAdminUI()->add_documents_menu();
-        $this->getAdminUI()->add_column_settings_submenu();
-    }
-    
-    /**
-     * Enqueue scripts and styles
-     */
-    public function enqueueScripts($hook) {
-        $this->getAdminUI()->enqueue_admin_scripts($hook);
+        $this->getAdminUI()->add_metadata_settings_submenu();
     }
     
     /**
      * Register AJAX handlers
      */
     private function registerAjaxHandlers() {
-        add_action('wp_ajax_handle_document_upload', array($this->getAjaxHandler(), 'handle_document_upload'));
-        add_action('wp_ajax_nopriv_handle_document_upload', array($this->getAjaxHandler(), 'handle_unauthorized_access'));
-        add_action('wp_ajax_save_column_settings', array($this->getAjaxHandler(), 'save_column_settings'));
-        add_action('wp_ajax_delete_column', array($this->getAjaxHandler(), 'delete_column'));
+        add_action('wp_ajax_upload_document', array($this->getAjaxHandler(), 'handle_document_upload'));
+        add_action('wp_ajax_nopriv_upload_document', array($this->getAjaxHandler(), 'handle_unauthorized_access'));
         add_action('wp_ajax_save_document_metadata', array($this->getAjaxHandler(), 'save_document_metadata'));
         add_action('wp_ajax_delete_document', array($this->getAjaxHandler(), 'delete_document'));
+        add_action('wp_ajax_save_metadata_settings', array($this->getAjaxHandler(), 'save_metadata_settings'));
+        add_action('wp_ajax_delete_metadata', array($this->getAjaxHandler(), 'delete_metadata'));
         add_action('wp_ajax_save_bulk_edit', array($this->getAjaxHandler(), 'save_bulk_edit'));
     }
     
@@ -144,5 +141,26 @@ class DocumentManager {
         }
         
         return $this->ajaxHandler;
+    }
+    
+    /**
+     * Register Document post type
+     */
+    public function registerPostTypes() {
+        $this->getPostType()->register();
+    }
+    
+    /**
+     * Register shortcodes if any
+     */
+    public function registerShortcodes() {
+        // No shortcodes implemented yet
+    }
+    
+    /**
+     * Register filters if any
+     */
+    public function registerFilters() {
+        // No filters implemented yet
     }
 } 

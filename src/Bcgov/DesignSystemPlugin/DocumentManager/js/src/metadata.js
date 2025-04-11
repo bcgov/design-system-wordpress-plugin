@@ -1,6 +1,6 @@
 /**
- * Columns functionality for Document Manager
- * Handles custom columns management
+ * Metadata functionality for Document Manager
+ * Handles custom metadata fields management
  */
 
 (function ($) {
@@ -10,18 +10,18 @@
     window.BCGOV.DocumentManager = window.BCGOV.DocumentManager || {};
     
     // Module definition
-    window.BCGOV.DocumentManager.Columns = {
+    window.BCGOV.DocumentManager.Metadata = {
         init: function() {
             this.initEventHandlers();
         },
         
         initEventHandlers: function() {
-            // Handle adding new column
-            $('#add-column-form').on('submit', function(e) {
+            // Handle adding new metadata field
+            $('#add-metadata-form').on('submit', function(e) {
                 e.preventDefault();
                 
                 var formData = new FormData(this);
-                formData.append('action', 'save_column_settings');
+                formData.append('action', 'save_metadata_settings');
                 formData.append('security', documentManager.nonce);
                 
                 $.ajax({
@@ -31,7 +31,7 @@
                     processData: false,
                     contentType: false,
                     beforeSend: function() {
-                        $('#add-column-form button[type="submit"]')
+                        $('#add-metadata-form button[type="submit"]')
                             .prop('disabled', true)
                             .text('Adding...');
                     },
@@ -46,18 +46,18 @@
                         alert('Error: ' + error);
                     },
                     complete: function() {
-                        $('#add-column-form button[type="submit"]')
+                        $('#add-metadata-form button[type="submit"]')
                             .prop('disabled', false)
-                            .text('Add Column');
+                            .text('Add Field');
                     }
                 });
             });
 
-            // Handle column deletion
-            $(document).on('click', '.delete-column', function(e) {
+            // Handle metadata field deletion
+            $(document).on('click', '.delete-metadata', function(e) {
                 e.preventDefault();
                 
-                if (!confirm('Are you sure you want to delete this column? This will remove all associated metadata from documents.')) {
+                if (!confirm('Are you sure you want to delete this metadata field? This will remove all associated metadata from documents.')) {
                     return;
                 }
 
@@ -69,7 +69,7 @@
                     url: documentManager.ajaxurl,
                     type: 'POST',
                     data: {
-                        action: 'delete_column',
+                        action: 'delete_metadata',
                         security: documentManager.nonce,
                         meta_key: metaKey
                     },
@@ -83,7 +83,7 @@
                                 $(this).remove();
                             });
                         } else {
-                            alert('Error: ' + (response.data || 'Failed to delete column'));
+                            alert('Error: ' + (response.data || 'Failed to delete metadata field'));
                             $row.removeClass('deleting');
                             $button.prop('disabled', false);
                         }

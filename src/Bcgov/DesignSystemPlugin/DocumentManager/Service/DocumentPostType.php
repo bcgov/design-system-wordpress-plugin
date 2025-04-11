@@ -9,7 +9,6 @@ class DocumentPostType {
 
     public function __construct(DocumentManagerConfig $config) {
         $this->config = $config;
-        add_action('init', array($this, 'register'));
         
         // Add filter to redirect single document views to the file
         add_action('template_redirect', array($this, 'redirect_document_to_file'));

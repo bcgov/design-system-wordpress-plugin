@@ -31,8 +31,8 @@
             window.BCGOV.DocumentManager.BulkEdit.init();
         }
         
-        if (typeof window.BCGOV.DocumentManager.Columns !== 'undefined') {
-            window.BCGOV.DocumentManager.Columns.init();
+        if (typeof window.BCGOV.DocumentManager.Metadata !== 'undefined') {
+            window.BCGOV.DocumentManager.Metadata.init();
         }
     };
 
@@ -73,62 +73,8 @@
         }
     };
 
-    // Add CSS to ensure proper display
-    function addStyles() {
-        var style = document.createElement('style');
-        style.textContent = `
-            .edit-mode {
-                display: none;
-                width: 100%;
-                padding: 5px;
-                margin: 2px 0;
-                border: 1px solid #ddd;
-                border-radius: 4px;
-            }
-            .view-mode {
-                display: block;
-                padding: 5px;
-            }
-            .bulk-edit-mode .edit-mode {
-                display: block;
-            }
-            .bulk-edit-mode .view-mode {
-                display: none;
-            }
-            .wp-list-table {
-                table-layout: fixed;
-                width: 100%;
-            }
-            .wp-list-table th,
-            .wp-list-table td {
-                word-wrap: break-word;
-                overflow-wrap: break-word;
-            }
-            .wp-list-table .column-icon {
-                width: 30px;
-            }
-            .wp-list-table .column-actions {
-                width: 200px;
-            }
-            .wp-list-table .column-title {
-                width: 20%;
-            }
-            .wp-list-table .column-description {
-                width: 25%;
-            }
-            .wp-list-table .column-filetype {
-                width: 10%;
-            }
-            .wp-list-table .column-date {
-                width: 10%;
-            }
-        `;
-        document.head.appendChild(style);
-    }
-
     // Document ready handler
     $(document).ready(function() {
-        addStyles();
         window.BCGOV.DocumentManager.init();
     });
 

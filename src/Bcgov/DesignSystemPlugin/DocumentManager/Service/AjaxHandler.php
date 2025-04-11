@@ -79,12 +79,12 @@ class AjaxHandler {
     }
 
     /**
-     * Save column settings via AJAX
+     * Save metadata settings via AJAX
      */
-    public function save_column_settings() {
+    public function save_metadata_settings() {
         try {
             // Debug logging
-            error_log('Save column settings request received');
+            error_log('Save metadata settings request received');
             error_log('POST data: ' . print_r($_POST, true));
 
             // Verify nonce
@@ -95,7 +95,7 @@ class AjaxHandler {
 
             // Check user capabilities
             if (!current_user_can('manage_options')) {
-                wp_send_json_error('You do not have permission to save column settings.', 403);
+                wp_send_json_error('You do not have permission to save metadata settings.', 403);
                 return;
             }
 
@@ -112,12 +112,12 @@ class AjaxHandler {
     }
 
     /**
-     * Handle column deletion
+     * Handle metadata field deletion
      */
-    public function delete_column() {
+    public function delete_metadata() {
         try {
             // Debug logging
-            error_log('Delete column request received');
+            error_log('Delete metadata field request received');
             error_log('POST data: ' . print_r($_POST, true));
 
             // Check nonce using 'security' parameter
@@ -127,7 +127,7 @@ class AjaxHandler {
 
             // Check permissions
             if (!current_user_can('manage_options')) {
-                throw new \Exception('You do not have permission to delete columns.');
+                throw new \Exception('You do not have permission to delete metadata fields.');
             }
 
             // Get meta key
@@ -136,11 +136,11 @@ class AjaxHandler {
             $this->metadataManager->deleteColumn($meta_key);
             
             wp_send_json_success(array(
-                'message' => 'Column deleted successfully.'
+                'message' => 'Metadata field deleted successfully.'
             ));
 
         } catch (\Exception $e) {
-            error_log('Column deletion error: ' . $e->getMessage());
+            error_log('Metadata deletion error: ' . $e->getMessage());
             wp_send_json_error(array(
                 'message' => $e->getMessage()
             ));

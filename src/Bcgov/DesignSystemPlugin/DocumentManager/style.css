@@ -180,6 +180,11 @@
     margin-top: 30px;
 }
 
+.metadata-manager-section,
+.existing-metadata-section {
+    margin-top: 30px;
+}
+
 .wp-list-table th {
     font-weight: 600;
 }
@@ -215,8 +220,20 @@
     min-height: 100px;
 }
 
-.existing-columns-section {
-    margin-top: 30px;
+/* Metadata Settings Styles */
+.existing-metadata-section tr {
+    transition: opacity 0.4s ease-out;
+}
+
+.existing-metadata-section tr.deleting {
+    opacity: 0.5;
+}
+
+/* Style for empty state */
+.existing-metadata-section tbody tr td[colspan] {
+    text-align: center;
+    padding: 20px;
+    color: #666;
 }
 
 /* Modal styles */
@@ -541,48 +558,6 @@
     transform: rotate(-45deg);
 }
 
-/* Column Settings Styles */
-.existing-columns-section tr {
-    transition: opacity 0.4s ease-out;
-}
-
-.existing-columns-section tr.deleting {
-    opacity: 0.5;
-}
-
-/* Style for empty state */
-.existing-columns-section tbody tr td[colspan] {
-    text-align: center;
-    padding: 20px;
-    color: #666;
-}
-
-/* Add visual feedback for edit mode */
-.edit-mode {
-    display: none;
-    width: 100%;
-    padding: 5px;
-    margin: 2px 0;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-.view-mode {
-    display: block;
-    padding: 5px;
-}
-
-.updated-row {
-    background-color: #f0f9ff !important;
-    transition: background-color 1s ease;
-}
-
-/* Button visibility states */
-.save-bulk-edit,
-.cancel-bulk-edit {
-    display: none;
-}
-
 /* Notification positioning */
 .notice {
     margin: 15px 0;
@@ -592,7 +567,8 @@
 
 .edit-mode:focus {
     border-color: #2271b1;
-    box-shadow: 0 0 0 
+    box-shadow: 0 0 0 1px #2271b1;
+}
 
 /* Responsive adjustments */
 @media screen and (max-height: 800px) {
@@ -684,4 +660,62 @@
     width: 30px;
     min-width: 30px;
     max-width: 30px;
+}
+
+/* Add visual feedback for edit mode */
+.edit-mode {
+    display: none;
+    width: 100%;
+    padding: 5px;
+    margin: 2px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.view-mode {
+    display: block;
+    padding: 5px;
+}
+
+.updated-row {
+    background-color: #f0f9ff !important;
+    transition: background-color 1s ease;
+}
+
+/* Button visibility states */
+.save-bulk-edit,
+.cancel-bulk-edit {
+    display: none;
+}
+
+/* Table layout improvements */
+.wp-list-table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.wp-list-table th,
+.wp-list-table td {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.wp-list-table .column-actions {
+    width: 200px;
+}
+
+.wp-list-table .column-title {
+    width: 20%;
+}
+
+.wp-list-table .column-description {
+    width: 25%;
+}
+
+.wp-list-table .column-filetype {
+    width: 10%;
+}
+
+.wp-list-table .column-date {
+    width: 10%;
 } 

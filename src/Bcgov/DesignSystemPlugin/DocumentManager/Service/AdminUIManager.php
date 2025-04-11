@@ -36,16 +36,16 @@ class AdminUIManager {
     }
     
     /**
-     * Add Column Settings submenu
+     * Add Metadata Settings submenu
      */
-    public function add_column_settings_submenu() {
+    public function add_metadata_settings_submenu() {
         add_submenu_page(
             'document-manager',
-            'Column Settings',
-            'Column Settings',
+            'Metadata Settings',
+            'Metadata Settings',
             'manage_options',
-            'document-columns',
-            array($this, 'render_column_settings_page')
+            'document-metadata',
+            array($this, 'render_metadata_settings_page')
         );
     }
 
@@ -53,7 +53,7 @@ class AdminUIManager {
      * Enqueue necessary scripts and styles
      */
     public function enqueue_admin_scripts($hook) {
-        $valid_pages = array('toplevel_page_document-manager', 'documents_page_document-columns');
+        $valid_pages = array('toplevel_page_document-manager', 'documents_page_document-metadata');
         if (!in_array($hook, $valid_pages)) {
             return;
         }
@@ -90,8 +90,8 @@ class AdminUIManager {
                 'file' => 'js/src/bulk-edit.js',
                 'deps' => array('jquery', 'document-manager-core', 'document-manager-table-view')
             ),
-            'columns' => array(
-                'file' => 'js/src/columns.js',
+            'metadata' => array(
+                'file' => 'js/src/metadata.js',
                 'deps' => array('jquery', 'document-manager-core')
             )
         );
@@ -499,48 +499,48 @@ class AdminUIManager {
     }
 
     /**
-     * Render Column Settings page
+     * Render Metadata Settings page
      */
-    public function render_column_settings_page() {
-        $custom_columns = get_option('document_custom_columns', array());
+    public function render_metadata_settings_page() {
+        $custom_metadata = get_option('document_custom_columns', array());
         ?>
         <div class="wrap">
-            <h1>Document Library Column Settings</h1>
+            <h1>Document Library Metadata Settings</h1>
             
-            <div class="column-manager-section">
-                <h2>Add New Column</h2>
-                <form id="add-column-form" method="post">
+            <div class="metadata-manager-section">
+                <h2>Add New Metadata Field</h2>
+                <form id="add-metadata-form" method="post">
                     <table class="form-table">
                         <tr>
-                            <th><label for="column_label">Column Label</label></th>
+                            <th><label for="column_label">Field Label</label></th>
                             <td>
                                 <input type="text" id="column_label" name="column_label" class="regular-text" required>
-                                <p class="description">Enter a label for your new column</p>
+                                <p class="description">Enter a label for your new metadata field</p>
                             </td>
                         </tr>
                     </table>
                     <input type="hidden" name="column_type" value="text">
-                    <button type="submit" class="button button-primary">Add Column</button>
+                    <button type="submit" class="button button-primary">Add Field</button>
                 </form>
             </div>
 
-            <div class="existing-columns-section">
-                <h2>Existing Columns</h2>
+            <div class="existing-metadata-section">
+                <h2>Existing Metadata Fields</h2>
                 <table class="wp-list-table widefat fixed striped">
                     <thead>
                         <tr>
-                            <th>Column Label</th>
+                            <th>Field Label</th>
                             <th>Meta Key</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($custom_columns as $meta_key => $column): ?>
+                        <?php foreach ($custom_metadata as $meta_key => $metadata_field): ?>
                         <tr>
-                            <td><?php echo esc_html($column['label']); ?></td>
+                            <td><?php echo esc_html($metadata_field['label']); ?></td>
                             <td><?php echo esc_html($meta_key); ?></td>
                             <td>
-                                <button class="button button-small delete-column" 
+                                <button class="button button-small delete-metadata" 
                                     data-meta-key="<?php echo esc_attr($meta_key); ?>">
                                     Delete
                                 </button>
