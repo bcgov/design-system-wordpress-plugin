@@ -3,7 +3,6 @@
 namespace Bcgov\DesignSystemPlugin\DocumentManager\Service;
 
 use Bcgov\DesignSystemPlugin\DocumentManager\Config\DocumentManagerConfig;
-use Bcgov\DesignSystemPlugin\DocumentManager\Exception\DocumentException;
 
 class DocumentUploader {
     private $config;
@@ -18,23 +17,23 @@ class DocumentUploader {
      * @param array $file Single file from $_FILES
      * @param array $metadata Document metadata
      * @return array Upload result with post ID and file URL
-     * @throws DocumentException
+     * @throws \Exception
      */
     public function uploadSingle(array $file, array $metadata = []) {
         // Validate file
         if ($file['error'] !== UPLOAD_ERR_OK) {
-            throw new DocumentException($this->getUploadErrorMessage($file['error']));
+            throw new \Exception($this->getUploadErrorMessage($file['error']));
         }
 
         // Check file size
         if ($file['size'] > $this->config->get('max_file_size')) {
-            throw new DocumentException('File size exceeds maximum limit.');
+            throw new \Exception('File size exceeds maximum limit.');
         }
 
         // Check file type
         $file_type = wp_check_filetype($file['name']);
         if (!in_array($file_type['ext'], $this->config->get('allowed_file_types'))) {
-            throw new DocumentException('File type not allowed.');
+            throw new \Exception('File type not allowed.');
         }
 
         // Get the filename without extension for title comparison
@@ -56,7 +55,7 @@ class DocumentUploader {
 
         foreach ($existing_docs as $doc) {
             if (strtolower($doc->post_title) === strtolower($title)) {
-                throw new DocumentException('A document with the name "' . $title . '" already exists. Please choose a different name.');
+                throw new \Exception('A document with the name "' . $title . '" already exists. Please choose a different name.');
             }
         }
 
@@ -71,7 +70,7 @@ class DocumentUploader {
 
         // Move uploaded file
         if (!move_uploaded_file($file['tmp_name'], $file_path)) {
-            throw new DocumentException('Failed to move uploaded file.');
+            throw new \Exception('Failed to move uploaded file.');
         }
 
         // Create post
@@ -87,7 +86,7 @@ class DocumentUploader {
 
         $post_id = wp_insert_post($post_data);
         if (is_wp_error($post_id)) {
-            throw new DocumentException('Failed to create document post.');
+            throw new \Exception('Failed to create document post.');
         }
 
         // Save file metadata
@@ -121,6 +120,9 @@ class DocumentUploader {
                 update_post_meta($post_id, $meta_key, '');
             }
         }
+        
+        // Clear document caches after upload
+        $this->clearDocumentCaches();
 
         return [
             'post_id' => $post_id,
@@ -152,5 +154,33 @@ class DocumentUploader {
         return isset($upload_errors[$error_code]) 
             ? $upload_errors[$error_code] 
             : 'Unknown upload error';
+    }
+    
+    /**
+     * Clear all document-related caches
+     */
+    private function clearDocumentCaches() {
+        global $wpdb;
+        
+        // Clear document count cache
+        delete_transient('document_manager_count');
+        
+        // Get all document pagination caches
+        $transient_like = $wpdb->esc_like('_transient_document_manager_documents_page_') . '%';
+        $transients = $wpdb->get_col(
+            $wpdb->prepare(
+                "SELECT option_name FROM $wpdb->options WHERE option_name LIKE %s",
+                $transient_like
+            )
+        );
+        
+        // Delete each pagination cache
+        foreach ($transients as $transient) {
+            // Extract the transient name by removing the '_transient_' prefix
+            $transient_name = str_replace('_transient_', '', $transient);
+            delete_transient($transient_name);
+        }
+        
+        error_log('Document Manager: Cleared caches after document upload');
     }
 } 

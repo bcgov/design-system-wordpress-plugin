@@ -156,7 +156,7 @@
             // Add action buttons
             row += `
                 <td class="actions column-actions">
-                    <a href="${document.file_url}" class="button button-small" target="_blank">Download</a>
+                    <a href="${document.file_url}" class="button button-small" target="_blank">View</a>
                     <button type="button" 
                             class="button button-small edit-metadata" 
                             data-id="${document.post_id}"

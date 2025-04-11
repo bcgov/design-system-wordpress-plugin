@@ -273,13 +273,19 @@
                 success: function(response) {
                     console.log('Upload response:', response);
                     if (response.success) {
+                        var $documentSection = $('.document-library-section');
+                        var noDocumentsMessage = $documentSection.find('p:contains("No documents found")');
+                        
+                        // Check if there are no documents (empty table or message)
+                        if (noDocumentsMessage.length || $('.wp-list-table tbody tr').length === 0) {
+                            // The page is in a "no documents" state - reload the page to get the proper table
+                            window.location.reload();
+                            return;
+                        }
+                        
+                        // Normal case - we have a document table, just add the new row
                         var $tbody = $('.wp-list-table tbody');
                         
-                        // Remove "No documents found" message if it exists
-                        if ($tbody.find('tr td:contains("No documents found")').length) {
-                            $tbody.empty();
-                        }
-
                         // Add each uploaded document to the table
                         response.data.forEach(function(document) {
                             console.log('Creating row for document:', document);
