@@ -68,35 +68,66 @@ class DocumentManager {
         
         // Construct file paths
         $style_path = $plugin_dir . $relative_path . 'style.css';
-        $js_path = $plugin_dir . $relative_path . 'edit.js';
         
-        // Construct URLs
+        // Define JavaScript modules
+        $js_modules = array(
+            'core' => array(
+                'file' => 'js/src/core.js',
+                'deps' => array('jquery')
+            ),
+            'table-view' => array(
+                'file' => 'js/src/table-view.js',
+                'deps' => array('jquery', 'document-manager-core')
+            ),
+            'upload' => array(
+                'file' => 'js/src/upload.js',
+                'deps' => array('jquery', 'document-manager-core', 'document-manager-table-view')
+            ),
+            'edit-document' => array(
+                'file' => 'js/src/edit-document.js',
+                'deps' => array('jquery', 'document-manager-core', 'document-manager-table-view')
+            ),
+            'bulk-edit' => array(
+                'file' => 'js/src/bulk-edit.js',
+                'deps' => array('jquery', 'document-manager-core', 'document-manager-table-view')
+            ),
+            'columns' => array(
+                'file' => 'js/src/columns.js',
+                'deps' => array('jquery', 'document-manager-core')
+            )
+        );
+        
+        // Enqueue each module
+        foreach ($js_modules as $name => $module) {
+            $file_path = $plugin_dir . $relative_path . $module['file'];
+            $file_url = $plugin_url . $relative_path . $module['file'];
+            $version = file_exists($file_path) ? filemtime($file_path) : '1.0';
+            
+            wp_enqueue_script(
+                'document-manager-' . $name, 
+                $file_url, 
+                $module['deps'], 
+                $version, 
+                true
+            );
+        }
+        
+        // Enqueue styles
         $style_url = $plugin_url . $relative_path . 'style.css';
-        $js_url = $plugin_url . $relative_path . 'edit.js';
-
-        // Get file versions
         $style_version = file_exists($style_path) ? filemtime($style_path) : '1.0';
-        $js_version = file_exists($js_path) ? filemtime($js_path) : '1.0';
-
-        // Debug information
-        error_log('Style path: ' . $style_path);
-        error_log('Style URL: ' . $style_url);
-        error_log('JS path: ' . $js_path);
-        error_log('JS URL: ' . $js_url);
-
         wp_enqueue_style('document-manager-styles', $style_url, array(), $style_version);
-        wp_enqueue_script('document-manager-script', $js_url, array('jquery'), $js_version, true);
         
         // Generate nonce and store it for debugging
         $nonce_key = $this->config->get('nonce_key');
         $nonce = wp_create_nonce($nonce_key);
         
         // Add debug output
-        error_log('Enqueuing scripts for bulk edit');
+        error_log('Enqueuing scripts for document manager');
         error_log('Nonce Key: ' . $nonce_key);
         error_log('Generated Nonce: ' . $nonce);
 
-        wp_localize_script('document-manager-script', 'documentManager', array(
+        // Add localized script data to the core module
+        wp_localize_script('document-manager-core', 'documentManager', array(
             'ajaxurl' => admin_url('admin-ajax.php'),
             'nonce' => $nonce,
             'isAdmin' => current_user_can('manage_options'),
