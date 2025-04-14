@@ -3,11 +3,20 @@
 namespace Bcgov\DesignSystemPlugin\DocumentManager\Service;
 
 use Bcgov\DesignSystemPlugin\DocumentManager\Config\DocumentManagerConfig;
-use Bcgov\DesignSystemPlugin\DocumentManager\Manager\DocumentMetadataManager;
+use Bcgov\DesignSystemPlugin\DocumentManager\Service\DocumentMetadataManager;
 
+/**
+ * Handles document file uploads
+ */
 class DocumentUploader {
-    private $config;
+    /** @var DocumentManagerConfig */
+    private DocumentManagerConfig $config;
 
+    /**
+     * Constructor
+     * 
+     * @param DocumentManagerConfig $config Configuration object
+     */
     public function __construct(DocumentManagerConfig $config) {
         $this->config = $config;
     }
@@ -17,11 +26,12 @@ class DocumentUploader {
      * 
      * @param array $file Single file from $_FILES
      * @param array $metadata Document metadata
-     * @param DocumentMetadataManager $metadataManager Optional metadata manager for cache clearing
-     * @return array Upload result with post ID and file URL
-     * @throws \Exception
+     * @param DocumentMetadataManager|null $metadataManager Optional metadata manager for cache clearing
+     * @return array{post_id: int, file_url: string, title: string, description: string, file_type: string, meta: array<string, string>} 
+     *         Upload result with post ID and file URL
+     * @throws \Exception If file upload fails for any reason
      */
-    public function uploadSingle(array $file, array $metadata = [], $metadataManager = null) {
+    public function uploadSingle(array $file, array $metadata = [], ?DocumentMetadataManager $metadataManager = null): array {
         // Validate file
         if ($file['error'] !== UPLOAD_ERR_OK) {
             throw new \Exception($this->getUploadErrorMessage($file['error']));
@@ -63,12 +73,32 @@ class DocumentUploader {
 
         // Set up upload directory
         $upload_dir = wp_upload_dir();
-        $document_dir = $upload_dir['basedir'] . '/documents/' . date('Y/m');
-        wp_mkdir_p($document_dir);
+        $document_dir = $upload_dir['basedir'] . '/documents';
+        
+        // Create directory if it doesn't exist
+        if (!wp_mkdir_p($document_dir)) {
+            throw new \Exception('Failed to create upload directory.');
+        }
         
         // Use original filename without modification
         $filename = sanitize_file_name($file['name']);
         $file_path = $document_dir . '/' . $filename;
+
+        // Check for filename conflict and handle it
+        if (file_exists($file_path)) {
+            $file_info = pathinfo($filename);
+            $base = $file_info['filename'];
+            $ext = isset($file_info['extension']) ? '.' . $file_info['extension'] : '';
+            $counter = 1;
+            
+            // Try appending numbers until we find an available filename
+            while (file_exists($document_dir . '/' . $base . '-' . $counter . $ext)) {
+                $counter++;
+            }
+            
+            $filename = $base . '-' . $counter . $ext;
+            $file_path = $document_dir . '/' . $filename;
+        }
 
         // Move uploaded file
         if (!move_uploaded_file($file['tmp_name'], $file_path)) {
@@ -88,11 +118,13 @@ class DocumentUploader {
 
         $post_id = wp_insert_post($post_data);
         if (is_wp_error($post_id)) {
-            throw new \Exception('Failed to create document post.');
+            // Delete uploaded file if post creation fails
+            @unlink($file_path);
+            throw new \Exception($post_id->get_error_message());
         }
 
         // Save file metadata
-        $file_url = $upload_dir['baseurl'] . '/documents/' . date('Y/m') . '/' . $filename;
+        $file_url = $upload_dir['baseurl'] . '/documents/' . $filename;
         update_post_meta($post_id, '_document_file_url', $file_url);
         update_post_meta($post_id, '_document_file_type', $file_type['type']);
 
@@ -146,7 +178,7 @@ class DocumentUploader {
      * @param int $error_code PHP upload error code
      * @return string Error message
      */
-    private function getUploadErrorMessage($error_code) {
+    private function getUploadErrorMessage(int $error_code): string {
         $upload_errors = array(
             UPLOAD_ERR_INI_SIZE => 'File exceeds upload_max_filesize directive in php.ini',
             UPLOAD_ERR_FORM_SIZE => 'File exceeds MAX_FILE_SIZE directive specified in the HTML form',

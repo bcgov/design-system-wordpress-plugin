@@ -5,11 +5,50 @@ namespace Bcgov\DesignSystemPlugin\DocumentManager\Service;
 use \WP_Query;
 use Bcgov\DesignSystemPlugin\DocumentManager\Config\DocumentManagerConfig;
 
+/**
+ * AdminUIManager Service
+ * 
+ * This class is responsible for all admin user interface functionality in the Document Manager.
+ * It handles:
+ * - Admin menu and submenu creation
+ * - UI rendering for document management pages
+ * - Document upload interface
+ * - Document listing/table view
+ * - Metadata field management interface
+ * - Admin scripts and styles enqueuing
+ */
 class AdminUIManager {
+    /**
+     * Configuration settings
+     * 
+     * @var DocumentManagerConfig
+     */
     private $config;
+    
+    /**
+     * Document uploader service
+     * 
+     * @var DocumentUploader
+     */
     private $uploader;
+    
+    /**
+     * Metadata manager service
+     * 
+     * @var DocumentMetadataManager
+     */
     private $metadataManager;
     
+    /**
+     * Constructor - initializes the admin UI manager with required services
+     * 
+     * This class uses dependency injection to receive all the services it needs
+     * to function. This makes testing easier and reduces tight coupling.
+     * 
+     * @param DocumentManagerConfig $config         Configuration service
+     * @param DocumentUploader $uploader            Document upload service
+     * @param DocumentMetadataManager $metadataManager Metadata management service
+     */
     public function __construct(
         DocumentManagerConfig $config, 
         DocumentUploader $uploader,
@@ -22,6 +61,16 @@ class AdminUIManager {
     
     /**
      * Add Documents menu to WordPress admin
+     * 
+     * Creates the main "Documents" menu item in the WordPress admin sidebar.
+     * Uses WordPress's add_menu_page() function with the following parameters:
+     * - Page title: What appears in the browser tab
+     * - Menu title: What's shown in the admin menu
+     * - Capability: Permission level required (manage_options = admin level)
+     * - Menu slug: URL identifier for the page
+     * - Callback: Function that renders the page content
+     * - Icon: Dashicon to use for the menu
+     * - Position: Where in the menu order this should appear (20 is below Posts)
      */
     public function add_documents_menu() {
         add_menu_page(
@@ -37,6 +86,15 @@ class AdminUIManager {
     
     /**
      * Add Metadata Settings submenu
+     * 
+     * Creates a submenu under the Documents menu for managing metadata fields.
+     * Uses WordPress's add_submenu_page() function with these parameters:
+     * - Parent slug: Which menu this is a submenu of
+     * - Page title: What appears in the browser tab
+     * - Menu title: What's shown in the admin menu
+     * - Capability: Permission level required (manage_options = admin level)
+     * - Menu slug: URL identifier for the page
+     * - Callback: Function that renders the page content
      */
     public function add_metadata_settings_submenu() {
         add_submenu_page(
@@ -51,6 +109,11 @@ class AdminUIManager {
 
     /**
      * Enqueue necessary scripts and styles
+     * 
+     * Registers and loads all JavaScript files and CSS needed for the document manager.
+     * Only loads resources on the document manager pages to avoid affecting other admin areas.
+     * 
+     * @param string $hook The current admin page hook suffix
      */
     public function enqueue_admin_scripts($hook) {
         $valid_pages = array('toplevel_page_document-manager', 'documents_page_document-metadata');
@@ -136,8 +199,12 @@ class AdminUIManager {
 
     /**
      * Get localized messages for JavaScript
+     * 
+     * Prepares translatable text strings that will be passed to JavaScript.
+     * This allows for consistent error messages between PHP and JavaScript,
+     * and supports translation with WordPress's i18n functions.
      *
-     * @return array
+     * @return array Associative array of message keys and translated strings
      */
     private function getLocalizedMessages() {
         return array(
@@ -152,8 +219,21 @@ class AdminUIManager {
 
     /**
      * Render the document manager page
+     * 
+     * This is the main UI method that generates the HTML for the document manager page.
+     * The page consists of several key components:
+     * 
+     * 1. Upload section with drag-and-drop functionality
+     * 2. Metadata modal for entering information during upload
+     * 3. Document library table with search, filtering and pagination
+     * 4. Edit/delete functionality for existing documents
+     * 5. Bulk edit capabilities for multiple documents
+     * 
+     * The method also implements caching for improved performance when
+     * dealing with large numbers of documents.
      */
     public function render_document_page() {
+        // Get custom metadata fields configured for documents
         $custom_columns = get_option('document_custom_columns', array());
         
         // Pagination settings
@@ -164,6 +244,18 @@ class AdminUIManager {
         <div class="wrap">
             <h1>Document Manager</h1>
             
+            <!-- 
+            * Document Upload Section
+            * 
+            * This section handles file uploads with a modern drag-and-drop interface.
+            * Key features:
+            * - Supports dropping files directly onto the upload zone
+            * - Also supports traditional file input via "Choose Files" button
+            * - The file input is hidden but accessible via the button for better UX
+            * - Multiple file upload is enabled with the "multiple" attribute
+            * - Only accepts PDF files by default (controlled by accept attribute)
+            * - Includes WordPress security nonce field for CSRF protection
+            -->
             <div class="document-upload-section">
                 <h2>Upload New Documents</h2>
                 <form id="document-upload-form" method="post" enctype="multipart/form-data">
@@ -187,7 +279,16 @@ class AdminUIManager {
                 </form>
             </div>
 
-            <!-- Upload Metadata Modal -->
+            <!-- 
+            * Upload Metadata Modal
+            *
+            * This modal appears after files are selected for upload but before they're submitted.
+            * It allows users to add metadata to all uploaded documents at once:
+            * - Document description
+            * - Custom metadata fields defined in the plugin settings
+            * - Handles different field types (text, select, etc.)
+            * - The form is submitted via AJAX by JavaScript in upload.js
+            -->
             <div id="upload-metadata-modal" class="metadata-modal" style="display: none;">
                 <div class="metadata-modal-content">
                     <span class="close-modal">&times;</span>
@@ -228,14 +329,30 @@ class AdminUIManager {
                 </div>
             </div>
 
+            <!-- 
+            * Document Library Section
+            *
+            * This section displays all uploaded documents in a table format with:
+            * - Pagination for better performance with large document libraries
+            * - Caching to reduce database queries
+            * - Sorting and filtering capabilities
+            * - Individual and bulk editing features
+            * - Direct access to document files
+            * 
+            * The implementation uses transients (WordPress caching) to store:
+            * 1. Total document count (for pagination)
+            * 2. Document query results per page
+            -->
             <div class="document-library-section">
                 <h2>Document Library</h2>
                 <?php
                 // First, get total count of documents for pagination
+                // Uses WordPress transients API for caching to improve performance
                 $cache_key_count = 'document_manager_count';
                 $total_documents = get_transient($cache_key_count);
                 
                 if (false === $total_documents) {
+                    // Cache miss - need to query the database
                     $count_query = new \WP_Query(array(
                         'post_type' => 'document',
                         'posts_per_page' => -1,
@@ -253,12 +370,13 @@ class AdminUIManager {
                 // Calculate pagination
                 $total_pages = ceil($total_documents / $per_page);
                 
-                // Check for cached documents
+                // Check for cached documents for the current page
                 $cache_key = 'document_manager_documents_page_' . $current_page;
                 $documents = get_transient($cache_key);
                 
                 // If no cache or cache expired
                 if (false === $documents) {
+                    // Cache miss - perform the database query
                     $documents = new \WP_Query(array(
                         'post_type' => 'document',
                         'posts_per_page' => $per_page,
@@ -276,12 +394,34 @@ class AdminUIManager {
                 }
 
                 if ($documents->have_posts()) : ?>
+                    <!-- 
+                    * Bulk Edit Controls
+                    *
+                    * These buttons toggle between normal view and bulk edit mode:
+                    * - "Enable Bulk Edit Mode" makes all fields editable at once
+                    * - "Save Changes" button appears only in bulk edit mode
+                    * - "Cancel" button reverts changes without saving
+                    * 
+                    * Bulk edit functionality is handled by JavaScript (bulk-edit.js)
+                    -->
                     <div class="table-actions">
                         <button type="button" class="button toggle-bulk-edit">Enable Bulk Edit Mode</button>
                         <button type="button" class="button button-primary save-bulk-edit" style="display: none;">Save Changes</button>
                         <button type="button" class="button cancel-bulk-edit" style="display: none;">Cancel</button>
                     </div>
                     <form id="bulk-edit-form">
+                        <!-- 
+                        * Document Table
+                        *
+                        * Displays all documents with:
+                        * - File type icon
+                        * - Document title and description (editable)
+                        * - File type and upload date
+                        * - Custom metadata fields (editable)
+                        * - Action buttons (View/Edit/Delete)
+                        * 
+                        * Table styling uses WordPress admin UI classes
+                        -->
                         <table class="wp-list-table widefat fixed striped">
                             <thead>
                                 <tr>
@@ -304,6 +444,7 @@ class AdminUIManager {
                                     <tr data-id="<?php echo get_the_ID(); ?>">
                                         <td class="column-icon">
                                             <?php 
+                                            // Choose appropriate icon based on file type
                                             $icon_class = 'dashicons ';
                                             switch ($file_type) {
                                                 case 'application/pdf':
@@ -323,6 +464,16 @@ class AdminUIManager {
                                             ?>
                                             <span class="<?php echo esc_attr($icon_class); ?>"></span>
                                         </td>
+                                        <!-- 
+                                        * Editable Fields
+                                        * 
+                                        * Each editable cell contains:
+                                        * - View mode span: shown by default, displays the current value
+                                        * - Edit mode input: hidden initially, appears in edit/bulk edit mode
+                                        * - data-field attribute: identifies which field this cell represents
+                                        * 
+                                        * The toggle between modes is handled by JavaScript
+                                        -->
                                         <td class="editable" data-field="title">
                                             <span class="view-mode"><?php the_title(); ?></span>
                                             <input type="text" class="edit-mode" value="<?php echo esc_attr(get_the_title()); ?>" style="display: none;">
@@ -356,6 +507,16 @@ class AdminUIManager {
                                                 <?php endif; ?>
                                             </td>
                                         <?php endforeach; ?>
+                                        <!-- 
+                                        * Action Buttons
+                                        * 
+                                        * Each document row has three action buttons:
+                                        * - View: Opens the document file in a new tab
+                                        * - Edit: Opens the edit modal with all document fields
+                                        * - Delete: Removes the document after confirmation
+                                        * 
+                                        * Button data attributes store the information needed for JS handlers
+                                        -->
                                         <td>
                                             <a href="<?php echo esc_url($file_url); ?>" class="button button-small" target="_blank">View</a>
                                             <button type="button" 
@@ -385,12 +546,24 @@ class AdminUIManager {
                             </tbody>
                         </table>
                         <?php 
-                        // Change this line from using 'document_upload_nonce' to using the config nonce key
+                        // Security nonce for bulk edits
+                        // Uses the nonce key from configuration instead of hardcoded value
                         wp_nonce_field($this->config->get('nonce_key'), 'bulk_edit_nonce'); 
                         ?>
                     </form>
                     
                     <?php if ($total_pages > 1) : ?>
+                    <!-- 
+                    * Pagination Controls
+                    *
+                    * Standard WordPress-style pagination with:
+                    * - First/previous/next/last page links
+                    * - Current page indicator
+                    * - Total items count
+                    * - Disabled controls when at first or last page
+                    * 
+                    * The pagination links maintain all other query parameters
+                    -->
                     <div class="tablenav">
                         <div class="tablenav-pages">
                             <span class="displaying-num"><?php printf(_n('%s item', '%s items', $total_documents), number_format_i18n($total_documents)); ?></span>
@@ -440,7 +613,16 @@ class AdminUIManager {
                 ?>
             </div>
 
-            <!-- Single Document Edit Modal -->
+            <!-- 
+            * Single Document Edit Modal
+            *
+            * This modal appears when editing a single document:
+            * - Provides fields for all document properties
+            * - Populated with current values via JavaScript
+            * - Supports all field types (text, select, date, number)
+            * - Form is submitted via AJAX in edit-document.js
+            * - Has both save and cancel options
+            -->
             <div id="edit-document-modal" class="metadata-modal">
                 <div class="metadata-modal-content">
                     <span class="close-modal">&times;</span>
@@ -500,13 +682,32 @@ class AdminUIManager {
 
     /**
      * Render Metadata Settings page
+     * 
+     * This method generates the admin page for managing document metadata fields.
+     * The page allows administrators to:
+     * 
+     * 1. Add new metadata fields
+     * 2. View existing metadata fields
+     * 3. Delete metadata fields
+     * 
+     * These custom fields appear in document upload/edit forms and in the document table.
+     * The actual saving of new fields is handled by AJAX in metadata.js.
      */
     public function render_metadata_settings_page() {
+        // Get existing custom metadata fields
         $custom_metadata = get_option('document_custom_columns', array());
         ?>
         <div class="wrap">
             <h1>Document Library Metadata Settings</h1>
             
+            <!-- 
+            * Add New Metadata Field Section
+            *
+            * Simple form for creating new metadata fields
+            * - Field label input (user-friendly name)
+            * - Hidden field type (currently defaults to text)
+            * - In future versions, could be expanded to support more field types
+            -->
             <div class="metadata-manager-section">
                 <h2>Add New Metadata Field</h2>
                 <form id="add-metadata-form" method="post">
@@ -524,6 +725,16 @@ class AdminUIManager {
                 </form>
             </div>
 
+            <!-- 
+            * Existing Metadata Fields Section
+            *
+            * Displays a table of all configured metadata fields with:
+            * - Field label (display name)
+            * - Meta key (system name used in database)
+            * - Delete button for each field
+            * 
+            * The delete operations are handled by AJAX in metadata.js
+            -->
             <div class="existing-metadata-section">
                 <h2>Existing Metadata Fields</h2>
                 <table class="wp-list-table widefat fixed striped">

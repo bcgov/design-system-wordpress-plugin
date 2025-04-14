@@ -4,9 +4,18 @@ namespace Bcgov\DesignSystemPlugin\DocumentManager\Service;
 
 use Bcgov\DesignSystemPlugin\DocumentManager\Config\DocumentManagerConfig;
 
+/**
+ * Manages document metadata, settings, and caching
+ */
 class DocumentMetadataManager {
-    private $config;
+    /** @var DocumentManagerConfig */
+    private DocumentManagerConfig $config;
     
+    /**
+     * Constructor
+     * 
+     * @param DocumentManagerConfig $config Configuration object
+     */
     public function __construct(DocumentManagerConfig $config) {
         $this->config = $config;
     }
@@ -18,7 +27,7 @@ class DocumentMetadataManager {
      * @param string $new_title New title
      * @return bool Success status
      */
-    public function updateDocumentTitle($post_id, $new_title) {
+    public function updateDocumentTitle(int $post_id, string $new_title): bool {
         // Update post title
         $update_result = wp_update_post([
             'ID' => $post_id,
@@ -46,7 +55,7 @@ class DocumentMetadataManager {
      * @param string $new_title New title
      * @return bool|string New file URL on success, false on failure
      */
-    public function renameDocumentFile($post_id, $new_title) {
+    public function renameDocumentFile(int $post_id, string $new_title) {
         // Get current file URL
         $current_file_url = get_post_meta($post_id, '_document_file_url', true);
         if (!$current_file_url) {
@@ -56,15 +65,37 @@ class DocumentMetadataManager {
         // Get file info
         $upload_dir = wp_upload_dir();
         $current_file_path = str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $current_file_url);
+        
+        // Check if file exists
+        if (!file_exists($current_file_path)) {
+            return false;
+        }
+        
         $file_info = pathinfo($current_file_path);
         
         // Create new filename
         $new_filename = sanitize_file_name($new_title . '.' . $file_info['extension']);
         $new_file_path = $file_info['dirname'] . '/' . $new_filename;
         
-        // Don't rename if the file already exists
+        // Check for filename conflict and handle it
         if (file_exists($new_file_path) && $new_file_path !== $current_file_path) {
-            return false;
+            $base = sanitize_file_name($new_title);
+            $ext = isset($file_info['extension']) ? '.' . $file_info['extension'] : '';
+            $counter = 1;
+            
+            // Try appending numbers until we find an available filename
+            while (file_exists($file_info['dirname'] . '/' . $base . '-' . $counter . $ext) && 
+                  ($file_info['dirname'] . '/' . $base . '-' . $counter . $ext) !== $current_file_path) {
+                $counter++;
+            }
+            
+            $new_filename = $base . '-' . $counter . $ext;
+            $new_file_path = $file_info['dirname'] . '/' . $new_filename;
+        }
+        
+        // Don't rename if the file paths are identical
+        if ($new_file_path === $current_file_path) {
+            return $current_file_url;
         }
         
         // Rename the file
@@ -82,9 +113,9 @@ class DocumentMetadataManager {
      * @param int $post_id Post ID
      * @param array $metadata Document metadata
      * @return bool Success status
-     * @throws \Exception
+     * @throws \Exception If document update fails
      */
-    public function updateDocumentMetadata($post_id, $metadata) {
+    public function updateDocumentMetadata(int $post_id, array $metadata): bool {
         // Verify post exists and is correct type
         $post = get_post($post_id);
         if (!$post || $post->post_type !== $this->config->get('post_type')) {
@@ -107,10 +138,13 @@ class DocumentMetadataManager {
             $update_data['post_excerpt'] = sanitize_textarea_field($metadata['description']);
         }
 
-        // Update the post
-        $result = wp_update_post($update_data);
-        if (is_wp_error($result)) {
-            throw new \Exception('Failed to update document.');
+        // Only update if there are additional fields besides ID
+        if (count($update_data) > 1) {
+            // Update the post
+            $result = wp_update_post($update_data);
+            if (is_wp_error($result)) {
+                throw new \Exception($result->get_error_message());
+            }
         }
 
         // Update custom metadata
@@ -131,19 +165,31 @@ class DocumentMetadataManager {
      *
      * @param int $post_id Post ID
      * @return bool Success status
-     * @throws \Exception
+     * @throws \Exception If document deletion fails
      */
-    public function deleteDocument($post_id) {
+    public function deleteDocument(int $post_id): bool {
         // Verify post exists and is correct type
         $post = get_post($post_id);
         if (!$post || $post->post_type !== $this->config->get('post_type')) {
             throw new \Exception('Invalid document.');
         }
 
+        // Get file path before deleting post
+        $file_url = get_post_meta($post_id, '_document_file_url', true);
+        if ($file_url) {
+            $upload_dir = wp_upload_dir();
+            $file_path = str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $file_url);
+        }
+
         // Delete the post
         $result = wp_delete_post($post_id, true);
         if (!$result) {
             throw new \Exception('Failed to delete document.');
+        }
+        
+        // Delete the file if it exists
+        if (!empty($file_path) && file_exists($file_path)) {
+            @unlink($file_path);
         }
         
         // Clear document cache when a document is deleted
@@ -157,7 +203,7 @@ class DocumentMetadataManager {
      *
      * @return array Column settings
      */
-    public function getColumnSettings() {
+    public function getColumnSettings(): array {
         // Check for cached column settings
         $cache_key = 'document_manager_columns';
         $columns = get_transient($cache_key);
@@ -182,9 +228,10 @@ class DocumentMetadataManager {
     /**
      * Clear all document-related caches
      * 
-     * @param string|array $types Cache types to clear ('count', 'listings', 'columns', 'all')
+     * @param string|array<string> $types Cache types to clear ('count', 'listings', 'columns', 'all')
+     * @return void
      */
-    public function clearCache($types = 'all') {
+    public function clearCache($types = 'all'): void {
         global $wpdb;
         
         $types = (array)$types;
@@ -214,35 +261,15 @@ class DocumentMetadataManager {
     }
     
     /**
-     * Alias for backward compatibility
-     */
-    private function clearDocumentCache() {
-        $this->clearCache(['count', 'listings']);
-    }
-    
-    /**
-     * Alias for backward compatibility
-     */
-    public function clearDocumentListCache() {
-        $this->clearCache(['count', 'listings']);
-    }
-    
-    /**
-     * Alias for backward compatibility
-     */
-    private function clearColumnSettingsCache() {
-        $this->clearCache('columns');
-    }
-    
-    /**
      * Save column settings
      *
      * @param string $label Column label
      * @param string $type Column type (text, number, date, select, etc.)
      * @param array $options Options for select type
      * @return array Updated column settings
+     * @throws \Exception If saving fails
      */
-    public function saveColumnSettings($label, $type, $options = array()) {
+    public function saveColumnSettings(string $label, string $type, array $options = []): array {
         // Validate inputs
         if (empty($label)) {
             throw new \Exception('Column label is required.');
@@ -272,11 +299,8 @@ class DocumentMetadataManager {
             throw new \Exception('Failed to save column settings.');
         }
         
-        // Clear document list cache
-        $this->clearDocumentListCache();
-        
-        // Clear column settings cache
-        $this->clearColumnSettingsCache();
+        // Clear caches
+        $this->clearCache(['listings', 'columns']);
 
         return $custom_columns;
     }
@@ -286,8 +310,9 @@ class DocumentMetadataManager {
      *
      * @param string $meta_key Meta key to delete
      * @return bool True if successful
+     * @throws \Exception If deletion fails
      */
-    public function deleteColumn($meta_key) {
+    public function deleteColumn(string $meta_key): bool {
         // Get existing custom columns
         $custom_columns = get_option('document_custom_columns', array());
 
@@ -307,11 +332,8 @@ class DocumentMetadataManager {
         // Delete all post meta with this key
         $this->deleteMetaForAllDocuments($meta_key);
         
-        // Clear document list cache
-        $this->clearDocumentListCache();
-        
-        // Clear column settings cache
-        $this->clearColumnSettingsCache();
+        // Clear caches
+        $this->clearCache(['listings', 'columns']);
 
         return true;
     }
@@ -321,9 +343,9 @@ class DocumentMetadataManager {
      *
      * @param array $updates Document updates
      * @return array Result with updated posts
-     * @throws \Exception
+     * @throws \Exception If bulk update fails
      */
-    public function bulkUpdateDocuments($updates) {
+    public function bulkUpdateDocuments(array $updates): array {
         global $wpdb;
         
         if (!$updates || !is_array($updates)) {
@@ -434,9 +456,9 @@ class DocumentMetadataManager {
      * Delete all metadata for a specific key across all documents
      * 
      * @param string $meta_key The meta key to delete
-     * @return int|false Number of rows affected or false on error
+     * @return int Number of rows affected
      */
-    protected function deleteMetaForAllDocuments($meta_key) {
+    protected function deleteMetaForAllDocuments(string $meta_key): int {
         global $wpdb;
         
         // Get all document post IDs

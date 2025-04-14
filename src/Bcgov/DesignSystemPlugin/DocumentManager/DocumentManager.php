@@ -9,16 +9,30 @@ use Bcgov\DesignSystemPlugin\DocumentManager\Service\AdminUIManager;
 use Bcgov\DesignSystemPlugin\DocumentManager\Service\AjaxHandler;
 use Bcgov\DesignSystemPlugin\DocumentManager\Service\DocumentMetadataManager;
 
+/**
+ * Main DocumentManager class that coordinates various document management services
+ */
 class DocumentManager {
     private const NONCE_KEY = 'document_upload_nonce';
     private const POST_TYPE = 'document';
     
-    private $config;
-    private $postType;
-    private $uploader;
-    private $adminUI;
-    private $ajaxHandler;
-    private $metadataManager;
+    /** @var DocumentManagerConfig */
+    private DocumentManagerConfig $config;
+    
+    /** @var DocumentPostType|null */
+    private ?DocumentPostType $postType = null;
+    
+    /** @var DocumentUploader|null */
+    private ?DocumentUploader $uploader = null;
+    
+    /** @var AdminUIManager|null */
+    private ?AdminUIManager $adminUI = null;
+    
+    /** @var AjaxHandler|null */
+    private ?AjaxHandler $ajaxHandler = null;
+    
+    /** @var DocumentMetadataManager|null */
+    private ?DocumentMetadataManager $metadataManager = null;
     
     /**
      * Constructor
@@ -35,8 +49,10 @@ class DocumentManager {
     
     /**
      * Register hooks and filters
+     *
+     * @return void
      */
-    public function register() {
+    public function register(): void {
         add_action('init', [$this, 'registerPostTypes']);
         add_action('admin_menu', [$this, 'registerAdminMenus']);
         add_action('admin_enqueue_scripts', [$this->getAdminUI(), 'enqueue_admin_scripts']);
@@ -51,16 +67,20 @@ class DocumentManager {
     
     /**
      * Register admin menus and submenus
+     *
+     * @return void
      */
-    public function registerAdminMenus() {
+    public function registerAdminMenus(): void {
         $this->getAdminUI()->add_documents_menu();
         $this->getAdminUI()->add_metadata_settings_submenu();
     }
     
     /**
      * Register AJAX handlers
+     *
+     * @return void
      */
-    private function registerAjaxHandlers() {
+    private function registerAjaxHandlers(): void {
         $ajax = $this->getAjaxHandler();
         
         add_action('wp_ajax_upload_document', [$ajax, 'handle_document_upload']);
@@ -77,7 +97,7 @@ class DocumentManager {
      *
      * @return DocumentPostType
      */
-    public function getPostType() {
+    public function getPostType(): DocumentPostType {
         if (null === $this->postType) {
             $this->postType = new DocumentPostType($this->config);
         }
@@ -90,7 +110,7 @@ class DocumentManager {
      *
      * @return DocumentUploader
      */
-    public function getUploader() {
+    public function getUploader(): DocumentUploader {
         if (null === $this->uploader) {
             $this->uploader = new DocumentUploader($this->config);
         }
@@ -103,7 +123,7 @@ class DocumentManager {
      *
      * @return DocumentMetadataManager
      */
-    public function getMetadataManager() {
+    public function getMetadataManager(): DocumentMetadataManager {
         if (null === $this->metadataManager) {
             $this->metadataManager = new DocumentMetadataManager($this->config);
         }
@@ -116,7 +136,7 @@ class DocumentManager {
      *
      * @return AdminUIManager
      */
-    public function getAdminUI() {
+    public function getAdminUI(): AdminUIManager {
         if (null === $this->adminUI) {
             $this->adminUI = new AdminUIManager(
                 $this->config, 
@@ -133,7 +153,7 @@ class DocumentManager {
      *
      * @return AjaxHandler
      */
-    public function getAjaxHandler() {
+    public function getAjaxHandler(): AjaxHandler {
         if (null === $this->ajaxHandler) {
             $this->ajaxHandler = new AjaxHandler(
                 $this->config,
@@ -147,22 +167,28 @@ class DocumentManager {
     
     /**
      * Register Document post type
+     *
+     * @return void
      */
-    public function registerPostTypes() {
+    public function registerPostTypes(): void {
         $this->getPostType()->register();
     }
     
     /**
      * Register shortcodes if any
+     *
+     * @return void
      */
-    public function registerShortcodes() {
+    public function registerShortcodes(): void {
         // No shortcodes implemented yet
     }
     
     /**
      * Register filters if any
+     *
+     * @return void
      */
-    public function registerFilters() {
+    public function registerFilters(): void {
         // No filters implemented yet
     }
 } 
