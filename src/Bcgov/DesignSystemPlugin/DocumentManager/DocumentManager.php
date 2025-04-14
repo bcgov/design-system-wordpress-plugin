@@ -20,18 +20,15 @@ class DocumentManager {
     private $ajaxHandler;
     private $metadataManager;
     
-    public function __construct() {
-        // Only initialize the config in the constructor
-        $this->config = new DocumentManagerConfig();
-        
-        // Initialize the plugin
-        $this->init();
-    }
-    
     /**
-     * Initialize the DocumentManager plugin
+     * Constructor
+     * 
+     * @param DocumentManagerConfig|null $config Optional config instance
      */
-    private function init() {
+    public function __construct(DocumentManagerConfig $config = null) {
+        // Initialize the config
+        $this->config = $config ?: new DocumentManagerConfig();
+        
         // Register hooks and filters
         $this->register();
     }
@@ -40,9 +37,12 @@ class DocumentManager {
      * Register hooks and filters
      */
     public function register() {
-        add_action('init', array($this, 'registerPostTypes'));
-        add_action('admin_menu', array($this, 'registerAdminMenus'));
-        add_action('admin_enqueue_scripts', array($this->getAdminUI(), 'enqueue_admin_scripts'));
+        add_action('init', [$this, 'registerPostTypes']);
+        add_action('admin_menu', [$this, 'registerAdminMenus']);
+        add_action('admin_enqueue_scripts', [$this->getAdminUI(), 'enqueue_admin_scripts']);
+        
+        // Register event handlers for cache clearing
+        add_action('bcgov_document_manager_document_uploaded', [$this->getMetadataManager(), 'clearCache']);
         
         $this->registerAjaxHandlers();
         $this->registerShortcodes();
@@ -61,13 +61,15 @@ class DocumentManager {
      * Register AJAX handlers
      */
     private function registerAjaxHandlers() {
-        add_action('wp_ajax_upload_document', array($this->getAjaxHandler(), 'handle_document_upload'));
-        add_action('wp_ajax_nopriv_upload_document', array($this->getAjaxHandler(), 'handle_unauthorized_access'));
-        add_action('wp_ajax_save_document_metadata', array($this->getAjaxHandler(), 'save_document_metadata'));
-        add_action('wp_ajax_delete_document', array($this->getAjaxHandler(), 'delete_document'));
-        add_action('wp_ajax_save_metadata_settings', array($this->getAjaxHandler(), 'save_metadata_settings'));
-        add_action('wp_ajax_delete_metadata', array($this->getAjaxHandler(), 'delete_metadata'));
-        add_action('wp_ajax_save_bulk_edit', array($this->getAjaxHandler(), 'save_bulk_edit'));
+        $ajax = $this->getAjaxHandler();
+        
+        add_action('wp_ajax_upload_document', [$ajax, 'handle_document_upload']);
+        add_action('wp_ajax_nopriv_upload_document', [$ajax, 'handle_unauthorized_access']);
+        add_action('wp_ajax_save_document_metadata', [$ajax, 'save_document_metadata']);
+        add_action('wp_ajax_delete_document', [$ajax, 'delete_document']);
+        add_action('wp_ajax_save_metadata_settings', [$ajax, 'save_metadata_settings']);
+        add_action('wp_ajax_delete_metadata', [$ajax, 'delete_metadata']);
+        add_action('wp_ajax_save_bulk_edit', [$ajax, 'save_bulk_edit']);
     }
     
     /**

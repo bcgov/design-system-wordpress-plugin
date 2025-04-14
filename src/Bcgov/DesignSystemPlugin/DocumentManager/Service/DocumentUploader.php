@@ -3,6 +3,7 @@
 namespace Bcgov\DesignSystemPlugin\DocumentManager\Service;
 
 use Bcgov\DesignSystemPlugin\DocumentManager\Config\DocumentManagerConfig;
+use Bcgov\DesignSystemPlugin\DocumentManager\Manager\DocumentMetadataManager;
 
 class DocumentUploader {
     private $config;
@@ -16,10 +17,11 @@ class DocumentUploader {
      * 
      * @param array $file Single file from $_FILES
      * @param array $metadata Document metadata
+     * @param DocumentMetadataManager $metadataManager Optional metadata manager for cache clearing
      * @return array Upload result with post ID and file URL
      * @throws \Exception
      */
-    public function uploadSingle(array $file, array $metadata = []) {
+    public function uploadSingle(array $file, array $metadata = [], $metadataManager = null) {
         // Validate file
         if ($file['error'] !== UPLOAD_ERR_OK) {
             throw new \Exception($this->getUploadErrorMessage($file['error']));
@@ -122,7 +124,11 @@ class DocumentUploader {
         }
         
         // Clear document caches after upload
-        $this->clearDocumentCaches();
+        if ($metadataManager) {
+            $metadataManager->clearCache();
+        } else {
+            do_action('bcgov_document_manager_document_uploaded', $post_id);
+        }
 
         return [
             'post_id' => $post_id,
@@ -154,33 +160,5 @@ class DocumentUploader {
         return isset($upload_errors[$error_code]) 
             ? $upload_errors[$error_code] 
             : 'Unknown upload error';
-    }
-    
-    /**
-     * Clear all document-related caches
-     */
-    private function clearDocumentCaches() {
-        global $wpdb;
-        
-        // Clear document count cache
-        delete_transient('document_manager_count');
-        
-        // Get all document pagination caches
-        $transient_like = $wpdb->esc_like('_transient_document_manager_documents_page_') . '%';
-        $transients = $wpdb->get_col(
-            $wpdb->prepare(
-                "SELECT option_name FROM $wpdb->options WHERE option_name LIKE %s",
-                $transient_like
-            )
-        );
-        
-        // Delete each pagination cache
-        foreach ($transients as $transient) {
-            // Extract the transient name by removing the '_transient_' prefix
-            $transient_name = str_replace('_transient_', '', $transient);
-            delete_transient($transient_name);
-        }
-        
-        error_log('Document Manager: Cleared caches after document upload');
     }
 } 

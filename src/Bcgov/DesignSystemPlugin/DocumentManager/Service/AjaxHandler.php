@@ -61,7 +61,7 @@ class AjaxHandler {
                     'size' => $files['size'][$i]
                 );
 
-                $results[] = $this->uploader->uploadSingle($file, $metadata);
+                $results[] = $this->uploader->uploadSingle($file, $metadata, $this->metadataManager);
             }
 
             wp_send_json_success($results);

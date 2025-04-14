@@ -121,7 +121,7 @@ class DocumentMetadataManager {
         }
         
         // Clear document cache when metadata is updated
-        $this->clearDocumentCache();
+        $this->clearCache();
         
         return true;
     }
@@ -147,7 +147,7 @@ class DocumentMetadataManager {
         }
         
         // Clear document cache when a document is deleted
-        $this->clearDocumentCache();
+        $this->clearCache();
         
         return true;
     }
@@ -180,17 +180,58 @@ class DocumentMetadataManager {
     }
     
     /**
-     * Clear the document list cache when settings change
+     * Clear all document-related caches
+     * 
+     * @param string|array $types Cache types to clear ('count', 'listings', 'columns', 'all')
+     */
+    public function clearCache($types = 'all') {
+        global $wpdb;
+        
+        $types = (array)$types;
+        
+        if (in_array('all', $types) || in_array('count', $types)) {
+            delete_transient('document_manager_count');
+        }
+        
+        if (in_array('all', $types) || in_array('listings', $types)) {
+            // Clear all page caches using a single SQL query
+            $transient_like = $wpdb->esc_like('_transient_document_manager_documents_page_') . '%';
+            $wpdb->query(
+                $wpdb->prepare(
+                    "DELETE FROM $wpdb->options WHERE option_name LIKE %s",
+                    $transient_like
+                )
+            );
+        }
+        
+        if (in_array('all', $types) || in_array('columns', $types)) {
+            delete_transient('document_manager_columns');
+        }
+        
+        do_action('bcgov_document_manager_cache_cleared', $types);
+        
+        error_log('Document Manager: Cache cleared - ' . implode(', ', $types));
+    }
+    
+    /**
+     * Alias for backward compatibility
+     */
+    private function clearDocumentCache() {
+        $this->clearCache(['count', 'listings']);
+    }
+    
+    /**
+     * Alias for backward compatibility
      */
     public function clearDocumentListCache() {
-        // Clear count cache
-        delete_transient('document_manager_count');
-        
-        // Clear all page caches (we don't know which pages exist, so we'll do a SQL query)
-        global $wpdb;
-        $wpdb->query("DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_document_manager_documents_page_%'");
-        
-        error_log('Document Manager: Document list cache cleared');
+        $this->clearCache(['count', 'listings']);
+    }
+    
+    /**
+     * Alias for backward compatibility
+     */
+    private function clearColumnSettingsCache() {
+        $this->clearCache('columns');
     }
     
     /**
@@ -374,7 +415,7 @@ class DocumentMetadataManager {
                 }
                 
                 // Clear document cache after bulk updates
-                $this->clearDocumentCache();
+                $this->clearCache();
 
                 return [
                     'message' => 'Changes saved successfully.',
@@ -387,65 +428,6 @@ class DocumentMetadataManager {
             $wpdb->query('ROLLBACK');
             throw $e;
         }
-    }
-    
-    /**
-     * Clear the document cache
-     * 
-     * @return bool True if at least one cache was cleared
-     */
-    private function clearDocumentCache() {
-        global $wpdb;
-        $result = false;
-        
-        // Clear document count cache
-        $count_cache_key = 'document_manager_count';
-        $count_result = delete_transient($count_cache_key);
-        $result = $result || $count_result;
-        
-        if ($count_result) {
-            error_log('Document Manager: Document count cache cleared');
-        }
-        
-        // Get all document pagination caches
-        // This gets all transients that start with 'document_manager_documents_page_'
-        $transient_like = $wpdb->esc_like('_transient_document_manager_documents_page_') . '%';
-        $transients = $wpdb->get_col(
-            $wpdb->prepare(
-                "SELECT option_name FROM $wpdb->options WHERE option_name LIKE %s",
-                $transient_like
-            )
-        );
-        
-        // Delete each pagination cache
-        foreach ($transients as $transient) {
-            // Extract the transient name by removing the '_transient_' prefix
-            $transient_name = str_replace('_transient_', '', $transient);
-            $page_result = delete_transient($transient_name);
-            $result = $result || $page_result;
-        }
-        
-        if (!empty($transients)) {
-            error_log('Document Manager: Cleared ' . count($transients) . ' pagination caches');
-        }
-        
-        return $result;
-    }
-    
-    /**
-     * Clear the column settings cache
-     * 
-     * @return bool True if the cache was cleared
-     */
-    private function clearColumnSettingsCache() {
-        $cache_key = 'document_manager_columns';
-        $result = delete_transient($cache_key);
-        
-        if ($result) {
-            error_log('Document Manager: Column settings cache cleared');
-        }
-        
-        return $result;
     }
     
     /**
