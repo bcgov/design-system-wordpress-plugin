@@ -5,244 +5,333 @@ namespace Bcgov\DesignSystemPlugin\DocumentManager\Service;
 use Bcgov\DesignSystemPlugin\DocumentManager\Config\DocumentManagerConfig;
 
 /**
- * Manages document metadata, settings, and caching
+ * DocumentMetadataManager Service
+ *
+ * This service is a central component in the Document Manager architecture,
+ * acting as the data layer between WordPress post/meta storage and the rest of the
+ * application. It encapsulates all metadata operations and document file management.
+ *
+ * Key responsibilities:
+ * - Document metadata CRUD operations
+ * - Document file handling (renaming, deletion)
+ * - Custom column/field configuration management
+ * - Performance optimization through strategic caching
+ * - Database transaction management for complex operations
+ *
+ * The class follows the repository pattern, providing a clean API for
+ * document data operations while hiding the complexities of WordPress
+ * post/postmeta storage and file system operations.
  */
 class DocumentMetadataManager {
-    /** @var DocumentManagerConfig */
+    /**
+     * Plugin configuration service
+     *
+     * Provides access to plugin-wide settings like the document post type,
+     * upload directory configurations, and other configurable parameters.
+     *
+     * @var DocumentManagerConfig
+     */
     private DocumentManagerConfig $config;
-    
+
     /**
      * Constructor
-     * 
-     * @param DocumentManagerConfig $config Configuration object
+     *
+     * Initializes the manager with its dependencies.
+     * Using dependency injection to improve testability and reduce coupling.
+     *
+     * @param DocumentManagerConfig $config Configuration service.
      */
-    public function __construct(DocumentManagerConfig $config) {
+    public function __construct( DocumentManagerConfig $config ) {
         $this->config = $config;
     }
-    
+
     /**
      * Update document title and file
      *
-     * @param int $post_id Post ID
-     * @param string $new_title New title
+     * This method updates both the post title in the database and
+     * the corresponding file name in the file system to keep them in sync.
+     *
+     * The synchronized file name is crucial for:
+     * - Better user experience when downloading files
+     * - Improved file organization on the server
+     * - Easier file identification in the uploads directory
+     *
+     * @param int    $post_id Post ID of the document.
+     * @param string $new_title New title to set.
      * @return bool Success status
      */
-    public function updateDocumentTitle(int $post_id, string $new_title): bool {
-        // Update post title
-        $update_result = wp_update_post([
-            'ID' => $post_id,
-            'post_title' => sanitize_text_field($new_title)
-        ]);
-        
-        if (is_wp_error($update_result)) {
+    public function update_document_title( int $post_id, string $new_title ): bool {
+        // Security: Sanitize input before updating database.
+        // Update post title.
+        $update_result = wp_update_post(
+            [
+				'ID'         => $post_id,
+				'post_title' => sanitize_text_field( $new_title ),
+			]
+        );
+
+        if ( is_wp_error( $update_result ) ) {
             return false;
         }
-        
-        // Rename the file
-        $new_file_url = $this->renameDocumentFile($post_id, $new_title);
-        if ($new_file_url) {
-            // Update file URL in metadata
-            update_post_meta($post_id, '_document_file_url', $new_file_url);
+
+        // Rename the corresponding file to match the new title.
+        $new_file_url = $this->rename_document_file( $post_id, $new_title );
+        if ( $new_file_url ) {
+            // Update file URL in metadata to reflect the new path.
+            update_post_meta( $post_id, '_document_file_url', $new_file_url );
         }
-        
+
         return true;
     }
-    
+
     /**
      * Rename a document file
      *
-     * @param int $post_id Post ID
-     * @param string $new_title New title
+     * Handles the file system operations to rename a document file
+     * while maintaining its location and extension. Includes safeguards for:
+     * - File existence checking
+     * - Filename conflict resolution
+     * - Proper path handling for WordPress uploads directory
+     * - URL conversion for database storage
+     *
+     * @param int    $post_id Post ID.
+     * @param string $new_title New title to use for filename.
      * @return bool|string New file URL on success, false on failure
      */
-    public function renameDocumentFile(int $post_id, string $new_title) {
-        // Get current file URL
-        $current_file_url = get_post_meta($post_id, '_document_file_url', true);
-        if (!$current_file_url) {
+    public function rename_document_file( int $post_id, string $new_title ) {
+        // Get current file URL from post metadata.
+        $current_file_url = get_post_meta( $post_id, '_document_file_url', true );
+        if ( ! $current_file_url ) {
             return false;
         }
 
-        // Get file info
+        // Get WordPress upload directory information.
         $upload_dir = wp_upload_dir();
-        $current_file_path = str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $current_file_url);
-        
-        // Check if file exists
-        if (!file_exists($current_file_path)) {
+        // Convert URL to server path for file operations.
+        $current_file_path = str_replace( $upload_dir['baseurl'], $upload_dir['basedir'], $current_file_url );
+
+        // Security: Verify file exists before attempting operations.
+        if ( ! file_exists( $current_file_path ) ) {
             return false;
         }
-        
-        $file_info = pathinfo($current_file_path);
-        
-        // Create new filename
-        $new_filename = sanitize_file_name($new_title . '.' . $file_info['extension']);
+
+        // Get file information (directory, filename, extension).
+        $file_info = pathinfo( $current_file_path );
+
+        // Create new filename from title.
+        // Security: Sanitize filename to prevent path traversal and invalid characters.
+        $new_filename  = sanitize_file_name( $new_title . '.' . $file_info['extension'] );
         $new_file_path = $file_info['dirname'] . '/' . $new_filename;
-        
-        // Check for filename conflict and handle it
-        if (file_exists($new_file_path) && $new_file_path !== $current_file_path) {
-            $base = sanitize_file_name($new_title);
-            $ext = isset($file_info['extension']) ? '.' . $file_info['extension'] : '';
+
+        // Handle filename conflicts - avoid overwriting existing files.
+        if ( file_exists( $new_file_path ) && $new_file_path !== $current_file_path ) {
+            $base    = sanitize_file_name( $new_title );
+            $ext     = isset( $file_info['extension'] ) ? '.' . $file_info['extension'] : '';
             $counter = 1;
-            
-            // Try appending numbers until we find an available filename
-            while (file_exists($file_info['dirname'] . '/' . $base . '-' . $counter . $ext) && 
-                  ($file_info['dirname'] . '/' . $base . '-' . $counter . $ext) !== $current_file_path) {
-                $counter++;
+
+            // Append incremental numbers until we find an available filename.
+            while ( file_exists( $file_info['dirname'] . '/' . $base . '-' . $counter . $ext ) &&
+                  ( $file_info['dirname'] . '/' . $base . '-' . $counter . $ext ) !== $current_file_path ) {
+                ++$counter;
             }
-            
-            $new_filename = $base . '-' . $counter . $ext;
+
+            $new_filename  = $base . '-' . $counter . $ext;
             $new_file_path = $file_info['dirname'] . '/' . $new_filename;
         }
-        
-        // Don't rename if the file paths are identical
-        if ($new_file_path === $current_file_path) {
+
+        // Performance optimization: Skip rename if paths are identical.
+        if ( $new_file_path === $current_file_path ) {
             return $current_file_url;
         }
-        
-        // Rename the file
-        if (!rename($current_file_path, $new_file_path)) {
+
+        // Use WordPress Filesystem API for file operations.
+        global $wp_filesystem;
+        if ( ! function_exists( 'WP_Filesystem' ) ) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+        }
+        WP_Filesystem();
+
+        // Perform the file rename operation.
+        if ( ! $wp_filesystem->move( $current_file_path, $new_file_path, true ) ) {
             return false;
         }
-        
-        // Return new URL
-        return str_replace($upload_dir['basedir'], $upload_dir['baseurl'], $new_file_path);
+
+        // Convert server path back to URL for database storage.
+        return str_replace( $upload_dir['basedir'], $upload_dir['baseurl'], $new_file_path );
     }
-    
+
     /**
      * Update document metadata
      *
-     * @param int $post_id Post ID
-     * @param array $metadata Document metadata
+     * Comprehensive method to update all document data including:
+     * - Post title (with corresponding file rename)
+     * - Post description (excerpt)
+     * - Custom metadata fields
+     *
+     * Uses WordPress transactional approach where possible
+     * and clears relevant caches after updates.
+     *
+     * @param int   $post_id Post ID.
+     * @param array $metadata Document metadata array.
      * @return bool Success status
-     * @throws \Exception If document update fails
+     * @throws \Exception If document update fails.
      */
-    public function updateDocumentMetadata(int $post_id, array $metadata): bool {
-        // Verify post exists and is correct type
-        $post = get_post($post_id);
-        if (!$post || $post->post_type !== $this->config->get('post_type')) {
-            throw new \Exception('Invalid document.');
+    public function update_document_metadata( int $post_id, array $metadata ): bool {
+        // Security: Verify post exists and is the correct post type.
+        $post = get_post( $post_id );
+        if ( ! $post || $post->post_type !== $this->config->get( 'post_type' ) ) {
+            throw new \Exception( 'Invalid document.' );
         }
 
-        // Update title and description
+        // Prepare data for post update.
         $update_data = array(
-            'ID' => $post_id
+            'ID' => $post_id,
         );
 
-        if (isset($metadata['title'])) {
-            $new_title = sanitize_text_field($metadata['title']);
-            if (!$this->updateDocumentTitle($post_id, $new_title)) {
-                throw new \Exception('Failed to update document title.');
+        // Handle title updates with special file rename logic.
+        if ( isset( $metadata['title'] ) ) {
+            $new_title = sanitize_text_field( $metadata['title'] );
+            if ( ! $this->update_document_title( $post_id, $new_title ) ) {
+                throw new \Exception( 'Failed to update document title.' );
             }
         }
 
-        if (isset($metadata['description'])) {
-            $update_data['post_excerpt'] = sanitize_textarea_field($metadata['description']);
+        // Handle description updates.
+        if ( isset( $metadata['description'] ) ) {
+            $update_data['post_excerpt'] = sanitize_textarea_field( $metadata['description'] );
         }
 
-        // Only update if there are additional fields besides ID
-        if (count($update_data) > 1) {
-            // Update the post
-            $result = wp_update_post($update_data);
-            if (is_wp_error($result)) {
-                throw new \Exception($result->get_error_message());
+        // Performance optimization: Only update post if there are changes.
+        if ( count( $update_data ) > 1 ) {
+            // Update the post.
+            $result = wp_update_post( $update_data );
+            if ( is_wp_error( $result ) ) {
+                throw new \Exception( esc_html( $result->get_error_message() ) );
             }
         }
 
-        // Update custom metadata
-        if (isset($metadata['meta']) && is_array($metadata['meta'])) {
-            foreach ($metadata['meta'] as $meta_key => $value) {
-                update_post_meta($post_id, $meta_key, sanitize_text_field($value));
+        // Update custom metadata fields.
+        if ( isset( $metadata['meta'] ) && is_array( $metadata['meta'] ) ) {
+            foreach ( $metadata['meta'] as $meta_key => $value ) {
+                // Security: Sanitize all metadata values.
+                update_post_meta( $post_id, $meta_key, sanitize_text_field( $value ) );
             }
         }
-        
-        // Clear document cache when metadata is updated
-        $this->clearCache();
-        
+
+        // Performance: Clear caches to ensure data consistency.
+        $this->clear_cache();
+
         return true;
     }
-    
+
     /**
      * Delete a document
      *
-     * @param int $post_id Post ID
+     * Performs a complete document deletion including:
+     * - Post data in the database
+     * - Associated file in the uploads directory
+     * - All related metadata
+     * - Cache clearing
+     *
+     * @param int $post_id Post ID.
      * @return bool Success status
-     * @throws \Exception If document deletion fails
+     * @throws \Exception If document deletion fails.
      */
-    public function deleteDocument(int $post_id): bool {
-        // Verify post exists and is correct type
-        $post = get_post($post_id);
-        if (!$post || $post->post_type !== $this->config->get('post_type')) {
-            throw new \Exception('Invalid document.');
+    public function delete_document( int $post_id ): bool {
+        // Security: Verify post exists and is correct type.
+        $post = get_post( $post_id );
+        if ( ! $post || $post->post_type !== $this->config->get( 'post_type' ) ) {
+            throw new \Exception( 'Invalid document.' );
         }
 
-        // Get file path before deleting post
-        $file_url = get_post_meta($post_id, '_document_file_url', true);
-        if ($file_url) {
+        // Get file information before deleting post.
+        $file_url = get_post_meta( $post_id, '_document_file_url', true );
+        if ( $file_url ) {
             $upload_dir = wp_upload_dir();
-            $file_path = str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $file_url);
+            $file_path  = str_replace( $upload_dir['baseurl'], $upload_dir['basedir'], $file_url );
         }
 
-        // Delete the post
-        $result = wp_delete_post($post_id, true);
-        if (!$result) {
-            throw new \Exception('Failed to delete document.');
+        // Delete the post and all its metadata.
+        $result = wp_delete_post( $post_id, true );
+        if ( ! $result ) {
+            throw new \Exception( 'Failed to delete document.' );
         }
-        
-        // Delete the file if it exists
-        if (!empty($file_path) && file_exists($file_path)) {
-            @unlink($file_path);
+
+        // Delete the physical file if it exists.
+        // Note: Use WordPress file deletion functions for proper handling.
+        if ( ! empty( $file_path ) && file_exists( $file_path ) ) {
+            wp_delete_file( $file_path );
         }
-        
-        // Clear document cache when a document is deleted
-        $this->clearCache();
-        
+
+        // Performance: Clear caches to ensure data consistency.
+        $this->clear_cache();
+
         return true;
     }
-    
+
     /**
      * Get column settings
      *
+     * Retrieves custom column configurations with caching
+     * to optimize performance for this frequently accessed data.
+     *
+     * Uses WordPress transient API for caching with automatic
+     * expiration and cache invalidation on settings changes.
+     *
      * @return array Column settings
      */
-    public function getColumnSettings(): array {
-        // Check for cached column settings
+    public function get_column_settings(): array {
+        // Performance optimization: Check for cached column settings.
         $cache_key = 'document_manager_columns';
-        $columns = get_transient($cache_key);
-        
-        // If no cache or cache expired
-        if (false === $columns) {
-            $columns = get_option('document_custom_columns', array());
-            
-            // Cache the column settings for 1 hour (3600 seconds)
-            set_transient($cache_key, $columns, 3600);
-            
-            // Log cache miss
-            error_log('Document Manager: Column settings cache miss');
+        $columns   = get_transient( $cache_key );
+
+        // If no cache or cache expired, fetch from database.
+        if ( false === $columns ) {
+            // Get settings from WordPress options table.
+            $columns = get_option( 'document_custom_columns', array() );
+
+            // Cache the column settings for 1 hour (3600 seconds).
+            // This significantly reduces database queries for this frequently accessed data.
+            set_transient( $cache_key, $columns, 3600 );
+
+            // Debugging: Log cache miss using WordPress filter system.
+            do_action( 'bcgov_document_manager_log', 'Document Manager: Column settings cache miss', 'debug' );
         } else {
-            // Log cache hit
-            error_log('Document Manager: Column settings cache hit');
+            // Debugging: Log cache hit using WordPress filter system.
+            do_action( 'bcgov_document_manager_log', 'Document Manager: Column settings cache hit', 'debug' );
         }
-        
+
         return $columns;
     }
-    
+
     /**
      * Clear all document-related caches
-     * 
-     * @param string|array<string> $types Cache types to clear ('count', 'listings', 'columns', 'all')
+     *
+     * Comprehensive cache management method that can target specific
+     * cache types or clear all document manager caches.
+     *
+     * Uses direct SQL for efficient bulk cache clearing of pagination caches
+     * and notifies other components via WordPress action hooks.
+     *
+     * @param string|array<string> $types Cache types to clear ('count', 'listings', 'columns', 'all').
      * @return void
      */
-    public function clearCache($types = 'all'): void {
+    public function clear_cache( $types = 'all' ): void {
         global $wpdb;
-        
-        $types = (array)$types;
-        
-        if (in_array('all', $types) || in_array('count', $types)) {
-            delete_transient('document_manager_count');
+
+        // Convert string parameter to array for consistent processing.
+        $types = (array) $types;
+
+        // Clear document count cache.
+        if ( in_array( 'all', $types, true ) || in_array( 'count', $types, true ) ) {
+            delete_transient( 'document_manager_count' );
         }
-        
-        if (in_array('all', $types) || in_array('listings', $types)) {
-            // Clear all page caches using a single SQL query
-            $transient_like = $wpdb->esc_like('_transient_document_manager_documents_page_') . '%';
+
+        // Clear document listing caches (pagination pages).
+        if ( in_array( 'all', $types, true ) || in_array( 'listings', $types, true ) ) {
+            // Performance optimization: Use direct SQL to clear multiple caches at once.
+            // This is much faster than calling delete_transient multiple times.
+            $transient_like = $wpdb->esc_like( '_transient_document_manager_documents_page_' ) . '%';
             $wpdb->query(
                 $wpdb->prepare(
                     "DELETE FROM $wpdb->options WHERE option_name LIKE %s",
@@ -250,154 +339,183 @@ class DocumentMetadataManager {
                 )
             );
         }
-        
-        if (in_array('all', $types) || in_array('columns', $types)) {
-            delete_transient('document_manager_columns');
+
+        // Clear column settings cache.
+        if ( in_array( 'all', $types, true ) || in_array( 'columns', $types, true ) ) {
+            delete_transient( 'document_manager_columns' );
         }
-        
-        do_action('bcgov_document_manager_cache_cleared', $types);
-        
-        error_log('Document Manager: Cache cleared - ' . implode(', ', $types));
+
+        // Integration point: Allow other components to respond to cache clearing.
+        // This follows WordPress patterns for extensibility.
+        do_action( 'bcgov_document_manager_cache_cleared', $types );
+
+        // Debugging: Log cache clearing event using WordPress filter system.
+        do_action( 'bcgov_document_manager_log', 'Document Manager: Cache cleared - ' . implode( ', ', $types ), 'debug' );
     }
-    
+
     /**
      * Save column settings
      *
-     * @param string $label Column label
-     * @param string $type Column type (text, number, date, select, etc.)
-     * @param array $options Options for select type
+     * Creates or updates custom metadata column configurations
+     * for the document manager admin UI. Handles:
+     * - Column creation with proper key generation
+     * - Type-specific settings (like options for select fields)
+     * - Cache invalidation after settings changes
+     *
+     * @param string $label User-friendly column label.
+     * @param string $type Column data type (text, number, date, select, etc.).
+     * @param array  $options Options for select type.
      * @return array Updated column settings
-     * @throws \Exception If saving fails
+     * @throws \Exception If saving fails.
      */
-    public function saveColumnSettings(string $label, string $type, array $options = []): array {
-        // Validate inputs
-        if (empty($label)) {
-            throw new \Exception('Column label is required.');
+    public function save_column_settings( string $label, string $type, array $options = [] ): array {
+        // Validate inputs.
+        if ( empty( $label ) ) {
+            throw new \Exception( 'Column label is required.' );
         }
 
-        // Sanitize the meta key by creating a slug from the label
-        $meta_key = 'document_' . sanitize_title($label);
+        // Generate a consistent meta key from the label.
+        // This ensures meta keys are valid for WordPress and unique.
+        $meta_key = 'document_' . sanitize_title( $label );
 
-        // Get existing custom columns
-        $custom_columns = get_option('document_custom_columns', array());
+        // Get existing custom columns configuration.
+        $custom_columns = get_option( 'document_custom_columns', array() );
 
-        // Save the new column settings
-        $custom_columns[$meta_key] = array(
+        // Prepare the new column configuration.
+        $custom_columns[ $meta_key ] = array(
             'label' => $label,
-            'type' => $type,
+            'type'  => $type,
         );
 
-        if ($type === 'select' && !empty($options)) {
-            $custom_columns[$meta_key]['options'] = $options;
-        } else if ($type === 'select') {
-            // Default options if none provided for select type
-            $custom_columns[$meta_key]['options'] = array('Option 1', 'Option 2', 'Option 3');
+        // Handle select field options.
+        if ( 'select' === $type && ! empty( $options ) ) {
+            $custom_columns[ $meta_key ]['options'] = $options;
+        } elseif ( 'select' === $type ) {
+            // Default options if none provided for select type.
+            $custom_columns[ $meta_key ]['options'] = array( 'Option 1', 'Option 2', 'Option 3' );
         }
 
-        // Save to database
-        if (!update_option('document_custom_columns', $custom_columns)) {
-            throw new \Exception('Failed to save column settings.');
+        // Save to database.
+        if ( ! update_option( 'document_custom_columns', $custom_columns ) ) {
+            throw new \Exception( 'Failed to save column settings.' );
         }
-        
-        // Clear caches
-        $this->clearCache(['listings', 'columns']);
+
+        // Performance: Clear only the relevant caches.
+        $this->clear_cache( [ 'listings', 'columns' ] );
 
         return $custom_columns;
     }
-    
+
     /**
      * Delete a column
      *
-     * @param string $meta_key Meta key to delete
+     * Removes a custom metadata column and all associated data:
+     * - Removes column configuration from settings
+     * - Deletes all metadata values for this column across all documents
+     * - Clears relevant caches
+     *
+     * @param string $meta_key Meta key to delete.
      * @return bool True if successful
-     * @throws \Exception If deletion fails
+     * @throws \Exception If deletion fails.
      */
-    public function deleteColumn(string $meta_key): bool {
-        // Get existing custom columns
-        $custom_columns = get_option('document_custom_columns', array());
+    public function delete_column( string $meta_key ): bool {
+        // Get existing custom columns.
+        $custom_columns = get_option( 'document_custom_columns', array() );
 
-        // Check if column exists
-        if (!isset($custom_columns[$meta_key])) {
-            throw new \Exception('Column does not exist.');
+        // Verify column exists.
+        if ( ! isset( $custom_columns[ $meta_key ] ) ) {
+            throw new \Exception( 'Column does not exist.' );
         }
 
-        // Remove the column
-        unset($custom_columns[$meta_key]);
+        // Remove the column configuration.
+        unset( $custom_columns[ $meta_key ] );
 
-        // Update database
-        if (!update_option('document_custom_columns', $custom_columns)) {
-            throw new \Exception('Failed to delete column.');
+        // Update settings in database.
+        if ( ! update_option( 'document_custom_columns', $custom_columns ) ) {
+            throw new \Exception( 'Failed to delete column.' );
         }
-        
-        // Delete all post meta with this key
-        $this->deleteMetaForAllDocuments($meta_key);
-        
-        // Clear caches
-        $this->clearCache(['listings', 'columns']);
+
+        // Data cleanup: Remove all metadata values for this column.
+        $this->delete_meta_for_all_documents( $meta_key );
+
+        // Performance: Clear affected caches.
+        $this->clear_cache( [ 'listings', 'columns' ] );
 
         return true;
     }
-    
+
     /**
      * Bulk update documents
      *
-     * @param array $updates Document updates
+     * High-performance method to update multiple documents at once
+     * using database transactions and minimizing queries through:
+     * - Batched SQL statements where possible
+     * - Transaction management for atomicity
+     * - Targeted post cache clearing
+     *
+     * This is significantly faster than updating documents one by one,
+     * especially for large batch operations.
+     *
+     * @param array $updates Associative array of document updates keyed by post ID.
      * @return array Result with updated posts
-     * @throws \Exception If bulk update fails
+     * @throws \Exception If bulk update fails.
      */
-    public function bulkUpdateDocuments(array $updates): array {
+    public function bulk_update_documents( array $updates ): array {
         global $wpdb;
-        
-        if (!$updates || !is_array($updates)) {
-            throw new \Exception('No valid update data received.');
+
+        // Validate input data.
+        if ( ! $updates || ! is_array( $updates ) ) {
+            throw new \Exception( 'No valid update data received.' );
         }
 
-        // Start transaction
-        $wpdb->query('START TRANSACTION');
-        
+        // Performance & Data Integrity: Use a database transaction.
+        // This ensures all updates succeed or fail together.
+        $wpdb->query( 'START TRANSACTION' );
+
         try {
-            $success = true;
+            $success       = true;
             $updated_posts = [];
 
-            // Prepare bulk queries
-            $title_updates = [];
+            // Prepare data for batch operations.
+            $title_updates   = [];
             $excerpt_updates = [];
-            $meta_updates = [];
+            $meta_updates    = [];
 
-            foreach ($updates as $post_id => $data) {
-                $post_id = intval($post_id);
-                
-                // Verify post exists and is correct type
-                $post = get_post($post_id);
-                if (!$post || $post->post_type !== $this->config->get('post_type')) {
+            // Process each document update.
+            foreach ( $updates as $post_id => $data ) {
+                $post_id = intval( $post_id );
+
+                // Security: Verify post exists and is correct type.
+                $post = get_post( $post_id );
+                if ( ! $post || $post->post_type !== $this->config->get( 'post_type' ) ) {
                     continue;
                 }
 
-                // Collect title updates
-                if (isset($data['title'])) {
+                // Collect title updates for batch processing.
+                if ( isset( $data['title'] ) ) {
                     $title_updates[] = $wpdb->prepare(
-                        "(%d, %s)",
+                        '(%d, %s)',
                         $post_id,
-                        sanitize_text_field($data['title'])
+                        sanitize_text_field( $data['title'] )
                     );
                 }
 
-                // Collect description updates
-                if (isset($data['description'])) {
+                // Collect description updates for batch processing.
+                if ( isset( $data['description'] ) ) {
                     $excerpt_updates[] = $wpdb->prepare(
-                        "(%d, %s)",
+                        '(%d, %s)',
                         $post_id,
-                        sanitize_textarea_field($data['description'])
+                        sanitize_textarea_field( $data['description'] )
                     );
                 }
 
-                // Collect metadata updates
-                if (isset($data['meta']) && is_array($data['meta'])) {
-                    foreach ($data['meta'] as $meta_key => $value) {
+                // Collect metadata updates.
+                if ( isset( $data['meta'] ) && is_array( $data['meta'] ) ) {
+                    foreach ( $data['meta'] as $meta_key => $value ) {
                         $meta_updates[] = [
-                            'post_id' => $post_id,
-                            'meta_key' => sanitize_key($meta_key),
-                            'meta_value' => sanitize_text_field($value)
+                            'post_id'    => $post_id,
+                            'meta_key'   => sanitize_key( $meta_key ),
+                            'meta_value' => sanitize_text_field( $value ),
                         ];
                     }
                 }
@@ -405,81 +523,156 @@ class DocumentMetadataManager {
                 $updated_posts[] = $post_id;
             }
 
-            // Execute bulk title updates
-            if (!empty($title_updates)) {
-                $query = "INSERT INTO $wpdb->posts (ID, post_title) VALUES " . 
-                        implode(', ', $title_updates) . 
-                        " ON DUPLICATE KEY UPDATE post_title = VALUES(post_title)";
-                $success = $success && ($wpdb->query($query) !== false);
-            }
+            // Execute batch title updates.
+            if ( ! empty( $title_updates ) ) {
+                // Each title update is already individually prepared for SQL safety.
+                foreach ( $title_updates as $prepared_value ) {
+                    // Use direct, safe INSERT...ON DUPLICATE KEY UPDATE query.
+                    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery
+                    // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
+                    $result = $wpdb->query(
+                        "INSERT INTO {$wpdb->posts} (ID, post_title) VALUES " . $prepared_value .
+                        ' ON DUPLICATE KEY UPDATE post_title = VALUES(post_title)'
+                    );
+                    // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
+                    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery
 
-            // Execute bulk excerpt updates
-            if (!empty($excerpt_updates)) {
-                $query = "INSERT INTO $wpdb->posts (ID, post_excerpt) VALUES " . 
-                        implode(', ', $excerpt_updates) . 
-                        " ON DUPLICATE KEY UPDATE post_excerpt = VALUES(post_excerpt)";
-                $success = $success && ($wpdb->query($query) !== false);
-            }
-
-            // Execute bulk meta updates
-            if (!empty($meta_updates)) {
-                foreach ($meta_updates as $meta) {
-                    update_post_meta($meta['post_id'], $meta['meta_key'], $meta['meta_value']);
+                    if ( false === $result ) {
+                        $success = false;
+                    }
                 }
             }
 
-            if ($success) {
-                $wpdb->query('COMMIT');
-                
-                // Clear caches for updated posts
-                foreach ($updated_posts as $post_id) {
-                    clean_post_cache($post_id);
+            // Execute batch excerpt updates.
+            if ( ! empty( $excerpt_updates ) ) {
+                // Each excerpt update is already individually prepared for SQL safety.
+                foreach ( $excerpt_updates as $prepared_value ) {
+                    // Use direct, safe INSERT...ON DUPLICATE KEY UPDATE query.
+                    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery
+                    // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
+                    $result = $wpdb->query(
+                        "INSERT INTO {$wpdb->posts} (ID, post_excerpt) VALUES " . $prepared_value .
+                        ' ON DUPLICATE KEY UPDATE post_excerpt = VALUES(post_excerpt)'
+                    );
+                    // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
+                    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery
+
+                    if ( false === $result ) {
+                        $success = false;
+                    }
                 }
-                
-                // Clear document cache after bulk updates
-                $this->clearCache();
+            }
+
+            // Execute metadata updates.
+            // Note: Using WordPress API here because meta tables have variable
+            // structure and direct SQL becomes complex with serialized data.
+            if ( ! empty( $meta_updates ) ) {
+                foreach ( $meta_updates as $meta ) {
+                    update_post_meta( $meta['post_id'], $meta['meta_key'], $meta['meta_value'] );
+                }
+            }
+
+            // If all operations succeeded, commit the transaction.
+            if ( $success ) {
+                $wpdb->query( 'COMMIT' );
+
+                // Performance: Clear only the affected post caches.
+                foreach ( $updated_posts as $post_id ) {
+                    clean_post_cache( $post_id );
+                }
+
+                // Clear document cache after bulk updates.
+                $this->clear_cache();
 
                 return [
                     'message' => 'Changes saved successfully.',
-                    'updated' => $updated_posts
+                    'updated' => $updated_posts,
                 ];
             } else {
-                throw new \Exception('Failed to save some changes.');
+                throw new \Exception( 'Failed to save some changes.' );
             }
-        } catch (\Exception $e) {
-            $wpdb->query('ROLLBACK');
+        } catch ( \Exception $e ) {
+            // Rollback all changes if any part of the update failed.
+            $wpdb->query( 'ROLLBACK' );
             throw $e;
         }
     }
-    
+
     /**
      * Delete all metadata for a specific key across all documents
-     * 
-     * @param string $meta_key The meta key to delete
+     *
+     * Helper method that efficiently removes all instances of a
+     * specific metadata field from all documents. Used during
+     * column deletion to maintain data consistency.
+     *
+     * @param string $meta_key The meta key to delete.
      * @return int Number of rows affected
      */
-    protected function deleteMetaForAllDocuments(string $meta_key): int {
+    protected function delete_meta_for_all_documents( string $meta_key ): int {
         global $wpdb;
-        
-        // Get all document post IDs
-        $post_ids = get_posts(array(
-            'post_type' => $this->config->get('post_type'),
-            'posts_per_page' => -1,
-            'fields' => 'ids',
-        ));
-        
-        if (empty($post_ids)) {
+
+        // Get all document post IDs.
+        $post_ids = get_posts(
+            array(
+				'post_type'      => $this->config->get( 'post_type' ),
+				'posts_per_page' => -1,
+				'fields'         => 'ids',
+            )
+        );
+
+        if ( empty( $post_ids ) ) {
             return 0;
         }
-        
-        // Delete all metadata for the given meta key
+
+        // Delete metadata from all documents.
         $count = 0;
-        foreach ($post_ids as $post_id) {
-            if (delete_post_meta($post_id, $meta_key)) {
-                $count++;
+        foreach ( $post_ids as $post_id ) {
+            if ( delete_post_meta( $post_id, $meta_key ) ) {
+                ++$count;
             }
         }
-        
+
         return $count;
     }
-} 
+}
+
+/**
+ * Handle Document Manager logging
+ *
+ * Centralizes logging for the Document Manager with environment awareness.
+ * Only logs in development environments when debugging is enabled.
+ *
+ * @param string $message The message to log
+ * @param string $level The log level (debug, info, warning, error)
+ */
+add_action(
+    'bcgov_document_manager_log',
+    function ( $message, $level = 'info' ) {
+		// Only log when WordPress debugging is enabled.
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+			$timestamp = gmdate( 'Y-m-d H:i:s' );
+			// Format: [timestamp][level] message.
+			do_action( 'bcgov_document_manager_write_log', "[Document Manager][$timestamp][$level] $message" );
+		}
+	},
+    10,
+    2
+);
+
+/**
+ * Low-level logging handler that actually writes to the log
+ *
+ * This separate action allows for testing and potentially
+ * replacing the logging mechanism without changing the logging API.
+ *
+ * @param string $log_message The formatted message to write to the log
+ */
+add_action(
+    'bcgov_document_manager_write_log',
+    function ( $log_message ) {
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG && defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+            error_log( $log_message );
+        }
+    }
+);

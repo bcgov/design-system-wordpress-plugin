@@ -187,4 +187,3 @@ $in_page_nav = new InPageNav();
 
 // Initialize the DocumentManager.
 $document_manager = new DocumentManager();
-

@@ -583,11 +583,11 @@
         width: 95%;
         padding: 15px;
     }
-    
+
     .form-actions {
         text-align: center;
     }
-    
+
     .form-actions button {
         width: 100%;
         margin: 5px 0;
@@ -718,4 +718,4 @@
 
 .wp-list-table .column-date {
     width: 10%;
-} 
+}
