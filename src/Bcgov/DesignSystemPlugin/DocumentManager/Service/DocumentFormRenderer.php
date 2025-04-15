@@ -95,12 +95,12 @@ class DocumentFormRenderer {
         * - Only accepts PDF files by default (controlled by accept attribute)
         * - Includes WordPress security nonce field for CSRF protection.
         -->
-        <div class="document-upload-section">
-            <h2>Upload New Documents</h2>
+        <div class="document-upload-section" style="max-width: 800px; margin: 0 auto 30px auto;">
+            <h2 style="text-align: center;">Upload New Documents</h2>
             <form id="document-upload-form" method="post" enctype="multipart/form-data">
-                <div class="drag-drop-zone" id="drag-drop-zone">
+                <div class="drag-drop-zone" id="drag-drop-zone" style="border: 2px dashed #ccc; border-radius: 5px; padding: 30px; text-align: center;">
                     <div class="drag-drop-content">
-                        <i class="dashicons dashicons-upload"></i>
+                        <i class="dashicons dashicons-upload" style="font-size: 48px; width: 48px; height: 48px;"></i>
                         <p>Drag and drop your documents here</p>
                         <p class="drag-drop-or">or</p>
                         <label for="document_file" class="button">Choose Files</label>
