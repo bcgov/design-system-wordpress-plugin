@@ -80,7 +80,7 @@
                 var formData = {
                     action: 'save_document_metadata',
                     post_id: postId,
-                    security: documentManager.nonce,
+                    security: documentManager.nonces.edit,
                     title: $('#edit_document_title').val(),
                     description: $('#edit_document_description').val(),
                     meta: {}

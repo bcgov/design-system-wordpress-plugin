@@ -38,8 +38,16 @@ class DocumentManagerConfig {
         $this->settings = [
             'allowed_file_types' => [ 'pdf' ],      // Only allow PDF files by default.
             'max_file_size'      => 10485760,          // 10MB in bytes.
-            'nonce_key'          => 'document_upload_nonce', // Security token name.
+            'nonce_key'          => 'bcgov_doc_manager_nonce', // Security token name.
             'post_type'          => 'document',             // Custom post type name.
+            'nonce_actions'      => [
+                'upload'            => 'upload_document',
+                'edit'              => 'edit_document',
+                'delete'            => 'delete_document', 
+                'bulk_edit'         => 'bulk_edit_documents',
+                'metadata_settings' => 'metadata_settings',
+                'pagination'        => 'document_pagination',
+            ],
         ];
 
         // Allow settings to be filtered by other plugins
@@ -58,6 +66,20 @@ class DocumentManagerConfig {
      */
     public function get( string $key ) {
         return $this->settings[ $key ] ?? null;
+    }
+
+    /**
+     * Get nonce action for a specific operation
+     *
+     * Retrieves the appropriate nonce action string for the given operation.
+     * This enables action-specific nonces for better security.
+     *
+     * @param string $operation The operation name (upload, edit, delete, etc.)
+     * @return string The nonce action string
+     */
+    public function get_nonce_action( string $operation ) {
+        $actions = $this->get( 'nonce_actions' );
+        return $actions[ $operation ] ?? 'default_action';
     }
 
     /**

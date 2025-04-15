@@ -22,7 +22,7 @@
                 
                 var formData = new FormData(this);
                 formData.append('action', 'save_metadata_settings');
-                formData.append('security', documentManager.nonce);
+                formData.append('security', documentManager.nonces.metadata_settings);
                 
                 $.ajax({
                     url: documentManager.ajaxurl,
@@ -70,7 +70,7 @@
                     type: 'POST',
                     data: {
                         action: 'delete_metadata',
-                        security: documentManager.nonce,
+                        security: documentManager.nonces.metadata_settings,
                         meta_key: metaKey
                     },
                     beforeSend: function() {

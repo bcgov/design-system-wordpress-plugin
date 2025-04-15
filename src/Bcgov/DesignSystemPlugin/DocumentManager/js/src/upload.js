@@ -116,7 +116,7 @@
                 }
                 
                 formData.append('action', 'upload_document');
-                formData.append('security', documentManager.nonce);
+                formData.append('security', documentManager.nonces.upload);
                 
                 window.BCGOV.DocumentManager.Upload.submitUpload(formData);
             });

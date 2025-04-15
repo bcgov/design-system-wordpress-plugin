@@ -157,7 +157,7 @@
                 type: 'POST',
                 data: {
                     action: 'save_bulk_edit',
-                    security: documentManager.nonce,
+                    security: documentManager.nonces.bulk_edit,
                     updates: JSON.stringify(updates)
                 },
                 success: function(response) {

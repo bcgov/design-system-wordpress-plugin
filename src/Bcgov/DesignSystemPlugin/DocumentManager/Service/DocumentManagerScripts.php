@@ -145,17 +145,33 @@ class DocumentManagerScripts {
         $nonce_key = $this->config->get('nonce_key');
         $nonce = wp_create_nonce($nonce_key);
         
-        // Add debug logging for troubleshooting
-        // These logs help diagnose issues in development environments
-        error_log('Enqueuing scripts for document manager');
-        error_log('Nonce Key: ' . $nonce_key);
-        error_log('Generated Nonce: ' . $nonce);
-
         // Add localized script data to the core module
         // This creates the bridge between PHP and JavaScript
         wp_localize_script('document-manager-core', 'documentManager', array(
             'ajaxurl' => admin_url('admin-ajax.php'),
             'nonce' => $nonce,
+            'isAdmin' => current_user_can('manage_options'),
+            'messages' => $this->getLocalizedMessages()
+        ));
+
+        // Security: Generate WordPress nonces for different AJAX operations
+        // This prevents Cross-Site Request Forgery (CSRF) attacks by using action-specific nonces
+        $nonce_key = $this->config->get('nonce_key');
+        
+        // Generate action-specific nonces
+        $nonces = [
+            'upload' => wp_create_nonce($this->config->get_nonce_action('upload')),
+            'edit' => wp_create_nonce($this->config->get_nonce_action('edit')),
+            'delete' => wp_create_nonce($this->config->get_nonce_action('delete')),
+            'bulk_edit' => wp_create_nonce($this->config->get_nonce_action('bulk_edit')),
+            'metadata_settings' => wp_create_nonce($this->config->get_nonce_action('metadata_settings')),
+        ];
+        
+        // Add localized script data to the core module
+        // This creates the bridge between PHP and JavaScript
+        wp_localize_script('document-manager-core', 'documentManager', array(
+            'ajaxurl' => admin_url('admin-ajax.php'),
+            'nonces' => $nonces,
             'isAdmin' => current_user_can('manage_options'),
             'messages' => $this->getLocalizedMessages()
         ));

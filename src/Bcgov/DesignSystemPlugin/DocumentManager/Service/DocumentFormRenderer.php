@@ -116,7 +116,7 @@ class DocumentFormRenderer {
                 </div>
                 <?php
                 // Security: Add WordPress nonce field to prevent CSRF attacks.
-                wp_nonce_field( 'document_upload_nonce', 'document_upload_nonce' );
+                wp_nonce_field( $this->config->get_nonce_action('upload'), 'security' );
                 ?>
             </form>
         </div>

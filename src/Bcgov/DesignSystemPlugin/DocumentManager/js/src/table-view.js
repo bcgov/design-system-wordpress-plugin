@@ -28,10 +28,9 @@
                 var $button = $(this);
                 var postId = $button.data('post-id');
                 
-                // Debug logging
+                // Debug logging (without logging the actual nonce value)
                 console.log('Delete button clicked');
                 console.log('Post ID:', postId);
-                console.log('Nonce:', documentManager.nonce);
                 
                 if (!confirm(documentManager.messages.deleteConfirm)) {
                     return;
@@ -43,7 +42,7 @@
                     data: {
                         action: 'delete_document',
                         post_id: postId,
-                        security: documentManager.nonce
+                        security: documentManager.nonces.delete
                     },
                     beforeSend: function() {
                         $button.prop('disabled', true);
