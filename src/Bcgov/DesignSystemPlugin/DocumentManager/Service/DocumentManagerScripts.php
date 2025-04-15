@@ -140,21 +140,6 @@ class DocumentManagerScripts {
         $style_version = file_exists($style_path) ? filemtime($style_path) : '1.0';
         wp_enqueue_style('document-manager-styles', $style_url, array(), $style_version);
         
-        // Security: Generate WordPress nonce for AJAX operations
-        // This prevents Cross-Site Request Forgery (CSRF) attacks
-        $nonce_key = $this->config->get('nonce_key');
-        $nonce = wp_create_nonce($nonce_key);
-        
-        // Add localized script data to the core module
-        // This creates the bridge between PHP and JavaScript
-        wp_localize_script('document-manager-core', 'documentManager', array(
-            'ajaxurl' => admin_url('admin-ajax.php'),
-            'nonce' => $nonce,
-            'isAdmin' => current_user_can('manage_options'),
-            'messages' => $this->getLocalizedMessages()
-        ));
-
-        // Security: Generate WordPress nonces for different AJAX operations
         // This prevents Cross-Site Request Forgery (CSRF) attacks by using action-specific nonces
         $nonce_key = $this->config->get('nonce_key');
         

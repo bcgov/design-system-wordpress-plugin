@@ -70,11 +70,11 @@ class AjaxHandler {
      * Handle document upload AJAX action
      *
      * Processes file uploads from the document upload form. This method:
-     * 1. Verifies the security nonce to prevent CSRF attacks
-     * 2. Checks user capabilities to ensure proper authorization
-     * 3. Processes uploaded files (supports multiple file upload)
-     * 4. Applies metadata to each uploaded document
-     * 5. Returns JSON response with success or error information
+     * 1. Verifies the security nonce to prevent CSRF attacks.
+     * 2. Checks user capabilities to ensure proper authorization.
+     * 3. Processes uploaded files (supports multiple file upload).
+     * 4. Applies metadata to each uploaded document.
+     * 5. Returns JSON response with success or error information.
      *
      * File processing is delegated to the DocumentUploader service.
      *
@@ -82,11 +82,11 @@ class AjaxHandler {
      */
     public function handle_document_upload() {
         try {
-            // Get the action-specific nonce key and verify it
-            $nonce_action = $this->config->get_nonce_action('upload');
+            // Get the action-specific nonce key and verify it..
+            $nonce_action   = $this->config->get_nonce_action( 'upload' );
             $received_nonce = isset( $_REQUEST['security'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['security'] ) ) : 'no_nonce';
 
-            // Add debug output via action hook, avoiding logging the actual nonce value
+            // Add debug output via action hook, avoiding logging the actual nonce value.
             do_action( 'bcgov_document_manager_log', 'Upload document request received', 'debug' );
             do_action( 'bcgov_document_manager_log', 'Nonce action used: ' . $nonce_action, 'debug' );
 
@@ -170,15 +170,15 @@ class AjaxHandler {
      */
     public function save_metadata_settings() {
         try {
-            // Get the action-specific nonce key and verify it
-            $nonce_action = $this->config->get_nonce_action('metadata_settings');
+            // Get the action-specific nonce key and verify it..
+            $nonce_action   = $this->config->get_nonce_action( 'metadata_settings' );
             $received_nonce = isset( $_REQUEST['security'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['security'] ) ) : 'no_nonce';
 
-            // Add debug output via action hook, avoiding logging the actual nonce value
+            // Add debug output via action hook, avoiding logging the actual nonce value.
             do_action( 'bcgov_document_manager_log', 'Metadata settings request received', 'debug' );
             do_action( 'bcgov_document_manager_log', 'Nonce action used: ' . $nonce_action, 'debug' );
 
-            // Security check: Verify nonce using action-specific value
+            // Security check: Verify nonce using action-specific value.
             if ( ! wp_verify_nonce( $received_nonce, $nonce_action ) ) {
                 wp_send_json_error( 'Invalid security token.', 403 );
                 return;
@@ -224,29 +224,29 @@ class AjaxHandler {
      */
     public function delete_metadata() {
         try {
-            // Get the action-specific nonce key and verify it
-            $nonce_action = $this->config->get_nonce_action('metadata_settings');
+            // Get the action-specific nonce key and verify it..
+            $nonce_action   = $this->config->get_nonce_action( 'metadata_settings' );
             $received_nonce = isset( $_REQUEST['security'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['security'] ) ) : 'no_nonce';
 
-            // Add debug output via action hook
-            do_action( 'bcgov_document_manager_log', 'Delete metadata field request received', 'debug' );
-            do_action( 'bcgov_document_manager_log', 'POST data: ' . wp_json_encode( $_POST ), 'debug' );
-            do_action( 'bcgov_document_manager_log', 'Nonce action used: ' . $nonce_action, 'debug' );
-
-            // Security check: Verify nonce using action-specific value
+            // Security check: Verify nonce using action-specific value.
             if ( ! wp_verify_nonce( $received_nonce, $nonce_action ) ) {
                 throw new \Exception( 'Security check failed. Please refresh the page and try again.' );
             }
 
-            // Check permissions
+            // Add debug output via action hook.
+            do_action( 'bcgov_document_manager_log', 'Delete metadata field request received', 'debug' );
+            do_action( 'bcgov_document_manager_log', 'POST data: ' . wp_json_encode( $_POST ), 'debug' );
+            do_action( 'bcgov_document_manager_log', 'Nonce action used: ' . $nonce_action, 'debug' );
+
+            // Check permissions.
             if ( ! current_user_can( 'manage_options' ) ) {
                 throw new \Exception( 'You do not have permission to delete metadata fields.' );
             }
 
-            // Get meta key
+            // Get meta key.
             $meta_key = isset( $_POST['meta_key'] ) ? sanitize_key( wp_unslash( $_POST['meta_key'] ) ) : '';
 
-            // Delegate to metadata manager service
+            // Delegate to metadata manager service.
             $this->metadata_manager->delete_column( $meta_key );
 
             wp_send_json_success(
@@ -282,16 +282,16 @@ class AjaxHandler {
      */
     public function save_document_metadata() {
         try {
-            // Get the action-specific nonce key and verify it
-            $nonce_action = $this->config->get_nonce_action('edit');
+            // Get the action-specific nonce key and verify it..
+            $nonce_action   = $this->config->get_nonce_action( 'edit' );
             $received_nonce = isset( $_REQUEST['security'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['security'] ) ) : 'no_nonce';
 
-            // Add debug output via action hook, avoiding logging the actual nonce value
+            // Add debug output via action hook, avoiding logging the actual nonce value.
             do_action( 'bcgov_document_manager_log', 'Document edit request received', 'debug' );
             do_action( 'bcgov_document_manager_log', 'POST data received (sanitized)', 'debug' );
             do_action( 'bcgov_document_manager_log', 'Nonce action used: ' . $nonce_action, 'debug' );
 
-            // Security check: Verify nonce using action-specific value
+            // Security check: Verify nonce using action-specific value.
             if ( ! wp_verify_nonce( $received_nonce, $nonce_action ) ) {
                 throw new \Exception( 'Security check failed. Please refresh the page and try again.' );
             }
@@ -364,15 +364,15 @@ class AjaxHandler {
      */
     public function delete_document() {
         try {
-            // Get the action-specific nonce key and verify it
-            $nonce_action = $this->config->get_nonce_action('delete');
+            // Get the action-specific nonce key and verify it..
+            $nonce_action   = $this->config->get_nonce_action( 'delete' );
             $received_nonce = isset( $_REQUEST['security'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['security'] ) ) : 'no_nonce';
 
-            // Add debug output via action hook, avoiding logging the actual nonce value
+            // Add debug output via action hook, avoiding logging the actual nonce value.
             do_action( 'bcgov_document_manager_log', 'Delete document request received', 'debug' );
             do_action( 'bcgov_document_manager_log', 'Nonce action used: ' . $nonce_action, 'debug' );
 
-            // Security check: Verify nonce using action-specific value
+            // Security check: Verify nonce using action-specific value.
             if ( ! wp_verify_nonce( $received_nonce, $nonce_action ) ) {
                 throw new \Exception( 'Security check failed. Please refresh the page and try again.' );
             }
@@ -428,15 +428,15 @@ class AjaxHandler {
      */
     public function save_bulk_edit() {
         try {
-            // Get the action-specific nonce key and verify it
-            $nonce_action = $this->config->get_nonce_action('bulk_edit');
+            // Get the action-specific nonce key and verify it..
+            $nonce_action   = $this->config->get_nonce_action( 'bulk_edit' );
             $received_nonce = isset( $_REQUEST['security'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['security'] ) ) : 'no_nonce';
 
-            // Add debug output via action hook, avoiding logging the actual nonce value
+            // Add debug output via action hook, avoiding logging the actual nonce value.
             do_action( 'bcgov_document_manager_log', 'Bulk edit request received', 'debug' );
             do_action( 'bcgov_document_manager_log', 'Nonce action used: ' . $nonce_action, 'debug' );
 
-            // Security check: Verify nonce using action-specific value
+            // Security check: Verify nonce using action-specific value.
             if ( ! wp_verify_nonce( $received_nonce, $nonce_action ) ) {
                 throw new \Exception( 'Security check failed. Please refresh the page and try again.' );
             }

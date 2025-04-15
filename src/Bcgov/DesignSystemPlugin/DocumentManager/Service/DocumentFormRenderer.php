@@ -116,7 +116,7 @@ class DocumentFormRenderer {
                 </div>
                 <?php
                 // Security: Add WordPress nonce field to prevent CSRF attacks.
-                wp_nonce_field( $this->config->get_nonce_action('upload'), 'security' );
+                wp_nonce_field( $this->config->get_nonce_action( 'upload' ), 'security' );
                 ?>
             </form>
         </div>
@@ -173,25 +173,14 @@ class DocumentFormRenderer {
                     </div>
 
                     <div class="form-section">
-                        <h3>Additional Information</h3>
-                        <?php foreach ( $custom_columns as $meta_key => $column ) : ?>
-                            <div class="custom-field">
-                                <label for="<?php echo esc_attr( $meta_key ); ?>"><?php echo esc_html( $column['label'] ); ?></label>
-                                <?php if ( 'select' === $column['type'] ) : ?>
-                                    <select name="meta[<?php echo esc_attr( $meta_key ); ?>]" id="<?php echo esc_attr( $meta_key ); ?>">
-                                        <option value="">Select <?php echo esc_html( $column['label'] ); ?></option>
-                                        <?php foreach ( $column['options'] as $option ) : ?>
-                                            <option value="<?php echo esc_attr( $option ); ?>"><?php echo esc_html( $option ); ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                <?php else : ?>
-                                    <input type="<?php echo esc_attr( $column['type'] ); ?>" 
-                                           name="meta[<?php echo esc_attr( $meta_key ); ?>]" 
-                                           id="<?php echo esc_attr( $meta_key ); ?>">
-                                <?php endif; ?>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
+    <h3>Additional Information</h3>
+		<?php foreach ( $custom_columns as $meta_key => $column ) : ?>
+        <div class="custom-field">
+            <label for="<?php echo esc_attr( $meta_key ); ?>"><?php echo esc_html( $column['label'] ); ?></label>
+            <input type="text" name="meta[<?php echo esc_attr( $meta_key ); ?>]" id="<?php echo esc_attr( $meta_key ); ?>">
+        </div>
+    <?php endforeach; ?>
+</div>
                     <button type="submit" class="button button-primary">Upload Documents</button>
                     <button type="button" class="button cancel-upload">Cancel</button>
                 </form>
@@ -268,23 +257,7 @@ class DocumentFormRenderer {
 							?>
                             <div class="custom-field">
                                 <label for="edit_<?php echo esc_attr( $meta_key ); ?>"><?php echo esc_html( $column['label'] ); ?></label>
-                                <?php if ( 'select' === $column['type'] ) : ?>
-                                    <select name="meta[<?php echo esc_attr( $meta_key ); ?>]" id="edit_<?php echo esc_attr( $meta_key ); ?>">
-                                        <option value="">Select <?php echo esc_html( $column['label'] ); ?></option>
-                                        <?php foreach ( $column['options'] as $option ) : ?>
-                                            <option value="<?php echo esc_attr( $option ); ?>"><?php echo esc_html( $option ); ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                <?php elseif ( 'date' === $column['type'] ) : ?>
-                                    <input type="date" name="meta[<?php echo esc_attr( $meta_key ); ?>]" id="edit_<?php echo esc_attr( $meta_key ); ?>">
-                                <?php elseif ( 'number' === $column['type'] ) : ?>
-                                    <input type="number" name="meta[<?php echo esc_attr( $meta_key ); ?>]" id="edit_<?php echo esc_attr( $meta_key ); ?>">
-                                <?php else : ?>
-                                    <input type="text" name="meta[<?php echo esc_attr( $meta_key ); ?>]" id="edit_<?php echo esc_attr( $meta_key ); ?>">
-                                <?php endif; ?>
-                                <?php if ( ! empty( $column['description'] ) ) : ?>
-                                    <p class="description"><?php echo esc_html( $column['description'] ); ?></p>
-                                <?php endif; ?>
+                                <input type="text" name="meta[<?php echo esc_attr( $meta_key ); ?>]" id="edit_<?php echo esc_attr( $meta_key ); ?>">
                             </div>
                         <?php endforeach; ?>
                     </div>
