@@ -44,7 +44,7 @@
                 
                 // Use FormData to easily collect all form fields
                 // This supports both text inputs and potential file uploads
-                var formData = new FormData(this);
+                const formData = new FormData(this);
                 
                 // Add required AJAX parameters
                 formData.append('action', 'save_metadata_settings');  // WordPress AJAX action

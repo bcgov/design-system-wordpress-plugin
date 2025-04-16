@@ -47,8 +47,8 @@
             $(document).on('click', '.delete-document', function(e) {
                 e.preventDefault();
                 
-                var $button = $(this);
-                var postId = $button.data('post-id');
+                const $button = $(this);
+                const postId = $button.data('post-id');
                 
                 // Show confirmation dialog before proceeding
                 // Uses the localized message from WordPress for consistency
@@ -106,11 +106,11 @@
          * @return {Array} Array of column objects with label and key properties
          */
         getCustomColumns: function() {
-            var columns = [];
+            const columns = [];
             
             // Iterate through table headers to find custom columns
             $('.wp-list-table thead th').each(function(index) {
-                var $th = $(this);
+                const $th = $(this);
                 
                 // Skip standard columns and only process custom metadata columns
                 // Standard columns: icon, title, description, file type, date, actions
@@ -236,7 +236,7 @@
          */
         updateField: function($row, fieldName, newValue) {
             // Find the table cell for this field
-            var $field = $row.find('[data-field="' + fieldName + '"]');
+            const $field = $row.find('[data-field="' + fieldName + '"]');
             
             // If no matching field, exit early
             if (!$field.length) {
@@ -244,76 +244,71 @@
             }
 
             // Update the view mode text with formatted value
-            var $viewMode = $field.find('.view-mode');
-            var displayValue = window.BCGOV.DocumentManager.utils.formatDisplayValue(newValue);
+            const $viewMode = $field.find('.view-mode');
+            const displayValue = window.BCGOV.DocumentManager.utils.formatDisplayValue(newValue);
             $viewMode.text(displayValue);
 
-            // Update the edit mode input value
-            var $editMode = $field.find('.edit-mode');
+            // Also update the edit mode value
+            const $editMode = $field.find('.edit-mode');
             $editMode.val(newValue);
-
-            // Ensure correct display mode (view mode visible, edit mode hidden)
-            $viewMode.show();
-            $editMode.hide();
         },
         
         /**
-         * Update multiple metadata fields for a table row
-         * Updates both the visible row and the stored metadata
+         * Update a document row's metadata fields
+         * Used after saving changes to update the display
          * 
          * @param {jQuery} $row - The table row jQuery object
-         * @param {Object} updates - Object containing field updates (key-value pairs)
-         * @return {Object} The new metadata object after updates
+         * @param {Object} updates - Object with field keys and new values
          */
         updateRowMetadata: function($row, updates) {
-            // Find the edit button which stores the full metadata
-            var $editButton = $row.find('.edit-metadata');
-            var currentMetadata = {};
+            // Get the edit button which has the metadata JSON
+            const $editButton = $row.find('.edit-metadata');
+            let currentMetadata = {};
             
-            // Get current metadata from the data attribute
+            // Get current metadata from the edit button if available
             try {
-                // Always get from attribute not jQuery.data() to avoid caching issues
                 currentMetadata = JSON.parse($editButton.attr('data-metadata') || '{}');
             } catch (e) {
-                console.error('Error parsing current metadata:', e);
-                currentMetadata = {};
+                console.error('Error parsing metadata:', e);
             }
-
-            // Merge current metadata with updates using object spread
-            var newMetadata = { ...currentMetadata, ...updates };
-
-            // Store updated metadata in the edit button's data attribute
+            
+            // Create updated metadata by merging the current and new values
+            const newMetadata = { ...currentMetadata, ...updates };
+            
+            // Update the button's metadata attribute for future edits
             $editButton.attr('data-metadata', JSON.stringify(newMetadata));
-
-            // Update all table cells to reflect the new metadata
-            Object.keys(newMetadata).forEach(function(key) {
-                var value = newMetadata[key];
-                var $field = $row.find('[data-field="' + key + '"]');
+            
+            // Update each field in the table row
+            Object.keys(updates).forEach(key => {
+                const value = newMetadata[key];
+                const $field = $row.find('[data-field="' + key + '"]');
                 
                 if ($field.length) {
-                    // Update the view mode display with formatted value
-                    $field.find('.view-mode').text(window.BCGOV.DocumentManager.utils.formatDisplayValue(value));
+                    // Update view mode with formatted value
+                    $field.find('.view-mode').text(
+                        window.BCGOV.DocumentManager.utils.formatDisplayValue(value)
+                    );
                     
-                    // Update the edit mode input value
-                    var $editMode = $field.find('.edit-mode');
+                    // Update edit mode with raw value
+                    const $editMode = $field.find('.edit-mode');
                     $editMode.val(value);
                 }
             });
-
-            return newMetadata;
         },
         
         /**
-         * Highlight a row that has been updated
-         * Provides visual feedback after a successful update
+         * Highlight a row that was just updated
+         * Provides visual feedback about changes
          * 
-         * @param {jQuery} $row - The table row jQuery object to highlight
+         * @param {jQuery} $row - The row to highlight
          */
         highlightUpdatedRow: function($row) {
-            // Temporarily change background color and animate back to normal
-            // This creates a subtle "flash" effect to show changes
-            $row.css('background-color', '#f7fcfe')  // Soft blue highlight
-                .animate({ backgroundColor: 'transparent' }, 2000);  // Fade back over 2 seconds
+            $row.addClass('updated');
+            
+            // Remove highlight after a delay
+            setTimeout(function() {
+                $row.removeClass('updated');
+            }, 3000);
         }
     };
     

@@ -18,11 +18,11 @@
     window.BCGOV.DocumentManager = window.BCGOV.DocumentManager || {};
     
     // Private module variables for state management and UI elements
-    var hasUnsavedChanges = false;  // Tracks if any fields have been modified
-    var $table;                    // The document table element
-    var $bulkEditBtn;              // The button to enter bulk edit mode
-    var $saveChangesBtn;           // The button to save changes
-    var $cancelBulkEditBtn;        // The button to cancel edit mode
+    let hasUnsavedChanges = false;  // Tracks if any fields have been modified
+    let $table;                    // The document table element
+    let $bulkEditBtn;              // The button to enter bulk edit mode
+    let $saveChangesBtn;           // The button to save changes
+    let $cancelBulkEditBtn;        // The button to cancel edit mode
     
     // Module definition with public methods
     window.BCGOV.DocumentManager.BulkEdit = {
@@ -138,28 +138,28 @@
          * Collects changes from the UI, submits to server, and updates the display
          */
         saveBulkEdits: function() {
-            var $saveButton = $('.save-bulk-edit');
-            var updates = {};  // Will hold all changes keyed by document ID
+            const $saveButton = $('.save-bulk-edit');
+            const updates = {};  // Will hold all changes keyed by document ID
             
             // Step 1: Collect all changes from the table rows
             $('.wp-list-table tbody tr').each(function() {
-                var $row = $(this);
-                var postId = $row.data('id');
-                var hasChanges = false;
-                var rowData = {
+                const $row = $(this);
+                const postId = $row.data('id');
+                let hasChanges = false;
+                const rowData = {
                     meta: {}  // Container for custom metadata field changes
                 };
 
                 // Check each editable field in the row for changes
                 $row.find('.editable').each(function() {
-                    var $field = $(this);
-                    var fieldName = $field.data('field');
-                    var $input = $field.find('.edit-mode');
-                    var $viewMode = $field.find('.view-mode');
+                    const $field = $(this);
+                    const fieldName = $field.data('field');
+                    const $input = $field.find('.edit-mode');
+                    const $viewMode = $field.find('.view-mode');
                     
                     // Get current values, handling the em-dash placeholder for empty values
-                    var newValue = $input.val().trim();
-                    var oldValue = $viewMode.text().trim() === '—' ? '' : $viewMode.text().trim();
+                    const newValue = $input.val().trim();
+                    const oldValue = $viewMode.text().trim() === '—' ? '' : $viewMode.text().trim();
 
                     // Only include fields that actually changed
                     if (newValue !== oldValue) {
@@ -207,8 +207,8 @@
                     if (response.success) {
                         // Step 4: Update the UI with saved values
                         Object.keys(updates).forEach(function(postId) {
-                            var data = updates[postId];
-                            var $row = $('tr[data-id="' + postId + '"]');
+                            const data = updates[postId];
+                            const $row = $('tr[data-id="' + postId + '"]');
                             
                             // Use the TableView module to update row display
                             if (typeof window.BCGOV.DocumentManager.TableView !== 'undefined') {

@@ -42,13 +42,13 @@
             $(document).on('click', '.edit-metadata', function(e) {
                 e.preventDefault();
                 
-                var $button = $(this);
-                var postId = $button.data('id');
+                const $button = $(this);
+                const postId = $button.data('id');
                 // Use attr() instead of data() to get the current values
                 // data() caches values, while attr() always reads from the DOM
-                var title = $button.attr('data-title');
-                var description = $button.attr('data-description');
-                var metadata = $button.attr('data-metadata');
+                const title = $button.attr('data-title');
+                const description = $button.attr('data-description');
+                let metadata = $button.attr('data-metadata');
                 
                 // Parse the metadata JSON string into an object
                 // Metadata comes from the button's data-metadata attribute
@@ -69,7 +69,7 @@
                 // These are dynamically generated based on the available metadata fields
                 if (metadata && typeof metadata === 'object') {
                     Object.keys(metadata).forEach(function(key) {
-                        var $field = $('#edit_' + key);
+                        const $field = $('#edit_' + key);
                         if ($field.length) {
                             $field.val(metadata[key] || '');
                         }
@@ -97,12 +97,12 @@
             $('#edit-document-form').on('submit', function(e) {
                 e.preventDefault();
                 
-                var $form = $(this);
-                var $submitButton = $form.find('button[type="submit"]');
-                var postId = $('#edit-post-id').val();
+                const $form = $(this);
+                const $submitButton = $form.find('button[type="submit"]');
+                const postId = $('#edit-post-id').val();
                 
                 // Collect all form data for submission
-                var formData = {
+                const formData = {
                     action: 'save_document_metadata',  // WordPress AJAX action
                     post_id: postId,                   // Document ID to update
                     security: documentManager.nonces.edit, // Security nonce
@@ -114,9 +114,9 @@
                 // Collect values from all custom metadata fields
                 // These have names in the format meta[field_name]
                 $form.find('[name^="meta["]').each(function() {
-                    var $field = $(this);
+                    const $field = $(this);
                     // Extract the field name from the input name attribute
-                    var key = $field.attr('name').match(/meta\[(.*?)\]/)[1];
+                    const key = $field.attr('name').match(/meta\[(.*?)\]/)[1];
                     formData.meta[key] = $field.val();
                 });
                 
@@ -131,7 +131,7 @@
                     success: function(response) {
                         if (response.success) {
                             // Find the document's row in the table
-                            var $row = $('tr[data-id="' + postId + '"]');
+                            const $row = $('tr[data-id="' + postId + '"]');
                             
                             // Update the table row with the new data
                             // This avoids having to reload the page
@@ -141,7 +141,7 @@
 
                                 // Update the edit button's data attributes with new values
                                 // This ensures future edits will have the updated data
-                                var $editButton = $row.find('.edit-metadata');
+                                const $editButton = $row.find('.edit-metadata');
                                 $editButton.attr({
                                     'data-title': formData.title,
                                     'data-description': formData.description

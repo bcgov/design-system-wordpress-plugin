@@ -98,7 +98,7 @@
                 $dropZone.removeClass('drag-over');
                 
                 // Get files from the drop event
-                var files = e.originalEvent.dataTransfer.files;
+                const files = e.originalEvent.dataTransfer.files;
                 window.BCGOV.DocumentManager.Upload.handleFiles(files);
             });
 
@@ -126,11 +126,11 @@
                 }
 
                 // Create FormData object to hold both files and metadata
-                var formData = new FormData();
+                const formData = new FormData();
                 
                 // Structure the metadata in the expected format
                 // This includes document description and custom metadata fields
-                var metadata = {
+                const metadata = {
                     description: $('#document_description').val(),
                     meta: {}
                 };
@@ -138,8 +138,8 @@
                 // Collect all custom metadata fields from the form
                 // These fields are named with the pattern meta[field_name]
                 $(this).find('[name^="meta["]').each(function() {
-                    var $field = $(this);
-                    var key = $field.attr('name').match(/meta\[(.*?)\]/)[1];
+                    const $field = $(this);
+                    const key = $field.attr('name').match(/meta\[(.*?)\]/)[1];
                     metadata.meta[key] = $field.val();
                 });
                 
@@ -149,7 +149,7 @@
                 
                 // Add all selected files to the FormData
                 // This supports multiple file uploads in one request
-                for (var i = 0; i < selectedFiles.length; i++) {
+                for (let i = 0; i < selectedFiles.length; i++) {
                     formData.append('document_file[]', selectedFiles[i]);
                 }
                 
@@ -163,7 +163,7 @@
             
             // Handle modal close via close button or cancel button
             $(document).on('click', '.close-modal, .cancel-upload', function() {
-                var $modal = $(this).closest('.metadata-modal');
+                const $modal = $(this).closest('.metadata-modal');
                 $modal.hide();
                 if ($modal.is('#upload-metadata-modal')) {
                     // Reset file selection when closing the upload modal
@@ -195,7 +195,7 @@
          * @return {boolean} True if all files are valid, false otherwise
          */
         validateFiles: function(files) {
-            for (var i = 0; i < files.length; i++) {
+            for (let i = 0; i < files.length; i++) {
                 if (files[i].type !== 'application/pdf') {
                     window.BCGOV.DocumentManager.utils.showNotification('Only PDF files are allowed.', 'error');
                     return false;
@@ -312,8 +312,8 @@
             }
 
             // Create a list of selected filenames
-            var fileList = $('<ul class="selected-files-list"></ul>');
-            for (var i = 0; i < files.length; i++) {
+            const fileList = $('<ul class="selected-files-list"></ul>');
+            for (let i = 0; i < files.length; i++) {
                 fileList.append($('<li></li>').text(files[i].name));
             }
 
@@ -360,8 +360,8 @@
                 // Handle successful upload
                 success: function(response) {
                     if (response.success) {
-                        var $documentSection = $('.document-library-section');
-                        var noDocumentsMessage = $documentSection.find('p:contains("No documents found")');
+                        const $documentSection = $('.document-library-section');
+                        const noDocumentsMessage = $documentSection.find('p:contains("No documents found")');
                         
                         // Special case: if this is the first document, reload page
                         // This ensures we get the table structure
@@ -372,14 +372,14 @@
                         }
                         
                         // Update the existing table with new rows
-                        var $tbody = $('.wp-list-table tbody');
+                        const $tbody = $('.wp-list-table tbody');
                         
                         // Add each uploaded document to the table
                         response.data.forEach(function(document) {
                             if (typeof window.BCGOV.DocumentManager.TableView !== 'undefined') {
                                 // Create and insert new row using TableView helper
-                                var newRowHtml = window.BCGOV.DocumentManager.TableView.createDocumentRow(document);
-                                var $newRow = $(newRowHtml);
+                                const newRowHtml = window.BCGOV.DocumentManager.TableView.createDocumentRow(document);
+                                const $newRow = $(newRowHtml);
                                 
                                 // Insert at top of table for visibility
                                 $tbody.prepend($newRow);
@@ -389,34 +389,59 @@
                             }
                         });
 
-                        // Reset UI after successful upload
-                        $('#upload-metadata-modal').hide();
-                        $('#upload-metadata-form')[0].reset();
-                        $fileInput.val('');
-                        $fileNameDisplay.empty();
-                        selectedFiles = null;
-
-                        // Show success notification
-                        window.BCGOV.DocumentManager.utils.showNotification('Documents uploaded successfully.');
+                        // Show success message and reset form
+                        const successMessage = response.data.length > 1 
+                            ? 'Documents successfully uploaded' 
+                            : 'Document successfully uploaded';
+                        window.BCGOV.DocumentManager.utils.showNotification(successMessage, 'success');
+                        
+                        // Reset form and modals
+                        window.BCGOV.DocumentManager.Upload.resetUploadForm();
                     } else {
-                        // Show error message from server
-                        window.BCGOV.DocumentManager.utils.showNotification(response.data.message || 'Error uploading documents.', 'error');
+                        // Handle server-side validation errors
+                        window.BCGOV.DocumentManager.utils.showNotification(response.data || 'Upload failed', 'error');
                     }
                 },
-                
-                // Handle AJAX errors (network issues, server errors)
+                // Handle AJAX errors
                 error: function(xhr, status, error) {
-                    console.error('Upload error:', {xhr, status, error});
-                    window.BCGOV.DocumentManager.utils.showNotification('Error: ' + error, 'error');
+                    let errorMessage = 'Upload failed';
+                    
+                    // Try to parse error response if available
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response && response.data) {
+                            errorMessage = response.data;
+                        }
+                    } catch (e) {
+                        console.error('Error parsing server response:', e);
+                    }
+                    
+                    window.BCGOV.DocumentManager.utils.showNotification(errorMessage, 'error');
                 },
-                
-                // Always restore the button state when complete
+                // Always restore button state regardless of outcome
                 complete: function() {
                     $('#upload-metadata-form button[type="submit"]')
                         .prop('disabled', false)
-                        .text('Upload Documents');
+                        .text('Upload');
                 }
             });
+        },
+        
+        resetUploadForm: function() {
+            // Hide modal
+            $('#upload-metadata-modal').hide();
+            
+            // Reset form fields
+            $('#upload-metadata-form')[0].reset();
+            
+            // Clear file input and display
+            const $fileInput = $('#document-file');
+            const $fileNameDisplay = $('#selected-files');
+            $fileInput.val('');
+            $fileNameDisplay.empty();
+            
+            // Reset selected files tracking
+            selectedFiles = null;
         }
     };
     

@@ -111,8 +111,8 @@
             $('.notice').remove();
             
             // Create notification with WordPress admin styling
-            var notificationClass = 'notice notice-' + type + ' is-dismissible';
-            var notification = $('<div class="' + notificationClass + '"><p>' + message + '</p></div>');
+            const notificationClass = 'notice notice-' + type + ' is-dismissible';
+            const notification = $('<div class="' + notificationClass + '"><p>' + message + '</p></div>');
             
             // Insert notification after the page title
             $('.wrap > h1').after(notification);
