@@ -115,8 +115,8 @@ class AdminUIManager {
      * Register all admin scripts and styles
      */
     private function register_admin_scripts(): void {
-        $plugin_url = plugin_dir_url(dirname(dirname(dirname(__DIR__))));
-        $version = filemtime(dirname(dirname(__DIR__)) . '/DocumentRepository/assets/document-repository.js');
+        $plugin_url = plugin_dir_url(dirname(dirname(dirname(dirname(__DIR__)))));
+        $version = filemtime(dirname(dirname(__DIR__)) . '/DocumentRepository/build/document-repository.js');
         
         // Use development versions of React for better error messages
         wp_deregister_script('react');
@@ -139,7 +139,7 @@ class AdminUIManager {
         // Main app bundle
         wp_register_script(
             'document-repository-app',
-            $plugin_url . 'Bcgov/DesignSystemPlugin/DocumentRepository/assets/document-repository.js',
+            $plugin_url . 'src/Bcgov/DesignSystemPlugin/DocumentRepository/build/document-repository.js',
             ['wp-element', 'wp-api-fetch', 'wp-components', 'wp-i18n', 'react', 'react-dom'],
             $version,
             true
@@ -148,7 +148,7 @@ class AdminUIManager {
         // Metadata settings app bundle
         wp_register_script(
             'document-repository-metadata-app',
-            $plugin_url . 'Bcgov/DesignSystemPlugin/DocumentRepository/assets/metadata-settings.js',
+            $plugin_url . 'src/Bcgov/DesignSystemPlugin/DocumentRepository/build/metadata-settings.js',
             ['wp-element', 'wp-api-fetch', 'wp-components', 'wp-i18n', 'react', 'react-dom'],
             $version,
             true
@@ -157,7 +157,7 @@ class AdminUIManager {
         // Styles
         wp_register_style(
             $this->config->get('css_handle'),
-            $plugin_url . 'Bcgov/DesignSystemPlugin/DocumentRepository/assets/document-repository.css',
+            $plugin_url . 'src/Bcgov/DesignSystemPlugin/DocumentRepository/build/document-repository.css',
             ['wp-components'],
             $version
         );

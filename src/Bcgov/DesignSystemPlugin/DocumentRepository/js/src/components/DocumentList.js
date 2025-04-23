@@ -163,6 +163,30 @@ const DocumentList = ({
         setDeleteDocument(null);
     };
 
+    // Handle bulk document deletion
+    const handleBulkDelete = async () => {
+        try {
+            setIsMultiDeleting(true);
+            
+            // Delete each selected document
+            for (const documentId of selectedDocuments) {
+                await onDelete(documentId);
+            }
+            
+            // Close the confirmation modal
+            setBulkDeleteConfirmOpen(false);
+            
+            // Clear selected documents
+            onSelectAll(false);
+            
+        } catch (error) {
+            console.error('Error deleting documents:', error);
+            setError(__('Failed to delete some documents.', 'bcgov-design-system'));
+        } finally {
+            setIsMultiDeleting(false);
+        }
+    };
+
     // Handle drag events
     const handleDragEnter = (e) => {
         e.preventDefault();
@@ -919,6 +943,19 @@ const DocumentList = ({
                                     selectedDocuments.length
                                 )}
                             </p>
+                            <div className="documents-to-delete">
+                                <h4>{__('Documents to be deleted:', 'bcgov-design-system')}</h4>
+                                <ul>
+                                    {localDocuments
+                                        .filter(doc => selectedDocuments.includes(doc.id))
+                                        .map(doc => (
+                                            <li key={doc.id}>
+                                                {doc.title || doc.filename}
+                                            </li>
+                                        ))
+                                    }
+                                </ul>
+                            </div>
                             <p className="delete-warning">
                                 {__('This action cannot be undone.', 'bcgov-design-system')}
                             </p>

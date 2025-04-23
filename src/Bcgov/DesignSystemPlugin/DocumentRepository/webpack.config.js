@@ -6,12 +6,16 @@ module.exports = (env, argv) => {
     
     return {
         entry: {
-            'document-repository': './js/src/index.js',
+            'document-repository': [
+                './js/src/index.js',
+                './css/document-repository.css'
+            ],
             'metadata-settings': './js/src/metadata-index.js',
         },
         output: {
             filename: '[name].js',
-            path: path.resolve(__dirname, 'assets'),
+            path: path.resolve(__dirname, 'build'),
+            clean: true,
         },
         externals: {
             '@wordpress/element': 'wp.element',
