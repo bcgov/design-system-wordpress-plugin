@@ -125,6 +125,15 @@ class RestApiController {
             ],
         ]);
         
+        // Add cleanup endpoint for metadata fields
+        register_rest_route($namespace, '/metadata-fields/(?P<id>[a-z0-9_]+)/cleanup', [
+            [
+                'methods' => 'DELETE',
+                'callback' => [$this, 'cleanup_metadata_field'],
+                'permission_callback' => [$this, 'check_edit_permission'],
+            ],
+        ]);
+        
         // Categories and tags endpoints
         register_rest_route($namespace, '/categories', [
             [
@@ -577,6 +586,40 @@ class RestApiController {
         }
         
         return new WP_REST_Response(null, 204);
+    }
+    
+    /**
+     * Clean up a metadata field from all documents
+     * 
+     * @param WP_REST_Request $request The request object
+     * @return WP_REST_Response|WP_Error The response object or error
+     */
+    public function cleanup_metadata_field(WP_REST_Request $request) {
+        $field_id = $request->get_param('id');
+        
+        // Get all documents
+        $args = [
+            'post_type' => $this->config->get_post_type(),
+            'posts_per_page' => -1,
+            'post_status' => 'any',
+            'fields' => 'ids',
+        ];
+        
+        $query = new \WP_Query($args);
+        $document_ids = $query->posts;
+        
+        // Delete the metadata from each document
+        foreach ($document_ids as $doc_id) {
+            delete_post_meta($doc_id, $field_id);
+        }
+        
+        return new WP_REST_Response([
+            'message' => sprintf(
+                __('Metadata field "%s" has been removed from %d documents', 'bcgov-design-system'),
+                $field_id,
+                count($document_ids)
+            )
+        ], 200);
     }
     
     /**

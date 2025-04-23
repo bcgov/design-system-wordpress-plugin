@@ -116,48 +116,30 @@ class AdminUIManager {
      */
     private function register_admin_scripts(): void {
         $plugin_url = plugin_dir_url(dirname(dirname(dirname(__DIR__))));
-        $version = filemtime(dirname(dirname(__DIR__)) . '/DocumentRepository/assets/document-repository.js');
+        // Get version from file modification time
+        $version = filemtime(dirname(dirname(__DIR__)) . '/DocumentRepository/build/document-repository.js');
         
-        // Use development versions of React for better error messages
-        wp_deregister_script('react');
-        wp_deregister_script('react-dom');
-        
+        // Register scripts
         wp_register_script(
-            'react',
-            'https://unpkg.com/react@17.0.1/umd/react.development.js',
-            array(),
-            '17.0.1'
-        );
-        
-        wp_register_script(
-            'react-dom',
-            'https://unpkg.com/react-dom@17.0.1/umd/react-dom.development.js',
-            array('react'),
-            '17.0.1'
-        );
-        
-        // Main app bundle
-        wp_register_script(
-            'document-repository-app',
-            $plugin_url . 'Bcgov/DesignSystemPlugin/DocumentRepository/assets/document-repository.js',
-            ['wp-element', 'wp-api-fetch', 'wp-components', 'wp-i18n', 'react', 'react-dom'],
+            'document-repository',
+            $plugin_url . 'Bcgov/DesignSystemPlugin/DocumentRepository/build/document-repository.js',
+            ['wp-element', 'wp-components', 'wp-api-fetch', 'wp-i18n', 'lodash'],
             $version,
             true
         );
         
-        // Metadata settings app bundle
         wp_register_script(
-            'document-repository-metadata-app',
-            $plugin_url . 'Bcgov/DesignSystemPlugin/DocumentRepository/assets/metadata-settings.js',
-            ['wp-element', 'wp-api-fetch', 'wp-components', 'wp-i18n', 'react', 'react-dom'],
+            'document-repository-metadata-settings',
+            $plugin_url . 'Bcgov/DesignSystemPlugin/DocumentRepository/build/metadata-settings.js',
+            ['wp-element', 'wp-components', 'wp-api-fetch', 'wp-i18n', 'lodash'],
             $version,
             true
         );
         
-        // Styles
+        // Register styles
         wp_register_style(
-            $this->config->get('css_handle'),
-            $plugin_url . 'Bcgov/DesignSystemPlugin/DocumentRepository/assets/document-repository.css',
+            'document-repository',
+            $plugin_url . 'Bcgov/DesignSystemPlugin/DocumentRepository/build/document-repository.css',
             ['wp-components'],
             $version
         );
@@ -168,7 +150,7 @@ class AdminUIManager {
      * 
      * @param string $hook Current admin page hook
      */
-    private function localize_scripts(string $hook): void {
+    public function localize_scripts(string $hook): void {
         $data = [
             'apiRoot' => esc_url_raw(rest_url()),
             'apiNamespace' => $this->config->get_api_namespace(),

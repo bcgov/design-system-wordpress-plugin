@@ -18,6 +18,7 @@ import {
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
+import { format } from 'date-fns';
 
 // Components
 import DocumentDetails from './DocumentDetails';
@@ -32,12 +33,10 @@ const { apiNamespace } = window.documentRepositorySettings;
  * @return {string} Formatted size
  */
 const formatFileSize = (bytes) => {
-    if (!bytes) return '0 Bytes';
-    
+    if (bytes === 0) return '0 Bytes';
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
 
@@ -138,10 +137,12 @@ const DocumentList = ({
     const [isMultiDeleting, setIsMultiDeleting] = useState(false);
     const [editingMetadata, setEditingMetadata] = useState(null);
     const [editedMetadataValues, setEditedMetadataValues] = useState({});
+    const [metadataErrors, setMetadataErrors] = useState({});
     const [isSavingMetadata, setIsSavingMetadata] = useState(false);
     const [isSpreadsheetMode, setIsSpreadsheetMode] = useState(false);
     const [bulkEditedMetadata, setBulkEditedMetadata] = useState({});
     const [isSavingBulk, setIsSavingBulk] = useState(false);
+    const [notice, setNotice] = useState(null);
 
     // Ref for the file input
     const fileInputRef = useRef(null);
@@ -417,9 +418,6 @@ const DocumentList = ({
                             {__('Type', 'bcgov-design-system')}
                         </div>
                         <div className="document-table-cell header" role="columnheader">
-                            {__('Modified', 'bcgov-design-system')}
-                        </div>
-                        <div className="document-table-cell header" role="columnheader">
                             {__('Actions', 'bcgov-design-system')}
                         </div>
                     </div>
@@ -490,11 +488,6 @@ const DocumentList = ({
                                 <div className="document-table-cell" role="cell">
                                     {document.metadata && document.metadata.document_file_type ? 
                                         document.metadata.document_file_type : '—'}
-                                </div>
-                                <div className="document-table-cell" role="cell">
-                                    {document.metadata && document.metadata.modified_date ? 
-                                        formatDate(document.metadata.modified_date) : 
-                                        formatDate(document.modified)}
                                 </div>
                                 <div className="document-table-cell actions" role="cell" onClick={(e) => e.stopPropagation()}>
                                     {!isSpreadsheetMode && (
@@ -630,57 +623,74 @@ const DocumentList = ({
     
     // Handle metadata edit
     const handleEditMetadata = (document) => {
-        setEditingMetadata(document);
-        setEditedMetadataValues(document.metadata || {});
-        setError(null);
+        const documentToEdit = {
+            ...document,
+            upload_date: document.date || document.upload_date || document.metadata?.upload_date
+        };
+        setEditingMetadata(documentToEdit);
+        // Initialize edited values with current metadata
+        const initialValues = {};
+        metadataFields.forEach(field => {
+            initialValues[field.id] = document.metadata?.[field.id] || '';
+        });
+        setEditedMetadataValues(initialValues);
+        setMetadataErrors({});
     };
 
     // Handle metadata change
-    const handleMetadataChange = (key, value) => {
+    const handleMetadataChange = (fieldId, value) => {
         setEditedMetadataValues(prev => ({
             ...prev,
-            [key]: value
+            [fieldId]: value
+        }));
+        // Clear error for this field when value changes
+        setMetadataErrors(prev => ({
+            ...prev,
+            [fieldId]: ''
         }));
     };
 
     // Handle metadata save
-    const handleSaveMetadata = async () => {
-        if (!editingMetadata) return;
-        
+    const handleSaveMetadata = async (e) => {
+        e.preventDefault();
         setIsSavingMetadata(true);
-        setError(null);
         
         try {
             const response = await apiFetch({
                 path: `/${apiNamespace}/documents/${editingMetadata.id}/metadata`,
                 method: 'POST',
-                data: editedMetadataValues,
-                headers: {
-                    'Content-Type': 'application/json',
-                }
+                data: editedMetadataValues
             });
-            
-            // Update the document in the local state with the response data
-            const updatedDocuments = localDocuments.map(doc => 
+
+            // Update the document in the list
+            setLocalDocuments(prev => prev.map(doc => 
                 doc.id === editingMetadata.id 
-                    ? { ...doc, metadata: response.metadata }
+                    ? { ...doc, metadata: { ...doc.metadata, ...editedMetadataValues } }
                     : doc
-            );
+            ));
             
-            // Update local state
-            setLocalDocuments(updatedDocuments);
-            
-            // Notify parent component if callback exists
-            if (typeof onDocumentsUpdate === 'function') {
-                onDocumentsUpdate(updatedDocuments);
-            }
-            
-            // Reset editing state
+            // Close modal and reset state
             setEditingMetadata(null);
             setEditedMetadataValues({});
+            setMetadataErrors({});
+            
+            setNotice({
+                status: 'success',
+                message: __('Document metadata updated successfully', 'bcgov-design-system')
+            });
+            
+            // Clear notice after 3 seconds
+            setTimeout(() => setNotice(null), 3000);
         } catch (error) {
-            console.error('Error saving metadata:', error);
-            setError(error.message || 'Failed to save metadata');
+            console.error('Error updating metadata:', error);
+            if (error.data?.errors) {
+                setMetadataErrors(error.data.errors);
+            } else {
+                setNotice({
+                    status: 'error',
+                    message: error.message || __('Failed to update metadata', 'bcgov-design-system')
+                });
+            }
         } finally {
             setIsSavingMetadata(false);
         }
@@ -760,6 +770,16 @@ const DocumentList = ({
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
             >
+                {notice && (
+                    <Notice 
+                        status={notice.status}
+                        isDismissible={true}
+                        onRemove={() => setNotice(null)}
+                    >
+                        {notice.message}
+                    </Notice>
+                )}
+                
                 {/* Hidden file input */}
                 <input
                     type="file"
@@ -926,87 +946,99 @@ const DocumentList = ({
                     </Modal>
                 )}
 
-                {/* Metadata edit modal */}
-                        {editingMetadata && (
-                            <Modal
-                                title={__('Edit Document Metadata', 'bcgov-design-system')}
-                                onRequestClose={() => {
-                                    setEditingMetadata(null);
-                                    setEditedMetadataValues({});
-                                }}
-                            >
-                                <div className="metadata-edit-form">
-                                    {error && (
-                                        <Notice status="error" isDismissible={false}>
-                                            {error}
-                                        </Notice>
-                                    )}
+                {/* Metadata Edit Modal */}
+                {editingMetadata && (
+                    <Modal
+                        title={__('Edit Document Metadata', 'bcgov-design-system')}
+                        onRequestClose={() => {
+                            setEditingMetadata(null);
+                            setEditedMetadataValues({});
+                            setMetadataErrors({});
+                        }}
+                        className="metadata-edit-modal"
+                    >
+                        <form onSubmit={handleSaveMetadata} className="metadata-edit-form">
+                            <div className="editable-metadata">
+                                <h3>{__('Custom Metadata', 'bcgov-design-system')}</h3>
+                                {metadataFields.map(field => {
+                                    const error = metadataErrors[field.id];
                                     
-                                    {metadataFields.map(field => (
+                                    return (
                                         <div key={field.id} className="metadata-field">
-                                            <label htmlFor={`metadata-${field.id}`}>{field.label}</label>
                                             {field.type === 'select' ? (
                                                 <SelectControl
-                                                    id={`metadata-${field.id}`}
+                                                    label={field.label}
                                                     value={editedMetadataValues[field.id] || ''}
-                                                    options={[
-                                                        { label: __('Select...', 'bcgov-design-system'), value: '' },
-                                                        ...(field.options || []).map(option => ({
-                                                            label: option,
-                                                            value: option
-                                                        }))
-                                                    ]}
-                                                    onChange={value => handleMetadataChange(field.id, value)}
-                                                />
-                                            ) : field.type === 'date' ? (
-                                                <TextControl
-                                                    id={`metadata-${field.id}`}
-                                                    type="date"
-                                                    value={editedMetadataValues[field.id] || ''}
-                                                    onChange={value => handleMetadataChange(field.id, value)}
-                                                />
-                                            ) : field.type === 'textarea' ? (
-                                                <TextareaControl
-                                                    id={`metadata-${field.id}`}
-                                                    value={editedMetadataValues[field.id] || ''}
+                                                    options={field.options.map(opt => ({
+                                                        label: opt,
+                                                        value: opt
+                                                    }))}
                                                     onChange={value => handleMetadataChange(field.id, value)}
                                                 />
                                             ) : (
                                                 <TextControl
-                                                    id={`metadata-${field.id}`}
+                                                    label={field.label}
                                                     value={editedMetadataValues[field.id] || ''}
                                                     onChange={value => handleMetadataChange(field.id, value)}
+                                                    type={field.type === 'date' ? 'date' : 'text'}
                                                 />
                                             )}
+                                            {error && <div className="metadata-error">{error}</div>}
                                         </div>
-                                    ))}
-                        
-                                    <div className="modal-actions">
-                                        <Button
-                                            isPrimary
-                                            onClick={handleSaveMetadata}
-                                            disabled={isSavingMetadata}
-                                        >
-                                            {isSavingMetadata ? (
-                                                <>
-                                                    <Spinner />
-                                                    {__('Saving...', 'bcgov-design-system')}
-                                                </>
-                                            ) : __('Save Changes', 'bcgov-design-system')}
-                                        </Button>
-                                        <Button
-                                            isSecondary
-                                            onClick={() => {
-                                                setEditingMetadata(null);
-                                                setEditedMetadataValues({});
-                                            }}
-                                            disabled={isSavingMetadata}
-                                        >
-                                            {__('Cancel', 'bcgov-design-system')}
-                                        </Button>
+                                    );
+                                })}
+                            </div>
+                            
+                            <div className="non-editable-metadata">
+                                <h3>{__('Document Information', 'bcgov-design-system')}</h3>
+                                <div className="metadata-field">
+                                    <label>{__('Filename', 'bcgov-design-system')}</label>
+                                    <div className="field-value">
+                                        {(editingMetadata.metadata?.document_file_name || 
+                                         editingMetadata.filename || 
+                                         editingMetadata.title || 
+                                         '').replace(/\.pdf$/i, '') || 
+                                         __('Not available', 'bcgov-design-system')}
                                     </div>
                                 </div>
-                            </Modal>
+                                <div className="metadata-field">
+                                    <label>{__('File Type', 'bcgov-design-system')}</label>
+                                    <div className="field-value">
+                                        {editingMetadata.metadata?.document_file_type || 'PDF'}
+                                    </div>
+                                </div>
+                                <div className="metadata-field">
+                                    <label>{__('File Size', 'bcgov-design-system')}</label>
+                                    <div className="field-value">
+                                        {editingMetadata.metadata?.document_file_size ? 
+                                            formatFileSize(parseInt(editingMetadata.metadata.document_file_size)) : 
+                                            __('Not available', 'bcgov-design-system')}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="modal-actions">
+                                <Button
+                                    variant="secondary"
+                                    onClick={() => {
+                                        setEditingMetadata(null);
+                                        setEditedMetadataValues({});
+                                        setMetadataErrors({});
+                                    }}
+                                >
+                                    {__('Cancel', 'bcgov-design-system')}
+                                </Button>
+                                <Button
+                                    variant="primary"
+                                    type="submit"
+                                    isBusy={isSavingMetadata}
+                                    disabled={isSavingMetadata}
+                                >
+                                    {__('Save Changes', 'bcgov-design-system')}
+                                </Button>
+                            </div>
+                        </form>
+                    </Modal>
                 )}
             </div>
         </ErrorBoundary>

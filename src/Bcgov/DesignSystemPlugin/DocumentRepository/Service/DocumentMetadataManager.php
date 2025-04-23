@@ -20,6 +20,9 @@ class DocumentMetadataManager {
      */
     private RepositoryConfig $config;
     
+    private const CACHE_KEY = 'document_repository_metadata_fields';
+    private const CACHE_EXPIRATION = 3600; // 1 hour
+    
     /**
      * Constructor
      * 
@@ -30,13 +33,23 @@ class DocumentMetadataManager {
     }
     
     /**
-     * Get document custom metadata fields
+     * Get metadata fields configuration
      * 
      * @return array Metadata field definitions
      */
     public function get_metadata_fields(): array {
-        $fields = get_option('document_repository_metadata_fields', []);
-        return apply_filters('document_repository_metadata_fields', $fields);
+        // Try to get from cache first
+        $cached_fields = wp_cache_get(self::CACHE_KEY);
+        if (false !== $cached_fields) {
+            return $cached_fields;
+        }
+
+        $fields = get_option('document_repository_metadata_fields', $this->get_default_metadata_fields());
+        
+        // Cache the result
+        wp_cache_set(self::CACHE_KEY, $fields, '', self::CACHE_EXPIRATION);
+        
+        return $fields;
     }
     
     /**
@@ -44,13 +57,12 @@ class DocumentMetadataManager {
      * 
      * @return array Default metadata field definitions
      */
-    private function get_default_metadata_fields(): array {
+    public function get_default_metadata_fields(): array {
         return [
             [
                 'id' => 'document_description',
                 'label' => 'Description',
                 'type' => 'textarea',
-                'required' => false,
                 'order' => 0,
                 'filterable' => true,
             ],
@@ -58,7 +70,6 @@ class DocumentMetadataManager {
                 'id' => 'document_version',
                 'label' => 'Version',
                 'type' => 'text',
-                'required' => false,
                 'order' => 1,
                 'filterable' => true,
             ],
@@ -72,11 +83,38 @@ class DocumentMetadataManager {
                     'approved' => 'Approved',
                     'archived' => 'Archived'
                 ],
-                'required' => true,
                 'order' => 2,
                 'filterable' => true,
             ],
         ];
+    }
+    
+    private function validate_field(array $field): array {
+        $errors = [];
+        
+        // Required fields
+        if (empty($field['id'])) {
+            $errors[] = __('Field ID is required', 'bcgov-design-system');
+        }
+        if (empty($field['label'])) {
+            $errors[] = __('Field label is required', 'bcgov-design-system');
+        }
+        if (empty($field['type'])) {
+            $errors[] = __('Field type is required', 'bcgov-design-system');
+        }
+        
+        // Validate type
+        $valid_types = ['text', 'select', 'date'];
+        if (!in_array($field['type'], $valid_types)) {
+            $errors[] = __('Invalid field type', 'bcgov-design-system');
+        }
+        
+        // Validate select options
+        if ($field['type'] === 'select' && empty($field['options'])) {
+            $errors[] = __('Select fields require at least one option', 'bcgov-design-system');
+        }
+        
+        return $errors;
     }
     
     /**
@@ -86,12 +124,21 @@ class DocumentMetadataManager {
      * @return bool Whether the save was successful
      */
     public function save_metadata_fields(array $fields): bool {
-        // Validate fields structure
-        foreach ($fields as $field) {
-            if (!isset($field['id']) || !isset($field['label']) || !isset($field['type'])) {
-                $this->log('Invalid metadata field structure: ' . wp_json_encode($field), 'error');
-                return false;
+        // Validate all fields
+        $all_errors = [];
+        foreach ($fields as $index => $field) {
+            $errors = $this->validate_field($field);
+            if (!empty($errors)) {
+                $all_errors[$index] = $errors;
             }
+        }
+        
+        if (!empty($all_errors)) {
+            return new WP_Error(
+                'validation_failed',
+                __('Field validation failed', 'bcgov-design-system'),
+                ['errors' => $all_errors]
+            );
         }
         
         // Sort fields by order
@@ -103,7 +150,7 @@ class DocumentMetadataManager {
         $result = update_option('document_repository_metadata_fields', $fields);
         
         // Clear cache
-        $this->clear_cache(['columns']);
+        wp_cache_delete(self::CACHE_KEY);
         
         return $result;
     }
