@@ -116,30 +116,48 @@ class AdminUIManager {
      */
     private function register_admin_scripts(): void {
         $plugin_url = plugin_dir_url(dirname(dirname(dirname(__DIR__))));
-        // Get version from file modification time
-        $version = filemtime(dirname(dirname(__DIR__)) . '/DocumentRepository/build/document-repository.js');
+        $version = filemtime(dirname(dirname(__DIR__)) . '/DocumentRepository/assets/document-repository.js');
         
-        // Register scripts
+        // Use development versions of React for better error messages
+        wp_deregister_script('react');
+        wp_deregister_script('react-dom');
+        
         wp_register_script(
-            'document-repository',
-            $plugin_url . 'Bcgov/DesignSystemPlugin/DocumentRepository/build/document-repository.js',
-            ['wp-element', 'wp-components', 'wp-api-fetch', 'wp-i18n', 'lodash'],
+            'react',
+            'https://unpkg.com/react@17.0.1/umd/react.development.js',
+            array(),
+            '17.0.1'
+        );
+        
+        wp_register_script(
+            'react-dom',
+            'https://unpkg.com/react-dom@17.0.1/umd/react-dom.development.js',
+            array('react'),
+            '17.0.1'
+        );
+        
+        // Main app bundle
+        wp_register_script(
+            'document-repository-app',
+            $plugin_url . 'Bcgov/DesignSystemPlugin/DocumentRepository/assets/document-repository.js',
+            ['wp-element', 'wp-api-fetch', 'wp-components', 'wp-i18n', 'react', 'react-dom'],
             $version,
             true
         );
         
+        // Metadata settings app bundle
         wp_register_script(
-            'document-repository-metadata-settings',
-            $plugin_url . 'Bcgov/DesignSystemPlugin/DocumentRepository/build/metadata-settings.js',
-            ['wp-element', 'wp-components', 'wp-api-fetch', 'wp-i18n', 'lodash'],
+            'document-repository-metadata-app',
+            $plugin_url . 'Bcgov/DesignSystemPlugin/DocumentRepository/assets/metadata-settings.js',
+            ['wp-element', 'wp-api-fetch', 'wp-components', 'wp-i18n', 'react', 'react-dom'],
             $version,
             true
         );
         
-        // Register styles
+        // Styles
         wp_register_style(
-            'document-repository',
-            $plugin_url . 'Bcgov/DesignSystemPlugin/DocumentRepository/build/document-repository.css',
+            $this->config->get('css_handle'),
+            $plugin_url . 'Bcgov/DesignSystemPlugin/DocumentRepository/assets/document-repository.css',
             ['wp-components'],
             $version
         );

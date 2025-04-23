@@ -392,7 +392,19 @@ const MetadataApp = () => {
         setState(prev => {
             // If the field being changed is the label, auto-generate the ID
             if (field === 'label') {
-                const generatedId = value.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+                const baseId = value.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+                const fieldType = prev.modals[modalType].field.type.toLowerCase();
+                const generatedId = `${baseId}_${fieldType}`;
+                return updateModalField(prev, modalType, { 
+                    [field]: value,
+                    id: generatedId
+                });
+            }
+            // If the type is being changed, update the ID to reflect the new type
+            if (field === 'type') {
+                const currentLabel = prev.modals[modalType].field.label || '';
+                const baseId = currentLabel.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+                const generatedId = `${baseId}_${value.toLowerCase()}`;
                 return updateModalField(prev, modalType, { 
                     [field]: value,
                     id: generatedId
@@ -485,7 +497,7 @@ const MetadataApp = () => {
                                                             <h3>{field.label}</h3>
                                                             <div className="metadata-field-details">
                                                                 <span className="metadata-field-id">
-                                                                    ID: {field.id}
+                                                                    ID: {field.id.replace(/_[^_]+$/, '')}
                                                                 </span>
                                                             </div>
                                                         </div>
