@@ -1,0 +1,229 @@
+/* Document Repository Styles */
+
+.document-repository {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.document-list-container {
+    position: relative;
+    min-height: 200px;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.document-list-container:hover {
+    border-color: #2271b1;
+    background-color: #f0f7ff;
+}
+
+.document-list-container.dragging {
+    border-color: #2271b1;
+    background-color: rgba(34, 113, 177, 0.05);
+    box-shadow: 0 0 0 1px #2271b1, 0 0 8px rgba(34, 113, 177, 0.4);
+}
+
+.document-drop-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    border: 2px dashed #2271b1;
+    border-radius: 8px;
+}
+
+.document-drop-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    font-size: 1.5em;
+    color: #2271b1;
+    text-align: center;
+    padding: 20px;
+}
+
+.document-drop-message svg {
+    width: 64px;
+    height: 64px;
+    color: #2271b1;
+}
+
+/* Empty state styles */
+.document-list-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    min-height: 300px;
+}
+
+.document-list-empty .dropzone-icon {
+    margin-bottom: 16px;
+}
+
+.document-list-empty .dropzone-icon svg {
+    width: 64px;
+    height: 64px;
+    color: #2271b1;
+}
+
+.document-list-empty p {
+    margin: 0 0 16px;
+    font-size: 1.2em;
+    color: #50575e;
+}
+
+.document-list-upload-hint-container {
+    margin-top: 16px;
+}
+
+.document-list-upload-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: #2271b1;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.document-list-upload-hint:hover {
+    background-color: #135e96;
+}
+
+.document-list-upload-hint svg {
+    width: 16px;
+    height: 16px;
+}
+
+.document-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    table-layout: fixed;
+}
+
+.document-table-header {
+    background-color: #f0f0f1;
+}
+
+/* Column widths */
+.document-table-cell {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Checkbox column */
+.document-table-cell:first-child {
+    width: 40px;
+}
+
+/* Title column */
+.document-table-cell:nth-child(2) {
+    width: auto;
+    min-width: 200px;
+}
+
+/* Metadata columns */
+.document-table-cell.metadata-column {
+    width: 150px;
+}
+
+/* Size column */
+.document-table-cell:nth-last-child(3) {
+    width: 100px;
+}
+
+/* Type column */
+.document-table-cell:nth-last-child(2) {
+    width: 100px;
+}
+
+/* Modified column */
+.document-table-cell:nth-last-child(1) {
+    width: 120px;
+}
+
+/* Actions column */
+.document-table-cell.actions {
+    width: 100px;
+    text-align: right;
+}
+
+.document-table-row {
+    transition: background-color 0.2s ease;
+}
+
+.document-table-row:hover {
+    background-color: #f9f9f9;
+}
+
+.document-table-row.selected {
+    background-color: #f0f7ff;
+}
+
+.document-list-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 782px) {
+    .document-table-cell {
+        padding: 8px;
+    }
+    
+    .document-drop-message {
+        font-size: 1.2em;
+    }
+}
+
+/* Upload Modal Styles */
+.upload-progress-info {
+    margin-bottom: 16px;
+    padding: 8px 12px;
+    background-color: #f0f7ff;
+    border-radius: 4px;
+    border: 1px solid #c5d9ed;
+}
+
+.upload-queue-status {
+    margin: 0;
+    color: #2271b1;
+    font-size: 14px;
+    font-weight: 500;
+} 

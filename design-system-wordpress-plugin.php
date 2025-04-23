@@ -125,7 +125,35 @@ use Bcgov\DesignSystemPlugin\InPageNav\InPageNav;
 
 use Bcgov\DesignSystemPlugin\AutoAnchor\Settings as AutoAnchorSettings;
 
-use Bcgov\DesignSystemPlugin\DocumentManager\DocumentManager;
+// Import the new DocumentRepository
+use Bcgov\DesignSystemPlugin\DocumentRepository\DocumentRepository;
+
+/**
+ * Increase PHP upload limits for document repository
+ */
+function bcgov_increase_upload_limits() {
+    // Only modify limits for admin users
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+    
+    // Increase upload limit to 20MB (only affects PHP's runtime, not the php.ini)
+    @ini_set('upload_max_filesize', '20M');
+    @ini_set('post_max_size', '20M');
+    @ini_set('memory_limit', '256M');
+    @ini_set('max_execution_time', '300');
+    @ini_set('max_input_time', '300');
+    
+    // Debug logging for upload settings
+    if (defined('WP_DEBUG') && WP_DEBUG) {
+        error_log('PHP Upload Settings: ' . 
+            ' upload_max_filesize: ' . ini_get('upload_max_filesize') .
+            ', post_max_size: ' . ini_get('post_max_size') .
+            ', memory_limit: ' . ini_get('memory_limit')
+        );
+    }
+}
+add_action('admin_init', 'bcgov_increase_upload_limits');
 
 /**
  * Design System settings
@@ -185,5 +213,5 @@ $auto_anchor_settings->init();
 // Initialize InPageNav.
 $in_page_nav = new InPageNav();
 
-// Initialize the DocumentManager.
-$document_manager = new DocumentManager();
+// Initialize the DocumentRepository.
+$document_repository = new DocumentRepository();

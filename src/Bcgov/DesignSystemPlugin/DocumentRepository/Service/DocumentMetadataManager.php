@@ -1,0 +1,386 @@
+<?php
+
+namespace Bcgov\DesignSystemPlugin\DocumentRepository\Service;
+
+use Bcgov\DesignSystemPlugin\DocumentRepository\Config\RepositoryConfig;
+use WP_Query;
+use WP_Error;
+
+/**
+ * DocumentMetadataManager - Metadata and Cache Handler
+ * 
+ * This service manages document metadata, custom fields, and caching for
+ * document queries and metadata settings.
+ */
+class DocumentMetadataManager {
+    /**
+     * Configuration service
+     * 
+     * @var RepositoryConfig
+     */
+    private RepositoryConfig $config;
+    
+    /**
+     * Constructor
+     * 
+     * @param RepositoryConfig $config Configuration service
+     */
+    public function __construct(RepositoryConfig $config) {
+        $this->config = $config;
+    }
+    
+    /**
+     * Get document custom metadata fields
+     * 
+     * @return array Metadata field definitions
+     */
+    public function get_metadata_fields(): array {
+        $fields = get_option('document_repository_metadata_fields', []);
+        return apply_filters('document_repository_metadata_fields', $fields);
+    }
+    
+    /**
+     * Get default metadata fields
+     * 
+     * @return array Default metadata field definitions
+     */
+    private function get_default_metadata_fields(): array {
+        return [
+            [
+                'id' => 'document_description',
+                'label' => 'Description',
+                'type' => 'textarea',
+                'required' => false,
+                'order' => 0,
+                'filterable' => true,
+            ],
+            [
+                'id' => 'document_version',
+                'label' => 'Version',
+                'type' => 'text',
+                'required' => false,
+                'order' => 1,
+                'filterable' => true,
+            ],
+            [
+                'id' => 'document_status',
+                'label' => 'Status',
+                'type' => 'select',
+                'options' => [
+                    'draft' => 'Draft',
+                    'review' => 'Under Review',
+                    'approved' => 'Approved',
+                    'archived' => 'Archived'
+                ],
+                'required' => true,
+                'order' => 2,
+                'filterable' => true,
+            ],
+        ];
+    }
+    
+    /**
+     * Save metadata fields configuration
+     * 
+     * @param array $fields Metadata field definitions to save
+     * @return bool Whether the save was successful
+     */
+    public function save_metadata_fields(array $fields): bool {
+        // Validate fields structure
+        foreach ($fields as $field) {
+            if (!isset($field['id']) || !isset($field['label']) || !isset($field['type'])) {
+                $this->log('Invalid metadata field structure: ' . wp_json_encode($field), 'error');
+                return false;
+            }
+        }
+        
+        // Sort fields by order
+        usort($fields, function ($a, $b) {
+            return ($a['order'] ?? 0) - ($b['order'] ?? 0);
+        });
+        
+        // Save fields
+        $result = update_option('document_repository_metadata_fields', $fields);
+        
+        // Clear cache
+        $this->clear_cache(['columns']);
+        
+        return $result;
+    }
+    
+    /**
+     * Add a new metadata field
+     * 
+     * @param array $field Field definition
+     * @return bool Whether the addition was successful
+     */
+    public function add_metadata_field(array $field): bool {
+        if (!isset($field['id']) || !isset($field['label']) || !isset($field['type'])) {
+            return false;
+        }
+        
+        $fields = $this->get_metadata_fields();
+        
+        // Check for duplicate ID
+        foreach ($fields as $existing) {
+            if ($existing['id'] === $field['id']) {
+                return false;
+            }
+        }
+        
+        // Add new field
+        $fields[] = $field;
+        
+        return $this->save_metadata_fields($fields);
+    }
+    
+    /**
+     * Update an existing metadata field
+     * 
+     * @param string $field_id Field ID to update
+     * @param array $field New field definition
+     * @return bool Whether the update was successful
+     */
+    public function update_metadata_field(string $field_id, array $field): bool {
+        $fields = $this->get_metadata_fields();
+        $updated = false;
+        
+        foreach ($fields as $key => $existing) {
+            if ($existing['id'] === $field_id) {
+                $fields[$key] = $field;
+                $updated = true;
+                break;
+            }
+        }
+        
+        if (!$updated) {
+            return false;
+        }
+        
+        return $this->save_metadata_fields($fields);
+    }
+    
+    /**
+     * Delete a metadata field
+     * 
+     * @param string $field_id Field ID to delete
+     * @return bool Whether the deletion was successful
+     */
+    public function delete_metadata_field(string $field_id): bool {
+        $fields = $this->get_metadata_fields();
+        $updated = false;
+        
+        foreach ($fields as $key => $field) {
+            if ($field['id'] === $field_id) {
+                unset($fields[$key]);
+                $updated = true;
+                break;
+            }
+        }
+        
+        if (!$updated) {
+            return false;
+        }
+        
+        // Reindex array
+        $fields = array_values($fields);
+        
+        return $this->save_metadata_fields($fields);
+    }
+    
+    /**
+     * Get document metadata
+     * 
+     * @param int $post_id Document post ID
+     * @return array Document metadata
+     */
+    public function get_document_metadata(int $post_id): array {
+        // Get all metadata for the post
+        $all_meta = get_post_meta($post_id);
+        $metadata = [];
+        
+        // Convert single value arrays to scalar values
+        foreach ($all_meta as $key => $values) {
+            $metadata[$key] = is_array($values) && count($values) === 1 ? $values[0] : $values;
+        }
+        
+        // Add file data
+        $file_id = get_post_meta($post_id, 'document_file_id', true);
+        if ($file_id) {
+            $metadata['document_file_id'] = $file_id;
+            $metadata['document_file_url'] = wp_get_attachment_url($file_id);
+            $metadata['document_file_name'] = basename(get_attached_file($file_id));
+            $metadata['document_file_type'] = get_post_mime_type($file_id);
+            $metadata['document_file_size'] = filesize(get_attached_file($file_id));
+        }
+        
+        return $metadata;
+    }
+    
+    /**
+     * Save document metadata
+     * 
+     * @param int $post_id Document post ID
+     * @param array $metadata Metadata to save
+     * @return bool Whether the save was successful
+     */
+    public function save_document_metadata(int $post_id, array $metadata): bool {
+        $fields = $this->get_metadata_fields();
+        
+        foreach ($fields as $field) {
+            $field_id = $field['id'];
+            
+            if (isset($metadata[$field_id])) {
+                update_post_meta($post_id, $field_id, $metadata[$field_id]);
+            }
+        }
+        
+        // Save file ID if provided
+        if (isset($metadata['document_file_id'])) {
+            update_post_meta($post_id, 'document_file_id', $metadata['document_file_id']);
+        }
+        
+        // Clear cache
+        $this->clear_cache(['documents']);
+        
+        return true;
+    }
+    
+    /**
+     * Get documents with pagination and caching
+     * 
+     * @param array $args Query arguments
+     * @return array Documents and pagination info
+     */
+    public function get_documents(array $args = []): array {
+        $defaults = [
+            'paged' => 1,
+            'per_page' => $this->config->get('per_page'),
+            'orderby' => 'date',
+            'order' => 'DESC',
+            'search' => '',
+            'meta_query' => [],
+            'tax_query' => [],
+        ];
+        
+        $args = wp_parse_args($args, $defaults);
+        $cache_key = 'document_repository_documents_page_' . md5(serialize($args));
+        
+        // Check cache if enabled
+        if ($this->config->get('cache_enabled')) {
+            $cached = get_transient($cache_key);
+            if (false !== $cached) {
+                $this->log('Cache hit for documents query', 'debug');
+                return $cached;
+            }
+        }
+        
+        // Build query
+        $query_args = [
+            'post_type' => $this->config->get_post_type(),
+            'posts_per_page' => $args['per_page'],
+            'paged' => $args['paged'],
+            'orderby' => $args['orderby'],
+            'order' => $args['order'],
+            'post_status' => 'publish',
+        ];
+        
+        // Add search
+        if (!empty($args['search'])) {
+            $query_args['s'] = $args['search'];
+        }
+        
+        // Add meta query
+        if (!empty($args['meta_query'])) {
+            $query_args['meta_query'] = $args['meta_query'];
+        }
+        
+        // Add taxonomy query
+        if (!empty($args['tax_query'])) {
+            $query_args['tax_query'] = $args['tax_query'];
+        }
+        
+        // Run query
+        $query = new WP_Query($query_args);
+        
+        // Format results
+        $documents = [];
+        foreach ($query->posts as $post) {
+            $documents[] = [
+                'id' => $post->ID,
+                'title' => $post->post_title,
+                'date' => $post->post_date,
+                'author' => get_the_author_meta('display_name', $post->post_author),
+                'metadata' => $this->get_document_metadata($post->ID),
+            ];
+        }
+        
+        $result = [
+            'documents' => $documents,
+            'total' => $query->found_posts,
+            'total_pages' => $query->max_num_pages,
+            'current_page' => $args['paged'],
+        ];
+        
+        // Cache results
+        if ($this->config->get('cache_enabled')) {
+            set_transient($cache_key, $result, $this->config->get('cache_ttl'));
+        }
+        
+        $this->log('Documents query executed', 'debug');
+        return $result;
+    }
+    
+    /**
+     * Clear cache
+     * 
+     * @param array|int $types Cache types to clear (documents, columns, etc.) or document ID
+     */
+    public function clear_cache($types = ['documents', 'columns']): void {
+        global $wpdb;
+        
+        // If $types is an integer (document ID), convert it to default array
+        if (is_int($types) || is_numeric($types)) {
+            $this->log('Cache cleared for document ID: ' . $types, 'debug');
+            $types = ['documents', 'columns'];
+        }
+        
+        // Ensure $types is an array
+        if (!is_array($types)) {
+            $types = ['documents', 'columns'];
+        }
+        
+        foreach ($types as $type) {
+            switch ($type) {
+                case 'documents':
+                    // Clear document count cache
+                    delete_transient('document_repository_count');
+                    
+                    // Clear document pages cache
+                    $transient_like = $wpdb->esc_like('_transient_document_repository_documents_page_') . '%';
+                    $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '%{$transient_like}'");
+                    break;
+                    
+                case 'columns':
+                    // Clear columns cache
+                    delete_transient('document_repository_columns');
+                    break;
+            }
+        }
+        
+        do_action('document_repository_cache_cleared', $types);
+        $this->log('Cache cleared: ' . (is_array($types) ? implode(', ', $types) : $types), 'debug');
+    }
+    
+    /**
+     * Log message to WordPress log
+     * 
+     * @param string $message Message to log
+     * @param string $level Log level
+     */
+    private function log(string $message, string $level = 'info'): void {
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            do_action('document_repository_log', $message, $level);
+        }
+    }
+} 
