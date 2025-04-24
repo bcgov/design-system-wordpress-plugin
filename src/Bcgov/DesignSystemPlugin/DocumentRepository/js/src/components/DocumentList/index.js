@@ -38,16 +38,13 @@ const DocumentList = ({
     selectedDocuments = [],
     onSelectDocument,
     onSelectAll,
-    onUploadSuccess,
     onFileDrop,
     onDocumentsUpdate,
     metadataFields = [],
 }) => {
     const [localDocuments, setLocalDocuments] = useState(documents);
     const [deleteDocument, setDeleteDocument] = useState(null);
-    const [uploadModal, setUploadModal] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
-    const [error, setError] = useState(null);
     const [uploadingFiles, setUploadingFiles] = useState([]);
     const [showUploadFeedback, setShowUploadFeedback] = useState(false);
     const [bulkDeleteConfirmOpen, setBulkDeleteConfirmOpen] = useState(false);
@@ -87,7 +84,10 @@ const DocumentList = ({
             
         } catch (error) {
             console.error('Error deleting documents:', error);
-            setError(__('Failed to delete some documents.', 'bcgov-design-system'));
+            setNotice({
+                status: 'error',
+                message: __('Failed to delete some documents.', 'bcgov-design-system')
+            });
         } finally {
             setIsMultiDeleting(false);
         }
@@ -137,7 +137,7 @@ const DocumentList = ({
         }
     };
 
-    // Common file handling logic
+    // Handle files
     const handleFiles = (files) => {
         // Show immediate feedback before any processing
         setShowUploadFeedback(true);
@@ -168,7 +168,10 @@ const DocumentList = ({
                 status: 'error',
                 error: 'Only PDF files are allowed.'
             })));
-            setError('Only PDF files are allowed.');
+            setNotice({
+                status: 'error',
+                message: __('Only PDF files are allowed.', 'bcgov-design-system')
+            });
             return;
         }
 
@@ -182,7 +185,10 @@ const DocumentList = ({
                     error: isPdf ? null : 'Not a PDF file'
                 };
             }));
-            setError('Some files were skipped because they are not PDFs.');
+            setNotice({
+                status: 'warning',
+                message: __('Some files were skipped because they are not PDFs.', 'bcgov-design-system')
+            });
         } else {
             // Update all files to uploading status
             setUploadingFiles(prev => prev.map(f => ({
@@ -301,7 +307,6 @@ const DocumentList = ({
     // Save all bulk metadata changes
     const handleSaveBulkChanges = async () => {
         setIsSavingBulk(true);
-        setError(null);
         
         try {
             // Create an array of promises for each document update
@@ -319,22 +324,25 @@ const DocumentList = ({
             // Wait for all updates to complete
             await Promise.all(updatePromises);
 
-            // Update local state
-            const updatedDocuments = localDocuments.map(doc => ({
-                ...doc,
-                metadata: bulkEditedMetadata[doc.id] || doc.metadata
-            }));
-            setLocalDocuments(updatedDocuments);
-
-            // Notify parent component
+            // Update local state and notify parent component
             if (typeof onDocumentsUpdate === 'function') {
-                onDocumentsUpdate(updatedDocuments);
+                onDocumentsUpdate(documents.map(doc => ({
+                    ...doc,
+                    metadata: bulkEditedMetadata[doc.id] || doc.metadata
+                })));
             }
 
             setIsSpreadsheetMode(false);
+            setNotice({
+                status: 'success',
+                message: __('All changes saved successfully', 'bcgov-design-system')
+            });
         } catch (error) {
             console.error('Error saving bulk metadata:', error);
-            setError(error.message || 'Failed to save metadata changes');
+            setNotice({
+                status: 'error',
+                message: error.message || __('Failed to save metadata changes', 'bcgov-design-system')
+            });
         } finally {
             setIsSavingBulk(false);
         }

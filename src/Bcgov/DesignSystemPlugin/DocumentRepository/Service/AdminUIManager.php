@@ -102,6 +102,7 @@ class AdminUIManager {
             wp_enqueue_script('dswp-document-repository-app');
         } else {
             wp_enqueue_script('dswp-document-repository-metadata-app');
+            error_log('Enqueuing metadata settings script on hook: ' . $hook);
         }
         
         // Always load the main styles
@@ -109,6 +110,11 @@ class AdminUIManager {
         
         // Localize script with data
         $this->localize_scripts($hook);
+
+        // Add error logging for script enqueuing
+        if (!wp_script_is('dswp-document-repository-metadata-app', 'enqueued')) {
+            error_log('Failed to enqueue metadata settings script');
+        }
     }
     
     /**
@@ -118,29 +124,11 @@ class AdminUIManager {
         $plugin_url = plugin_dir_url(dirname(dirname(dirname(dirname(__DIR__)))));
         $version = filemtime(dirname(dirname(__DIR__)) . '/DocumentRepository/build/document-repository.js');
         
-        // Use development versions of React for better error messages
-        wp_deregister_script('react');
-        wp_deregister_script('react-dom');
-        
-        wp_register_script(
-            'react',
-            'https://unpkg.com/react@17.0.1/umd/react.development.js',
-            array(),
-            '17.0.1'
-        );
-        
-        wp_register_script(
-            'react-dom',
-            'https://unpkg.com/react-dom@17.0.1/umd/react-dom.development.js',
-            array('react'),
-            '17.0.1'
-        );
-        
         // Main app bundle
         wp_register_script(
             'dswp-document-repository-app',
             $plugin_url . 'src/Bcgov/DesignSystemPlugin/DocumentRepository/build/document-repository.js',
-            ['wp-element', 'wp-api-fetch', 'wp-components', 'wp-i18n', 'react', 'react-dom'],
+            ['wp-element', 'wp-api-fetch', 'wp-components', 'wp-i18n'],
             $version,
             true
         );
@@ -149,7 +137,7 @@ class AdminUIManager {
         wp_register_script(
             'dswp-document-repository-metadata-app',
             $plugin_url . 'src/Bcgov/DesignSystemPlugin/DocumentRepository/build/metadata-settings.js',
-            ['wp-element', 'wp-api-fetch', 'wp-components', 'wp-i18n', 'react', 'react-dom'],
+            ['wp-element', 'wp-api-fetch', 'wp-components', 'wp-i18n'],
             $version,
             true
         );
@@ -161,6 +149,11 @@ class AdminUIManager {
             ['wp-components'],
             $version
         );
+
+        // Add error logging for script registration
+        if (!wp_script_is('dswp-document-repository-metadata-app', 'registered')) {
+            error_log('Failed to register metadata settings script');
+        }
     }
     
     /**

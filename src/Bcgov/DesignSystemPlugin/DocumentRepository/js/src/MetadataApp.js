@@ -14,23 +14,47 @@ import {
     TextControl,
     SelectControl,
     CheckboxControl,
-    Spinner,
     Notice,
-    DragDropContext,
-    Draggable,
-    Droppable,
     Modal,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
 
-// Mock DragDropContext if it's not available
-const DndContext = typeof DragDropContext !== 'undefined' ? DragDropContext : ({ children }) => children;
-const DndDroppable = typeof Droppable !== 'undefined' ? Droppable : ({ children }) => children(
-    { droppableProps: {}, innerRef: () => {} }, {}
+// Since drag and drop is not available in @wordpress/components, we'll use a simple list
+const MetadataList = ({ children }) => (
+    <div className="metadata-fields-list">
+        {children}
+    </div>
 );
-const DndDraggable = typeof Draggable !== 'undefined' ? Draggable : ({ children }) => children(
-    { draggableProps: {}, dragHandleProps: {}, innerRef: () => {} }, {}
+
+const MetadataItem = ({ children, onMoveUp, onMoveDown, index, total }) => (
+    <div className="metadata-field-item">
+        <div className="metadata-field-info">
+            {children}
+        </div>
+        <div className="metadata-field-move-actions">
+            {index > 0 && (
+                <Button
+                    variant="secondary"
+                    onClick={onMoveUp}
+                    className="move-up"
+                    aria-label={__('Move Up', 'bcgov-design-system')}
+                >
+                    ↑
+                </Button>
+            )}
+            {index < total - 1 && (
+                <Button
+                    variant="secondary"
+                    onClick={onMoveDown}
+                    className="move-down"
+                    aria-label={__('Move Down', 'bcgov-design-system')}
+                >
+                    ↓
+                </Button>
+            )}
+        </div>
+    </div>
 );
 
 /**
@@ -257,25 +281,6 @@ const MetadataApp = () => {
         }
     }, [state.modals.add.field, state.fields, saveFields]);
     
-    // Handle drag and drop reordering
-    const handleDragEnd = (result) => {
-        if (!result.destination) {
-            return;
-        }
-        
-        const reorderedFields = [...state.fields];
-        const [movedField] = reorderedFields.splice(result.source.index, 1);
-        reorderedFields.splice(result.destination.index, 0, movedField);
-        
-        // Update order property
-        const updatedFields = reorderedFields.map((field, index) => ({
-            ...field,
-            order: index,
-        }));
-        
-        setState(prev => ({ ...prev, fields: updatedFields }));
-    };
-    
     // Handle editing a field
     const handleEditField = (field, index) => {
         setState(prev => ({
@@ -427,12 +432,37 @@ const MetadataApp = () => {
     if (state.isLoading) {
         return (
             <div className="metadata-settings-loading">
-                <Spinner />
+                <div className="spinner-wrapper">
+                    <div className="components-spinner" />
+                </div>
                 <p>{__('Loading metadata fields...', 'bcgov-design-system')}</p>
             </div>
         );
     }
     
+    // Handle moving items up/down
+    const handleMoveUp = (index) => {
+        if (index <= 0) return;
+        const newFields = [...state.fields];
+        [newFields[index - 1], newFields[index]] = [newFields[index], newFields[index - 1]];
+        // Update order property
+        newFields.forEach((field, idx) => {
+            field.order = idx;
+        });
+        setState(prev => ({ ...prev, fields: newFields }));
+    };
+
+    const handleMoveDown = (index) => {
+        if (index >= state.fields.length - 1) return;
+        const newFields = [...state.fields];
+        [newFields[index], newFields[index + 1]] = [newFields[index + 1], newFields[index]];
+        // Update order property
+        newFields.forEach((field, idx) => {
+            field.order = idx;
+        });
+        setState(prev => ({ ...prev, fields: newFields }));
+    };
+
     return (
         <div className="metadata-settings">
             {state.error && (
@@ -464,7 +494,7 @@ const MetadataApp = () => {
                 
                 <CardBody>
                     <div className="metadata-fields-info">
-                        <p>{__('Customize the metadata fields that will be available for documents. Drag and drop to reorder fields.', 'bcgov-design-system')}</p>
+                        <p>{__('Customize the metadata fields that will be available for documents. Use the up/down arrows to reorder fields.', 'bcgov-design-system')}</p>
                     </div>
                     
                     {state.fields.length === 0 ? (
@@ -472,62 +502,41 @@ const MetadataApp = () => {
                             <p>{__('No custom metadata fields defined yet. Click "Add New Field" to create one.', 'bcgov-design-system')}</p>
                         </div>
                     ) : (
-                        <DndContext onDragEnd={handleDragEnd}>
-                            <DndDroppable droppableId="metadata-fields">
-                                {(provided) => (
-                                    <div
-                                        className="metadata-fields-list"
-                                        {...provided.droppableProps}
-                                        ref={provided.innerRef}
-                                    >
-                                        {sortedFields.map((field, index) => (
-                                            <DndDraggable
-                                                key={field.id}
-                                                draggableId={field.id}
-                                                index={index}
-                                            >
-                                                {(provided) => (
-                                                    <div
-                                                        className="metadata-field-item"
-                                                        ref={provided.innerRef}
-                                                        {...provided.draggableProps}
-                                                        {...provided.dragHandleProps}
-                                                    >
-                                                        <div className="metadata-field-info">
-                                                            <h3>{field.label}</h3>
-                                                            <div className="metadata-field-details">
-                                                                <span className="metadata-field-id">
-                                                                    ID: {field.id.replace(/_[^_]+$/, '')}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <div className="metadata-field-actions">
-                                                            <Button
-                                                                variant="secondary"
-                                                                onClick={() => handleEditField(field, index)}
-                                                            >
-                                                                {__('Edit', 'bcgov-design-system')}
-                                                            </Button>
-                                                            
-                                                            <Button
-                                                                variant="secondary"
-                                                                isDestructive
-                                                                onClick={() => handleDeleteField(field.id)}
-                                                                disabled={state.isSaving}
-                                                            >
-                                                                {__('Delete', 'bcgov-design-system')}
-                                                            </Button>
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </DndDraggable>
-                                        ))}
-                                        {provided.placeholder}
+                        <MetadataList>
+                            {sortedFields.map((field, index) => (
+                                <MetadataItem
+                                    key={field.id}
+                                    index={index}
+                                    total={sortedFields.length}
+                                    onMoveUp={() => handleMoveUp(index)}
+                                    onMoveDown={() => handleMoveDown(index)}
+                                >
+                                    <h3>{field.label}</h3>
+                                    <div className="metadata-field-details">
+                                        <span className="metadata-field-id">
+                                            ID: {field.id.replace(/_[^_]+$/, '')}
+                                        </span>
                                     </div>
-                                )}
-                            </DndDroppable>
-                        </DndContext>
+                                    <div className="metadata-field-actions">
+                                        <Button
+                                            variant="secondary"
+                                            onClick={() => handleEditField(field, index)}
+                                        >
+                                            {__('Edit', 'bcgov-design-system')}
+                                        </Button>
+                                        
+                                        <Button
+                                            variant="secondary"
+                                            isDestructive
+                                            onClick={() => handleDeleteField(field.id)}
+                                            disabled={state.isSaving}
+                                        >
+                                            {__('Delete', 'bcgov-design-system')}
+                                        </Button>
+                                    </div>
+                                </MetadataItem>
+                            ))}
+                        </MetadataList>
                     )}
                 </CardBody>
             </Card>

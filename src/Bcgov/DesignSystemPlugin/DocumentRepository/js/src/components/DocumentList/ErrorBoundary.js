@@ -15,20 +15,27 @@ class ErrorBoundary extends Component {
         console.error('Document Repository Error:', error, errorInfo);
     }
 
+    renderError() {
+        return (
+            <div className="error-boundary">
+                <h2>{__('Something went wrong.', 'bcgov-design-system')}</h2>
+                <p>{__('Please try refreshing the page.', 'bcgov-design-system')}</p>
+                {process.env.NODE_ENV === 'development' && (
+                    <pre>{this.state.error?.toString()}</pre>
+                )}
+            </div>
+        );
+    }
+
+    renderContent() {
+        return this.props.children;
+    }
+
     render() {
         if (this.state.hasError) {
-            return (
-                <div className="error-boundary">
-                    <h2>{__('Something went wrong.', 'bcgov-design-system')}</h2>
-                    <p>{__('Please try refreshing the page.', 'bcgov-design-system')}</p>
-                    {process.env.NODE_ENV === 'development' && (
-                        <pre>{this.state.error?.toString()}</pre>
-                    )}
-                </div>
-            );
+            return this.renderError();
         }
-
-        return this.props.children;
+        return this.renderContent();
     }
 }
 

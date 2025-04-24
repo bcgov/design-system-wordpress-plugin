@@ -15,21 +15,28 @@ class SafeRender extends Component {
         console.error('Row Render Error:', error, errorInfo);
     }
 
+    renderError() {
+        return (
+            <div className="document-table-row error" role="row">
+                <div className="document-table-cell" role="cell" style={{ textAlign: 'center' }}>
+                    {__('Error rendering document row.', 'bcgov-design-system')}
+                    {process.env.NODE_ENV === 'development' && (
+                        <pre>{this.state.error?.toString()}</pre>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    renderContent() {
+        return this.props.children;
+    }
+
     render() {
         if (this.state.hasError) {
-            return (
-                <div className="document-table-row error" role="row">
-                    <div className="document-table-cell" role="cell" style={{ textAlign: 'center' }}>
-                        {__('Error rendering document row.', 'bcgov-design-system')}
-                        {process.env.NODE_ENV === 'development' && (
-                            <pre>{this.state.error?.toString()}</pre>
-                        )}
-                    </div>
-                </div>
-            );
+            return this.renderError();
         }
-
-        return this.props.children;
+        return this.renderContent();
     }
 }
 
