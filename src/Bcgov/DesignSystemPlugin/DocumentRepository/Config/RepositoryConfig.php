@@ -16,7 +16,7 @@ class RepositoryConfig {
      */
     private array $settings = [
         // Post type settings
-        'post_type' => 'repository_document',
+        'post_type' => 'dswp_document',
         'post_type_label' => 'Documents',
         'post_type_singular' => 'Document',
         
