@@ -5,16 +5,16 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 module.exports = {
     ...defaultConfig,
     entry: {
+        'metadata-settings': './assets/js/src/metadata-index.js',
         'document-repository': [
-            './js/src/index.js',
-            './css/document-repository.css'
-        ],
-        'metadata-settings': './js/src/metadata-index.js',
+            './assets/js/src/index.js',
+            './assets/css/document-repository.css'
+        ]
     },
     output: {
-        ...defaultConfig.output,
         path: path.resolve(__dirname, 'build'),
         filename: '[name].js',
+        clean: true
     },
     externals: {
         ...defaultConfig.externals,
@@ -42,8 +42,8 @@ module.exports = {
                 test: /\.css$/,
                 use: [
                     MiniCssExtractPlugin.loader,
-                    'css-loader',
-                ],
+                    'css-loader'
+                ]
             },
             {
                 test: /\.s[ac]ss$/i,
@@ -53,12 +53,13 @@ module.exports = {
                     'sass-loader',
                 ],
             },
-        ],
+        ]
     },
     plugins: [
+        ...defaultConfig.plugins,
         new MiniCssExtractPlugin({
-            filename: '[name].css',
-        }),
+            filename: '[name].css'
+        })
     ],
     devtool: defaultConfig.devtool,
 }; 

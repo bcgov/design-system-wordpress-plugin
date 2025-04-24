@@ -2,12 +2,12 @@
 
 namespace Bcgov\DesignSystemPlugin\DocumentRepository;
 
-use Bcgov\DesignSystemPlugin\DocumentRepository\Config\RepositoryConfig;
-use Bcgov\DesignSystemPlugin\DocumentRepository\Service\DocumentPostType;
-use Bcgov\DesignSystemPlugin\DocumentRepository\Service\DocumentUploader;
-use Bcgov\DesignSystemPlugin\DocumentRepository\Service\AdminUIManager;
-use Bcgov\DesignSystemPlugin\DocumentRepository\Service\RestApiController;
-use Bcgov\DesignSystemPlugin\DocumentRepository\Service\DocumentMetadataManager;
+use Bcgov\DesignSystemPlugin\DocumentRepository\src\Config\RepositoryConfig;
+use Bcgov\DesignSystemPlugin\DocumentRepository\src\Service\DocumentPostType;
+use Bcgov\DesignSystemPlugin\DocumentRepository\src\Service\DocumentUploader;
+use Bcgov\DesignSystemPlugin\DocumentRepository\src\Service\AdminUIManager;
+use Bcgov\DesignSystemPlugin\DocumentRepository\src\Service\RestApiController;
+use Bcgov\DesignSystemPlugin\DocumentRepository\src\Service\DocumentMetadataManager;
 
 /**
  * DocumentRepository - Main Plugin Class

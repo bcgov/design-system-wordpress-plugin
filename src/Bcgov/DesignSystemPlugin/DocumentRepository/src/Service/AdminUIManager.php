@@ -1,8 +1,8 @@
 <?php
 
-namespace Bcgov\DesignSystemPlugin\DocumentRepository\Service;
+namespace Bcgov\DesignSystemPlugin\DocumentRepository\src\Service;
 
-use Bcgov\DesignSystemPlugin\DocumentRepository\Config\RepositoryConfig;
+use Bcgov\DesignSystemPlugin\DocumentRepository\src\Config\RepositoryConfig;
 
 /**
  * AdminUIManager - Admin UI Integration
@@ -121,13 +121,24 @@ class AdminUIManager {
      * Register all admin scripts and styles
      */
     private function register_admin_scripts(): void {
-        $plugin_url = plugin_dir_url(dirname(dirname(dirname(dirname(__DIR__)))));
-        $version = filemtime(dirname(dirname(__DIR__)) . '/DocumentRepository/build/document-repository.js');
+        // Get the plugin root directory URL using WordPress constants
+        $plugin_dir = WP_PLUGIN_DIR . '/design-system-wordpress-plugin';
+        $plugin_url = WP_PLUGIN_URL . '/design-system-wordpress-plugin';
+        $build_path = $plugin_dir . '/src/Bcgov/DesignSystemPlugin/DocumentRepository/build';
+        
+        // Add debug logging
+        error_log('Plugin Directory: ' . $plugin_dir);
+        error_log('Plugin URL: ' . $plugin_url);
+        error_log('Build Path: ' . $build_path);
+        
+        // Get version from file modification time, or use fallback if file doesn't exist
+        $js_file = $build_path . '/document-repository.js';
+        $version = file_exists($js_file) ? filemtime($js_file) : time();
         
         // Main app bundle
         wp_register_script(
             'dswp-document-repository-app',
-            $plugin_url . 'src/Bcgov/DesignSystemPlugin/DocumentRepository/build/document-repository.js',
+            $plugin_url . '/src/Bcgov/DesignSystemPlugin/DocumentRepository/build/document-repository.js',
             ['wp-element', 'wp-api-fetch', 'wp-components', 'wp-i18n'],
             $version,
             true
@@ -136,7 +147,7 @@ class AdminUIManager {
         // Metadata settings app bundle
         wp_register_script(
             'dswp-document-repository-metadata-app',
-            $plugin_url . 'src/Bcgov/DesignSystemPlugin/DocumentRepository/build/metadata-settings.js',
+            $plugin_url . '/src/Bcgov/DesignSystemPlugin/DocumentRepository/build/metadata-settings.js',
             ['wp-element', 'wp-api-fetch', 'wp-components', 'wp-i18n'],
             $version,
             true
@@ -145,7 +156,7 @@ class AdminUIManager {
         // Styles
         wp_register_style(
             $this->config->get('css_handle'),
-            $plugin_url . 'src/Bcgov/DesignSystemPlugin/DocumentRepository/build/document-repository.css',
+            $plugin_url . '/src/Bcgov/DesignSystemPlugin/DocumentRepository/build/document-repository.css',
             ['wp-components'],
             $version
         );
@@ -153,6 +164,10 @@ class AdminUIManager {
         // Add error logging for script registration
         if (!wp_script_is('dswp-document-repository-metadata-app', 'registered')) {
             error_log('Failed to register metadata settings script');
+            error_log('Build path: ' . $build_path);
+            error_log('Plugin URL: ' . $plugin_url);
+            error_log('JS file exists: ' . (file_exists($js_file) ? 'yes' : 'no'));
+            error_log('CSS file exists: ' . (file_exists($build_path . '/document-repository.css') ? 'yes' : 'no'));
         }
     }
     

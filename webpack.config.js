@@ -1,12 +1,6 @@
 const defaultConfig = require('@wordpress/scripts/config/webpack.config');
 const path = require('path');
 
-// Split entries into document repository and other entries
-const documentRepoEntries = {
-    'metadata-settings': './src/Bcgov/DesignSystemPlugin/DocumentRepository/js/src/metadata-index.js',
-    'document-repository': './src/Bcgov/DesignSystemPlugin/DocumentRepository/js/src/index.js'
-};
-
 const otherEntries = {
     'index': ['./src/scripts/index.js', './src/styles/index.scss'],
     'auto-anchor': [
@@ -18,16 +12,6 @@ const otherEntries = {
     'in-page-nav-editor': './src/Bcgov/DesignSystemPlugin/InPageNav/edit.js'
 };
 
-// Create separate configurations for document repository and other files
-const documentRepoConfig = {
-    ...defaultConfig,
-    entry: documentRepoEntries,
-    output: {
-        path: path.resolve(__dirname, 'src/Bcgov/DesignSystemPlugin/DocumentRepository/build'),
-        filename: '[name].js'
-    }
-};
-
 const otherConfig = {
     ...defaultConfig,
     entry: otherEntries,
@@ -37,4 +21,4 @@ const otherConfig = {
     }
 };
 
-module.exports = [documentRepoConfig, otherConfig]; 
+module.exports = otherConfig; 

@@ -238,6 +238,7 @@ const DocumentList = ({
 
     // Handle metadata change
     const handleMetadataChange = (documentId, fieldId, value) => {
+        // Update bulk edited metadata for saving later
         setBulkEditedMetadata(prev => ({
             ...prev,
             [documentId]: {
@@ -245,6 +246,29 @@ const DocumentList = ({
                 [fieldId]: value
             }
         }));
+
+        // Immediately update the local documents state to reflect changes in the table
+        setLocalDocuments(prev => {
+            const newDocs = prev.map(doc => {
+                if (doc.id === documentId) {
+                    return {
+                        ...doc,
+                        metadata: {
+                            ...doc.metadata,
+                            [fieldId]: value
+                        }
+                    };
+                }
+                return doc;
+            });
+            
+            // Notify parent component of the changes immediately
+            if (typeof onDocumentsUpdate === 'function') {
+                onDocumentsUpdate(newDocs);
+            }
+            
+            return newDocs;
+        });
     };
 
     // Handle metadata save
