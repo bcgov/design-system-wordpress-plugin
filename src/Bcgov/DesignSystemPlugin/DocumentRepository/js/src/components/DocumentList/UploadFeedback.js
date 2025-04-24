@@ -1,12 +1,7 @@
-import { __ } from '@wordpress/i18n';
-import { sprintf } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
-const UploadFeedback = ({ 
-    showFeedback,
-    uploadingFiles,
-    onClose
-}) => {
-    if (!showFeedback || uploadingFiles.length === 0) return null;
+const UploadFeedback = ({ uploadingFiles, showUploadFeedback, onClose }) => {
+    if (!showUploadFeedback || uploadingFiles.length === 0) return null;
 
     const successCount = uploadingFiles.filter(f => f.status === 'success').length;
     const errorCount = uploadingFiles.filter(f => f.status === 'error').length;
@@ -26,7 +21,6 @@ const UploadFeedback = ({
                 <button 
                     className="upload-feedback-close"
                     onClick={() => {
-                        // Only allow closing if no uploads are in progress
                         if (uploadingCount === 0 && processingCount === 0) {
                             onClose();
                         }
@@ -42,14 +36,10 @@ const UploadFeedback = ({
                     <div key={file.id} className={`upload-feedback-item ${file.status} ${file.isPlaceholder ? 'placeholder' : ''}`}>
                         <span className="upload-feedback-item-name">{file.name}</span>
                         {file.status === 'processing' && (
-                            <>
-                                {__('Processing...', 'bcgov-design-system')}
-                            </>
+                            <>{__('Processing...', 'bcgov-design-system')}</>
                         )}
                         {file.status === 'uploading' && (
-                            <>
-                                {__('Uploading...', 'bcgov-design-system')}
-                            </>
+                            <>{__('Uploading...', 'bcgov-design-system')}</>
                         )}
                         {file.status === 'success' && (
                             <svg viewBox="0 0 24 24" width="16" height="16">

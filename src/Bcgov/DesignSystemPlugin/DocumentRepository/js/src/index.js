@@ -15,16 +15,16 @@ import { Modal, Button } from '@wordpress/components';
  * Render the app
  */
 document.addEventListener('DOMContentLoaded', () => {
-    const appContainer = document.getElementById('document-repository-app');
+    const appContainer = document.getElementById('dswp-document-repository-app');
     
     if (appContainer) {
         console.log('Document Repository mounting app');
         
         // Create a Modal root element if it doesn't exist
-        let modalRoot = document.getElementById('document-repository-modals');
+        let modalRoot = document.getElementById('dswp-document-repository-modals');
         if (!modalRoot) {
             modalRoot = document.createElement('div');
-            modalRoot.id = 'document-repository-modals';
+            modalRoot.id = 'dswp-document-repository-modals';
             document.body.appendChild(modalRoot);
         }
         

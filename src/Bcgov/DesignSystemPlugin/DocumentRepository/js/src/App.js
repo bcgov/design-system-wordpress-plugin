@@ -41,7 +41,7 @@ class AppErrorBoundary extends React.Component {
     render() {
         if (this.state.hasError) {
             return (
-                <div className="document-repository-error">
+                <div className="dswp-document-repository-error">
                     <Notice status="error" isDismissible={false}>
                         <h2>{__('Something went wrong in the Document Repository', 'bcgov-design-system')}</h2>
                         <p>{this.state.error && this.state.error.toString()}</p>
@@ -241,7 +241,7 @@ const App = () => {
     
     if (isLoading) {
         return (
-            <div className="document-repository-loading">
+            <div className="dswp-document-repository-loading">
                 <Spinner />
                 <p>{__('Loading document repository...', 'bcgov-design-system')}</p>
             </div>
@@ -258,7 +258,7 @@ const App = () => {
     
     return (
         <AppErrorBoundary>
-            <div className="document-repository">
+            <div className="dswp-document-repository">
                 <DocumentList
                     documents={documents || []}
                     isLoading={isLoading}

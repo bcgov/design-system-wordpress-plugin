@@ -10,7 +10,7 @@ import MetadataApp from './MetadataApp';
 
 // Wait for DOM content to be loaded
 document.addEventListener('DOMContentLoaded', () => {
-    const container = document.getElementById('document-repository-metadata-app');
+    const container = document.getElementById('dswp-document-repository-metadata-app');
     
     if (container) {
         render(<MetadataApp />, container);

@@ -1,26 +1,11 @@
-/**
- * Document List Component
- * 
- * Displays a table of documents with sorting, pagination, and selection capabilities.
- */
-
 import { useState, useEffect, useRef } from '@wordpress/element';
-import {
-    Button,
-    CheckboxControl,
-    Modal,
-    Notice,
-    SelectControl,
-    TextControl,
-} from '@wordpress/components';
-import { __, sprintf } from '@wordpress/i18n';
+import { Button, Modal, Notice, SelectControl, TextControl } from '@wordpress/components';
+import { __ } from '@wordpress/i18n';
+import { sprintf } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
-import { Component } from '@wordpress/element';
-
-import DocumentTableRow from './table/DocumentTableRow';
-import UploadFeedback from './upload/UploadFeedback';
-import MetadataEditModal from './modals/MetadataEditModal';
-import DeleteConfirmationModal from './modals/DeleteConfirmationModal';
+import ErrorBoundary from './ErrorBoundary';
+import DocumentTable from './DocumentTable';
+import UploadFeedback from './UploadFeedback';
 
 // Global settings from WordPress
 const settings = window.documentRepositorySettings;
@@ -43,79 +28,6 @@ const formatFileSize = (bytes) => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
 
-// Error boundary component for catching rendering errors
-class ErrorBoundary extends Component {
-    constructor(props) {
-        super(props);
-        this.state = { hasError: false, error: null };
-    }
-
-    static getDerivedStateFromError(error) {
-        // Update state so the next render will show the fallback UI
-        return { hasError: true, error };
-    }
-
-    componentDidCatch(error, errorInfo) {
-        // You can log the error to an error reporting service here
-        console.error('Document Repository Error:', error, errorInfo);
-    }
-
-    render() {
-        if (this.state.hasError) {
-            return (
-                <div className="error-boundary">
-                    <h2>{__('Something went wrong.', 'bcgov-design-system')}</h2>
-                    <p>{__('Please try refreshing the page.', 'bcgov-design-system')}</p>
-                    {process.env.NODE_ENV === 'development' && (
-                        <pre>{this.state.error?.toString()}</pre>
-                    )}
-                </div>
-            );
-        }
-
-        return this.props.children;
-    }
-}
-
-// Safe render component to prevent crashes from individual row errors
-class SafeRender extends Component {
-    constructor(props) {
-        super(props);
-        this.state = { hasError: false, error: null };
-    }
-
-    static getDerivedStateFromError(error) {
-        return { hasError: true, error };
-    }
-
-    componentDidCatch(error, errorInfo) {
-        console.error('Row Render Error:', error, errorInfo);
-    }
-
-    render() {
-        if (this.state.hasError) {
-            return (
-                <div className="document-table-row error" role="row">
-                    <div className="document-table-cell" role="cell" style={{ textAlign: 'center' }}>
-                        {__('Error rendering document row.', 'bcgov-design-system')}
-                        {process.env.NODE_ENV === 'development' && (
-                            <pre>{this.state.error?.toString()}</pre>
-                        )}
-                    </div>
-                </div>
-            );
-        }
-
-        return this.props.children;
-    }
-}
-
-/**
- * Document List component
- * 
- * @param {Object} props Component props
- * @returns {JSX.Element} Component
- */
 const DocumentList = ({
     documents = [],
     currentPage = 1,
@@ -212,20 +124,22 @@ const DocumentList = ({
         setIsDragging(false);
         
         const droppedFiles = e.dataTransfer.files;
-        handleFiles(droppedFiles);
+        if (droppedFiles && droppedFiles.length > 0) {
+            handleFiles(Array.from(droppedFiles));
+        }
     };
 
     // Handle file selection through file input
     const handleFileInputChange = (e) => {
-        const files = e.target.files;
-        handleFiles(files);
+        const files = Array.from(e.target.files);
+        if (files.length > 0) {
+            handleFiles(files);
+        }
     };
 
     // Common file handling logic
     const handleFiles = (files) => {
-        if (!files || files.length === 0) return;
-
-        // Show immediate feedback
+        // Show immediate feedback before any processing
         setShowUploadFeedback(true);
         setUploadingFiles([{
             id: 'placeholder',
@@ -235,9 +149,8 @@ const DocumentList = ({
             isPlaceholder: true
         }]);
 
-        // Process files
-        const fileArray = Array.from(files);
-        setUploadingFiles(fileArray.map(file => ({
+        // Process files immediately
+        setUploadingFiles(files.map(file => ({
             id: Math.random().toString(36).substr(2, 9),
             name: file.name,
             status: 'processing',
@@ -245,7 +158,7 @@ const DocumentList = ({
         })));
         
         // Filter for PDF files
-        const pdfFiles = fileArray.filter(file => 
+        const pdfFiles = files.filter(file => 
             file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')
         );
         
@@ -259,7 +172,8 @@ const DocumentList = ({
             return;
         }
 
-        if (fileArray.length !== pdfFiles.length) {
+        if (files.length !== pdfFiles.length) {
+            // Update non-PDF files to show error
             setUploadingFiles(prev => prev.map(f => {
                 const isPdf = f.name.toLowerCase().endsWith('.pdf');
                 return {
@@ -270,6 +184,7 @@ const DocumentList = ({
             }));
             setError('Some files were skipped because they are not PDFs.');
         } else {
+            // Update all files to uploading status
             setUploadingFiles(prev => prev.map(f => ({
                 ...f,
                 status: 'uploading'
@@ -372,6 +287,17 @@ const DocumentList = ({
         }
     };
 
+    // Initialize bulk edit metadata when entering spreadsheet mode
+    useEffect(() => {
+        if (isSpreadsheetMode) {
+            const initialBulkMetadata = {};
+            localDocuments.forEach(doc => {
+                initialBulkMetadata[doc.id] = doc.metadata || {};
+            });
+            setBulkEditedMetadata(initialBulkMetadata);
+        }
+    }, [isSpreadsheetMode, localDocuments]);
+
     // Save all bulk metadata changes
     const handleSaveBulkChanges = async () => {
         setIsSavingBulk(true);
@@ -414,9 +340,6 @@ const DocumentList = ({
         }
     };
 
-    // Check if all documents are selected
-    const allSelected = localDocuments.length > 0 && selectedDocuments.length === localDocuments.length;
-
     return (
         <ErrorBoundary>
             <div 
@@ -456,26 +379,6 @@ const DocumentList = ({
                                 </svg>
                                 {__('Upload Documents', 'bcgov-design-system')}
                             </button>
-                            <Button
-                                variant={isSpreadsheetMode ? "primary" : "secondary"}
-                                onClick={() => setIsSpreadsheetMode(!isSpreadsheetMode)}
-                            >
-                                {isSpreadsheetMode ? __('Exit Spreadsheet Mode', 'bcgov-design-system') : __('Edit as Spreadsheet', 'bcgov-design-system')}
-                            </Button>
-                            {isSpreadsheetMode && (
-                                <Button
-                                    variant="primary"
-                                    onClick={handleSaveBulkChanges}
-                                    disabled={isSavingBulk}
-                                    className="bulk-save-button"
-                                >
-                                    {isSavingBulk ? (
-                                        <>
-                                            {__('Saving...', 'bcgov-design-system')}
-                                        </>
-                                    ) : __('Save All Changes', 'bcgov-design-system')}
-                                </Button>
-                            )}
                         </div>
                         {selectedDocuments.length > 0 && (
                             <Button
@@ -490,62 +393,45 @@ const DocumentList = ({
                             </Button>
                         )}
                     </div>
+                    {localDocuments.length > 0 && (
+                        <div className="mode-toggle">
+                            <Button
+                                variant={isSpreadsheetMode ? "primary" : "secondary"}
+                                onClick={() => setIsSpreadsheetMode(!isSpreadsheetMode)}
+                            >
+                                {isSpreadsheetMode ? __('Exit Spreadsheet Mode', 'bcgov-design-system') : __('Edit as Spreadsheet', 'bcgov-design-system')}
+                            </Button>
+                            {isSpreadsheetMode && (
+                                <Button
+                                    variant="primary"
+                                    onClick={handleSaveBulkChanges}
+                                    disabled={isSavingBulk}
+                                    style={{ marginLeft: '8px' }}
+                                >
+                                    {isSavingBulk ? (
+                                        <>{__('Saving...', 'bcgov-design-system')}</>
+                                    ) : __('Save All Changes', 'bcgov-design-system')}
+                                </Button>
+                            )}
+                        </div>
+                    )}
                 </div>
 
-                {/* Document Table */}
-                <div className="document-table" role="table">
-                    {/* Table header */}
-                    <div className="document-table-header" role="rowgroup">
-                        <div className="document-table-row" role="row">
-                            <div className="document-table-cell header" role="columnheader">
-                                <CheckboxControl
-                                    checked={allSelected}
-                                    onChange={onSelectAll}
-                                />
-                            </div>
-                            <div className="document-table-cell header" role="columnheader">
-                                {__('Title', 'bcgov-design-system')}
-                            </div>
-                            {metadataFields.map(field => (
-                                <div 
-                                    key={field.id} 
-                                    className="document-table-cell header metadata-column" 
-                                    role="columnheader"
-                                >
-                                    {field.label}
-                                </div>
-                            ))}
-                            <div className="document-table-cell header" role="columnheader">
-                                {__('Size', 'bcgov-design-system')}
-                            </div>
-                            <div className="document-table-cell header" role="columnheader">
-                                {__('Type', 'bcgov-design-system')}
-                            </div>
-                            <div className="document-table-cell header" role="columnheader">
-                                {__('Actions', 'bcgov-design-system')}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    {/* Table body */}
-                    <div className="document-table-body" role="rowgroup">
-                        {localDocuments.map((document) => (
-                            <DocumentTableRow
-                                key={document.id}
-                                document={document}
-                                isSelected={selectedDocuments.includes(document.id)}
-                                onSelect={onSelectDocument}
-                                metadataFields={metadataFields}
-                                isSpreadsheetMode={isSpreadsheetMode}
-                                bulkEditedMetadata={bulkEditedMetadata}
-                                onMetadataChange={handleMetadataChange}
-                                onEdit={handleEditMetadata}
-                                onDelete={setDeleteDocument}
-                                isDeleting={isDeleting}
-                            />
-                        ))}
-                    </div>
-                </div>
+                {/* Main content */}
+                <DocumentTable
+                    documents={localDocuments}
+                    selectedDocuments={selectedDocuments}
+                    onSelectDocument={onSelectDocument}
+                    onSelectAll={onSelectAll}
+                    onDelete={setDeleteDocument}
+                    onEdit={handleEditMetadata}
+                    isDeleting={isDeleting}
+                    metadataFields={metadataFields}
+                    isSpreadsheetMode={isSpreadsheetMode}
+                    bulkEditedMetadata={bulkEditedMetadata}
+                    onMetadataChange={handleMetadataChange}
+                    formatFileSize={formatFileSize}
+                />
                 
                 {/* Pagination */}
                 {totalPages > 1 && (
@@ -583,8 +469,8 @@ const DocumentList = ({
                 
                 {/* Upload feedback */}
                 <UploadFeedback
-                    showFeedback={showUploadFeedback}
                     uploadingFiles={uploadingFiles}
+                    showUploadFeedback={showUploadFeedback}
                     onClose={() => {
                         setShowUploadFeedback(false);
                         setUploadingFiles([]);
@@ -592,46 +478,199 @@ const DocumentList = ({
                 />
 
                 {/* Delete confirmation modal */}
-                <DeleteConfirmationModal
-                    document={deleteDocument}
-                    isDeleting={isDeleting}
-                    onClose={() => setDeleteDocument(null)}
-                    onConfirm={() => {
-                        onDelete(deleteDocument.id);
-                        setDeleteDocument(null);
-                    }}
-                />
+                {deleteDocument && (
+                    <Modal
+                        title={__('Delete Document', 'bcgov-design-system')}
+                        onRequestClose={() => setDeleteDocument(null)}
+                    >
+                        <div className="delete-confirmation-content">
+                            <p>
+                                {__('Are you sure you want to delete this document?', 'bcgov-design-system')}
+                            </p>
+                            <div className="documents-to-delete">
+                                <h4>{__('Document to be deleted:', 'bcgov-design-system')}</h4>
+                                <ul>
+                                    <li>{deleteDocument.title || deleteDocument.filename}</li>
+                                </ul>
+                            </div>
+                            <p className="delete-warning">
+                                {__('This action cannot be undone.', 'bcgov-design-system')}
+                            </p>
+                            <div className="modal-actions">
+                                <Button
+                                    isDestructive
+                                    onClick={() => {
+                                        onDelete(deleteDocument.id);
+                                        setDeleteDocument(null);
+                                    }}
+                                    disabled={isDeleting}
+                                >
+                                    {isDeleting ? __('Deleting...', 'bcgov-design-system') : __('Delete', 'bcgov-design-system')}
+                                </Button>
+                                <Button
+                                    onClick={() => setDeleteDocument(null)}
+                                    disabled={isDeleting}
+                                >
+                                    {__('Cancel', 'bcgov-design-system')}
+                                </Button>
+                            </div>
+                        </div>
+                    </Modal>
+                )}
 
-                {/* Bulk delete confirmation modal */}
-                <DeleteConfirmationModal
-                    isBulk={true}
-                    selectedDocuments={selectedDocuments}
-                    documents={localDocuments}
-                    isDeleting={isMultiDeleting}
-                    onClose={() => setBulkDeleteConfirmOpen(false)}
-                    onConfirm={handleBulkDelete}
-                />
+                {/* Bulk Delete confirmation modal */}
+                {bulkDeleteConfirmOpen && (
+                    <Modal
+                        title={__('Delete Selected Documents', 'bcgov-design-system')}
+                        onRequestClose={() => setBulkDeleteConfirmOpen(false)}
+                    >
+                        <div className="delete-confirmation-content">
+                            <p>
+                                {sprintf(
+                                    __('Are you sure you want to delete %d selected document(s)?', 'bcgov-design-system'),
+                                    selectedDocuments.length
+                                )}
+                            </p>
+                            <div className="documents-to-delete">
+                                <h4>{__('Documents to be deleted:', 'bcgov-design-system')}</h4>
+                                <ul>
+                                    {localDocuments
+                                        .filter(doc => selectedDocuments.includes(doc.id))
+                                        .map(doc => (
+                                            <li key={doc.id}>
+                                                {doc.title || doc.filename}
+                                            </li>
+                                        ))
+                                    }
+                                </ul>
+                            </div>
+                            <p className="delete-warning">
+                                {__('This action cannot be undone.', 'bcgov-design-system')}
+                            </p>
+                            <div className="modal-actions">
+                                <Button
+                                    isDestructive
+                                    onClick={handleBulkDelete}
+                                    disabled={isMultiDeleting}
+                                >
+                                    {isMultiDeleting ? (
+                                        <>{__('Deleting...', 'bcgov-design-system')}</>
+                                    ) : __('Delete Selected', 'bcgov-design-system')}
+                                </Button>
+                                <Button
+                                    onClick={() => setBulkDeleteConfirmOpen(false)}
+                                    disabled={isMultiDeleting}
+                                >
+                                    {__('Cancel', 'bcgov-design-system')}
+                                </Button>
+                            </div>
+                        </div>
+                    </Modal>
+                )}
 
-                {/* Metadata edit modal */}
-                <MetadataEditModal
-                    document={editingMetadata}
-                    metadataFields={metadataFields}
-                    editedMetadataValues={editedMetadataValues}
-                    metadataErrors={metadataErrors}
-                    isSaving={isSavingMetadata}
-                    onClose={() => {
-                        setEditingMetadata(null);
-                        setEditedMetadataValues({});
-                        setMetadataErrors({});
-                    }}
-                    onSave={handleSaveMetadata}
-                    onChange={(fieldId, value) => {
-                        setEditedMetadataValues(prev => ({
-                            ...prev,
-                            [fieldId]: value
-                        }));
-                    }}
-                />
+                {/* Metadata Edit Modal */}
+                {editingMetadata && (
+                    <Modal
+                        title={__('Edit Document Metadata', 'bcgov-design-system')}
+                        onRequestClose={() => {
+                            setEditingMetadata(null);
+                            setEditedMetadataValues({});
+                            setMetadataErrors({});
+                        }}
+                        className="metadata-edit-modal"
+                    >
+                        <form onSubmit={handleSaveMetadata} className="metadata-edit-form">
+                            <div className="editable-metadata">
+                                <h3>{__('Custom Metadata', 'bcgov-design-system')}</h3>
+                                {metadataFields.map(field => {
+                                    const error = metadataErrors[field.id];
+                                    
+                                    return (
+                                        <div key={field.id} className="metadata-field">
+                                            {field.type === 'select' ? (
+                                                <SelectControl
+                                                    label={field.label}
+                                                    value={editedMetadataValues[field.id] || ''}
+                                                    options={[
+                                                        { label: __('Select...', 'bcgov-design-system'), value: '' },
+                                                        ...(field.options || []).map(option => ({
+                                                            label: option,
+                                                            value: option
+                                                        }))
+                                                    ]}
+                                                    onChange={value => setEditedMetadataValues(prev => ({
+                                                        ...prev,
+                                                        [field.id]: value
+                                                    }))}
+                                                />
+                                            ) : (
+                                                <TextControl
+                                                    label={field.label}
+                                                    value={editedMetadataValues[field.id] || ''}
+                                                    onChange={value => setEditedMetadataValues(prev => ({
+                                                        ...prev,
+                                                        [field.id]: value
+                                                    }))}
+                                                    type={field.type === 'date' ? 'text' : 'text'}
+                                                />
+                                            )}
+                                            {error && <div className="metadata-error">{error}</div>}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                            
+                            <div className="non-editable-metadata">
+                                <h3>{__('Document Information', 'bcgov-design-system')}</h3>
+                                <div className="metadata-field">
+                                    <label>{__('Filename', 'bcgov-design-system')}</label>
+                                    <div className="field-value">
+                                        {(editingMetadata.metadata?.document_file_name || 
+                                         editingMetadata.filename || 
+                                         editingMetadata.title || 
+                                         '').replace(/\.pdf$/i, '') || 
+                                         __('Not available', 'bcgov-design-system')}
+                                    </div>
+                                </div>
+                                <div className="metadata-field">
+                                    <label>{__('File Type', 'bcgov-design-system')}</label>
+                                    <div className="field-value">
+                                        {editingMetadata.metadata?.document_file_type || 'PDF'}
+                                    </div>
+                                </div>
+                                <div className="metadata-field">
+                                    <label>{__('File Size', 'bcgov-design-system')}</label>
+                                    <div className="field-value">
+                                        {editingMetadata.metadata?.document_file_size ? 
+                                            formatFileSize(parseInt(editingMetadata.metadata.document_file_size)) : 
+                                            __('Not available', 'bcgov-design-system')}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="modal-actions">
+                                <Button
+                                    variant="secondary"
+                                    onClick={() => {
+                                        setEditingMetadata(null);
+                                        setEditedMetadataValues({});
+                                        setMetadataErrors({});
+                                    }}
+                                >
+                                    {__('Cancel', 'bcgov-design-system')}
+                                </Button>
+                                <Button
+                                    variant="primary"
+                                    type="submit"
+                                    isBusy={isSavingMetadata}
+                                    disabled={isSavingMetadata}
+                                >
+                                    {__('Save Changes', 'bcgov-design-system')}
+                                </Button>
+                            </div>
+                        </form>
+                    </Modal>
+                )}
             </div>
         </ErrorBoundary>
     );

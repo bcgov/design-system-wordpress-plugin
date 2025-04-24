@@ -5,13 +5,13 @@
  */
 
 /* Main container */
-.document-repository {
+.dswp-document-repository {
     margin: 20px 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
 
 /* Loading state */
-.document-repository-loading {
+.dswp-document-repository-loading {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -19,29 +19,24 @@
     padding: 40px;
     text-align: center;
 }
-.components-modal__frame.document-repository-modal.delete-modal {
-    height: 15rem;
-    width: 20rem;
-}
-
 
 /* Tabs */
-.document-repository-tabs {
+.dswp-document-repository-tabs {
     margin-bottom: 20px;
 }
 
-.document-repository-tabs .components-tab-panel__tabs {
+.dswp-document-repository-tabs .components-tab-panel__tabs {
     border-bottom: 1px solid #e0e0e0;
     margin-bottom: 20px;
 }
 
-.document-repository-tabs .components-tab-panel__tabs-item {
+.dswp-document-repository-tabs .components-tab-panel__tabs-item {
     padding: 12px 16px;
     font-size: 14px;
     font-weight: 500;
 }
 
-.document-repository-tabs .active-tab {
+.dswp-document-repository-tabs .active-tab {
     border-bottom: 2px solid #007cba;
     color: #007cba;
 }
@@ -497,7 +492,7 @@
 }
 
 /* Document Controls */
-.document-repository-controls {
+.dswp-document-repository-controls {
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -512,7 +507,7 @@
 
 /* Error and loading states */
 .document-list-loading,
-.document-repository-error details {
+.dswp-document-repository-error details {
     padding: 2rem;
     text-align: center;
 }
@@ -746,89 +741,123 @@
 }
 
 /* Modal styles */
-body.wp-admin .document-repository .components-modal__frame {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    max-height: 90vh;
-    margin: 0;
-    min-width: 320px;
-    max-width: 400px;
-    width: calc(100% - 32px);
-    background: white;
+.components-modal__frame {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    max-height: 90vh !important;
+    margin: 0 !important;
+    min-width: 400px !important;
+    max-width: 600px !important;
+    width: calc(100% - 32px) !important;
 }
 
-body.wp-admin .document-repository .components-modal__header {
-    height: 60px;
-    border-bottom: 1px solid #ddd;
-    margin: 0;
-    padding: 0 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: white;
-    position: relative;
+.components-modal__header {
+    height: 60px !important;
+    border-bottom: 1px solid #ddd !important;
+    margin: 0 !important;
+    padding: 0 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    background: white !important;
+    position: relative !important;
 }
 
-body.wp-admin .document-repository .components-modal__header h1 {
-    margin: 0;
-    font-size: 20px;
-    line-height: 1.4;
-    font-weight: 600;
-    color: #1e1e1e;
+.components-modal__header h1 {
+    margin: 0 !important;
+    font-size: 20px !important;
+    line-height: 1.4 !important;
+    font-weight: 600 !important;
 }
 
-body.wp-admin .document-repository .components-modal__content {
-    margin: 0;
-    padding: 12px 16px;
+.components-modal__content {
+    margin: 0 !important;
+    padding: 24px !important;
+    overflow-y: auto !important;
+    max-height: calc(90vh - 60px) !important;
+}
+
+.delete-confirmation-content {
+    padding: 16px;
+}
+
+.delete-confirmation-content .documents-to-delete {
+    margin: 16px 0;
+    padding: 16px;
+    background-color: #f6f7f7;
+    border-radius: 4px;
+    max-height: 200px;
     overflow-y: auto;
-    max-height: calc(90vh - 60px);
-    background: white;
+}
+
+.delete-confirmation-content .documents-to-delete h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
     color: #1e1e1e;
 }
 
-/* Specific styles for delete confirmation modal */
-body.wp-admin .document-repository .delete-modal .components-modal__frame {
-    min-width: 320px;
-    max-width: 400px;
+.delete-confirmation-content .documents-to-delete ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
 }
 
-/* Keep the metadata edit modal larger */
-body.wp-admin .document-repository .metadata-edit-modal .components-modal__frame {
-    min-width: 400px;
-    max-width: 600px;
+.delete-confirmation-content .documents-to-delete li {
+    padding: 8px 0;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 13px;
+    color: #2c3338;
+}
+
+.delete-confirmation-content .documents-to-delete li:last-child {
+    border-bottom: none;
+}
+
+.delete-confirmation-content .delete-warning {
+    margin: 16px 0;
+    color: #d63638;
+    font-weight: 500;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+    justify-content: center;
+    padding: 8px 0;
 }
 
 .modal-actions button {
-    min-width: 80px;
-    justify-content: center;
-    padding: 4px 12px;
-    height: 32px;
-    font-size: 13px;
+    min-width: 100px !important;
+    justify-content: center !important;
+    padding: 6px 16px !important;
+    height: auto !important;
+    font-size: 13px !important;
 }
 
 .modal-actions button.is-destructive {
-    background-color: #cc1818;
-    color: white;
+    background-color: #cc1818 !important;
+    color: white !important;
 }
 
 .modal-actions button.is-destructive:hover {
-    background-color: #b21616;
+    background-color: #b21616 !important;
 }
 
 /* Make sure modal overlay covers everything */
-body.wp-admin .document-repository .components-modal__screen-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 100000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.components-modal__screen-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    z-index: 100000 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
 /* Document Repository Styles */
@@ -907,22 +936,22 @@ body.wp-admin .document-repository .components-modal__screen-overlay {
 }
 
 /* Document Repository Modal */
-.document-repository-modal {
+.dswp-document-repository-modal {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 160000;
 }
 
-.document-repository-modal-content {
+.dswp-document-repository-modal-content {
     background: white;
-    color: #1e1e1e;
-    padding: 0;
+    padding: 0; /* Remove padding here since we'll handle it in the header and content */
     border-radius: 4px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     max-width: 600px;
@@ -972,7 +1001,7 @@ body.wp-admin .document-repository .components-modal__screen-overlay {
 }
 
 /* Add padding to the DocumentUploader when in modal */
-.document-repository-modal-content .document-uploader {
+.dswp-document-repository-modal-content .document-uploader {
     padding: 20px;
 }
 
@@ -986,7 +1015,7 @@ body.wp-admin .document-repository .components-modal__screen-overlay {
         font-size: 1.2em;
     }
     
-    .document-repository-modal-content {
+    .dswp-document-repository-modal-content {
         margin: 20px;
         max-width: calc(100% - 40px);
     }
@@ -1142,27 +1171,10 @@ body.wp-admin .document-repository .components-modal__screen-overlay {
     border-radius: 4px;
 }
 
-.document-list-left-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.document-list-upload-hint-container {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
 .mode-toggle {
     display: flex;
     align-items: center;
     gap: 8px;
-}
-
-/* Move save button styles to be separate */
-.bulk-save-button {
-    margin-left: 8px;
 }
 
 /* Metadata input styles for spreadsheet mode */

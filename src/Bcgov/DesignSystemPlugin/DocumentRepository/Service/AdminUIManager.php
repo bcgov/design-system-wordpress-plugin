@@ -87,7 +87,7 @@ class AdminUIManager {
         // Only load on our plugin pages
         $valid_hooks = [
             'toplevel_page_' . $this->config->get('menu_slug'),
-            'document-repository_page_' . $this->config->get('metadata_slug')
+            'dswp-document-repository_page_' . $this->config->get('metadata_slug')
         ];
         
         if (!in_array($hook, $valid_hooks)) {
@@ -99,9 +99,9 @@ class AdminUIManager {
         
         // Load the appropriate script for the current page
         if ($hook === 'toplevel_page_' . $this->config->get('menu_slug')) {
-            wp_enqueue_script('document-repository-app');
+            wp_enqueue_script('dswp-document-repository-app');
         } else {
-            wp_enqueue_script('document-repository-metadata-app');
+            wp_enqueue_script('dswp-document-repository-metadata-app');
         }
         
         // Always load the main styles
@@ -138,7 +138,7 @@ class AdminUIManager {
         
         // Main app bundle
         wp_register_script(
-            'document-repository-app',
+            'dswp-document-repository-app',
             $plugin_url . 'src/Bcgov/DesignSystemPlugin/DocumentRepository/build/document-repository.js',
             ['wp-element', 'wp-api-fetch', 'wp-components', 'wp-i18n', 'react', 'react-dom'],
             $version,
@@ -147,7 +147,7 @@ class AdminUIManager {
         
         // Metadata settings app bundle
         wp_register_script(
-            'document-repository-metadata-app',
+            'dswp-document-repository-metadata-app',
             $plugin_url . 'src/Bcgov/DesignSystemPlugin/DocumentRepository/build/metadata-settings.js',
             ['wp-element', 'wp-api-fetch', 'wp-components', 'wp-i18n', 'react', 'react-dom'],
             $version,
@@ -216,7 +216,7 @@ class AdminUIManager {
         ]));
         
         wp_localize_script(
-            $hook === 'toplevel_page_' . $this->config->get('menu_slug') ? 'document-repository-app' : 'document-repository-metadata-app',
+            $hook === 'toplevel_page_' . $this->config->get('menu_slug') ? 'dswp-document-repository-app' : 'dswp-document-repository-metadata-app',
             'documentRepositorySettings',
             $data
         );
@@ -229,7 +229,7 @@ class AdminUIManager {
         // We just need to output the container for our React app to mount to
         echo '<div class="wrap">';
         echo '<h1>Document Repository</h1>';
-        echo '<div id="document-repository-app"></div>';
+        echo '<div id="dswp-document-repository-app"></div>';
         echo '</div>';
     }
     
@@ -240,7 +240,7 @@ class AdminUIManager {
         // We just need to output the container for our React app to mount to
         echo '<div class="wrap">';
         echo '<h1>Metadata Settings</h1>';
-        echo '<div id="document-repository-metadata-app"></div>';
+        echo '<div id="dswp-document-repository-metadata-app"></div>';
         echo '</div>';
     }
 } 
