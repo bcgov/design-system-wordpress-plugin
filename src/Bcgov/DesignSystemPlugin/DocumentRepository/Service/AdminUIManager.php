@@ -87,7 +87,7 @@ class AdminUIManager {
         // Only load on our plugin pages
         $valid_hooks = [
             'toplevel_page_' . $this->config->get('menu_slug'),
-            'dswp-document-repository_page_' . $this->config->get('metadata_slug')
+            'document-repository_page_' . $this->config->get('metadata_slug')
         ];
         
         if (!in_array($hook, $valid_hooks)) {

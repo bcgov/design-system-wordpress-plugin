@@ -5,7 +5,7 @@
  * It sets up the React application and mounts it to the DOM.
  */
 
-import { createRoot } from '@wordpress/element';
+import { render } from '@wordpress/element';
 import MetadataApp from './MetadataApp';
 
 // Wait for DOM content to be loaded
@@ -18,8 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-        const root = createRoot(container);
-        root.render(<MetadataApp />);
+        render(<MetadataApp />, container);
     } catch (error) {
         console.error('Error initializing metadata app:', error);
         container.innerHTML = '<div class="notice notice-error"><p>Error initializing metadata settings. Please check the console for details.</p></div>';
