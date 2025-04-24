@@ -1,0 +1,121 @@
+import { __ } from '@wordpress/i18n';
+import { sprintf } from '@wordpress/i18n';
+
+const UploadFeedback = ({ 
+    showFeedback,
+    uploadingFiles,
+    onClose
+}) => {
+    if (!showFeedback || uploadingFiles.length === 0) return null;
+
+    const successCount = uploadingFiles.filter(f => f.status === 'success').length;
+    const errorCount = uploadingFiles.filter(f => f.status === 'error').length;
+    const uploadingCount = uploadingFiles.filter(f => f.status === 'uploading').length;
+    const processingCount = uploadingFiles.filter(f => f.status === 'processing').length;
+    const hasPlaceholder = uploadingFiles.some(f => f.isPlaceholder);
+
+    return (
+        <div className="upload-feedback">
+            <div className="upload-feedback-header">
+                <div className="upload-feedback-title">
+                    <svg viewBox="0 0 24 24" width="16" height="16">
+                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor"/>
+                    </svg>
+                    {__('Document Upload Status', 'bcgov-design-system')}
+                </div>
+                <button 
+                    className="upload-feedback-close"
+                    onClick={() => {
+                        // Only allow closing if no uploads are in progress
+                        if (uploadingCount === 0 && processingCount === 0) {
+                            onClose();
+                        }
+                    }}
+                >
+                    <svg viewBox="0 0 24 24" width="16" height="16">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
+                    </svg>
+                </button>
+            </div>
+            <div className="upload-feedback-items">
+                {uploadingFiles.map(file => (
+                    <div key={file.id} className={`upload-feedback-item ${file.status} ${file.isPlaceholder ? 'placeholder' : ''}`}>
+                        <span className="upload-feedback-item-name">{file.name}</span>
+                        {file.status === 'processing' && (
+                            <>
+                                {__('Processing...', 'bcgov-design-system')}
+                            </>
+                        )}
+                        {file.status === 'uploading' && (
+                            <>
+                                {__('Uploading...', 'bcgov-design-system')}
+                            </>
+                        )}
+                        {file.status === 'success' && (
+                            <svg viewBox="0 0 24 24" width="16" height="16">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"/>
+                            </svg>
+                        )}
+                        {file.status === 'error' && (
+                            <>
+                                <svg viewBox="0 0 24 24" width="16" height="16">
+                                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
+                                </svg>
+                                {file.error && (
+                                    <span className="upload-feedback-item-error">{file.error}</span>
+                                )}
+                            </>
+                        )}
+                    </div>
+                ))}
+            </div>
+            <div className="upload-feedback-summary">
+                {hasPlaceholder ? (
+                    <div className="processing">
+                        <svg viewBox="0 0 24 24" width="16" height="16">
+                            <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z" fill="currentColor"/>
+                        </svg>
+                        {__('Preparing files...', 'bcgov-design-system')}
+                    </div>
+                ) : (
+                    <>
+                        {processingCount > 0 && (
+                            <div className="processing">
+                                <svg viewBox="0 0 24 24" width="16" height="16">
+                                    <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z" fill="currentColor"/>
+                                </svg>
+                                {sprintf(__('Processing %d files...', 'bcgov-design-system'), processingCount)}
+                            </div>
+                        )}
+                        {uploadingCount > 0 && (
+                            <div className="uploading">
+                                <svg viewBox="0 0 24 24" width="16" height="16">
+                                    <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor"/>
+                                </svg>
+                                {sprintf(__('Uploading %d files...', 'bcgov-design-system'), uploadingCount)}
+                            </div>
+                        )}
+                        {successCount > 0 && (
+                            <div className="success">
+                                <svg viewBox="0 0 24 24" width="16" height="16">
+                                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"/>
+                                </svg>
+                                {sprintf(__('%d files uploaded successfully', 'bcgov-design-system'), successCount)}
+                            </div>
+                        )}
+                        {errorCount > 0 && (
+                            <div className="error">
+                                <svg viewBox="0 0 24 24" width="16" height="16">
+                                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
+                                </svg>
+                                {sprintf(__('%d files failed to upload', 'bcgov-design-system'), errorCount)}
+                            </div>
+                        )}
+                    </>
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default UploadFeedback; 

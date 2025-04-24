@@ -31,16 +31,6 @@ const DocumentUploader = ({
     selectedFile = null,
     modalMode = false 
 }) => {
-    // Debug logging for props
-    console.log('DocumentUploader mounted with props:', { 
-        modalMode,
-        selectedFile: selectedFile ? {
-            name: selectedFile.name,
-            size: selectedFile.size,
-            type: selectedFile.type
-        } : null,
-        metadataFieldsCount: Array.isArray(metadataFields) ? metadataFields.length : 0
-    });
     
     // File upload state
     const [file, setFile] = useState(selectedFile);
@@ -89,7 +79,7 @@ const DocumentUploader = ({
         
         // Check file size
         if (file.size > maxFileSize) {
-            const errorMsg = `File is too large. Maximum allowed size is ${Math.round(maxFileSize / (1024 * 1024))} MB.`;
+            const errorMsg = `File "${file.name}" is too large (${(file.size / (1024 * 1024)).toFixed(2)} MB). Maximum allowed size is ${(maxFileSize / (1024 * 1024)).toFixed(2)} MB.`;
             console.error('Validation error:', errorMsg);
             setError(errorMsg);
             return false;
@@ -100,7 +90,7 @@ const DocumentUploader = ({
         const allowedExtensions = Object.keys(allowedMimeTypes);
         
         if (!allowedExtensions.includes(fileExtension)) {
-            const errorMsg = `Invalid file type. Allowed types are: ${allowedExtensions.join(', ')}`;
+            const errorMsg = `File "${file.name}" has an invalid file type. Allowed types are: ${allowedExtensions.join(', ')}`;
             console.error('Validation error:', errorMsg);
             setError(errorMsg);
             return false;
@@ -252,30 +242,22 @@ const DocumentUploader = ({
         });
         
         try {
-            // Use XMLHttpRequest for better progress tracking
+            // Create XMLHttpRequest for upload with progress tracking
             const xhr = new XMLHttpRequest();
             
-            // Set up progress tracking
-            xhr.upload.addEventListener('progress', (event) => {
-                if (event.lengthComputable) {
-                    const percentComplete = Math.round((event.loaded / event.total) * 100);
-                    console.log('Upload progress:', percentComplete + '%');
-                    setUploadProgress(percentComplete);
-                }
-            });
-            
-            // Using a promise to handle the XMLHttpRequest
             const uploadPromise = new Promise((resolve, reject) => {
                 xhr.open('POST', `${window.documentRepositorySettings.apiRoot}${apiNamespace}/documents`);
                 
-                // Set the appropriate headers
+                // Add WordPress nonce header
                 xhr.setRequestHeader('X-WP-Nonce', window.documentRepositorySettings.nonce);
-                // Additional headers that might help
-                xhr.setRequestHeader('Accept', 'application/json');
-                xhr.withCredentials = true; // Send cookies for auth
                 
-                console.log('Using nonce:', window.documentRepositorySettings.nonce);
-                console.log('API endpoint:', `${window.documentRepositorySettings.apiRoot}${apiNamespace}/documents`);
+                // Track upload progress
+                xhr.upload.onprogress = (event) => {
+                    if (event.lengthComputable) {
+                        const progress = Math.round((event.loaded / event.total) * 100);
+                        setUploadProgress(progress);
+                    }
+                };
                 
                 xhr.onload = () => {
                     if (xhr.status >= 200 && xhr.status < 300) {
@@ -285,24 +267,32 @@ const DocumentUploader = ({
                             resolve(response);
                         } catch (error) {
                             console.error('Error parsing response:', xhr.responseText);
-                            reject(new Error(`Server error: ${xhr.responseText.substring(0, 100)}...`));
+                            reject(new Error(`Error uploading "${file.name}": Server returned invalid response`));
                         }
                     } else {
                         console.error('HTTP error:', xhr.status, xhr.statusText);
                         console.error('Response:', xhr.responseText);
                         
+                        let errorMessage;
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            errorMessage = response.message || response.error || xhr.statusText;
+                        } catch (e) {
+                            errorMessage = xhr.statusText || 'Server error';
+                        }
+                        
                         if (xhr.status === 403) {
                             console.error('403 Forbidden - Authentication error. Headers:', xhr.getAllResponseHeaders());
-                            reject(new Error('Authentication error - please refresh the page and try again'));
+                            reject(new Error(`Error uploading "${file.name}": Authentication error - please refresh the page and try again`));
                         } else {
-                            reject(new Error(xhr.statusText || 'Server error'));
+                            reject(new Error(`Error uploading "${file.name}": ${errorMessage}`));
                         }
                     }
                 };
                 
                 xhr.onerror = () => {
                     console.error('Network error during upload');
-                    reject(new Error('Network Error'));
+                    reject(new Error(`Network error while uploading "${file.name}". Please check your connection and try again.`));
                 };
                 
                 xhr.send(formData);
@@ -329,7 +319,7 @@ const DocumentUploader = ({
             }
         } catch (err) {
             console.error('Upload error:', err);
-            setError(err.message || __('Error uploading document. Please try again or contact support.', 'bcgov-design-system'));
+            setError(err.message || `Error uploading "${file.name}". Please try again or contact support.`);
             setIsUploading(false);
         }
     };

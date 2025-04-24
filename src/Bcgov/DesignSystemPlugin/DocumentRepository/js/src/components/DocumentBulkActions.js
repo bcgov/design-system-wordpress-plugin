@@ -4,6 +4,16 @@
  * Provides bulk action functionality for selected documents.
  */
 
+// Declare global type for window.documentRepositorySettings
+/** @typedef {Object} DocumentRepositorySettings
+ * @property {string} apiNamespace - API namespace for document repository
+ */
+
+// Declare the global window property
+/** @type {Window & { documentRepositorySettings?: DocumentRepositorySettings }} */
+const globalWindow = window;
+const settings = globalWindow.documentRepositorySettings || { apiNamespace: '' };
+
 import { useState } from '@wordpress/element';
 import {
     Button,
@@ -14,18 +24,30 @@ import {
     Card,
     CardHeader,
     CardBody,
-    TextareaControl,
     TextControl,
     SelectControl as MetadataSelectControl,
-    CheckboxControl,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
 
+// Type definitions for better type safety
+/** @typedef {Object} MetadataField
+ * @property {string} id - Field identifier
+ * @property {string} label - Field label
+ * @property {'text'|'select'} type - Field type
+ * @property {Object.<string, string>} [options] - Select field options
+ */
+
+/** @typedef {Object} DocumentBulkActionsProps
+ * @property {number[]} selectedDocuments - Array of selected document IDs
+ * @property {() => void} onActionComplete - Callback when bulk action completes
+ * @property {MetadataField[]} metadataFields - Array of metadata fields
+ */
+
 /**
  * Document Bulk Actions component
  * 
- * @param {Object} props Component props
+ * @param {DocumentBulkActionsProps} props - Component props
  * @returns {JSX.Element} Component
  */
 const DocumentBulkActions = ({
@@ -33,53 +55,59 @@ const DocumentBulkActions = ({
     onActionComplete,
     metadataFields = [],
 }) => {
-    // Action selection state
-    const [selectedAction, setSelectedAction] = useState('');
-    
-    // Modal state
-    const [showModal, setShowModal] = useState(false);
-    const [actionTitle, setActionTitle] = useState('');
-    
-    // Operation status
-    const [isProcessing, setIsProcessing] = useState(false);
-    const [error, setError] = useState(null);
-    
-    // Metadata to update (for bulk edit)
+    // Consolidated state object for related states
+    const [modalState, setModalState] = useState({
+        show: false,
+        title: '',
+        selectedAction: '',
+        isProcessing: false,
+        error: null,
+    });
+
     const [updateMetadata, setUpdateMetadata] = useState({});
     
-    // Get API namespace from settings
-    const { apiNamespace } = window.documentRepositorySettings;
+    // Get API namespace from settings with type safety
+    const { apiNamespace } = settings;
+    if (!apiNamespace) {
+        console.error('API namespace not found in settings');
+        return null;
+    }
     
-    // Handle action selection
+    /**
+     * Handle action selection
+     * @param {string} action - Selected action
+     */
     const handleActionChange = (action) => {
-        setSelectedAction(action);
+        setModalState(prev => ({
+            ...prev,
+            selectedAction: action,
+        }));
     };
     
-    // Apply the selected action
+    /**
+     * Apply the selected action
+     */
     const handleApplyAction = () => {
-        if (!selectedAction) {
+        if (!modalState.selectedAction) {
             return;
         }
         
-        // Set modal title based on action
-        switch (selectedAction) {
-            case 'delete':
-                setActionTitle(__('Bulk Delete Documents', 'bcgov-design-system'));
-                break;
-                
-            case 'edit':
-                setActionTitle(__('Bulk Edit Documents', 'bcgov-design-system'));
-                break;
-                
-            default:
-                return;
-        }
+        const title = modalState.selectedAction === 'delete' 
+            ? __('Bulk Delete Documents', 'bcgov-design-system')
+            : __('Bulk Edit Documents', 'bcgov-design-system');
         
-        // Show the modal
-        setShowModal(true);
+        setModalState(prev => ({
+            ...prev,
+            show: true,
+            title,
+        }));
     };
     
-    // Handle metadata field change for bulk edit
+    /**
+     * Handle metadata field change
+     * @param {string} fieldId - Field identifier
+     * @param {string} value - New field value
+     */
     const handleMetadataChange = (fieldId, value) => {
         setUpdateMetadata(prev => ({
             ...prev,
@@ -87,62 +115,86 @@ const DocumentBulkActions = ({
         }));
     };
     
-    // Handle bulk delete
+    /**
+     * Handle bulk delete operation
+     */
     const handleBulkDelete = async () => {
-        setIsProcessing(true);
-        setError(null);
+        setModalState(prev => ({
+            ...prev,
+            isProcessing: true,
+            error: null,
+        }));
         
         try {
-            // Delete each document
-            for (const documentId of selectedDocuments) {
-                await apiFetch({
+            await Promise.all(selectedDocuments.map(documentId => 
+                apiFetch({
                     path: `/${apiNamespace}/documents/${documentId}`,
                     method: 'DELETE',
-                });
-            }
+                })
+            ));
             
-            // Close modal and notify parent
-            setShowModal(false);
-            setIsProcessing(false);
+            setModalState(prev => ({
+                ...prev,
+                show: false,
+                isProcessing: false,
+            }));
             onActionComplete();
         } catch (err) {
-            setError(err.message || __('Error deleting documents.', 'bcgov-design-system'));
-            setIsProcessing(false);
+            setModalState(prev => ({
+                ...prev,
+                error: err.message || __('Error deleting documents.', 'bcgov-design-system'),
+                isProcessing: false,
+            }));
         }
     };
     
-    // Handle bulk edit
+    /**
+     * Handle bulk edit operation
+     */
     const handleBulkEdit = async () => {
-        // Validate if anything was changed
         if (Object.keys(updateMetadata).length === 0) {
-            setError(__('No changes were made. Please update at least one field.', 'bcgov-design-system'));
+            setModalState(prev => ({
+                ...prev,
+                error: __('No changes were made. Please update at least one field.', 'bcgov-design-system'),
+            }));
             return;
         }
         
-        setIsProcessing(true);
-        setError(null);
+        setModalState(prev => ({
+            ...prev,
+            isProcessing: true,
+            error: null,
+        }));
         
         try {
-            // Update each document
-            for (const documentId of selectedDocuments) {
-                await apiFetch({
+            await Promise.all(selectedDocuments.map(documentId => 
+                apiFetch({
                     path: `/${apiNamespace}/documents/${documentId}`,
                     method: 'PUT',
                     data: updateMetadata,
-                });
-            }
+                })
+            ));
             
-            // Close modal and notify parent
-            setShowModal(false);
-            setIsProcessing(false);
+            setModalState(prev => ({
+                ...prev,
+                show: false,
+                isProcessing: false,
+            }));
             onActionComplete();
         } catch (err) {
-            setError(err.message || __('Error updating documents.', 'bcgov-design-system'));
-            setIsProcessing(false);
+            setModalState(prev => ({
+                ...prev,
+                error: err.message || __('Error updating documents.', 'bcgov-design-system'),
+                isProcessing: false,
+            }));
         }
     };
     
-    // Render form field based on field type for bulk edit
+    /**
+     * Render form field based on field type
+     * @param {MetadataField} field - Metadata field configuration
+     * @returns {JSX.Element|null} Rendered field component
+     */
     const renderField = (field) => {
         const { id, label, type, options } = field;
         
@@ -165,7 +217,7 @@ const DocumentBulkActions = ({
                         value={updateMetadata[id] || ''}
                         options={[
                             { label: __('-- No change --', 'bcgov-design-system'), value: '' },
-                            ...Object.entries(options).map(([value, label]) => ({
+                            ...Object.entries(options || {}).map(([value, label]) => ({
                                 label,
                                 value,
                             })),
@@ -179,8 +231,13 @@ const DocumentBulkActions = ({
         }
     };
     
-    // Render the appropriate modal content based on the selected action
+    /**
+     * Render modal content based on selected action
+     * @returns {JSX.Element|null} Modal content
+     */
     const renderModalContent = () => {
+        const { selectedAction, isProcessing } = modalState;
+        
         switch (selectedAction) {
             case 'delete':
                 return (
@@ -204,7 +261,7 @@ const DocumentBulkActions = ({
                         <div className="bulk-action-buttons">
                             <Button
                                 variant="secondary"
-                                onClick={() => setShowModal(false)}
+                                onClick={() => setModalState(prev => ({ ...prev, show: false }))}
                                 disabled={isProcessing}
                             >
                                 {__('Cancel', 'bcgov-design-system')}
@@ -255,7 +312,7 @@ const DocumentBulkActions = ({
                         <div className="bulk-action-buttons">
                             <Button
                                 variant="secondary"
-                                onClick={() => setShowModal(false)}
+                                onClick={() => setModalState(prev => ({ ...prev, show: false }))}
                                 disabled={isProcessing}
                             >
                                 {__('Cancel', 'bcgov-design-system')}
@@ -293,7 +350,7 @@ const DocumentBulkActions = ({
                 
                 <div className="bulk-actions-controls">
                     <SelectControl
-                        value={selectedAction}
+                        value={modalState.selectedAction}
                         options={[
                             { label: __('Bulk Actions', 'bcgov-design-system'), value: '' },
                             { label: __('Edit', 'bcgov-design-system'), value: 'edit' },
@@ -305,28 +362,35 @@ const DocumentBulkActions = ({
                     <Button
                         variant="secondary"
                         onClick={handleApplyAction}
-                        disabled={!selectedAction}
+                        disabled={!modalState.selectedAction}
                     >
                         {__('Apply', 'bcgov-design-system')}
                     </Button>
                 </div>
             </div>
             
-            {showModal && (
+            {modalState.show && (
                 <Modal
-                    title={actionTitle}
-                    onRequestClose={() => setShowModal(false)}
+                    title={modalState.title}
+                    onRequestClose={() => setModalState(prev => ({ ...prev, show: false }))}
                     className="document-bulk-modal"
                 >
-                    {error && (
-                        <Notice status="error" isDismissible={true} onRemove={() => setError(null)}>
-                            {error}
+                    {modalState.error && (
+                        <Notice 
+                            status="error" 
+                            isDismissible={true} 
+                            onRemove={() => setModalState(prev => ({ ...prev, error: null }))}
+                        >
+                            {modalState.error}
                         </Notice>
                     )}
                     
-                    {isProcessing && (
+                    {modalState.isProcessing && (
                         <div className="bulk-processing">
-                            <Spinner />
+                            <Spinner 
+                                onPointerEnterCapture={() => {}}
+                                onPointerLeaveCapture={() => {}}
+                            />
                             <p>{__('Processing documents...', 'bcgov-design-system')}</p>
                         </div>
                     )}
