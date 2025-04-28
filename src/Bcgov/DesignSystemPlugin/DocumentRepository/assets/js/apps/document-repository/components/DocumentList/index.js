@@ -277,7 +277,7 @@ const DocumentList = ({
         setIsSavingMetadata(true);
         
         try {
-            const response = await apiFetch({
+            await apiFetch({
                 path: `/${apiNamespace}/documents/${editingMetadata.id}/metadata`,
                 method: 'POST',
                 data: editedMetadataValues
@@ -304,14 +304,15 @@ const DocumentList = ({
             setTimeout(() => setNotice(null), 3000);
         } catch (error) {
             console.error('Error updating metadata:', error);
+            // Enhanced error handling
+            const errorMessage = error.data?.message || error.message || __('Failed to update metadata', 'bcgov-design-system');
             if (error.data?.errors) {
                 setMetadataErrors(error.data.errors);
-            } else {
-                setNotice({
-                    status: 'error',
-                    message: error.message || __('Failed to update metadata', 'bcgov-design-system')
-                });
             }
+            setNotice({
+                status: 'error',
+                message: errorMessage
+            });
         } finally {
             setIsSavingMetadata(false);
         }
@@ -331,6 +332,7 @@ const DocumentList = ({
     // Save all bulk metadata changes
     const handleSaveBulkChanges = async () => {
         setIsSavingBulk(true);
+        let hasError = false;
         
         try {
             // Create an array of promises for each document update
@@ -338,10 +340,11 @@ const DocumentList = ({
                 return apiFetch({
                     path: `/${apiNamespace}/documents/${docId}/metadata`,
                     method: 'POST',
-                    data: metadata,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
+                    data: metadata
+                }).catch(error => {
+                    hasError = true;
+                    console.error(`Error updating document ${docId}:`, error);
+                    return null;
                 });
             });
 
@@ -357,9 +360,13 @@ const DocumentList = ({
             }
 
             setIsSpreadsheetMode(false);
+            setBulkEditedMetadata({});
+            
             setNotice({
-                status: 'success',
-                message: __('All changes saved successfully', 'bcgov-design-system')
+                status: hasError ? 'warning' : 'success',
+                message: hasError 
+                    ? __('Some changes could not be saved. Please check the console for details.', 'bcgov-design-system')
+                    : __('All changes saved successfully', 'bcgov-design-system')
             });
         } catch (error) {
             console.error('Error saving bulk metadata:', error);

@@ -692,6 +692,59 @@ class RestApiController {
             );
         }
         
+        // Validate metadata fields
+        $metadata_fields = $this->metadata_manager->get_metadata_fields();
+        $field_map = array_column($metadata_fields, null, 'id');
+        $validation_errors = [];
+        
+        foreach ($metadata as $field_id => $value) {
+            if (isset($field_map[$field_id])) {
+                $field = $field_map[$field_id];
+                
+                // Required field validation
+                if (!empty($field['required']) && empty($value)) {
+                    $validation_errors[$field_id] = sprintf(
+                        __('%s is required', 'bcgov-design-system'),
+                        $field['label']
+                    );
+                    continue;
+                }
+                
+                // Select field validation
+                if ($field['type'] === 'select' && !empty($field['options']) && !empty($value)) {
+                    if (!in_array($value, $field['options'])) {
+                        $validation_errors[$field_id] = sprintf(
+                            __('Invalid option for %s', 'bcgov-design-system'),
+                            $field['label']
+                        );
+                    }
+                }
+                
+                // Date field validation
+                if ($field['type'] === 'date' && !empty($value)) {
+                    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $value)) {
+                        $validation_errors[$field_id] = sprintf(
+                            __('Invalid date format for %s. Use YYYY-MM-DD', 'bcgov-design-system'),
+                            $field['label']
+                        );
+                    }
+                }
+            }
+        }
+        
+        // Return validation errors if any
+        if (!empty($validation_errors)) {
+            error_log('Metadata validation errors: ' . json_encode($validation_errors));
+            return new WP_Error(
+                'validation_failed',
+                'Metadata validation failed',
+                [
+                    'status' => 400,
+                    'errors' => $validation_errors
+                ]
+            );
+        }
+        
         // Update metadata using the metadata manager
         $result = $this->metadata_manager->save_document_metadata($document_id, $metadata);
         

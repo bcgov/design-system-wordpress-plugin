@@ -273,18 +273,42 @@ class DocumentMetadataManager {
      */
     public function save_document_metadata(int $post_id, array $metadata): bool {
         $fields = $this->get_metadata_fields();
+        $field_map = array_column($fields, null, 'id');
         
-        foreach ($fields as $field) {
-            $field_id = $field['id'];
-            
-            if (isset($metadata[$field_id])) {
-                update_post_meta($post_id, $field_id, $metadata[$field_id]);
+        foreach ($metadata as $field_id => $value) {
+            // Skip if not a registered field
+            if (!isset($field_map[$field_id]) && $field_id !== 'document_file_id') {
+                continue;
             }
-        }
-        
-        // Save file ID if provided
-        if (isset($metadata['document_file_id'])) {
-            update_post_meta($post_id, 'document_file_id', $metadata['document_file_id']);
+            
+            // Sanitize value based on field type
+            if (isset($field_map[$field_id])) {
+                $field = $field_map[$field_id];
+                switch ($field['type']) {
+                    case 'text':
+                        $value = sanitize_text_field($value);
+                        break;
+                    case 'textarea':
+                        $value = sanitize_textarea_field($value);
+                        break;
+                    case 'select':
+                        // Validate against allowed options
+                        if (!empty($field['options']) && !in_array($value, $field['options'])) {
+                            continue;
+                        }
+                        $value = sanitize_text_field($value);
+                        break;
+                    case 'date':
+                        // Basic date format validation
+                        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $value)) {
+                            continue;
+                        }
+                        break;
+                }
+            }
+            
+            // Save the sanitized value
+            update_post_meta($post_id, $field_id, $value);
         }
         
         // Clear cache

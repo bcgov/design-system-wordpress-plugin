@@ -1,0 +1,504 @@
+// Variables
+$primary-color: #007cba;
+$error-color: #cc1818;
+$success-color: #4caf50;
+$border-color: #e0e0e0;
+$text-color: #1e1e1e;
+$text-secondary: #666;
+$background-light: #f9f9f9;
+$background-primary-light: #f0f7ff;
+$background-error-light: #fcf0f1;
+$background-success-light: #f1f8e9;
+
+// Mixins
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin button-reset {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+@mixin transition {
+  transition: all 0.2s ease;
+}
+
+// Document Repository Styles
+.dswp-document-repository {
+  margin: 20px 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+
+  &-loading {
+    @include flex-center;
+    flex-direction: column;
+    padding: 40px;
+    text-align: center;
+  }
+
+  &-tabs {
+    margin-bottom: 20px;
+
+    .components-tab-panel__tabs {
+      border-bottom: 1px solid $border-color;
+      margin-bottom: 20px;
+
+      &-item {
+        padding: 12px 16px;
+        font-size: 14px;
+        font-weight: 500;
+      }
+    }
+
+    .active-tab {
+      border-bottom: 2px solid $primary-color;
+      color: $primary-color;
+    }
+  }
+}
+
+// Document List
+.document-list {
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  border: 1px solid $border-color;
+  @include transition;
+
+  &:hover {
+    border-color: #b4d6f3;
+    box-shadow: 0 0 0 1px rgba($primary-color, 0.1);
+  }
+
+  &.document-list-dropzone {
+    &:hover::after {
+      content: '';
+      position: absolute;
+      top: -3px;
+      left: -3px;
+      right: -3px;
+      bottom: -3px;
+      border: 2px dashed rgba($primary-color, 0.2);
+      border-radius: 6px;
+      pointer-events: none;
+      z-index: 0;
+      animation: pulse-border 2s infinite;
+    }
+  }
+}
+
+// Document Table
+.document-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  table-layout: fixed;
+
+  &-header {
+    display: table-header-group;
+    background-color: #f0f0f1;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  &-body {
+    display: table-row-group;
+  }
+
+  &-row {
+    display: table-row;
+    border-bottom: 1px solid $border-color;
+    @include transition;
+
+    &:hover {
+      background-color: $background-light;
+    }
+
+    &.selected {
+      background-color: $background-primary-light;
+    }
+  }
+
+  &-cell {
+    display: table-cell;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+
+    &:nth-child(1) { width: 40px; }
+    &:nth-child(2) { width: 200px; }
+    &.metadata-column {
+      width: 150px;
+      min-width: 120px;
+    }
+    &:nth-last-child(4) { width: 100px; }
+    &:nth-last-child(3) { width: 120px; }
+    &:nth-last-child(2) { width: 120px; }
+    &:last-child {
+      width: 100px;
+      text-align: right;
+    }
+
+    &.header {
+      font-weight: bold;
+      background-color: #f0f0f1;
+      border-bottom: 2px solid #ddd;
+    }
+  }
+}
+
+// Document Actions
+.document-action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+// Pagination
+.document-pagination {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+  border-top: 1px solid $border-color;
+}
+
+// Bulk Actions
+.document-bulk-actions {
+  margin-bottom: 20px;
+
+  .bulk-actions-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background-color: $background-primary-light;
+    border-radius: 4px;
+  }
+
+  .bulk-actions-count {
+    font-weight: 500;
+  }
+
+  .bulk-actions-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+// Upload Feedback
+.upload-feedback {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  padding: 16px;
+  width: 400px;
+  z-index: 100000;
+  border: 1px solid #ddd;
+  animation: slide-in 0.3s ease-out;
+
+  &-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #eee;
+  }
+
+  &-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: $text-color;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .dashicons {
+      color: $primary-color;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  &-close {
+    @include button-reset;
+    padding: 6px;
+    color: #757575;
+    border-radius: 50%;
+    @include flex-center;
+    @include transition;
+
+    &:hover {
+      background-color: #f0f0f0;
+      color: $text-color;
+    }
+  }
+
+  &-items {
+    max-height: 300px;
+    overflow-y: auto;
+    margin: -4px;
+    padding: 4px;
+  }
+
+  &-item {
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    background: #f8f9fa;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    @include transition;
+    border: 1px solid $border-color;
+    position: relative;
+    overflow: hidden;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    &.uploading {
+      background: $background-primary-light;
+      border-color: #90caf9;
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 2px;
+        background: $primary-color;
+        animation: progress 2s infinite linear;
+        width: 100%;
+      }
+    }
+
+    &.success {
+      background: $background-success-light;
+      border-color: #a5d6a7;
+      color: #2e7d32;
+      animation: success-pulse 1s ease-out;
+    }
+
+    &.error {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: $error-color;
+    }
+
+    &.processing {
+      background: #f5f5f5;
+      border-color: $border-color;
+      color: $text-secondary;
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 2px;
+        background: $text-secondary;
+        animation: processing 1.5s infinite linear;
+        width: 100%;
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes slide-in {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-border {
+  0% { border-color: rgba($primary-color, 0.1); }
+  50% { border-color: rgba($primary-color, 0.3); }
+  100% { border-color: rgba($primary-color, 0.1); }
+}
+
+@keyframes progress {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes success-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+@keyframes processing {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// Responsive styles
+@media screen and (max-width: 782px) {
+  .document-table {
+    display: block;
+    overflow-x: auto;
+
+    &-header,
+    &-body,
+    &-row {
+      display: table-row;
+    }
+
+    &-cell {
+      display: table-cell;
+      padding: 8px;
+
+      &:nth-child(n) {
+        width: auto;
+      }
+
+      &.metadata-column {
+        width: 120px;
+        min-width: 100px;
+      }
+    }
+  }
+
+  .document-list-actions {
+    flex-direction: column;
+    gap: 16px;
+
+    .mode-toggle {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  .upload-feedback {
+    width: calc(100% - 40px);
+    margin: 0 20px;
+  }
+
+  .document-drop-message {
+    font-size: 1.2em;
+  }
+
+  .modal-header h2 {
+    font-size: 1.1em;
+  }
+
+  .document-list-upload-hint {
+    font-size: 13px;
+    padding: 8px 12px;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+}
+
+// Modal styles
+.metadata-edit-modal {
+  .components-modal__content {
+    padding: 24px;
+  }
+
+  .metadata-edit-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-top: 24px;
+
+    @media (max-width: 782px) {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    h3 {
+      margin: 0 0 16px 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .metadata-field {
+      margin-bottom: 16px;
+    }
+
+    .metadata-error {
+      color: $error-color;
+      margin-top: 4px;
+      font-size: 12px;
+    }
+
+    .non-editable-metadata {
+      background-color: #f0f0f0;
+      padding: 16px;
+      border-radius: 4px;
+
+      .metadata-field {
+        margin-bottom: 12px;
+      }
+
+      label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 4px;
+        font-size: 13px;
+        color: $text-color;
+      }
+
+      .field-value {
+        font-size: 13px;
+        color: #50575e;
+      }
+    }
+
+    .modal-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid $border-color;
+    }
+  }
+}
+
+// Import any additional SCSS partials here if needed
+// @import "components/upload-modal";
+// @import "components/document-table";
+// etc... 
