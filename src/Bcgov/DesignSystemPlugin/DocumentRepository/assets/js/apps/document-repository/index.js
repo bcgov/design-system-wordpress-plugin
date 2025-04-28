@@ -7,13 +7,8 @@
 
 import { render } from '@wordpress/element';
 import App from './App';
-import { Modal, Button } from '@wordpress/components';
 
 // Ensure WP components are preloaded
-
-/**
- * Render the app
- */
 document.addEventListener('DOMContentLoaded', () => {
     const appContainer = document.getElementById('dswp-document-repository-app');
     

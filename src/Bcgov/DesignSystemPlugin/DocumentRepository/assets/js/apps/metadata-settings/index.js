@@ -6,7 +6,7 @@
  */
 
 import { render } from '@wordpress/element';
-import MetadataApp from './MetadataApp';
+import MetadataApp from './App';
 
 // Wait for DOM content to be loaded
 document.addEventListener('DOMContentLoaded', () => {

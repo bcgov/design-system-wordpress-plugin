@@ -41,47 +41,6 @@
     color: #007cba;
 }
 
-/* Search */
-.document-search {
-    margin-bottom: 20px;
-    background-color: #f9f9f9;
-    padding: 16px;
-    border-radius: 4px;
-}
-
-.search-input-container {
-    display: flex;
-    align-items: center;
-    width: 300px; /* Set a fixed width for the search container */
-}
-
-.search-input {
-    width: 100%;
-}
-
-.search-input input[type="search"] {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-    transition: all 0.2s ease;
-}
-
-.search-input input[type="search"]:focus {
-    border-color: #007cba;
-    box-shadow: 0 0 0 1px #007cba;
-    outline: none;
-}
-
-.filter-select-container {
-    min-width: 200px;
-}
-
-.reset-filters-button {
-    margin-top: 28px !important; /* Align with other form elements */
-}
-
 /* Document List */
 .document-list {
     background-color: #fff;

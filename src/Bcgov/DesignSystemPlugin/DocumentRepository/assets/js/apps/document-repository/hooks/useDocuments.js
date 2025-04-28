@@ -22,9 +22,8 @@ export const useDocuments = () => {
     const [isDeleting, setIsDeleting] = useState(false);
     const [error, setError] = useState(null);
     
-    // Search and filter parameters
+    // Pagination parameters
     const [searchParams, setSearchParams] = useState({
-        search: '',
         page: 1,
         per_page: window.documentRepositorySettings?.perPage || 20,
         orderby: 'date',
@@ -41,10 +40,10 @@ export const useDocuments = () => {
         try {
             const { apiNamespace } = window.documentRepositorySettings;
             
-            // Build query string for search and filters
+            // Build query string for pagination
             const queryParams = new URLSearchParams();
             
-            // Add all search parameters to query
+            // Add all parameters to query
             Object.entries(searchParams).forEach(([key, value]) => {
                 if (value) {
                     queryParams.append(key, value);

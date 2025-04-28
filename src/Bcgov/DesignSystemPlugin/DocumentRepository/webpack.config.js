@@ -5,9 +5,9 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 module.exports = {
     ...defaultConfig,
     entry: {
-        'metadata-settings': './assets/js/src/metadata-index.js',
+        'metadata-settings': './assets/js/apps/metadata-settings/index.js',
         'document-repository': [
-            './assets/js/src/index.js',
+            './assets/js/apps/document-repository/index.js',
             './assets/css/document-repository.css'
         ]
     },
