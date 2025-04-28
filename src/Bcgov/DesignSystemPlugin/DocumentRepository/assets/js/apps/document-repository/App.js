@@ -3,6 +3,10 @@
  * 
  * This is the root component of the Document Repository application.
  * It sets up the application structure, context providers, and main routes.
+ * 
+ * @component
+ * @example
+ * <App />
  */
 
 import { useState, useEffect } from '@wordpress/element';
@@ -17,6 +21,11 @@ import AppErrorBoundary from '../../shared/components/AppErrorBoundary';
 
 /**
  * Main App component
+ * 
+ * Manages the document repository application state and UI.
+ * Handles document listing, uploading, and metadata management.
+ * 
+ * @returns {JSX.Element} The rendered application
  */
 const App = () => {
     // API data loading state
@@ -54,7 +63,15 @@ const App = () => {
     // Selected documents for bulk actions
     const [selectedDocuments, setSelectedDocuments] = useState([]);
     
-    // Load metadata fields configuration on component mount
+    /**
+     * Load metadata fields configuration on component mount
+     * 
+     * Fetches the metadata field definitions from the API
+     * and updates the component state.
+     * 
+     * @async
+     * @function fetchMetadataFields
+     */
     useEffect(() => {
         const fetchMetadataFields = async () => {
             try {
@@ -76,7 +93,12 @@ const App = () => {
         fetchMetadataFields();
     }, []);
     
-    // Handle document selection for bulk actions
+    /**
+     * Handle document selection for bulk actions
+     * 
+     * @function handleDocumentSelection
+     * @param {number} documentId - ID of the document to select/deselect
+     */
     const handleDocumentSelection = (documentId) => {
         setSelectedDocuments((prev) => {
             if (prev.includes(documentId)) {
@@ -87,7 +109,12 @@ const App = () => {
         });
     };
     
-    // Handle selecting all documents
+    /**
+     * Handle selecting all documents
+     * 
+     * @function handleSelectAll
+     * @param {boolean} isSelected - Whether to select or deselect all documents
+     */
     const handleSelectAll = (isSelected) => {
         if (isSelected) {
             setSelectedDocuments(documents.map(doc => doc.id));
@@ -96,7 +123,12 @@ const App = () => {
         }
     };
     
-    // Handle page change
+    /**
+     * Handle page change in pagination
+     * 
+     * @function handlePageChange
+     * @param {number} newPage - New page number to navigate to
+     */
     const handlePageChange = (newPage) => {
         setSearchParams(prev => ({
             ...prev,
@@ -108,7 +140,15 @@ const App = () => {
     const [uploadQueue, setUploadQueue] = useState([]);
     const [currentUploadIndex, setCurrentUploadIndex] = useState(0);
 
-    // Handle multiple file uploads
+    /**
+     * Handle multiple file uploads
+     * 
+     * Processes an array of files for upload, filtering for PDFs
+     * and setting up the upload queue.
+     * 
+     * @function handleMultipleFiles
+     * @param {FileList|Array<File>} files - Files to upload
+     */
     const handleMultipleFiles = (files) => {
         // Convert to array if it's not already
         const fileArray = Array.isArray(files) ? files : Array.from(files);
@@ -134,7 +174,12 @@ const App = () => {
         setShowUploadModal(true);
     };
 
-    // Handle upload success and move to next file
+    /**
+     * Handle upload success and move to next file
+     * 
+     * @function handleUploadSuccess
+     * @param {Object} document - The successfully uploaded document
+     */
     const handleUploadSuccess = (document) => {
         console.log('Upload success:', document);
         
@@ -155,7 +200,14 @@ const App = () => {
         }
     };
 
-    // Handle file drop for document upload
+    /**
+     * Handle file drop for document upload
+     * 
+     * @async
+     * @function handleFileDrop
+     * @param {File} file - The file to upload
+     * @throws {Error} If upload fails
+     */
     const handleFileDrop = async (file) => {
         try {
             // Create FormData object
@@ -179,6 +231,7 @@ const App = () => {
         }
     };
     
+    // Loading state
     if (isLoading) {
         return (
             <div className="dswp-document-repository-loading">
@@ -188,6 +241,7 @@ const App = () => {
         );
     }
     
+    // Error state
     if (error) {
         return (
             <Notice status="error" isDismissible={false}>
@@ -196,6 +250,7 @@ const App = () => {
         );
     }
     
+    // Main application render
     return (
         <AppErrorBoundary>
             <div className="dswp-document-repository">

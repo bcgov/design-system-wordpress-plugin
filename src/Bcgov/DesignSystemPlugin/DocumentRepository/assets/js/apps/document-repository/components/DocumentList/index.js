@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from '@wordpress/element';
+import { useState, useEffect, useRef, useCallback, useMemo } from '@wordpress/element';
 import { Button, Modal, Notice, SelectControl, TextControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { sprintf } from '@wordpress/i18n';
@@ -7,26 +7,27 @@ import ErrorBoundary from './ErrorBoundary';
 import DocumentTable from './DocumentTable';
 import UploadFeedback from './UploadFeedback';
 
-// Global settings from WordPress
-const settings = window.documentRepositorySettings;
-if (!settings) {
-    console.error('Document Repository settings not found. Make sure the script is properly enqueued in WordPress.');
-}
-const apiNamespace = settings?.apiNamespace || 'wp/v2';
-
 /**
- * Format file size for display
+ * DocumentList Component
  * 
- * @param {number} bytes Size in bytes
- * @return {string} Formatted size
+ * Main component for managing and displaying a list of documents with metadata.
+ * Handles document uploads, metadata editing, bulk operations, and pagination.
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {Array} props.documents - List of document objects to display
+ * @param {number} props.currentPage - Current page number for pagination
+ * @param {number} props.totalPages - Total number of pages
+ * @param {Function} props.onPageChange - Callback when page changes
+ * @param {Function} props.onDelete - Callback when a document is deleted
+ * @param {boolean} props.isDeleting - Flag indicating if a delete operation is in progress
+ * @param {Array} props.selectedDocuments - Array of selected document IDs
+ * @param {Function} props.onSelectDocument - Callback when a document is selected
+ * @param {Function} props.onSelectAll - Callback when all documents are selected/deselected
+ * @param {Function} props.onFileDrop - Callback when files are dropped/uploaded
+ * @param {Function} props.onDocumentsUpdate - Callback when documents are updated
+ * @param {Array} props.metadataFields - Array of metadata field definitions
  */
-const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-};
 
 const DocumentList = ({
     documents = [],
@@ -42,6 +43,7 @@ const DocumentList = ({
     onDocumentsUpdate,
     metadataFields = [],
 }) => {
+    // State management
     const [localDocuments, setLocalDocuments] = useState(documents);
     const [deleteDocument, setDeleteDocument] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -57,29 +59,56 @@ const DocumentList = ({
     const [bulkEditedMetadata, setBulkEditedMetadata] = useState({});
     const [isSavingBulk, setIsSavingBulk] = useState(false);
     const [notice, setNotice] = useState(null);
+    const [hasMetadataChanges, setHasMetadataChanges] = useState(false);
 
-    // Ref for the file input
+    // Refs
     const fileInputRef = useRef(null);
+    const dragTimeoutRef = useRef(null);
 
-    // Update local documents when documents prop changes
+    // Memoize document IDs for performance
+    const documentIds = useMemo(() => localDocuments.map(doc => doc.id), [localDocuments]);
+
+    // Memoize formatFileSize to prevent recreation on each render
+    const formatFileSize = useMemo(() => (bytes) => {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }, []);
+
+    // Memoize API namespace to prevent recalculation
+    const apiNamespace = useMemo(() => {
+        const settings = window.documentRepositorySettings;
+        if (!settings) {
+            console.error('Document Repository settings not found. Make sure the script is properly enqueued in WordPress.');
+        }
+        return settings?.apiNamespace || 'wp/v2';
+    }, []);
+
+    // Effects
     useEffect(() => {
         setLocalDocuments(documents);
     }, [documents]);
 
-    // Handle bulk document deletion
-    const handleBulkDelete = async () => {
+    // Cleanup drag timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (dragTimeoutRef.current) {
+                clearTimeout(dragTimeoutRef.current);
+            }
+        };
+    }, []);
+
+    // Memoize handlers to prevent unnecessary re-renders
+    const handleBulkDelete = useCallback(async () => {
         try {
             setIsMultiDeleting(true);
             
-            // Delete each selected document
-            for (const documentId of selectedDocuments) {
-                await onDelete(documentId);
-            }
+            // Use Promise.all for parallel deletion
+            await Promise.all(selectedDocuments.map(docId => onDelete(docId)));
             
-            // Close the confirmation modal
             setBulkDeleteConfirmOpen(false);
-            
-            // Clear selected documents
             onSelectAll(false);
             
         } catch (error) {
@@ -91,34 +120,35 @@ const DocumentList = ({
         } finally {
             setIsMultiDeleting(false);
         }
-    };
+    }, [selectedDocuments, onDelete, onSelectAll]);
 
-    // Handle drag events
-    const handleDragEnter = (e) => {
+    const handleDragEnter = useCallback((e) => {
         e.preventDefault();
         e.stopPropagation();
         setIsDragging(true);
-    };
+    }, []);
 
-    const handleDragOver = (e) => {
+    const handleDragOver = useCallback((e) => {
         e.preventDefault();
         e.stopPropagation();
         if (!isDragging) {
             setIsDragging(true);
         }
-    };
+    }, [isDragging]);
 
-    const handleDragLeave = (e) => {
+    const handleDragLeave = useCallback((e) => {
         e.preventDefault();
         e.stopPropagation();
         const isLeavingContainer = !e.currentTarget.contains(e.relatedTarget);
         if (isLeavingContainer) {
-            setIsDragging(false);
+            // Use timeout to prevent flickering
+            dragTimeoutRef.current = setTimeout(() => {
+                setIsDragging(false);
+            }, 50);
         }
-    };
+    }, []);
 
-    // Handle drop
-    const handleDrop = (e) => {
+    const handleDrop = useCallback((e) => {
         e.preventDefault();
         e.stopPropagation();
         setIsDragging(false);
@@ -127,18 +157,16 @@ const DocumentList = ({
         if (droppedFiles && droppedFiles.length > 0) {
             handleFiles(Array.from(droppedFiles));
         }
-    };
+    }, []);
 
-    // Handle file selection through file input
-    const handleFileInputChange = (e) => {
+    const handleFileInputChange = useCallback((e) => {
         const files = Array.from(e.target.files);
         if (files.length > 0) {
             handleFiles(files);
         }
-    };
+    }, []);
 
-    // Handle files
-    const handleFiles = (files) => {
+    const handleFiles = useCallback((files) => {
         // Show immediate feedback before any processing
         setShowUploadFeedback(true);
         setUploadingFiles([{
@@ -150,12 +178,13 @@ const DocumentList = ({
         }]);
 
         // Process files immediately
-        setUploadingFiles(files.map(file => ({
+        const processedFiles = files.map(file => ({
             id: Math.random().toString(36).substr(2, 9),
             name: file.name,
             status: 'processing',
             error: null
-        })));
+        }));
+        setUploadingFiles(processedFiles);
         
         // Filter for PDF files
         const pdfFiles = files.filter(file => 
@@ -175,26 +204,21 @@ const DocumentList = ({
             return;
         }
 
+        // Update file statuses
+        setUploadingFiles(prev => prev.map(f => {
+            const isPdf = f.name.toLowerCase().endsWith('.pdf');
+            return {
+                ...f,
+                status: isPdf ? 'uploading' : 'error',
+                error: isPdf ? null : 'Not a PDF file'
+            };
+        }));
+
         if (files.length !== pdfFiles.length) {
-            // Update non-PDF files to show error
-            setUploadingFiles(prev => prev.map(f => {
-                const isPdf = f.name.toLowerCase().endsWith('.pdf');
-                return {
-                    ...f,
-                    status: isPdf ? 'uploading' : 'error',
-                    error: isPdf ? null : 'Not a PDF file'
-                };
-            }));
             setNotice({
                 status: 'warning',
                 message: __('Some files were skipped because they are not PDFs.', 'bcgov-design-system')
             });
-        } else {
-            // Update all files to uploading status
-            setUploadingFiles(prev => prev.map(f => ({
-                ...f,
-                status: 'uploading'
-            })));
         }
 
         // Handle each PDF file
@@ -211,22 +235,21 @@ const DocumentList = ({
                     ));
                 });
         });
-    };
+    }, [onFileDrop]);
 
-    // Handle click on the upload hint or dropzone
-    const handleUploadClick = () => {
+    const handleUploadClick = useCallback(() => {
         if (fileInputRef.current) {
             fileInputRef.current.click();
         }
-    };
-    
-    // Handle metadata edit
-    const handleEditMetadata = (document) => {
+    }, []);
+
+    const handleEditMetadata = useCallback((document) => {
         const documentToEdit = {
             ...document,
             upload_date: document.date || document.upload_date || document.metadata?.upload_date
         };
         setEditingMetadata(documentToEdit);
+        
         // Initialize edited values with current metadata
         const initialValues = {};
         metadataFields.forEach(field => {
@@ -234,45 +257,61 @@ const DocumentList = ({
         });
         setEditedMetadataValues(initialValues);
         setMetadataErrors({});
-    };
+    }, [metadataFields]);
 
-    // Handle metadata change
-    const handleMetadataChange = (documentId, fieldId, value) => {
+    const hasMetadataChanged = useCallback(() => {
+        if (!editingMetadata) return false;
+        return metadataFields.some(field => {
+            const currentValue = editingMetadata.metadata?.[field.id] || '';
+            const editedValue = editedMetadataValues[field.id] || '';
+            return currentValue !== editedValue;
+        });
+    }, [editingMetadata, editedMetadataValues, metadataFields]);
+
+    const handleMetadataChange = useCallback((documentId, fieldId, value) => {
+        // Get the original document to compare values
+        const originalDoc = localDocuments.find(doc => doc.id === documentId);
+        const originalValue = originalDoc?.metadata?.[fieldId] || '';
+        
+        // Only set hasMetadataChanges if the value is different from original
+        const hasChanged = String(value).trim() !== String(originalValue).trim();
+        setHasMetadataChanges(hasChanged);
+        
         // Update bulk edited metadata for saving later
         setBulkEditedMetadata(prev => ({
             ...prev,
             [documentId]: {
-                ...(prev[documentId] || {}),
+                ...prev[documentId],
                 [fieldId]: value
             }
         }));
 
-        // Immediately update the local documents state to reflect changes in the table
-        setLocalDocuments(prev => {
-            const newDocs = prev.map(doc => {
-                if (doc.id === documentId) {
-                    return {
-                        ...doc,
-                        metadata: {
-                            ...doc.metadata,
-                            [fieldId]: value
-                        }
-                    };
+        // Only update local documents if not in spreadsheet mode
+        if (!isSpreadsheetMode) {
+            setLocalDocuments(prev => {
+                const newDocs = prev.map(doc => {
+                    if (doc.id === documentId) {
+                        return {
+                            ...doc,
+                            metadata: {
+                                ...doc.metadata,
+                                [fieldId]: value
+                            }
+                        };
+                    }
+                    return doc;
+                });
+                
+                if (typeof onDocumentsUpdate === 'function') {
+                    onDocumentsUpdate(newDocs);
                 }
-                return doc;
+                
+                return newDocs;
             });
-            
-            // Notify parent component of the changes immediately
-            if (typeof onDocumentsUpdate === 'function') {
-                onDocumentsUpdate(newDocs);
-            }
-            
-            return newDocs;
-        });
-    };
+        }
+    }, [localDocuments, isSpreadsheetMode, onDocumentsUpdate]);
 
-    // Handle metadata save
-    const handleSaveMetadata = async (e) => {
+    const handleSaveMetadata = useCallback(async (e) => {
         e.preventDefault();
         setIsSavingMetadata(true);
         
@@ -283,14 +322,12 @@ const DocumentList = ({
                 data: editedMetadataValues
             });
 
-            // Update the document in the list
             setLocalDocuments(prev => prev.map(doc => 
                 doc.id === editingMetadata.id 
                     ? { ...doc, metadata: { ...doc.metadata, ...editedMetadataValues } }
                     : doc
             ));
             
-            // Close modal and reset state
             setEditingMetadata(null);
             setEditedMetadataValues({});
             setMetadataErrors({});
@@ -300,11 +337,9 @@ const DocumentList = ({
                 message: __('Document metadata updated successfully', 'bcgov-design-system')
             });
             
-            // Clear notice after 3 seconds
             setTimeout(() => setNotice(null), 3000);
         } catch (error) {
             console.error('Error updating metadata:', error);
-            // Enhanced error handling
             const errorMessage = error.data?.message || error.message || __('Failed to update metadata', 'bcgov-design-system');
             if (error.data?.errors) {
                 setMetadataErrors(error.data.errors);
@@ -316,28 +351,44 @@ const DocumentList = ({
         } finally {
             setIsSavingMetadata(false);
         }
-    };
+    }, [editingMetadata, editedMetadataValues, apiNamespace]);
 
     // Initialize bulk edit metadata when entering spreadsheet mode
     useEffect(() => {
         if (isSpreadsheetMode) {
             const initialBulkMetadata = {};
             localDocuments.forEach(doc => {
-                initialBulkMetadata[doc.id] = doc.metadata || {};
+                initialBulkMetadata[doc.id] = { ...(doc.metadata || {}) };
             });
             setBulkEditedMetadata(initialBulkMetadata);
+            setHasMetadataChanges(false);
+        } else {
+            setBulkEditedMetadata({});
+            setHasMetadataChanges(false);
         }
     }, [isSpreadsheetMode, localDocuments]);
 
-    // Save all bulk metadata changes
-    const handleSaveBulkChanges = async () => {
+    const hasBulkMetadataChanged = useCallback(() => {
+        if (!bulkEditedMetadata || Object.keys(bulkEditedMetadata).length === 0) return false;
+        
+        return Object.entries(bulkEditedMetadata).some(([docId, editedMetadata]) => {
+            const originalDoc = localDocuments.find(doc => doc.id === docId);
+            if (!originalDoc) return false;
+            
+            return Object.entries(editedMetadata).some(([fieldId, value]) => {
+                const originalValue = originalDoc.metadata?.[fieldId] || '';
+                return String(originalValue).trim() !== String(value).trim();
+            });
+        });
+    }, [bulkEditedMetadata, localDocuments]);
+
+    const handleSaveBulkChanges = useCallback(async () => {
         setIsSavingBulk(true);
         let hasError = false;
         
         try {
-            // Create an array of promises for each document update
-            const updatePromises = Object.entries(bulkEditedMetadata).map(([docId, metadata]) => {
-                return apiFetch({
+            const updatePromises = Object.entries(bulkEditedMetadata).map(([docId, metadata]) => 
+                apiFetch({
                     path: `/${apiNamespace}/documents/${docId}/metadata`,
                     method: 'POST',
                     data: metadata
@@ -345,22 +396,32 @@ const DocumentList = ({
                     hasError = true;
                     console.error(`Error updating document ${docId}:`, error);
                     return null;
-                });
-            });
+                })
+            );
 
-            // Wait for all updates to complete
-            await Promise.all(updatePromises);
+            const results = await Promise.all(updatePromises);
+            const updatedDocs = results.filter(result => result !== null);
 
-            // Update local state and notify parent component
-            if (typeof onDocumentsUpdate === 'function') {
-                onDocumentsUpdate(documents.map(doc => ({
-                    ...doc,
-                    metadata: bulkEditedMetadata[doc.id] || doc.metadata
-                })));
+            if (updatedDocs.length > 0) {
+                setLocalDocuments(prev => prev.map(doc => {
+                    const updatedDoc = updatedDocs.find(ud => ud.id === doc.id);
+                    return updatedDoc ? {
+                        ...doc,
+                        metadata: {
+                            ...doc.metadata,
+                            ...updatedDoc.metadata
+                        }
+                    } : doc;
+                }));
+
+                if (typeof onDocumentsUpdate === 'function') {
+                    onDocumentsUpdate(localDocuments);
+                }
             }
 
-            setIsSpreadsheetMode(false);
             setBulkEditedMetadata({});
+            setHasMetadataChanges(false);
+            setIsSpreadsheetMode(false);
             
             setNotice({
                 status: hasError ? 'warning' : 'success',
@@ -377,7 +438,34 @@ const DocumentList = ({
         } finally {
             setIsSavingBulk(false);
         }
-    };
+    }, [bulkEditedMetadata, localDocuments, apiNamespace, onDocumentsUpdate]);
+
+    // Memoize the document table props to prevent unnecessary re-renders
+    const documentTableProps = useMemo(() => ({
+        documents: localDocuments,
+        selectedDocuments,
+        onSelectDocument,
+        onSelectAll,
+        onDelete: setDeleteDocument,
+        onEdit: handleEditMetadata,
+        isDeleting,
+        metadataFields,
+        isSpreadsheetMode,
+        bulkEditedMetadata,
+        onMetadataChange: handleMetadataChange,
+        formatFileSize
+    }), [
+        localDocuments,
+        selectedDocuments,
+        onSelectDocument,
+        onSelectAll,
+        isDeleting,
+        metadataFields,
+        isSpreadsheetMode,
+        bulkEditedMetadata,
+        handleEditMetadata,
+        handleMetadataChange
+    ]);
 
     return (
         <ErrorBoundary>
@@ -398,7 +486,6 @@ const DocumentList = ({
                     </Notice>
                 )}
                 
-                {/* Hidden file input */}
                 <input
                     type="file"
                     ref={fileInputRef}
@@ -408,7 +495,6 @@ const DocumentList = ({
                     multiple
                 />
 
-                {/* Actions */}
                 <div className="document-list-actions">
                     <div className="document-list-left-actions">
                         <div className="document-list-upload-hint-container">
@@ -444,7 +530,7 @@ const DocumentList = ({
                                 <Button
                                     variant="primary"
                                     onClick={handleSaveBulkChanges}
-                                    disabled={isSavingBulk}
+                                    disabled={isSavingBulk || !hasMetadataChanges}
                                     style={{ marginLeft: '8px' }}
                                 >
                                     {isSavingBulk ? (
@@ -456,23 +542,8 @@ const DocumentList = ({
                     )}
                 </div>
 
-                {/* Main content */}
-                <DocumentTable
-                    documents={localDocuments}
-                    selectedDocuments={selectedDocuments}
-                    onSelectDocument={onSelectDocument}
-                    onSelectAll={onSelectAll}
-                    onDelete={setDeleteDocument}
-                    onEdit={handleEditMetadata}
-                    isDeleting={isDeleting}
-                    metadataFields={metadataFields}
-                    isSpreadsheetMode={isSpreadsheetMode}
-                    bulkEditedMetadata={bulkEditedMetadata}
-                    onMetadataChange={handleMetadataChange}
-                    formatFileSize={formatFileSize}
-                />
+                <DocumentTable {...documentTableProps} />
                 
-                {/* Pagination */}
                 {totalPages > 1 && (
                     <div className="pagination">
                         <Button
@@ -493,20 +564,18 @@ const DocumentList = ({
                     </div>
                 )}
                 
-                {/* Drop zone overlay */}
                 {isDragging && (
                     <div className="document-drop-overlay">
                         <div className="document-drop-message">
                             <svg viewBox="0 0 64 64" width="64" height="64">
                                 <path d="M32 16v24M20 28l12-12 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                <path d="M16 48h32M12 20v28c0 2.2 1.8 4 4 4h32c2.2 0 4-1.8 4-4V20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                                <path d="M16 48h32M12 20v28c2.2 0 4-1.8 4-4V20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                             </svg>
                             {__('Drop files to upload', 'bcgov-design-system')}
                         </div>
                     </div>
                 )}
                 
-                {/* Upload feedback */}
                 <UploadFeedback
                     uploadingFiles={uploadingFiles}
                     showUploadFeedback={showUploadFeedback}
@@ -516,7 +585,6 @@ const DocumentList = ({
                     }}
                 />
 
-                {/* Delete confirmation modal */}
                 {deleteDocument && (
                     <Modal
                         title={__('Delete Document', 'bcgov-design-system')}
@@ -557,7 +625,6 @@ const DocumentList = ({
                     </Modal>
                 )}
 
-                {/* Bulk Delete confirmation modal */}
                 {bulkDeleteConfirmOpen && (
                     <Modal
                         title={__('Delete Selected Documents', 'bcgov-design-system')}
@@ -607,7 +674,6 @@ const DocumentList = ({
                     </Modal>
                 )}
 
-                {/* Metadata Edit Modal */}
                 {editingMetadata && (
                     <Modal
                         title={__('Edit Document Metadata', 'bcgov-design-system')}
@@ -702,7 +768,7 @@ const DocumentList = ({
                                     variant="primary"
                                     type="submit"
                                     isBusy={isSavingMetadata}
-                                    disabled={isSavingMetadata}
+                                    disabled={isSavingMetadata || !hasMetadataChanged()}
                                 >
                                     {__('Save Changes', 'bcgov-design-system')}
                                 </Button>

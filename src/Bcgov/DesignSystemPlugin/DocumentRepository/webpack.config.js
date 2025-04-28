@@ -8,7 +8,7 @@ module.exports = {
         'metadata-settings': './assets/js/apps/metadata-settings/index.js',
         'document-repository': [
             './assets/js/apps/document-repository/index.js',
-            './assets/css/document-repository.css'
+            './assets/scss/document-repository.scss'
         ]
     },
     output: {

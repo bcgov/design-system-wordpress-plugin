@@ -1,8 +1,34 @@
 import { __, sprintf } from '@wordpress/i18n';
 
+/**
+ * UploadFeedback Component
+ * 
+ * Displays the status of file uploads in a modal-like interface.
+ * Shows individual file status, progress, and error messages.
+ * Provides a summary of upload results and allows closing when complete.
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {Array} props.uploadingFiles - Array of files being uploaded with their status
+ * @param {boolean} props.showUploadFeedback - Flag to control visibility of the feedback UI
+ * @param {Function} props.onClose - Callback function to close the feedback UI
+ * 
+ * @example
+ * const files = [
+ *   { id: '1', name: 'document.pdf', status: 'uploading' },
+ *   { id: '2', name: 'report.pdf', status: 'success' }
+ * ];
+ * <UploadFeedback
+ *   uploadingFiles={files}
+ *   showUploadFeedback={true}
+ *   onClose={() => setShowUploadFeedback(false)}
+ * />
+ */
 const UploadFeedback = ({ uploadingFiles, showUploadFeedback, onClose }) => {
+    // Return null if feedback should not be shown or no files are being uploaded
     if (!showUploadFeedback || uploadingFiles.length === 0) return null;
 
+    // Count files by their status for summary display
     const successCount = uploadingFiles.filter(f => f.status === 'success').length;
     const errorCount = uploadingFiles.filter(f => f.status === 'error').length;
     const uploadingCount = uploadingFiles.filter(f => f.status === 'uploading').length;
@@ -11,6 +37,7 @@ const UploadFeedback = ({ uploadingFiles, showUploadFeedback, onClose }) => {
 
     return (
         <div className="upload-feedback">
+            {/* Header with title and close button */}
             <div className="upload-feedback-header">
                 <div className="upload-feedback-title">
                     <svg viewBox="0 0 24 24" width="16" height="16">
@@ -21,6 +48,7 @@ const UploadFeedback = ({ uploadingFiles, showUploadFeedback, onClose }) => {
                 <button 
                     className="upload-feedback-close"
                     onClick={() => {
+                        // Only allow closing if no files are being processed or uploaded
                         if (uploadingCount === 0 && processingCount === 0) {
                             onClose();
                         }
@@ -31,6 +59,8 @@ const UploadFeedback = ({ uploadingFiles, showUploadFeedback, onClose }) => {
                     </svg>
                 </button>
             </div>
+
+            {/* List of files being uploaded with their individual status */}
             <div className="upload-feedback-items">
                 {uploadingFiles.map(file => (
                     <div key={file.id} className={`upload-feedback-item ${file.status} ${file.isPlaceholder ? 'placeholder' : ''}`}>
@@ -59,6 +89,8 @@ const UploadFeedback = ({ uploadingFiles, showUploadFeedback, onClose }) => {
                     </div>
                 ))}
             </div>
+
+            {/* Summary section showing counts of files in each status */}
             <div className="upload-feedback-summary">
                 {hasPlaceholder ? (
                     <div className="processing">

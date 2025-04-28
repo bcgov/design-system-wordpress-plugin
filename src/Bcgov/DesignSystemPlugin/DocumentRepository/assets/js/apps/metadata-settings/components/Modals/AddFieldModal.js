@@ -1,8 +1,39 @@
+/**
+ * AddFieldModal Component
+ * 
+ * A modal component for adding new metadata fields to the document repository.
+ * Provides a form interface for configuring field properties including ID, label,
+ * type, and options (for select fields).
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {boolean} props.isOpen - Whether the modal is open
+ * @param {Function} props.onClose - Callback to close the modal
+ * @param {Object} props.field - Current field data
+ * @param {Function} props.onFieldChange - Callback for field property changes
+ * @param {Function} props.onOptionsChange - Callback for options text changes
+ * @param {Function} props.onSave - Callback to save the new field
+ * @param {Object} [props.errors={}] - Validation errors for the form
+ * @returns {JSX.Element|null} The modal component or null if not open
+ * 
+ * @example
+ * <AddFieldModal
+ *   isOpen={true}
+ *   onClose={() => setModalOpen(false)}
+ *   field={fieldData}
+ *   onFieldChange={(key, value) => updateField(key, value)}
+ *   onOptionsChange={(value) => updateOptions(value)}
+ *   onSave={() => saveField()}
+ *   errors={validationErrors}
+ * />
+ */
+
 import { 
     Modal,
     TextControl,
     SelectControl,
     TextareaControl,
+    Button,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { FIELD_TYPES } from '../../constants/fieldTypes';
@@ -16,6 +47,7 @@ const AddFieldModal = ({
     onSave,
     errors = {}
 }) => {
+    // Return null if modal is not open
     if (!isOpen) return null;
 
     return (
@@ -24,6 +56,7 @@ const AddFieldModal = ({
             onRequestClose={onClose}
             className="metadata-field-modal"
         >
+            {/* Field ID input */}
             <TextControl
                 label={__('Field ID', 'bcgov-design-system')}
                 value={field.id}
@@ -32,6 +65,7 @@ const AddFieldModal = ({
                 error={errors.id}
             />
             
+            {/* Field Label input */}
             <TextControl
                 label={__('Field Label', 'bcgov-design-system')}
                 value={field.label}
@@ -40,6 +74,7 @@ const AddFieldModal = ({
                 error={errors.label}
             />
             
+            {/* Field Type selection */}
             <SelectControl
                 label={__('Field Type', 'bcgov-design-system')}
                 value={field.type}
@@ -47,6 +82,7 @@ const AddFieldModal = ({
                 onChange={(value) => onFieldChange('type', value)}
             />
             
+            {/* Options input (only shown for select fields) */}
             {field.type === 'select' && (
                 <TextareaControl
                     label={__('Options', 'bcgov-design-system')}
@@ -57,6 +93,7 @@ const AddFieldModal = ({
                 />
             )}
             
+            {/* Modal action buttons */}
             <div className="modal-actions">
                 <Button variant="primary" onClick={onSave}>
                     {__('Add Field', 'bcgov-design-system')}

@@ -1,3 +1,34 @@
+/**
+ * EditFieldModal Component
+ * 
+ * A modal component for editing existing metadata fields in the document repository.
+ * Provides a form interface for modifying field properties including ID, label,
+ * type, and options (for select fields). Similar to AddFieldModal but pre-populated
+ * with existing field data.
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {boolean} props.isOpen - Whether the modal is open
+ * @param {Function} props.onClose - Callback to close the modal
+ * @param {Object} props.field - Current field data to edit
+ * @param {Function} props.onFieldChange - Callback for field property changes
+ * @param {Function} props.onOptionsChange - Callback for options text changes
+ * @param {Function} props.onSave - Callback to save the field changes
+ * @param {Object} [props.errors={}] - Validation errors for the form
+ * @returns {JSX.Element|null} The modal component or null if not open or no field provided
+ * 
+ * @example
+ * <EditFieldModal
+ *   isOpen={true}
+ *   onClose={() => setModalOpen(false)}
+ *   field={existingFieldData}
+ *   onFieldChange={(key, value) => updateField(key, value)}
+ *   onOptionsChange={(value) => updateOptions(value)}
+ *   onSave={() => saveChanges()}
+ *   errors={validationErrors}
+ * />
+ */
+
 import { 
     Modal,
     TextControl,
@@ -17,6 +48,7 @@ const EditFieldModal = ({
     onSave,
     errors = {}
 }) => {
+    // Return null if modal is not open or no field data provided
     if (!isOpen || !field) return null;
 
     return (
@@ -25,6 +57,7 @@ const EditFieldModal = ({
             onRequestClose={onClose}
             className="metadata-field-modal"
         >
+            {/* Field ID input */}
             <TextControl
                 label={__('Field ID', 'bcgov-design-system')}
                 value={field.id}
@@ -33,6 +66,7 @@ const EditFieldModal = ({
                 error={errors.id}
             />
             
+            {/* Field Label input */}
             <TextControl
                 label={__('Field Label', 'bcgov-design-system')}
                 value={field.label}
@@ -41,6 +75,7 @@ const EditFieldModal = ({
                 error={errors.label}
             />
             
+            {/* Field Type selection */}
             <SelectControl
                 label={__('Field Type', 'bcgov-design-system')}
                 value={field.type}
@@ -48,6 +83,7 @@ const EditFieldModal = ({
                 onChange={(value) => onFieldChange('type', value)}
             />
             
+            {/* Options input (only shown for select fields) */}
             {field.type === 'select' && (
                 <TextareaControl
                     label={__('Options', 'bcgov-design-system')}
@@ -58,6 +94,7 @@ const EditFieldModal = ({
                 />
             )}
             
+            {/* Modal action buttons */}
             <div className="modal-actions">
                 <Button variant="primary" onClick={onSave}>
                     {__('Save Changes', 'bcgov-design-system')}

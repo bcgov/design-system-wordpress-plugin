@@ -1,5 +1,26 @@
 /**
  * Custom hook for managing document data and operations
+ * 
+ * Provides a centralized way to manage document-related state and operations
+ * including fetching, updating, and deleting documents. Handles pagination,
+ * loading states, and error handling.
+ * 
+ * @module useDocuments
+ * @returns {Object} Document management utilities and state
+ * @property {Array} documents - List of documents
+ * @property {number} totalDocuments - Total number of documents
+ * @property {number} currentPage - Current page number
+ * @property {number} totalPages - Total number of pages
+ * @property {boolean} isLoading - Loading state flag
+ * @property {boolean} isDeleting - Deletion in progress flag
+ * @property {string|null} error - Error message if any
+ * @property {Object} searchParams - Current search parameters
+ * @property {Function} setSearchParams - Update search parameters
+ * @property {Function} fetchDocuments - Fetch documents from API
+ * @property {Function} deleteDocument - Delete a single document
+ * @property {Function} updateDocument - Update a single document
+ * @property {Function} bulkUpdateDocuments - Update multiple documents
+ * @property {Function} bulkDeleteDocuments - Delete multiple documents
  */
 
 import { useState, useEffect, useCallback } from '@wordpress/element';
@@ -11,18 +32,18 @@ import apiFetch from '@wordpress/api-fetch';
  * @returns {Object} Document data and operations
  */
 export const useDocuments = () => {
-    // Document data
+    // Document data state
     const [documents, setDocuments] = useState([]);
     const [totalDocuments, setTotalDocuments] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     
-    // Loading states
+    // Loading and error states
     const [isLoading, setIsLoading] = useState(true);
     const [isDeleting, setIsDeleting] = useState(false);
     const [error, setError] = useState(null);
     
-    // Pagination parameters
+    // Search and pagination parameters
     const [searchParams, setSearchParams] = useState({
         page: 1,
         per_page: window.documentRepositorySettings?.perPage || 20,
@@ -32,6 +53,13 @@ export const useDocuments = () => {
     
     /**
      * Fetch documents from the API
+     * 
+     * Retrieves documents based on current search parameters.
+     * Updates document list, pagination info, and loading states.
+     * 
+     * @async
+     * @function fetchDocuments
+     * @throws {Error} If API request fails or response is invalid
      */
     const fetchDocuments = useCallback(async () => {
         setIsLoading(true);
@@ -85,8 +113,11 @@ export const useDocuments = () => {
     /**
      * Delete a document
      * 
-     * @param {number} documentId Document ID to delete
+     * @async
+     * @function deleteDocument
+     * @param {number} documentId - Document ID to delete
      * @returns {Promise<boolean>} Success status
+     * @throws {Error} If deletion fails
      */
     const deleteDocument = async (documentId) => {
         setIsDeleting(true);
@@ -114,9 +145,12 @@ export const useDocuments = () => {
     /**
      * Update a document
      * 
-     * @param {number} documentId Document ID to update
-     * @param {Object} data Document data to update
+     * @async
+     * @function updateDocument
+     * @param {number} documentId - Document ID to update
+     * @param {Object} data - Document data to update
      * @returns {Promise<Object|null>} Updated document or null on error
+     * @throws {Error} If update fails
      */
     const updateDocument = async (documentId, data) => {
         try {
@@ -141,9 +175,12 @@ export const useDocuments = () => {
     /**
      * Bulk update documents
      * 
-     * @param {Array<number>} documentIds Document IDs to update
-     * @param {Object} data Data to update for all documents
+     * @async
+     * @function bulkUpdateDocuments
+     * @param {Array<number>} documentIds - Document IDs to update
+     * @param {Object} data - Data to update for all documents
      * @returns {Promise<boolean>} Success status
+     * @throws {Error} If bulk update fails
      */
     const bulkUpdateDocuments = async (documentIds, data) => {
         try {
@@ -164,8 +201,11 @@ export const useDocuments = () => {
     /**
      * Bulk delete documents
      * 
-     * @param {Array<number>} documentIds Document IDs to delete
+     * @async
+     * @function bulkDeleteDocuments
+     * @param {Array<number>} documentIds - Document IDs to delete
      * @returns {Promise<boolean>} Success status
+     * @throws {Error} If bulk delete fails
      */
     const bulkDeleteDocuments = async (documentIds) => {
         try {

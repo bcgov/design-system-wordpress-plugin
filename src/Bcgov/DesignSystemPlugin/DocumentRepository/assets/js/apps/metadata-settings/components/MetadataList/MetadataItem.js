@@ -1,12 +1,42 @@
+/**
+ * MetadataItem Component
+ * 
+ * A component that renders an individual metadata field item with move up/down controls.
+ * Provides a consistent layout for metadata field items and handles reordering functionality.
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} props.children - The content of the metadata field item
+ * @param {Function} props.onMoveUp - Callback function to move the item up in the list
+ * @param {Function} props.onMoveDown - Callback function to move the item down in the list
+ * @param {number} props.index - The current position of the item in the list
+ * @param {number} props.total - The total number of items in the list
+ * @returns {JSX.Element} A div element containing the metadata field info and move controls
+ * 
+ * @example
+ * <MetadataItem
+ *   onMoveUp={() => handleMoveUp(index)}
+ *   onMoveDown={() => handleMoveDown(index)}
+ *   index={0}
+ *   total={3}
+ * >
+ *   <MetadataFieldContent />
+ * </MetadataItem>
+ */
+
 import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
 const MetadataItem = ({ children, onMoveUp, onMoveDown, index, total }) => (
     <div className="metadata-field-item">
+        {/* Main content area for the metadata field */}
         <div className="metadata-field-info">
             {children}
         </div>
+        
+        {/* Move controls - only show up/down buttons when applicable */}
         <div className="metadata-field-move-actions">
+            {/* Show move up button if not the first item */}
             {index > 0 && (
                 <Button
                     variant="secondary"
@@ -17,6 +47,8 @@ const MetadataItem = ({ children, onMoveUp, onMoveDown, index, total }) => (
                     ↑
                 </Button>
             )}
+            
+            {/* Show move down button if not the last item */}
             {index < total - 1 && (
                 <Button
                     variant="secondary"

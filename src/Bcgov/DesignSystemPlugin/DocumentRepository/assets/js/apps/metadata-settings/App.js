@@ -1,7 +1,11 @@
 /**
- * Metadata Settings App
+ * Metadata Settings Application
  * 
- * This component manages the metadata fields configuration.
+ * Main application component for managing document metadata fields.
+ * Provides functionality for adding, editing, deleting, and reordering
+ * metadata fields that can be associated with documents.
+ * 
+ * @module MetadataApp
  */
 
 import { useState, useEffect, useMemo, useCallback } from '@wordpress/element';
@@ -20,13 +24,34 @@ import {
 import { __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
 
-// Since drag and drop is not available in @wordpress/components, we'll use a simple list
+/**
+ * Metadata List Component
+ * 
+ * Container component for displaying a list of metadata fields.
+ * 
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} props.children - Child components to render
+ * @returns {JSX.Element} Metadata list container
+ */
 const MetadataList = ({ children }) => (
     <div className="metadata-fields-list">
         {children}
     </div>
 );
 
+/**
+ * Metadata Item Component
+ * 
+ * Individual metadata field item with move controls.
+ * 
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} props.children - Child components to render
+ * @param {Function} props.onMoveUp - Callback for moving item up
+ * @param {Function} props.onMoveDown - Callback for moving item down
+ * @param {number} props.index - Current item index
+ * @param {number} props.total - Total number of items
+ * @returns {JSX.Element} Metadata item with move controls
+ */
 const MetadataItem = ({ children, onMoveUp, onMoveDown, index, total }) => (
     <div className="metadata-field-item">
         <div className="metadata-field-info">
@@ -59,6 +84,13 @@ const MetadataItem = ({ children, onMoveUp, onMoveDown, index, total }) => (
 
 /**
  * Field Type Options
+ * 
+ * Available metadata field types and their display labels.
+ * 
+ * @constant {Object} FIELD_TYPES
+ * @property {string} text - Text field type
+ * @property {string} select - Select/dropdown field type
+ * @property {string} date - Date field type
  */
 const FIELD_TYPES = {
     text: __('Text', 'bcgov-design-system'),
@@ -66,7 +98,16 @@ const FIELD_TYPES = {
     date: __('Date', 'bcgov-design-system'),
 };
 
-// Custom hook for API operations
+/**
+ * Custom hook for metadata API operations
+ * 
+ * Provides methods for fetching and saving metadata fields.
+ * 
+ * @function useMetadataAPI
+ * @returns {Object} API methods
+ * @returns {Function} fetchFields - Fetches metadata fields
+ * @returns {Function} saveFields - Saves metadata fields
+ */
 const useMetadataAPI = () => {
     const { apiNamespace } = window.documentRepositorySettings;
     
@@ -103,7 +144,15 @@ const useMetadataAPI = () => {
     return { fetchFields, saveFields };
 };
 
-// Field validation utility
+/**
+ * Validates a metadata field configuration
+ * 
+ * @function validateField
+ * @param {Object} field - Field configuration to validate
+ * @param {Array} [existingFields=[]] - Existing fields for duplicate checking
+ * @param {number} [currentIndex=null] - Current field index
+ * @returns {Object} Validation errors
+ */
 const validateField = (field, existingFields = [], currentIndex = null) => {
     const errors = {};
     
@@ -115,7 +164,6 @@ const validateField = (field, existingFields = [], currentIndex = null) => {
         errors.label = __('Field label is required', 'bcgov-design-system');
     }
     
-    // Check for duplicate ID
     const hasDuplicate = existingFields.some(
         (existing, index) => existing.id === field.id && index !== currentIndex
     );
@@ -130,7 +178,15 @@ const validateField = (field, existingFields = [], currentIndex = null) => {
     return errors;
 };
 
-// Helper function for updating modal field state
+/**
+ * Updates modal field state
+ * 
+ * @function updateModalField
+ * @param {Object} state - Current state
+ * @param {string} modalType - Type of modal (add/edit)
+ * @param {Object} updates - Field updates to apply
+ * @returns {Object} Updated state
+ */
 const updateModalField = (state, modalType, updates) => ({
     ...state,
     modals: {
@@ -145,7 +201,14 @@ const updateModalField = (state, modalType, updates) => ({
     }
 });
 
-// Helper function for closing a modal
+/**
+ * Closes a modal
+ * 
+ * @function closeModal
+ * @param {Object} state - Current state
+ * @param {string} modalType - Type of modal to close
+ * @returns {Object} Updated state
+ */
 const closeModal = (state, modalType) => ({
     ...state,
     modals: {
@@ -157,7 +220,12 @@ const closeModal = (state, modalType) => ({
     }
 });
 
-// Initial state for a new field
+/**
+ * Gets initial state for a new field
+ * 
+ * @function getInitialFieldState
+ * @returns {Object} Initial field state
+ */
 const getInitialFieldState = () => ({
     id: '',
     label: '',
@@ -167,7 +235,10 @@ const getInitialFieldState = () => ({
 });
 
 /**
- * Metadata Settings App component
+ * Main Metadata Settings Application Component
+ * 
+ * @component MetadataApp
+ * @returns {JSX.Element} Metadata settings application
  */
 const MetadataApp = () => {
     // Consolidated state

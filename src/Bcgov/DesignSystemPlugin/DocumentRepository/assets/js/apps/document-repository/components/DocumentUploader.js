@@ -1,7 +1,28 @@
 /**
- * Document Uploader Component
+ * DocumentUploader Component
  * 
- * Handles file uploads and document metadata input.
+ * A comprehensive component for handling document uploads with metadata.
+ * Supports both drag-and-drop and file selection, with progress tracking
+ * and validation. Can operate in both modal and full-page modes.
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {Array} props.metadataFields - Array of metadata field definitions
+ * @param {Function} props.onUploadSuccess - Callback when upload completes successfully
+ * @param {File} [props.selectedFile] - Optional pre-selected file
+ * @param {boolean} [props.modalMode=false] - Whether to render in modal mode
+ * 
+ * @example
+ * const metadataFields = [
+ *   { id: 'title', label: 'Title', type: 'text', required: true },
+ *   { id: 'category', label: 'Category', type: 'select', options: ['A', 'B', 'C'] }
+ * ];
+ * 
+ * <DocumentUploader
+ *   metadataFields={metadataFields}
+ *   onUploadSuccess={(document) => console.log('Uploaded:', document)}
+ *   modalMode={true}
+ * />
  */
 
 import { useState, useRef, useEffect } from '@wordpress/element';
@@ -18,6 +39,20 @@ import {
     CardFooter,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * State Management
+ * 
+ * The component manages several pieces of state:
+ * - file: The currently selected file
+ * - isUploading: Upload progress flag
+ * - uploadProgress: Upload progress percentage
+ * - error: Error message if any
+ * - uploadSuccess: Success state flag
+ * - isDragging: Drag-and-drop state
+ * - title: Document title
+ * - metadata: Document metadata values
+ */
 
 /**
  * Document Uploader component
@@ -73,7 +108,17 @@ const DocumentUploader = ({
         }
     }, [selectedFile]);
     
-    // Validate file without setting state
+    /**
+     * File Validation
+     * 
+     * Validates files based on:
+     * - File size limits
+     * - Allowed file types
+     * - Required metadata fields
+     * 
+     * @param {File} file - File to validate
+     * @returns {boolean} Whether the file is valid
+     */
     const validateFile = (file) => {
         if (!file) return false;
         
@@ -193,7 +238,18 @@ const DocumentUploader = ({
         }));
     };
     
-    // Upload the document
+    /**
+     * Upload Process
+     * 
+     * Handles the document upload process:
+     * 1. Validates required fields
+     * 2. Creates FormData with file and metadata
+     * 3. Tracks upload progress
+     * 4. Handles success/error states
+     * 5. Notifies parent component on success
+     * 
+     * @async
+     */
     const handleUpload = async () => {
         console.log('Beginning upload process for file:', file?.name);
         
@@ -324,7 +380,17 @@ const DocumentUploader = ({
         }
     };
     
-    // Render form field based on field type
+    /**
+     * Metadata Field Rendering
+     * 
+     * Dynamically renders form fields based on metadata field definitions:
+     * - Text fields
+     * - Select fields
+     * - Date fields
+     * 
+     * @param {Object} field - Metadata field definition
+     * @returns {JSX.Element} Rendered form field
+     */
     const renderField = (field) => {
         const { id, label, type, options, required } = field;
         
@@ -375,6 +441,20 @@ const DocumentUploader = ({
         }
     };
     
+    /**
+     * Layout Modes
+     * 
+     * The component supports two layout modes:
+     * 1. Modal Mode:
+     *    - Simplified interface
+     *    - Pre-selected file support
+     *    - Compact metadata form
+     * 
+     * 2. Full Mode:
+     *    - Card-based layout
+     *    - Drag-and-drop support
+     *    - Full metadata form
+     */
     // Render content based on whether we're in modal mode or not
     const renderContent = () => {
         return (
@@ -493,6 +573,20 @@ const DocumentUploader = ({
         );
     };
     
+    /**
+     * Layout Modes
+     * 
+     * The component supports two layout modes:
+     * 1. Modal Mode:
+     *    - Simplified interface
+     *    - Pre-selected file support
+     *    - Compact metadata form
+     * 
+     * 2. Full Mode:
+     *    - Card-based layout
+     *    - Drag-and-drop support
+     *    - Full metadata form
+     */
     // If in modal mode, return a simplified layout
     if (modalMode) {
         console.log('DocumentUploader rendering in modal mode with file:', file?.name);

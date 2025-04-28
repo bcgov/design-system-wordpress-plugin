@@ -1,16 +1,30 @@
-// Variables
-$primary-color: #007cba;
-$error-color: #cc1818;
-$success-color: #4caf50;
-$border-color: #e0e0e0;
-$text-color: #1e1e1e;
-$text-secondary: #666;
-$background-light: #f9f9f9;
-$background-primary-light: #f0f7ff;
-$background-error-light: #fcf0f1;
-$background-success-light: #f1f8e9;
+/**
+ * Document Repository Styles
+ * 
+ * This file contains all styles for the Document Repository interface.
+ * It includes styles for the document list, table, upload functionality,
+ * and various UI components used throughout the application.
+ */
+
+@use "sass:color";
+
+// Color Variables
+// ---------------
+// Define the color palette used throughout the application
+$primary-color: #007cba;      // Main brand color
+$error-color: #cc1818;        // Error states and destructive actions
+$success-color: #4caf50;      // Success states
+$border-color: #e0e0e0;       // Border colors
+$text-color: #1e1e1e;         // Primary text color
+$text-secondary: #666;         // Secondary text color
+$background-light: #f9f9f9;    // Light background
+$background-primary-light: #f0f7ff;  // Light primary background
+$background-error-light: #fcf0f1;    // Light error background
+$background-success-light: #f1f8e9;  // Light success background
 
 // Mixins
+// ------
+// Reusable style patterns
 @mixin flex-center {
   display: flex;
   align-items: center;
@@ -28,11 +42,13 @@ $background-success-light: #f1f8e9;
   transition: all 0.2s ease;
 }
 
-// Document Repository Styles
+// Main Document Repository Container
+// --------------------------------
 .dswp-document-repository {
   margin: 20px 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 
+  // Loading State
   &-loading {
     @include flex-center;
     flex-direction: column;
@@ -40,6 +56,7 @@ $background-success-light: #f1f8e9;
     text-align: center;
   }
 
+  // Tab Navigation
   &-tabs {
     margin-bottom: 20px;
 
@@ -61,7 +78,8 @@ $background-success-light: #f1f8e9;
   }
 }
 
-// Document List
+// Document List Styles
+// ------------------
 .document-list {
   background-color: #fff;
   border-radius: 4px;
@@ -70,11 +88,13 @@ $background-success-light: #f1f8e9;
   border: 1px solid $border-color;
   @include transition;
 
+  // Hover State
   &:hover {
     border-color: #b4d6f3;
     box-shadow: 0 0 0 1px rgba($primary-color, 0.1);
   }
 
+  // Dropzone State
   &.document-list-dropzone {
     &:hover::after {
       content: '';
@@ -92,13 +112,15 @@ $background-success-light: #f1f8e9;
   }
 }
 
-// Document Table
+// Document Table Styles
+// -------------------
 .document-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
   table-layout: fixed;
 
+  // Table Header
   &-header {
     display: table-header-group;
     background-color: #f0f0f1;
@@ -107,10 +129,12 @@ $background-success-light: #f1f8e9;
     z-index: 1;
   }
 
+  // Table Body
   &-body {
     display: table-row-group;
   }
 
+  // Table Row
   &-row {
     display: table-row;
     border-bottom: 1px solid $border-color;
@@ -125,6 +149,7 @@ $background-success-light: #f1f8e9;
     }
   }
 
+  // Table Cell
   &-cell {
     display: table-cell;
     padding: 12px;
@@ -134,6 +159,7 @@ $background-success-light: #f1f8e9;
     white-space: nowrap;
     vertical-align: middle;
 
+    // Column Widths
     &:nth-child(1) { width: 40px; }
     &:nth-child(2) { width: 200px; }
     &.metadata-column {
@@ -144,10 +170,11 @@ $background-success-light: #f1f8e9;
     &:nth-last-child(3) { width: 120px; }
     &:nth-last-child(2) { width: 120px; }
     &:last-child {
-      width: 100px;
-      text-align: right;
+      padding: 8px;
+      min-width: 110px;
     }
 
+    // Header Cell
     &.header {
       font-weight: bold;
       background-color: #f0f0f1;
@@ -157,13 +184,85 @@ $background-success-light: #f1f8e9;
 }
 
 // Document Actions
+// --------------
 .document-action-buttons {
   display: flex;
   gap: 8px;
   justify-content: flex-end;
+
+  button, a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    border: 1px solid $border-color;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    color: $text-secondary;
+    min-width: 32px;
+    min-height: 32px;
+
+    // Hover State
+    &:hover {
+      background: $primary-color;
+      border-color: $primary-color;
+      color: white;
+      
+      svg, .dashicon {
+        color: white;
+        fill: white;
+        opacity: 0.9;
+      }
+    }
+
+    // Active State
+    &:active {
+      background: color.scale($primary-color, $lightness: -10%);
+      border-color: color.scale($primary-color, $lightness: -10%);
+    }
+
+    // Focus State
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px white, 0 0 0 4px $primary-color;
+    }
+
+    // Destructive Actions
+    &.is-destructive {
+      &:hover {
+        background: $error-color;
+        border-color: $error-color;
+        color: white;
+      }
+
+      &:active {
+        background: color.scale($error-color, $lightness: -10%);
+        border-color: color.scale($error-color, $lightness: -10%);
+      }
+
+      &:focus {
+        box-shadow: 0 0 0 2px white, 0 0 0 4px $error-color;
+      }
+    }
+
+    // Icons
+    svg, .dashicon {
+      width: 16px;
+      height: 16px;
+      color: currentColor;
+      fill: currentColor;
+      transition: all 0.2s ease;
+      margin: 0;
+    }
+  }
 }
 
 // Pagination
+// ---------
 .document-pagination {
   display: flex;
   justify-content: center;
@@ -172,6 +271,7 @@ $background-success-light: #f1f8e9;
 }
 
 // Bulk Actions
+// -----------
 .document-bulk-actions {
   margin-bottom: 20px;
 
@@ -196,6 +296,7 @@ $background-success-light: #f1f8e9;
 }
 
 // Upload Feedback
+// -------------
 .upload-feedback {
   position: fixed;
   bottom: 20px;
@@ -209,6 +310,7 @@ $background-success-light: #f1f8e9;
   border: 1px solid #ddd;
   animation: slide-in 0.3s ease-out;
 
+  // Header
   &-header {
     display: flex;
     justify-content: space-between;
@@ -218,6 +320,7 @@ $background-success-light: #f1f8e9;
     border-bottom: 1px solid #eee;
   }
 
+  // Title
   &-title {
     font-weight: 600;
     font-size: 14px;
@@ -234,6 +337,7 @@ $background-success-light: #f1f8e9;
     }
   }
 
+  // Close Button
   &-close {
     @include button-reset;
     padding: 6px;
@@ -248,6 +352,7 @@ $background-success-light: #f1f8e9;
     }
   }
 
+  // Items Container
   &-items {
     max-height: 300px;
     overflow-y: auto;
@@ -255,6 +360,7 @@ $background-success-light: #f1f8e9;
     padding: 4px;
   }
 
+  // Individual Items
   &-item {
     padding: 12px;
     border-radius: 6px;
@@ -273,6 +379,7 @@ $background-success-light: #f1f8e9;
       margin-bottom: 0;
     }
 
+    // Uploading State
     &.uploading {
       background: $background-primary-light;
       border-color: #90caf9;
@@ -289,6 +396,7 @@ $background-success-light: #f1f8e9;
       }
     }
 
+    // Success State
     &.success {
       background: $background-success-light;
       border-color: #a5d6a7;
@@ -296,12 +404,14 @@ $background-success-light: #f1f8e9;
       animation: success-pulse 1s ease-out;
     }
 
+    // Error State
     &.error {
       background: #fef2f2;
       border-color: #fecaca;
       color: $error-color;
     }
 
+    // Processing State
     &.processing {
       background: #f5f5f5;
       border-color: $border-color;
@@ -322,6 +432,7 @@ $background-success-light: #f1f8e9;
 }
 
 // Animations
+// ---------
 @keyframes slide-in {
   from {
     transform: translateY(100%);
@@ -369,7 +480,8 @@ $background-success-light: #f1f8e9;
   to { transform: rotate(360deg); }
 }
 
-// Responsive styles
+// Responsive Styles
+// ---------------
 @media screen and (max-width: 782px) {
   .document-table {
     display: block;
@@ -430,7 +542,8 @@ $background-success-light: #f1f8e9;
   }
 }
 
-// Modal styles
+// Modal Styles
+// -----------
 .metadata-edit-modal {
   .components-modal__content {
     padding: 24px;
@@ -494,11 +607,743 @@ $background-success-light: #f1f8e9;
       margin-top: 24px;
       padding-top: 16px;
       border-top: 1px solid $border-color;
+
+      .components-button {
+        height: 36px;
+        min-width: 80px;
+        padding: 0 16px;
+        font-size: 14px;
+        font-weight: 500;
+        justify-content: center;
+        transition: all 0.2s ease;
+
+        &:not(.is-primary) {
+          color: $primary-color;
+          border: 1px solid $primary-color;
+          background: transparent;
+
+          &:hover:not(:disabled) {
+            background: color.scale($primary-color, $lightness: -15%);
+            color: white;
+            border-color: transparent;
+          }
+        }
+
+        &.is-primary {
+          background: $primary-color;
+          color: white;
+          border: none;
+
+          &:hover:not(:disabled) {
+            background: color.scale($primary-color, $lightness: -10%);
+            color: white;
+          }
+
+          &:focus:not(:disabled) {
+            box-shadow: 0 0 0 2px white, 0 0 0 4px $primary-color;
+          }
+        }
+      }
     }
   }
 }
 
-// Import any additional SCSS partials here if needed
-// @import "components/upload-modal";
-// @import "components/document-table";
-// etc... 
+// Document Uploader Styles
+// ----------------------
+.document-uploader {
+  .components-card {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  &-dropzone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    background-color: $background-light;
+    margin-bottom: 24px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    min-height: 200px;
+    position: relative;
+
+    &:hover {
+      border-color: $primary-color;
+      background-color: $background-primary-light;
+    }
+
+    &.dragging {
+      border-color: $primary-color;
+      background-color: #e6f7ff;
+      box-shadow: 0 0 0 1px $primary-color, 0 0 8px rgba($primary-color, 0.4);
+    }
+
+    &.has-file {
+      border-style: solid;
+      border-color: $success-color;
+      background-color: $background-success-light;
+      padding: 20px;
+      min-height: auto;
+    }
+
+    .dropzone-icon {
+      color: $primary-color;
+      margin-bottom: 16px;
+    }
+
+    .dropzone-text {
+      text-align: center;
+
+      .primary-text {
+        font-size: 16px;
+        font-weight: 500;
+        margin-bottom: 8px;
+        color: $text-color;
+      }
+
+      .secondary-text {
+        font-size: 12px;
+        color: $text-secondary;
+        margin: 4px 0;
+      }
+    }
+
+    .selected-file {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 12px;
+      background-color: white;
+      border-radius: 4px;
+      border: 1px solid $border-color;
+
+      .file-name {
+        font-weight: 500;
+        word-break: break-all;
+        margin-right: 8px;
+      }
+
+      .remove-file {
+        @include button-reset;
+        padding: 4px 8px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        @include transition;
+
+        &:hover {
+          background-color: #f1f1f1;
+          color: $error-color;
+        }
+      }
+    }
+  }
+}
+
+// Upload Button Styles
+// ------------------
+.upload-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: color.scale($primary-color, $lightness: -10%);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  @include transition;
+
+  &:hover {
+    background-color: color.scale($primary-color, $lightness: -20%);
+  }
+
+  &:focus {
+    outline: 2px solid $primary-color;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+
+  .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+// Compact Upload Zone
+// -----------------
+.compact-dropzone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 2px dashed #ccc;
+  border-radius: 4px;
+  background-color: $background-light;
+  cursor: pointer;
+  @include transition;
+
+  &:hover {
+    border-color: $primary-color;
+    background-color: $background-primary-light;
+  }
+
+  &.dragging {
+    border-color: $primary-color;
+    background-color: #e6f7ff;
+    box-shadow: 0 0 0 1px $primary-color, 0 0 8px rgba($primary-color, 0.4);
+  }
+
+  .dropzone-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: $text-color;
+
+    svg {
+      color: $primary-color;
+    }
+  }
+}
+
+// Upload Progress
+// -------------
+.upload-progress {
+  margin-bottom: 24px;
+
+  progress {
+    width: 100%;
+    height: 12px;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 8px;
+
+    &::-webkit-progress-bar {
+      background-color: #f0f0f0;
+      border-radius: 6px;
+    }
+
+    &::-webkit-progress-value {
+      background-color: $primary-color;
+      border-radius: 6px;
+    }
+
+    &::-moz-progress-bar {
+      background-color: $primary-color;
+      border-radius: 6px;
+    }
+  }
+
+  p {
+    margin: 0;
+    text-align: center;
+    font-size: 12px;
+    color: $text-secondary;
+  }
+}
+
+// WordPress Component Button Overrides
+// ---------------------------------
+.components-button {
+  &.is-primary {
+    background-color: $primary-color;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    height: auto;
+    font-size: 13px;
+    
+    &:hover:not(:disabled) {
+      background-color: color.scale($primary-color, $lightness: -10%);
+    }
+    
+    &:focus:not(:disabled) {
+      box-shadow: 0 0 0 2px white, 0 0 0 4px $primary-color;
+    }
+    
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  &.is-secondary {
+    color: $primary-color;
+    border-color: $primary-color;
+    
+    &:hover:not(:disabled) {
+      background-color: color.scale($primary-color, $lightness: -10%);
+    }
+  }
+
+  &.has-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    .dashicon {
+      margin: 0;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+// Document List Actions
+// -------------------
+.document-list-actions {
+  display: flex;
+  align-items: center;
+  margin: 1rem 0;
+  padding: 0 1rem;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  gap: 2rem;
+
+  .document-list-left-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .mode-toggle {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+}
+
+.document-list-upload-hint-container {
+  margin-right: 1rem;
+}
+
+.document-list-upload-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #f0f0f0;
+    border-color: #ccc;
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.bulk-delete-button {
+  margin-left: 1rem;
+}
+
+.document-table {
+  margin: 1.5rem 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+// Mode Toggle Buttons
+// -----------------
+.mode-toggle {
+  button.components-button {
+    height: 36px;
+    padding: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.2s ease;
+
+    &.is-primary {
+      background: $primary-color !important;
+      color: white;
+
+      &:hover:not(:disabled) {
+        background: color.scale($primary-color, $lightness: -15%) !important;
+        color: white;
+        
+        svg, .dashicon {
+          color: white;
+          opacity: 0.9;
+        }
+      }
+
+      &:active:not(:disabled) {
+        background: color.scale($primary-color, $lightness: -20%) !important;
+      }
+    }
+
+    &.is-secondary {
+      $dark-gray: #1e1e1e;
+      background: transparent !important;
+      color: $dark-gray !important;
+
+      &:hover:not(:disabled) {
+        background: $dark-gray !important;
+        color: white !important;
+        border-color: $dark-gray !important;
+
+        svg, .dashicon {
+          color: white;
+          opacity: 0.9;
+        }
+      }
+
+      &:active:not(:disabled) {
+        background: color.scale($dark-gray, $lightness: -10%) !important;
+        color: white !important;
+      }
+
+      &:focus:not(:disabled) {
+        box-shadow: 0 0 0 2px white, 0 0 0 4px $dark-gray !important;
+      }
+    }
+
+    svg, .dashicon {
+      color: currentColor;
+      transition: all 0.2s ease;
+    }
+  }
+}
+
+// WordPress Button Overrides
+// -----------------------
+.components-button.is-secondary {
+  &.mode-toggle-button {
+    $dark-gray: #1e1e1e;
+    background: transparent;
+    color: $dark-gray;
+    border: 1px solid $dark-gray;
+
+    &:hover:not(:disabled) {
+      background: $dark-gray;
+      color: white;
+      border-color: $dark-gray;
+    }
+
+    &:active:not(:disabled) {
+      background: color.scale($dark-gray, $lightness: -10%);
+      color: white;
+    }
+  }
+}
+
+// Delete Form Styles
+// ----------------
+.document-delete-form {
+  padding: 24px;
+
+  .delete-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+    background-color: $background-error-light;
+    border-radius: 6px;
+    border: 1px solid color.adjust($error-color, $alpha: -0.8);
+    margin-bottom: 24px;
+
+    .warning-icon {
+      color: $error-color;
+      flex-shrink: 0;
+      margin-top: 2px;
+
+      svg {
+        width: 24px;
+        height: 24px;
+        fill: currentColor;
+      }
+    }
+
+    .warning-content {
+      color: color.scale($error-color, $lightness: -10%);
+      font-size: 14px;
+      line-height: 1.5;
+
+      strong {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 16px;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .document-info {
+    background: $background-light;
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 24px;
+
+    h3 {
+      margin: 0 0 12px 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: $text-color;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px 16px;
+      font-size: 13px;
+
+      .label {
+        color: $text-secondary;
+        font-weight: 500;
+      }
+
+      .value {
+        color: $text-color;
+      }
+    }
+  }
+
+  .delete-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid $border-color;
+
+    button {
+      min-width: 100px;
+      height: 36px;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 0 16px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+
+      &.cancel-button {
+        background: transparent;
+        border: 1px solid $border-color;
+        color: $text-secondary;
+
+        &:hover:not(:disabled) {
+          background: $background-light;
+          border-color: color.scale($border-color, $lightness: -10%);
+          color: $text-color;
+        }
+
+        &:active:not(:disabled) {
+          background: color.scale($background-light, $lightness: -5%);
+        }
+      }
+
+      &.delete-button {
+        background: $error-color;
+        border: none;
+        color: white;
+
+        &:hover:not(:disabled) {
+          background: color.scale($error-color, $lightness: -10%);
+          transform: translateY(-1px);
+          box-shadow: 0 2px 4px rgba($error-color, 0.2);
+        }
+
+        &:active:not(:disabled) {
+          transform: translateY(0);
+          background: color.scale($error-color, $lightness: -15%);
+          box-shadow: none;
+        }
+
+        &:focus:not(:disabled) {
+          box-shadow: 0 0 0 2px white, 0 0 0 4px $error-color;
+        }
+      }
+    }
+  }
+}
+
+// Delete Confirmation Content
+// ------------------------
+.delete-confirmation-content {
+  padding: 24px;
+
+  > p:first-child {
+    font-size: 16px;
+    font-weight: 500;
+    color: $text-color;
+    margin: 0 0 24px 0;
+  }
+
+  .documents-to-delete {
+    background-color: #f0f0f0;
+    padding: 16px;
+    border-radius: 4px;
+    margin-bottom: 24px;
+
+    h4 {
+      margin: 0 0 12px 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: $text-color;
+    }
+
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+
+      li {
+        font-size: 14px;
+        color: $text-color;
+        line-height: 1.4;
+      }
+    }
+  }
+
+  .delete-warning {
+    color: $error-color;
+    font-size: 14px;
+    margin: 0 0 24px 0;
+    padding: 12px 16px;
+    background: $background-error-light;
+    border-radius: 4px;
+    line-height: 1.4;
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 16px;
+    border-top: 1px solid $border-color;
+
+    .components-button {
+      height: 36px;
+      min-width: 80px;
+      padding: 0 16px;
+      font-size: 14px;
+      font-weight: 500;
+      justify-content: center;
+      transition: all 0.2s ease;
+
+      &.is-destructive {
+        background: $error-color;
+        color: white;
+        border: none;
+
+        &:hover:not(:disabled) {
+          background: color.scale($error-color, $lightness: -10%);
+          color: white;
+        }
+
+        &:focus:not(:disabled) {
+          box-shadow: 0 0 0 2px white, 0 0 0 4px $error-color;
+        }
+      }
+
+      &:not(.is-destructive) {
+        color: $primary-color;
+        border: 1px solid $primary-color;
+        background: transparent;
+
+        &:hover:not(:disabled) {
+          background: color.scale($primary-color, $lightness: -15%);
+          color: white;
+          border-color: transparent;
+        }
+      }
+    }
+  }
+}
+
+// Action Buttons in Table Cells
+// --------------------------
+.document-table-cell.actions {
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+
+    .components-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      border: 1px solid $border-color;
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      padding: 0;
+      color: $text-secondary;
+      min-width: 32px;
+      min-height: 32px;
+      margin: 0;
+
+      &:hover {
+        background: $primary-color;
+        border-color: $primary-color;
+        color: white;
+        
+        svg {
+          color: white;
+          fill: white;
+          opacity: 0.9;
+        }
+      }
+
+      &:active {
+        background: color.scale($primary-color, $lightness: -10%);
+        border-color: color.scale($primary-color, $lightness: -10%);
+      }
+
+      &:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px white, 0 0 0 4px $primary-color;
+      }
+
+      &.is-destructive {
+        &:hover {
+          background: $error-color;
+          border-color: $error-color;
+          color: white;
+        }
+
+        &:active {
+          background: color.scale($error-color, $lightness: -10%);
+          border-color: color.scale($error-color, $lightness: -10%);
+        }
+
+        &:focus {
+          box-shadow: 0 0 0 2px white, 0 0 0 4px $error-color;
+        }
+      }
+
+      svg {
+        width: 16px;
+        height: 16px;
+        color: currentColor;
+        fill: currentColor;
+        transition: all 0.2s ease;
+        margin: 0;
+      }
+    }
+  }
+} 
