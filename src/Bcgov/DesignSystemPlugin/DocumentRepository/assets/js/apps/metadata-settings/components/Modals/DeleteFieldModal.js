@@ -3,6 +3,15 @@
  * 
  * A modal component for confirming metadata field deletion.
  * Provides a warning message and field information before deletion.
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {boolean} props.isOpen - Whether the modal is open
+ * @param {Function} props.onClose - Callback to close the modal
+ * @param {Function} props.onConfirm - Callback to confirm deletion
+ * @param {Object} props.field - The field to be deleted
+ * @param {boolean} props.isDeleting - Flag indicating if deletion is in progress
+ * @returns {JSX.Element|null} The modal component or null if not open or no field provided
  */
 
 import { Modal, Button } from '@wordpress/components';
@@ -16,6 +25,7 @@ const DeleteFieldModal = ({
     field,
     isDeleting
 }) => {
+    // Return null if modal is not open or no field data provided
     if (!isOpen || !field) return null;
 
     return (
@@ -24,6 +34,7 @@ const DeleteFieldModal = ({
             onRequestClose={onClose}
             className="metadata-field-modal"
         >
+            {/* Warning section with icon and message */}
             <div className="document-delete-form">
                 <div className="delete-warning">
                     <div className="warning-icon">
@@ -37,6 +48,7 @@ const DeleteFieldModal = ({
                     </div>
                 </div>
 
+                {/* Field information display */}
                 <div className="document-info">
                     <h3>{__('Field Information', 'bcgov-design-system')}</h3>
                     <div className="info-grid">
@@ -49,6 +61,7 @@ const DeleteFieldModal = ({
                     </div>
                 </div>
 
+                {/* Action buttons */}
                 <div className="delete-actions">
                     <Button
                         variant="secondary"

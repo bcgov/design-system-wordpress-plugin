@@ -60,6 +60,8 @@ const DocumentList = ({
     const [isSavingBulk, setIsSavingBulk] = useState(false);
     const [notice, setNotice] = useState(null);
     const [hasMetadataChanges, setHasMetadataChanges] = useState(false);
+    const [failedOperations, setFailedOperations] = useState([]);
+    const [retryCount, setRetryCount] = useState({});
 
     // Refs
     const fileInputRef = useRef(null);
@@ -100,27 +102,121 @@ const DocumentList = ({
         };
     }, []);
 
-    // Memoize handlers to prevent unnecessary re-renders
+    /**
+     * Handles errors and tracks failed operations
+     * @param {string} operationType - Type of operation that failed
+     * @param {number} documentId - ID of the document that failed
+     * @param {Error} error - Error object
+     */
+    const handleOperationError = useCallback((operationType, documentId, error) => {
+        setFailedOperations(prev => [...prev, { type: operationType, documentId, error }]);
+        setRetryCount(prev => ({
+            ...prev,
+            [documentId]: (prev[documentId] || 0) + 1
+        }));
+
+        const errorMessage = error.message || __('An unknown error occurred.', 'bcgov-design-system');
+        setNotice({
+            status: 'error',
+            message: sprintf(
+                __('Operation failed for document %d: %s', 'bcgov-design-system'),
+                documentId,
+                errorMessage
+            )
+        });
+
+        // Log for debugging
+        console.error(`Operation ${operationType} failed for document ${documentId}:`, error);
+    }, []);
+
+    /**
+     * Retry failed operations
+     * @param {Object} operation - Failed operation to retry
+     */
+    const retryOperation = useCallback(async (operation) => {
+        const maxRetries = 3;
+        if (retryCount[operation.documentId] >= maxRetries) {
+            setNotice({
+                status: 'error',
+                message: sprintf(
+                    __('Maximum retry attempts reached for document %d', 'bcgov-design-system'),
+                    operation.documentId
+                )
+            });
+            return;
+        }
+
+        try {
+            switch (operation.type) {
+                case 'delete':
+                    await onDelete(operation.documentId);
+                    break;
+                case 'metadata':
+                    await handleSaveMetadata(operation.documentId);
+                    break;
+                default:
+                    console.error('Unknown operation type:', operation.type);
+            }
+
+            // Remove from failed operations if successful
+            setFailedOperations(prev => 
+                prev.filter(op => 
+                    !(op.type === operation.type && op.documentId === operation.documentId)
+                )
+            );
+        } catch (error) {
+            handleOperationError(operation.type, operation.documentId, error);
+        }
+    }, [onDelete, handleSaveMetadata, retryCount]);
+
+    // Update handleBulkDelete with better error handling
     const handleBulkDelete = useCallback(async () => {
         try {
             setIsMultiDeleting(true);
+            const results = await Promise.allSettled(
+                selectedDocuments.map(docId => onDelete(docId))
+            );
             
-            // Use Promise.all for parallel deletion
-            await Promise.all(selectedDocuments.map(docId => onDelete(docId)));
-            
+            // Process results
+            const failed = results
+                .map((result, index) => ({ result, docId: selectedDocuments[index] }))
+                .filter(({ result }) => result.status === 'rejected');
+
+            if (failed.length > 0) {
+                failed.forEach(({ result, docId }) => {
+                    handleOperationError('delete', docId, result.reason);
+                });
+
+                setNotice({
+                    status: 'warning',
+                    message: sprintf(
+                        __('%d of %d documents failed to delete. You can retry the failed operations.', 'bcgov-design-system'),
+                        failed.length,
+                        selectedDocuments.length
+                    )
+                });
+            } else {
+                setNotice({
+                    status: 'success',
+                    message: sprintf(
+                        __('Successfully deleted %d documents.', 'bcgov-design-system'),
+                        selectedDocuments.length
+                    )
+                });
+            }
+
             setBulkDeleteConfirmOpen(false);
             onSelectAll(false);
-            
         } catch (error) {
-            console.error('Error deleting documents:', error);
+            console.error('Error in bulk delete:', error);
             setNotice({
                 status: 'error',
-                message: __('Failed to delete some documents.', 'bcgov-design-system')
+                message: __('Failed to process bulk delete operation.', 'bcgov-design-system')
             });
         } finally {
             setIsMultiDeleting(false);
         }
-    }, [selectedDocuments, onDelete, onSelectAll]);
+    }, [selectedDocuments, onDelete, onSelectAll, handleOperationError]);
 
     const handleDragEnter = useCallback((e) => {
         e.preventDefault();
@@ -269,47 +365,74 @@ const DocumentList = ({
     }, [editingMetadata, editedMetadataValues, metadataFields]);
 
     const handleMetadataChange = useCallback((documentId, fieldId, value) => {
+        console.log('Metadata change:', { documentId, fieldId, value });
+        
         // Get the original document to compare values
         const originalDoc = localDocuments.find(doc => doc.id === documentId);
         const originalValue = originalDoc?.metadata?.[fieldId] || '';
-        
-        // Only set hasMetadataChanges if the value is different from original
-        const hasChanged = String(value).trim() !== String(originalValue).trim();
-        setHasMetadataChanges(hasChanged);
+        console.log('Original value:', originalValue);
         
         // Update bulk edited metadata for saving later
-        setBulkEditedMetadata(prev => ({
-            ...prev,
-            [documentId]: {
-                ...prev[documentId],
-                [fieldId]: value
-            }
-        }));
-
-        // Only update local documents if not in spreadsheet mode
-        if (!isSpreadsheetMode) {
-            setLocalDocuments(prev => {
-                const newDocs = prev.map(doc => {
-                    if (doc.id === documentId) {
-                        return {
-                            ...doc,
-                            metadata: {
-                                ...doc.metadata,
-                                [fieldId]: value
-                            }
-                        };
-                    }
-                    return doc;
-                });
-                
-                if (typeof onDocumentsUpdate === 'function') {
-                    onDocumentsUpdate(newDocs);
+        setBulkEditedMetadata(prev => {
+            const newBulkMetadata = {
+                ...prev,
+                [documentId]: {
+                    ...prev[documentId],
+                    [fieldId]: value
+                }
+            };
+            
+            console.log('New bulk metadata:', newBulkMetadata);
+            
+            // Check if there are any changes in the new bulk metadata
+            const hasChanged = Object.entries(newBulkMetadata).some(([docId, editedMetadata]) => {
+                const originalDoc = localDocuments.find(doc => doc.id === parseInt(docId));
+                if (!originalDoc) {
+                    console.log('No original doc found for:', docId);
+                    return false;
                 }
                 
-                return newDocs;
+                return Object.entries(editedMetadata).some(([fieldId, editedValue]) => {
+                    const originalValue = originalDoc.metadata?.[fieldId] || '';
+                    const isChanged = String(originalValue).trim() !== String(editedValue).trim();
+                    console.log('Comparing values:', {
+                        docId,
+                        fieldId,
+                        originalValue,
+                        editedValue,
+                        isChanged
+                    });
+                    return isChanged;
+                });
             });
-        }
-    }, [localDocuments, isSpreadsheetMode, onDocumentsUpdate]);
+            
+            console.log('Has changes:', hasChanged);
+            setHasMetadataChanges(hasChanged);
+            return newBulkMetadata;
+        });
+
+        // Always update local documents to reflect changes in the UI
+        setLocalDocuments(prev => {
+            const newDocs = prev.map(doc => {
+                if (doc.id === documentId) {
+                    return {
+                        ...doc,
+                        metadata: {
+                            ...doc.metadata,
+                            [fieldId]: value
+                        }
+                    };
+                }
+                return doc;
+            });
+            
+            if (typeof onDocumentsUpdate === 'function') {
+                onDocumentsUpdate(newDocs);
+            }
+            
+            return newDocs;
+        });
+    }, [localDocuments, onDocumentsUpdate]);
 
     const handleSaveMetadata = useCallback(async (e) => {
         e.preventDefault();
@@ -356,89 +479,135 @@ const DocumentList = ({
     // Initialize bulk edit metadata when entering spreadsheet mode
     useEffect(() => {
         if (isSpreadsheetMode) {
+            console.log('Entering spreadsheet mode');
             const initialBulkMetadata = {};
             localDocuments.forEach(doc => {
+                console.log('Processing document:', doc.id, doc);
                 initialBulkMetadata[doc.id] = { ...(doc.metadata || {}) };
             });
+            console.log('Initial bulk metadata:', initialBulkMetadata);
             setBulkEditedMetadata(initialBulkMetadata);
             setHasMetadataChanges(false);
         } else {
+            console.log('Exiting spreadsheet mode');
             setBulkEditedMetadata({});
             setHasMetadataChanges(false);
         }
-    }, [isSpreadsheetMode, localDocuments]);
+    }, [isSpreadsheetMode]);
 
     const hasBulkMetadataChanged = useCallback(() => {
-        if (!bulkEditedMetadata || Object.keys(bulkEditedMetadata).length === 0) return false;
+        console.log('Checking for bulk metadata changes...');
+        console.log('Bulk edited metadata:', bulkEditedMetadata);
+        console.log('Local documents:', localDocuments);
         
-        return Object.entries(bulkEditedMetadata).some(([docId, editedMetadata]) => {
-            const originalDoc = localDocuments.find(doc => doc.id === docId);
-            if (!originalDoc) return false;
+        if (!bulkEditedMetadata || Object.keys(bulkEditedMetadata).length === 0) {
+            console.log('No bulk edited metadata');
+            return false;
+        }
+        
+        const hasChanges = Object.entries(bulkEditedMetadata).some(([docId, editedMetadata]) => {
+            const originalDoc = localDocuments.find(doc => doc.id === parseInt(docId));
+            if (!originalDoc) {
+                console.log('No original doc found for:', docId, 'Available IDs:', localDocuments.map(d => d.id));
+                return false;
+            }
             
-            return Object.entries(editedMetadata).some(([fieldId, value]) => {
+            const hasDocChanges = Object.entries(editedMetadata).some(([fieldId, value]) => {
                 const originalValue = originalDoc.metadata?.[fieldId] || '';
-                return String(originalValue).trim() !== String(value).trim();
+                const editedValue = value || '';
+                const isChanged = String(originalValue).trim() !== String(editedValue).trim();
+                console.log('Comparing:', {
+                    docId,
+                    fieldId,
+                    originalValue,
+                    editedValue,
+                    isChanged
+                });
+                return isChanged;
             });
+            
+            console.log('Document changes:', { docId, hasDocChanges });
+            return hasDocChanges;
         });
+        
+        console.log('Overall changes detected:', hasChanges);
+        return hasChanges;
     }, [bulkEditedMetadata, localDocuments]);
 
+    // Update handleSaveBulkChanges with better error handling
     const handleSaveBulkChanges = useCallback(async () => {
         setIsSavingBulk(true);
-        let hasError = false;
-        
-        try {
-            const updatePromises = Object.entries(bulkEditedMetadata).map(([docId, metadata]) => 
+        const results = await Promise.allSettled(
+            Object.entries(bulkEditedMetadata).map(([docId, metadata]) => 
                 apiFetch({
                     path: `/${apiNamespace}/documents/${docId}/metadata`,
                     method: 'POST',
                     data: metadata
-                }).catch(error => {
-                    hasError = true;
-                    console.error(`Error updating document ${docId}:`, error);
-                    return null;
                 })
-            );
+            )
+        );
 
-            const results = await Promise.all(updatePromises);
-            const updatedDocs = results.filter(result => result !== null);
+        // Process results
+        const failed = results
+            .map((result, index) => ({
+                result,
+                docId: Object.keys(bulkEditedMetadata)[index]
+            }))
+            .filter(({ result }) => result.status === 'rejected');
 
-            if (updatedDocs.length > 0) {
-                setLocalDocuments(prev => prev.map(doc => {
-                    const updatedDoc = updatedDocs.find(ud => ud.id === doc.id);
-                    return updatedDoc ? {
-                        ...doc,
-                        metadata: {
-                            ...doc.metadata,
-                            ...updatedDoc.metadata
-                        }
-                    } : doc;
-                }));
+        if (failed.length > 0) {
+            failed.forEach(({ result, docId }) => {
+                handleOperationError('metadata', docId, result.reason);
+            });
 
-                if (typeof onDocumentsUpdate === 'function') {
-                    onDocumentsUpdate(localDocuments);
-                }
-            }
-
+            setNotice({
+                status: 'warning',
+                message: sprintf(
+                    __('%d of %d metadata updates failed. You can retry the failed operations.', 'bcgov-design-system'),
+                    failed.length,
+                    Object.keys(bulkEditedMetadata).length
+                )
+            });
+        } else {
+            setNotice({
+                status: 'success',
+                message: __('All metadata changes saved successfully.', 'bcgov-design-system')
+            });
             setBulkEditedMetadata({});
             setHasMetadataChanges(false);
             setIsSpreadsheetMode(false);
-            
-            setNotice({
-                status: hasError ? 'warning' : 'success',
-                message: hasError 
-                    ? __('Some changes could not be saved. Please check the console for details.', 'bcgov-design-system')
-                    : __('All changes saved successfully', 'bcgov-design-system')
-            });
-        } catch (error) {
-            console.error('Error saving bulk metadata:', error);
-            setNotice({
-                status: 'error',
-                message: error.message || __('Failed to save metadata changes', 'bcgov-design-system')
-            });
-        } finally {
-            setIsSavingBulk(false);
         }
-    }, [bulkEditedMetadata, localDocuments, apiNamespace, onDocumentsUpdate]);
+
+        setIsSavingBulk(false);
+    }, [bulkEditedMetadata, apiNamespace, handleOperationError]);
+
+    // Add retry UI if there are failed operations
+    const renderRetryNotice = useCallback(() => {
+        if (failedOperations.length === 0) return null;
+
+        return (
+            <Notice
+                status="warning"
+                isDismissible={false}
+                className="retry-notice"
+            >
+                <p>
+                    {sprintf(
+                        __('There are %d failed operations that can be retried.', 'bcgov-design-system'),
+                        failedOperations.length
+                    )}
+                </p>
+                <Button
+                    variant="secondary"
+                    onClick={() => {
+                        failedOperations.forEach(retryOperation);
+                    }}
+                >
+                    {__('Retry All', 'bcgov-design-system')}
+                </Button>
+            </Notice>
+        );
+    }, [failedOperations, retryOperation]);
 
     // Memoize the document table props to prevent unnecessary re-renders
     const documentTableProps = useMemo(() => ({
@@ -470,6 +639,7 @@ const DocumentList = ({
     return (
         <ErrorBoundary>
             <div className="document-list">
+                {renderRetryNotice()}
                 {/* Upload Section */}
                 <div 
                     className={`document-upload-section ${isDragging ? 'dragging' : ''}`}
@@ -504,7 +674,7 @@ const DocumentList = ({
                             <Button
                                 variant={isSpreadsheetMode ? 'primary' : 'secondary'}
                                 onClick={() => setIsSpreadsheetMode(!isSpreadsheetMode)}
-                                className="mode-toggle-button"
+                                className={`mode-toggle-button ${!isSpreadsheetMode ? 'spreadsheet-mode' : ''}`}
                             >
                                 {isSpreadsheetMode ? __('Exit Spreadsheet Mode', 'bcgov-design-system') : __('Spreadsheet Mode', 'bcgov-design-system')}
                             </Button>
