@@ -64,10 +64,16 @@ const DocumentTableRow = ({
                             value={bulkEditedMetadata[document.id]?.[field.id] || ''}
                             options={[
                                 { label: __('Select...', 'bcgov-design-system'), value: '' },
-                                ...(field.options || []).map(option => ({
-                                    label: option,
-                                    value: option
-                                }))
+                                ...(Array.isArray(field.options) 
+                                    ? (field.options || []).map(option => ({
+                                        label: option,
+                                        value: option
+                                    }))
+                                    : Object.entries(field.options || {}).map(([value, label]) => ({
+                                        label,
+                                        value
+                                    }))
+                                )
                             ]}
                             onChange={(value) => onMetadataChange(document.id, field.id, value)}
                         />

@@ -1,0 +1,89 @@
+// Font Variables
+// -------------
+$font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-bold: 600;
+
+// Color Variables
+// ---------------
+$primary-color: #003366;      // Main brand color
+$secondary-color: #38598A;
+$error-color: #D8292F;        // Error states and destructive actions
+$success-color: #4caf50;      // Success states
+$border-color: #E0E0E0;       // Border colors
+$text-color: #1E1E1E;         // Primary text color
+$text-secondary: #505050;      // Secondary text color
+$background-light: #F8F8F8;    // Light background
+$background-primary-light: #f0f7ff;  // Light primary background
+$background-error-light: #FFF1F2;    // Light error background
+$background-success-light: #f1f8e9;  // Light success background
+
+// Spacing
+$spacing-xs: 0.25rem;  // 4px
+$spacing-sm: 0.5rem;   // 8px
+$spacing-md: 1rem;     // 16px
+$spacing-lg: 1.5rem;   // 24px
+$spacing-xl: 2rem;     // 32px
+$spacing-xxl: 2.5rem;  // 40px
+
+// Border radius
+$border-radius-sm: 0.125rem;  // 2px
+$border-radius-md: 0.25rem;   // 4px
+$border-radius-lg: 0.5rem;    // 8px
+
+// Box shadows
+$box-shadow-sm: 0 0.063rem 0.125rem rgba(0, 0, 0, 0.05);  // 1px 2px
+$box-shadow-md: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);    // 2px 4px
+$box-shadow-lg: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);     // 4px 8px
+
+// Font sizes
+$font-size-xs: 0.75rem;    // 12px
+$font-size-sm: 0.875rem;   // 14px
+$font-size-base: 1rem;     // 16px
+$font-size-lg: 1.125rem;   // 18px
+$font-size-xl: 1.25rem;    // 20px
+$font-size-xxl: 1.5rem;    // 24px
+
+// Line heights
+$line-height-tight: 1.25;   // 20px for 16px font
+$line-height-base: 1.5;     // 24px for 16px font
+$line-height-relaxed: 1.75; // 28px for 16px font
+
+// Grid
+$grid-gutter: 1rem;        // 16px
+$container-padding: 1rem;   // 16px
+
+// Breakpoints
+$breakpoint-sm: 36rem;     // 576px
+$breakpoint-md: 48rem;     // 768px
+$breakpoint-lg: 62rem;     // 992px
+$breakpoint-xl: 75rem;     // 1200px
+
+// Z-index
+$z-index-dropdown: 1000;
+$z-index-sticky: 1020;
+$z-index-fixed: 1030;
+$z-index-modal-backdrop: 1040;
+$z-index-modal: 1050;
+$z-index-popover: 1060;
+$z-index-tooltip: 1070;
+
+// Mixins
+// ------
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin button-reset {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+@mixin transition {
+  transition: all 0.2s ease;
+} 

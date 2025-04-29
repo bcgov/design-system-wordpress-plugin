@@ -1,12 +1,15 @@
 /**
  * Document Repository Styles
  * 
- * This file contains all styles for the Document Repository interface.
+ * This file contains styles for the Document Repository interface.
  * It includes styles for the document list, table, upload functionality,
  * and various UI components used throughout the application.
  */
 
 @use "sass:color";
+@use "variables" as *;
+@use "metadata-modals" as *;
+@use "metadata-settings" as *;
 
 // Color Variables
 // ---------------
@@ -43,32 +46,32 @@ $background-success-light: #f1f8e9;  // Light success background
 // Main Document Repository Container
 // --------------------------------
 .dswp-document-repository {
-  margin: 20px 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  margin: 1.25rem 0; // 20px
+  font-family: $font-family-base;
 
   &-loading {
     @include flex-center;
     flex-direction: column;
-    padding: 40px;
+    padding: 2.5rem; // 40px
     text-align: center;
   }
 
   &-tabs {
-    margin-bottom: 20px;
+    margin-bottom: 1.25rem; // 20px
 
     .components-tab-panel__tabs {
       border-bottom: 1px solid $border-color;
-      margin-bottom: 20px;
+      margin-bottom: 1.25rem; // 20px
 
       &-item {
-        padding: 12px 16px;
-        font-size: 14px;
-        font-weight: 500;
+        padding: 0.75rem 1rem; // 12px 16px
+        font-size: 0.875rem; // 14px
+        font-weight: $font-weight-medium;
       }
     }
 
     .active-tab {
-      border-bottom: 2px solid $primary-color;
+      border-bottom: 0.125rem solid $primary-color; // 2px
       color: $primary-color;
     }
   }
@@ -78,8 +81,8 @@ $background-success-light: #f1f8e9;  // Light success background
 // ------------------
 .document-list {
   background-color: #fff;
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 0.25rem; // 4px
+  box-shadow: 0 0.063rem 0.188rem rgba(0, 0, 0, 0.1); // 1px 3px
   overflow: hidden;
   border: 1px solid $border-color;
   @include transition;
@@ -87,15 +90,15 @@ $background-success-light: #f1f8e9;  // Light success background
 
   &:hover {
     border-color: #b4d6f3;
-    box-shadow: 0 0 0 1px rgba($primary-color, 0.1);
+    box-shadow: 0 0 0 0.063rem rgba($primary-color, 0.1); // 1px
   }
 
   .document-upload-section {
     background-color: $background-primary-light;
-    border: 2px dashed $primary-color;
-    border-radius: 8px;
-    padding: 40px;
-    margin-bottom: 24px;
+    border: 0.125rem dashed $primary-color; // 2px
+    border-radius: 0.5rem; // 8px
+    padding: 2.5rem; // 40px
+    margin-bottom: 1.5rem; // 24px
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -112,10 +115,10 @@ $background-success-light: #f1f8e9;  // Light success background
       border-color: color.scale($primary-color, $lightness: -20%);
       border-style: solid;
       transform: scale(1.01);
-      box-shadow: 0 4px 12px rgba($primary-color, 0.15);
+      box-shadow: 0 0.25rem 0.75rem rgba($primary-color, 0.15); // 4px 12px
       
       .document-upload-content {
-        transform: translateY(-5px);
+        transform: translateY(-0.313rem); // -5px
         
         svg {
           transform: scale(1.1);
@@ -127,27 +130,27 @@ $background-success-light: #f1f8e9;  // Light success background
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 16px;
+      gap: 1rem; // 16px
       transition: all 0.3s ease;
 
       svg {
-        width: 64px;
-        height: 64px;
+        width: 4rem; // 64px
+        height: 4rem; // 64px
         color: $primary-color;
         transition: all 0.3s ease;
-        margin-bottom: 8px;
-        filter: drop-shadow(0 2px 4px rgba($primary-color, 0.2));
+        margin-bottom: 0.5rem; // 8px
+        filter: drop-shadow(0 0.125rem 0.25rem rgba($primary-color, 0.2)); // 2px 4px
       }
 
       h3 {
-        font-size: 20px;
-        font-weight: 600;
+        font-size: 1.25rem; // 20px
+        font-weight: $font-weight-bold;
         color: $text-color;
         margin: 0;
       }
 
       p {
-        font-size: 14px;
+        font-size: 0.875rem; // 14px
         color: $text-secondary;
         margin: 0;
       }
@@ -157,49 +160,49 @@ $background-success-light: #f1f8e9;  // Light success background
   .document-list-actions {
     display: flex;
     justify-content: flex-start;
-    margin-bottom: 24px;
+    margin-bottom: 1.5rem; // 24px
     padding: 0 1rem;
 
     .document-list-left-actions {
       display: flex;
-      gap: 16px;
+      gap: 1rem; // 16px
       align-items: center;
 
       .mode-toggle {
         display: flex;
-        gap: 8px;
+        gap: 0.5rem; // 8px
 
         .components-button {
-          height: 36px;
-          padding: 0 12px;
+          height: 2.25rem; // 36px
+          padding: 0 0.75rem; // 12px
           display: inline-flex;
           align-items: center;
-          gap: 8px;
+          gap: 0.5rem; // 8px
           transition: all 0.2s ease;
-          font-weight: 500;
+          font-weight: $font-weight-medium;
           justify-content: center;
           border: 1px solid $border-color;
-          border-radius: 4px;
+          border-radius: 0.25rem; // 4px
           background: white;
           color: $text-color;
-          min-width: 140px;
+          min-width: 8.75rem; // 140px
           position: relative;
 
           &.spreadsheet-mode {
-            padding-left: 36px;  // Make room for the icon
+            padding-left: 2.25rem; // 36px
 
             &::before {
               content: '';
               position: absolute;
-              left: 12px;
+              left: 0.75rem; // 12px
               top: 50%;
               transform: translateY(-50%);
-              width: 16px;
-              height: 16px;
+              width: 1rem; // 16px
+              height: 1rem; // 16px
               background-image: linear-gradient(to right, currentColor 1px, transparent 1px),
                               linear-gradient(to bottom, currentColor 1px, transparent 1px);
-              background-size: 5px 5px;
-              background-position: -1px -1px;
+              background-size: 0.313rem 0.313rem; // 5px 5px
+              background-position: -0.063rem -0.063rem; // -1px -1px
               border: 1px solid currentColor;
               box-sizing: border-box;
             }
@@ -223,7 +226,7 @@ $background-success-light: #f1f8e9;  // Light success background
           }
 
           &:focus:not(:disabled) {
-            box-shadow: 0 0 0 2px white, 0 0 0 4px $primary-color;
+            box-shadow: 0 0 0 0.125rem white, 0 0 0 0.25rem $primary-color; // 2px 4px
             outline: none;
           }
 
@@ -239,29 +242,29 @@ $background-success-light: #f1f8e9;  // Light success background
 
       .bulk-delete-button {
         background: $error-color;
-        color: white;
+        color: white !important;
         border: none;
-        height: 36px;
-        padding: 0 16px;
-        border-radius: 4px;
-        font-size: 13px;
-        font-weight: 500;
+        height: 2.25rem; // 36px
+        padding: 0 1rem; // 16px
+        border-radius: 0.25rem; // 4px
+        font-size: 0.813rem; // 13px
+        font-weight: $font-weight-medium;
         transition: all 0.2s ease;
 
         &:hover:not(:disabled) {
           background: color.scale($error-color, $lightness: -10%);
-          color: white;
+          color: white !important;
         }
 
         &:focus:not(:disabled) {
-          box-shadow: 0 0 0 2px white, 0 0 0 4px $error-color;
+          box-shadow: 0 0 0 0.125rem white, 0 0 0 0.25rem $error-color; // 2px 4px
         }
 
         &:disabled {
           opacity: 0.6;
           cursor: not-allowed;
           background: #e0e0e0;
-          color: #757575;
+          color: #757575 !important;
         }
       }
     }
@@ -273,7 +276,7 @@ $background-success-light: #f1f8e9;  // Light success background
 .document-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem; // 20px
   table-layout: fixed;
 
   &-header {
@@ -308,54 +311,55 @@ $background-success-light: #f1f8e9;  // Light success background
 
   &-cell {
     display: table-cell;
-    padding: 12px;
+    padding: 0.75rem; // 12px
     border-bottom: 1px solid #ddd;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     vertical-align: middle;
 
-    &:nth-child(1) { width: 40px; }
-    &:nth-child(2) { width: 200px; }
+    &:nth-child(1) { width: 2.5rem; } // 40px
+    &:nth-child(2) { width: 12.5rem; } // 200px
     &.metadata-column {
-      width: 150px;
-      min-width: 120px;
+      width: 9.375rem; // 150px
+      min-width: 7.5rem; // 120px
     }
-    &:nth-last-child(4) { width: 100px; }
-    &:nth-last-child(3) { width: 120px; }
-    &:nth-last-child(2) { width: 120px; }
+    &:nth-last-child(4) { width: 6.25rem; } // 100px
+    &:nth-last-child(3) { width: 7.5rem; } // 120px
+    &:nth-last-child(2) { width: 7.5rem; } // 120px
     &:last-child {
-      padding: 8px;
-      min-width: 110px;
+      padding: 0.5rem; // 8px
+      min-width: 6.875rem; // 110px
     }
 
     &.header {
       font-weight: bold;
       background-color: #f0f0f1;
-      border-bottom: 2px solid #ddd;
+      border-bottom: 0.125rem solid #ddd; // 2px
     }
 
     &.actions {
       .action-buttons {
         display: flex;
-        gap: 8px;
+        gap: $spacing-md; // Increased from $spacing-sm
         justify-content: flex-end;
 
         .components-button {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          width: 32px;
-          height: 32px;
-          border-radius: 4px;
+          width: 2rem;
+          height: 2rem;
+          border-radius: $border-radius-sm;
           border: 1px solid $border-color;
           background: transparent;
           cursor: pointer;
           transition: all 0.2s ease;
           padding: 0;
           color: $text-secondary;
-          min-width: 32px;
-          min-height: 32px;
+          min-width: 2rem;
+          min-height: 2rem;
+          margin: 0 $spacing-xs; // Added margin for consistent spacing
 
           &:hover {
             background: $primary-color;
@@ -376,7 +380,7 @@ $background-success-light: #f1f8e9;  // Light success background
 
           &:focus {
             outline: none;
-            box-shadow: 0 0 0 2px white, 0 0 0 4px $primary-color;
+            box-shadow: 0 0 0 0.125rem white, 0 0 0 0.25rem $primary-color; // 2px 4px
           }
 
           &.is-destructive {
@@ -392,13 +396,13 @@ $background-success-light: #f1f8e9;  // Light success background
             }
 
             &:focus {
-              box-shadow: 0 0 0 2px white, 0 0 0 4px $error-color;
+              box-shadow: 0 0 0 0.125rem white, 0 0 0 0.25rem $error-color; // 2px 4px
             }
           }
 
           svg {
-            width: 16px;
-            height: 16px;
+            width: 1rem; // 16px
+            height: 1rem; // 16px
             color: currentColor;
             fill: currentColor;
             transition: all 0.2s ease;
@@ -414,13 +418,13 @@ $background-success-light: #f1f8e9;  // Light success background
 // -------------
 .upload-feedback {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 1.25rem; // 20px
+  right: 1.25rem; // 20px
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  padding: 16px;
-  width: 400px;
+  border-radius: 0.5rem; // 8px
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15); // 8px 24px
+  padding: 1rem; // 16px
+  width: 25rem; // 400px
   z-index: 100000;
   border: 1px solid #ddd;
   animation: slide-in 0.3s ease-out;
@@ -429,30 +433,30 @@ $background-success-light: #f1f8e9;  // Light success background
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
-    padding-bottom: 12px;
+    margin-bottom: 1rem; // 16px
+    padding-bottom: 0.75rem; // 12px
     border-bottom: 1px solid #eee;
   }
 
   &-title {
-    font-weight: 600;
-    font-size: 14px;
+    font-weight: $font-weight-bold;
+    font-size: 0.875rem; // 14px
     color: $text-color;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 0.5rem; // 8px
 
     .dashicons {
       color: $primary-color;
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
+      font-size: 1.125rem; // 18px
+      width: 1.125rem; // 18px
+      height: 1.125rem; // 18px
     }
   }
 
   &-close {
     @include button-reset;
-    padding: 6px;
+    padding: 0.375rem; // 6px
     color: #757575;
     border-radius: 50%;
     @include flex-center;
@@ -465,21 +469,21 @@ $background-success-light: #f1f8e9;  // Light success background
   }
 
   &-items {
-    max-height: 300px;
+    max-height: 18.75rem; // 300px
     overflow-y: auto;
-    margin: -4px;
-    padding: 4px;
+    margin: -0.25rem; // -4px
+    padding: 0.25rem; // 4px
   }
 
   &-item {
-    padding: 12px;
-    border-radius: 6px;
-    margin-bottom: 8px;
+    padding: 0.75rem; // 12px
+    border-radius: 0.375rem; // 6px
+    margin-bottom: 0.5rem; // 8px
     background: #f8f9fa;
-    font-size: 13px;
+    font-size: 0.813rem; // 13px
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 0.75rem; // 12px
     @include transition;
     border: 1px solid $border-color;
     position: relative;
@@ -509,7 +513,7 @@ $background-success-light: #f1f8e9;  // Light success background
         position: absolute;
         top: 0;
         left: 0;
-        height: 2px;
+        height: 0.125rem; // 2px
         background: $primary-color;
         animation: progress 2s infinite linear;
         width: 100%;
@@ -539,7 +543,7 @@ $background-success-light: #f1f8e9;  // Light success background
         position: absolute;
         top: 0;
         left: 0;
-        height: 2px;
+        height: 0.125rem; // 2px
         background: $text-secondary;
         animation: processing 1.5s infinite linear;
         width: 100%;
@@ -551,35 +555,35 @@ $background-success-light: #f1f8e9;  // Light success background
 // Upload Progress
 // -------------
 .upload-progress {
-  margin-bottom: 24px;
+  margin-bottom: 1.5rem; // 24px
 
   progress {
     width: 100%;
-    height: 12px;
-    border-radius: 6px;
+    height: 0.75rem; // 12px
+    border-radius: 0.375rem; // 6px
     overflow: hidden;
-    margin-bottom: 8px;
+    margin-bottom: 0.5rem; // 8px
 
     &::-webkit-progress-bar {
       background-color: #f0f0f0;
-      border-radius: 6px;
+      border-radius: 0.375rem; // 6px
     }
 
     &::-webkit-progress-value {
       background-color: $primary-color;
-      border-radius: 6px;
+      border-radius: 0.375rem; // 6px
     }
 
     &::-moz-progress-bar {
       background-color: $primary-color;
-      border-radius: 6px;
+      border-radius: 0.375rem; // 6px
     }
   }
 
   p {
     margin: 0;
     text-align: center;
-    font-size: 12px;
+    font-size: 0.75rem; // 12px
     color: $text-secondary;
   }
 }
@@ -588,17 +592,17 @@ $background-success-light: #f1f8e9;  // Light success background
 // ----------------
 .document-uploader {
   .components-card {
-    max-width: 800px;
+    max-width: 50rem; // 800px
     margin: 0 auto;
   }
 
   &-file-select {
-    margin-bottom: 24px;
+    margin-bottom: 1.5rem; // 24px
   }
 
   &-modal {
     .components-modal__content {
-      padding: 24px;
+      padding: 1.5rem; // 24px
     }
   }
 }
@@ -606,286 +610,16 @@ $background-success-light: #f1f8e9;  // Light success background
 // Metadata Settings
 // ----------------
 .metadata-settings {
-  max-width: 800px;
+  max-width: 50rem; // 800px
   margin: 0 auto;
-  padding: 24px;
+  padding: 1.5rem; // 24px
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 0.5rem; // 8px
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.05); // 2px 8px
 
   &-loading {
     @include flex-center;
-    min-height: 200px;
-  }
-}
-
-// Modal Styles
-// -----------
-.metadata-edit-modal {
-  .components-modal__content {
-    padding: 24px;
-  }
-
-  .metadata-edit-form {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 32px;
-    margin-top: 24px;
-
-    @media (max-width: 782px) {
-      grid-template-columns: 1fr;
-      gap: 24px;
-    }
-
-    h3 {
-      margin: 0 0 16px 0;
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    .metadata-field {
-      margin-bottom: 16px;
-    }
-
-    .metadata-error {
-      color: $error-color;
-      margin-top: 4px;
-      font-size: 12px;
-    }
-
-    .non-editable-metadata {
-      background-color: #f0f0f0;
-      padding: 16px;
-      border-radius: 4px;
-
-      .metadata-field {
-        margin-bottom: 12px;
-      }
-
-      label {
-        display: block;
-        font-weight: 600;
-        margin-bottom: 4px;
-        font-size: 13px;
-        color: $text-color;
-      }
-
-      .field-value {
-        font-size: 13px;
-        color: #50575e;
-      }
-    }
-
-    .modal-actions {
-      grid-column: 1 / -1;
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-top: 24px;
-      padding-top: 16px;
-      border-top: 1px solid $border-color;
-
-      .components-button {
-        height: 36px;
-        min-width: 80px;
-        padding: 0 16px;
-        font-size: 14px;
-        font-weight: 500;
-        justify-content: center;
-        transition: all 0.2s ease;
-
-        &:not(.is-primary) {
-          color: $primary-color;
-          border: 1px solid $primary-color;
-          background: transparent;
-
-          &:hover:not(:disabled) {
-            background: $primary-color;
-            color: white;
-            border-color: $primary-color;
-          }
-
-          &:focus:not(:disabled) {
-            box-shadow: 0 0 0 2px white, 0 0 0 4px $primary-color;
-          }
-        }
-
-        &.is-primary {
-          background: $primary-color;
-          color: white;
-          border: none;
-
-          &:hover:not(:disabled) {
-            background: color.scale($primary-color, $lightness: -15%);
-            color: white;
-          }
-
-          &:focus:not(:disabled) {
-            box-shadow: 0 0 0 2px white, 0 0 0 4px $primary-color;
-          }
-        }
-
-        &.is-destructive {
-          background: $error-color;
-          color: white;
-          border: none;
-
-          &:hover:not(:disabled) {
-            background: color.scale($error-color, $lightness: -10%);
-            color: white;
-          }
-
-          &:focus:not(:disabled) {
-            box-shadow: 0 0 0 2px white, 0 0 0 4px $error-color;
-          }
-        }
-
-        &:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-          background: #e0e0e0;
-          color: #757575;
-          border-color: #e0e0e0;
-        }
-      }
-    }
-  }
-}
-
-// Delete Form Styles
-// ----------------
-.document-delete-form {
-  padding: 24px;
-
-  .delete-warning {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    padding: 16px;
-    background-color: $background-error-light;
-    border-radius: 6px;
-    border: 1px solid color.adjust($error-color, $alpha: -0.8);
-    margin-bottom: 24px;
-
-    .warning-icon {
-      color: $error-color;
-      flex-shrink: 0;
-      margin-top: 2px;
-
-      svg {
-        width: 24px;
-        height: 24px;
-        fill: currentColor;
-      }
-    }
-
-    .warning-content {
-      color: color.scale($error-color, $lightness: -10%);
-      font-size: 14px;
-      line-height: 1.5;
-
-      strong {
-        display: block;
-        margin-bottom: 8px;
-        font-size: 16px;
-        font-weight: 600;
-      }
-    }
-  }
-
-  .document-info {
-    background: $background-light;
-    border-radius: 6px;
-    padding: 16px;
-    margin-bottom: 24px;
-
-    h3 {
-      margin: 0 0 12px 0;
-      font-size: 14px;
-      font-weight: 600;
-      color: $text-color;
-    }
-
-    .info-grid {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 8px 16px;
-      font-size: 13px;
-
-      .label {
-        color: $text-secondary;
-        font-weight: 500;
-      }
-
-      .value {
-        color: $text-color;
-      }
-    }
-  }
-
-  .delete-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    padding-top: 16px;
-    border-top: 1px solid $border-color;
-
-    button {
-      min-width: 100px;
-      height: 36px;
-      font-size: 14px;
-      font-weight: 500;
-      padding: 0 16px;
-      border-radius: 4px;
-      transition: all 0.2s ease;
-
-      &.cancel-button {
-        background: transparent;
-        border: 1px solid $border-color;
-        color: $text-secondary;
-
-        &:hover:not(:disabled) {
-          background: $background-light;
-          border-color: color.scale($border-color, $lightness: -10%);
-          color: $text-color;
-        }
-
-        &:active:not(:disabled) {
-          background: color.scale($background-light, $lightness: -5%);
-        }
-      }
-
-      &.delete-button {
-        background: $error-color;
-        border: none;
-        color: white;
-
-        &:hover:not(:disabled) {
-          background: color.scale($error-color, $lightness: -10%);
-          transform: translateY(-1px);
-          box-shadow: 0 2px 4px rgba($error-color, 0.2);
-        }
-
-        &:active:not(:disabled) {
-          transform: translateY(0);
-          background: color.scale($error-color, $lightness: -15%);
-          box-shadow: none;
-        }
-
-        &:focus:not(:disabled) {
-          box-shadow: 0 0 0 2px white, 0 0 0 4px $error-color;
-        }
-
-        &:disabled {
-          background: #e0e0e0;
-          color: #757575;
-          cursor: not-allowed;
-          opacity: 0.7;
-          transform: none;
-          box-shadow: none;
-        }
-      }
-    }
+    min-height: 12.5rem; // 200px
   }
 }
 
@@ -895,58 +629,58 @@ $background-success-light: #f1f8e9;  // Light success background
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 300px;
-  padding: 24px;
+  min-height: 18.75rem; // 300px
+  padding: 1.5rem; // 24px
   text-align: center;
 
   .error-content {
     background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 32px;
-    max-width: 500px;
+    border-radius: 0.5rem; // 8px
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1); // 2px 4px
+    padding: 2rem; // 32px
+    max-width: 31.25rem; // 500px
     width: 100%;
 
     h2 {
       color: #1a1a1a;
-      font-size: 24px;
-      margin-bottom: 16px;
+      font-size: 1.5rem; // 24px
+      margin-bottom: 1rem; // 16px
     }
 
     p {
       color: #4a4a4a;
-      font-size: 14px;
+      font-size: 0.875rem; // 14px
       line-height: 1.5;
-      margin-bottom: 24px;
+      margin-bottom: 1.5rem; // 24px
     }
 
     details {
-      margin: 24px 0;
+      margin: 1.5rem 0; // 24px
       text-align: left;
 
       summary {
         color: #666;
         cursor: pointer;
-        font-size: 13px;
-        margin-bottom: 8px;
+        font-size: 0.813rem; // 13px
+        margin-bottom: 0.5rem; // 8px
       }
 
       pre {
         background: #f8f8f8;
-        border-radius: 4px;
+        border-radius: 0.25rem; // 4px
         color: #cc1818;
         font-family: monospace;
-        font-size: 12px;
+        font-size: 0.75rem; // 12px
         line-height: 1.4;
         margin: 0;
         overflow-x: auto;
-        padding: 16px;
+        padding: 1rem; // 16px
         white-space: pre-wrap;
       }
     }
 
     button {
-      margin-top: 16px;
+      margin-top: 1rem; // 16px
     }
   }
 }
@@ -991,7 +725,7 @@ $background-success-light: #f1f8e9;  // Light success background
 
 // Responsive Styles
 // ---------------
-@media screen and (max-width: 782px) {
+@media screen and (max-width: 48.875rem) { // 782px
   .document-table {
     display: block;
     overflow-x: auto;
@@ -1004,22 +738,22 @@ $background-success-light: #f1f8e9;  // Light success background
 
     &-cell {
       display: table-cell;
-      padding: 8px;
+      padding: 0.5rem; // 8px
 
       &:nth-child(n) {
         width: auto;
       }
 
       &.metadata-column {
-        width: 120px;
-        min-width: 100px;
+        width: 7.5rem; // 120px
+        min-width: 6.25rem; // 100px
       }
     }
   }
 
   .document-list-actions {
     flex-direction: column;
-    gap: 16px;
+    gap: 1rem; // 16px
 
     .mode-toggle {
       width: 100%;
@@ -1028,140 +762,12 @@ $background-success-light: #f1f8e9;  // Light success background
   }
 
   .upload-feedback {
-    width: calc(100% - 40px);
-    margin: 0 20px;
+    width: calc(100% - 2.5rem); // 40px
+    margin: 0 1.25rem; // 20px
   }
 
   .metadata-edit-form {
     grid-template-columns: 1fr;
-    gap: 24px;
-  }
-}
-
-// Delete Confirmation Modal
-// -----------------------
-.delete-confirmation-content {
-  padding: 24px;
-
-  > p:first-child {
-    font-size: 16px;
-    font-weight: 500;
-    color: $text-color;
-    margin: 0 0 24px 0;
-  }
-
-  .documents-to-delete {
-    background-color: $background-light;
-    padding: 16px;
-    border-radius: 6px;
-    margin-bottom: 24px;
-    border: 1px solid $border-color;
-
-    h4 {
-      margin: 0 0 12px 0;
-      font-size: 14px;
-      font-weight: 600;
-      color: $text-color;
-    }
-
-    ul {
-      margin: 0;
-      padding: 0;
-      list-style: none;
-
-      li {
-        font-size: 14px;
-        color: $text-color;
-        line-height: 1.4;
-      }
-    }
-  }
-
-  .delete-warning {
-    color: $error-color;
-    font-size: 14px;
-    margin: 0 0 24px 0;
-    padding: 12px 16px;
-    background: $background-error-light;
-    border: 1px solid color.adjust($error-color, $alpha: -0.8);
-    border-radius: 4px;
-    line-height: 1.4;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-
-    &::before {
-      content: "⚠";
-      font-size: 16px;
-    }
-  }
-
-  .modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-    padding-top: 16px;
-    border-top: 1px solid $border-color;
-
-    .components-button {
-      height: 36px;
-      min-width: 80px;
-      padding: 0 16px;
-      font-size: 14px;
-      font-weight: 500;
-      justify-content: center;
-      transition: all 0.2s ease;
-
-      &.is-destructive {
-        background: $error-color;
-        color: white;
-        border: none;
-
-        &:hover:not(:disabled) {
-          background: color.scale($error-color, $lightness: -10%);
-          color: white;
-          transform: translateY(-1px);
-          box-shadow: 0 2px 4px rgba($error-color, 0.2);
-        }
-
-        &:active:not(:disabled) {
-          transform: translateY(0);
-          background: color.scale($error-color, $lightness: -15%);
-          box-shadow: none;
-        }
-
-        &:focus:not(:disabled) {
-          box-shadow: 0 0 0 2px white, 0 0 0 4px $error-color;
-        }
-      }
-
-      &:not(.is-destructive) {
-        color: $text-secondary;
-        border: 1px solid $border-color;
-        background: transparent;
-
-        &:hover:not(:disabled) {
-          background: $background-light;
-          border-color: color.scale($border-color, $lightness: -10%);
-          color: $text-color;
-        }
-
-        &:active:not(:disabled) {
-          background: color.scale($background-light, $lightness: -5%);
-        }
-
-        &:focus:not(:disabled) {
-          box-shadow: 0 0 0 2px white, 0 0 0 4px $border-color;
-        }
-      }
-
-      &:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        background: #e0e0e0;
-        color: #757575;
-        border-color: #e0e0e0;
-      }
-    }
+    gap: 1.5rem; // 24px
   }
 } 

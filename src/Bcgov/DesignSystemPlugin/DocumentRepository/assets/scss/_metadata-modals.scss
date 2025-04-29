@@ -1,0 +1,336 @@
+/**
+ * Metadata Modal Styles
+ * 
+ * This file contains styles for metadata-related modals including:
+ * - Metadata edit modal
+ * - Delete confirmation modal
+ */
+
+@use "sass:color";
+@use "variables" as *;
+
+// Modal Styles (Global)
+.metadata-edit-modal {
+  font-family: $font-family-base;
+
+  .components-modal__content {
+    padding: 0;
+    margin: 0;
+  }
+
+  .components-modal__header {
+    height: 56px;
+    padding: 0 16px;
+    border-bottom: 1px solid $border-color;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    background: white;
+    position: relative;
+    z-index: 1;
+
+    .components-modal__header-heading {
+      font-size: 16px;
+      font-weight: 600;
+      color: $text-color;
+      margin: 0;
+      line-height: 56px;
+    }
+
+    .components-button {
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      border-radius: $border-radius-sm;
+      color: $text-secondary;
+      position: absolute;
+      right: 16px;
+      top: 16px;
+
+      &:hover {
+        background-color: $background-light;
+        color: $text-color;
+      }
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+
+  .metadata-edit-form {
+    padding: $spacing-lg;
+
+    .editable-metadata {
+      margin-bottom: $spacing-lg;
+
+      h3 {
+        font-size: $font-size-base;
+        font-weight: $font-weight-medium;
+        margin: 0 0 $spacing-md 0;
+        color: $text-color;
+      }
+
+      .metadata-field {
+        margin-bottom: $spacing-md;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+
+    .components-base-control {
+      margin-bottom: $spacing-md;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .components-base-control__label {
+        font-size: $font-size-sm;
+        font-weight: $font-weight-normal;
+        color: $text-secondary;
+        margin-bottom: $spacing-xs;
+        display: block;
+      }
+
+      .components-text-control__input {
+        width: 100%;
+        height: 2.25rem;
+        padding: $spacing-xs $spacing-sm;
+        border: 1px solid $border-color;
+        border-radius: $border-radius-sm;
+        font-size: $font-size-base;
+        color: $text-color;
+        background-color: white;
+
+        &:focus {
+          border-color: $primary-color;
+          box-shadow: $box-shadow-sm;
+          outline: none;
+        }
+
+        &:disabled {
+          background-color: $background-light;
+          color: $text-secondary;
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    .non-editable-metadata {
+      background-color: $background-light;
+      padding: $spacing-lg;
+      margin: $spacing-lg 0;
+      border-radius: $border-radius-sm;
+      border: 1px solid $border-color;
+
+      h3 {
+        font-size: $font-size-base;
+        font-weight: $font-weight-medium;
+        margin: 0 0 $spacing-md 0;
+        color: $text-color;
+      }
+
+      .metadata-field {
+        margin-bottom: $spacing-sm;
+        display: flex;
+        align-items: flex-start;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        label {
+          font-size: $font-size-sm;
+          color: $text-secondary;
+          width: 7.5rem;
+          flex-shrink: 0;
+          padding-top: 0.125rem;
+        }
+
+        .field-value {
+          font-size: $font-size-base;
+          color: $text-color;
+          flex: 1;
+          word-break: break-word;
+          line-height: $line-height-base;
+        }
+      }
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: $spacing-sm;
+      margin-top: $spacing-lg;
+      padding-top: $spacing-md;
+      border-top: 1px solid $border-color;
+
+      .components-button {
+        height: 2.25rem;
+        min-width: 5rem;
+        padding: 0 $spacing-lg;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+        border-radius: $border-radius-sm;
+        transition: all 0.2s ease;
+
+        &.is-primary {
+          background-color: $primary-color;
+          color: white;
+          border: none;
+
+          &:hover:not(:disabled) {
+            background-color: color.adjust($primary-color, $lightness: -5%);
+          }
+
+          &:disabled {
+            background-color: $background-light;
+            color: $text-secondary;
+            cursor: not-allowed;
+            opacity: 0.7;
+          }
+        }
+
+        &.is-secondary {
+          color: $text-color;
+          border: 1px solid $border-color;
+          background-color: white;
+
+          &:hover:not(:disabled) {
+            background-color: $background-light;
+            border-color: color.adjust($border-color, $lightness: -5%);
+          }
+
+          &:disabled {
+            background-color: $background-light;
+            color: $text-secondary;
+            cursor: not-allowed;
+            opacity: 0.7;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Delete Confirmation Modal
+.components-modal__screen-overlay {
+  font-family: $font-family-base;
+  
+  .delete-confirmation-content {
+    padding: $spacing-lg;
+
+    p {
+      font-size: $font-size-base;
+      color: $text-color;
+      margin: 0 0 $spacing-lg 0;
+      line-height: $line-height-base;
+    }
+
+    .documents-to-delete {
+      background: $background-light;
+      padding: $spacing-md;
+      border-radius: $border-radius-sm;
+      margin-bottom: $spacing-lg;
+      border: 1px solid $border-color;
+
+      h4 {
+        margin: 0 0 $spacing-sm 0;
+        font-size: $font-size-base;
+        font-weight: $font-weight-medium;
+        color: $text-color;
+      }
+
+      ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+
+        li {
+          font-size: $font-size-sm;
+          color: $text-color;
+          line-height: $line-height-base;
+          padding: $spacing-xs 0;
+        }
+      }
+    }
+
+    .delete-warning {
+      color: $error-color;
+      font-size: $font-size-sm;
+      margin: 0 0 $spacing-lg 0;
+      padding: $spacing-sm $spacing-md;
+      background: $background-error-light;
+      border: 1px solid color.adjust($error-color, $alpha: -0.8);
+      border-radius: $border-radius-sm;
+      line-height: $line-height-base;
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+
+      &::before {
+        content: "⚠";
+        font-size: $font-size-base;
+      }
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: $spacing-md;
+      padding-top: $spacing-md;
+      border-top: 1px solid $border-color;
+
+      .components-button {
+        height: 2.25rem;
+        min-width: 5rem;
+        padding: 0 $spacing-md;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+        border-radius: $border-radius-sm;
+        transition: all 0.2s ease;
+        margin: 0 $spacing-xs;
+
+        &.is-destructive {
+          background-color: $error-color !important;
+          color: white !important;
+          border: none !important;
+
+          &:hover:not(:disabled) {
+            background-color: color.adjust($error-color, $lightness: -5%) !important;
+          }
+
+          &:disabled {
+            background-color: $background-light !important;
+            color: $text-secondary !important;
+            cursor: not-allowed;
+            opacity: 0.7;
+          }
+        }
+
+        &:not(.is-destructive) {
+          color: $text-color;
+          border: 1px solid $border-color;
+          background-color: white;
+
+          &:hover:not(:disabled) {
+            background-color: $background-light;
+            border-color: color.adjust($border-color, $lightness: -5%);
+          }
+
+          &:disabled {
+            background-color: $background-light;
+            color: $text-secondary;
+            cursor: not-allowed;
+            opacity: 0.7;
+          }
+        }
+      }
+    }
+  }
+} 

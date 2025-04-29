@@ -844,7 +844,6 @@ const DocumentList = ({
                     >
                         <form onSubmit={handleSaveMetadata} className="metadata-edit-form">
                             <div className="editable-metadata">
-                                <h3>{__('Custom Metadata', 'bcgov-design-system')}</h3>
                                 {metadataFields.map(field => {
                                     const error = metadataErrors[field.id];
                                     
@@ -856,10 +855,16 @@ const DocumentList = ({
                                                     value={editedMetadataValues[field.id] || ''}
                                                     options={[
                                                         { label: __('Select...', 'bcgov-design-system'), value: '' },
-                                                        ...(field.options || []).map(option => ({
-                                                            label: option,
-                                                            value: option
-                                                        }))
+                                                        ...(Array.isArray(field.options) 
+                                                            ? (field.options || []).map(option => ({
+                                                                label: option,
+                                                                value: option
+                                                            }))
+                                                            : Object.entries(field.options || {}).map(([value, label]) => ({
+                                                                label,
+                                                                value
+                                                            }))
+                                                        )
                                                     ]}
                                                     onChange={value => setEditedMetadataValues(prev => ({
                                                         ...prev,
