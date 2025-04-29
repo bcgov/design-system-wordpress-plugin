@@ -23,6 +23,7 @@ import {
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
+import MetadataModal from '../shared/components/MetadataModal';
 import DeleteFieldModal from './components/Modals/DeleteFieldModal';
 
 /**
@@ -390,6 +391,20 @@ const MetadataApp = () => {
     
     // Handle editing a field
     const handleEditField = (field, index) => {
+        // Store original values for comparison
+        const originalFieldValues = {
+            label: field.label || '',
+            type: field.type || '',
+            options: field.options || [],
+            _rawOptionsText: field._rawOptionsText || '',
+            id: field.id || ''
+        };
+        
+        console.log('Setting original values:', originalFieldValues);
+        
+        setOriginalValues(originalFieldValues);
+        setHasChanges(false);
+        
         setState(prev => ({
             ...prev,
             modals: {
@@ -532,31 +547,76 @@ const MetadataApp = () => {
     };
     
     // Simplified state updates using helper functions
+    const [hasChanges, setHasChanges] = useState(false);
+    const [originalValues, setOriginalValues] = useState(null);
+
+    // Add function to check if any field values have changed from original
+    const checkForChanges = useCallback((modalType, currentValues) => {
+        if (!originalValues) return false;
+
+        // Compare each field with its original value
+        const fieldsToCompare = ['label', 'type', 'options', '_rawOptionsText'];
+        const hasChanges = fieldsToCompare.some(field => {
+            const original = String(originalValues[field] || '').trim();
+            const current = String(currentValues[field] || '').trim();
+            const isDifferent = original !== current;
+            
+            console.log('Comparing field:', field, {
+                original,
+                current,
+                isDifferent
+            });
+            
+            return isDifferent;
+        });
+
+        console.log('Final change detection:', {
+            originalValues,
+            currentValues,
+            hasChanges
+        });
+
+        setHasChanges(hasChanges);
+    }, [originalValues]);
+
+    // Update handleFieldChange to preserve exact case
     const handleFieldChange = useCallback((modalType, field, value) => {
         setState(prev => {
-            // If the field being changed is the label, auto-generate the ID
+            const currentField = prev.modals[modalType].field;
+            let updates = { [field]: value };
+
+            // If the field being changed is the label, generate ID but preserve label case
             if (field === 'label') {
+                // Only transform the ID, not the label
                 const baseId = value.toLowerCase().replace(/[^a-z0-9]+/g, '_');
-                const fieldType = prev.modals[modalType].field.type.toLowerCase();
+                const fieldType = currentField.type.toLowerCase();
                 const generatedId = `${baseId}_${fieldType}`;
-                return updateModalField(prev, modalType, { 
-                    [field]: value,
+                updates = {
+                    ...updates,
                     id: generatedId
-                });
+                };
             }
-            // If the type is being changed, update the ID to reflect the new type
+            // If the type is being changed, update the ID
             if (field === 'type') {
-                const currentLabel = prev.modals[modalType].field.label || '';
-                const baseId = currentLabel.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+                const baseId = currentField.label?.toLowerCase().replace(/[^a-z0-9]+/g, '_') || '';
                 const generatedId = `${baseId}_${value.toLowerCase()}`;
-                return updateModalField(prev, modalType, { 
-                    [field]: value,
+                updates = {
+                    ...updates,
                     id: generatedId
-                });
+                };
             }
-            return updateModalField(prev, modalType, { [field]: value });
+
+            const updatedField = {
+                ...currentField,
+                ...updates
+            };
+
+            // Check for changes against original values
+            checkForChanges(modalType, updatedField);
+
+            return updateModalField(prev, modalType, updates);
         });
-    }, []);
+    }, [checkForChanges]);
 
     const handleIdChange = useCallback((modalType, id) => {
         setState(prev => updateModalField(prev, modalType, { 
@@ -564,6 +624,7 @@ const MetadataApp = () => {
         }));
     }, []);
 
+    // Reset states when modal closes
     const handleModalClose = useCallback((modalType) => {
         setState(prev => ({
             ...prev,
@@ -572,6 +633,7 @@ const MetadataApp = () => {
                 [modalType]: {
                     ...prev.modals[modalType],
                     isOpen: false,
+                    field: getInitialFieldState(),
                     errors: {
                         label: '',
                         submit: ''
@@ -579,6 +641,8 @@ const MetadataApp = () => {
                 }
             }
         }));
+        setHasChanges(false);
+        setOriginalValues(null);
     }, []);
     
     if (state.isLoading) {
@@ -666,171 +730,90 @@ const MetadataApp = () => {
                 </CardBody>
             </Card>
             
-            {/* Add Field Modal */}
-            {state.modals.add.isOpen && (
-                <Modal
-                    title={__('Add New Metadata Field', 'bcgov-design-system')}
-                    onRequestClose={() => handleModalClose('add')}
-                    className="metadata-field-modal"
-                >
-                    <div className="metadata-field-form">
-                        {state.modals.add.errors.submit && (
-                            <Notice status="error" isDismissible={false}>
-                                <p>{state.modals.add.errors.submit}</p>
-                            </Notice>
-                        )}
-                        
-                        <TextControl
-                            label={__('Field Label', 'bcgov-design-system')}
-                            help={__('Display name for the field', 'bcgov-design-system')}
-                            value={state.modals.add.field.label}
-                            onChange={label => handleFieldChange('add', 'label', label)}
-                            required
-                            className={state.modals.add.errors.label ? 'has-error' : ''}
-                        />
-                        {state.modals.add.errors.label && (
-                            <div className="field-error">
-                                {state.modals.add.errors.label}
-                            </div>
-                        )}
-                        
-                        <SelectControl
-                            label={__('Field Type', 'bcgov-design-system')}
-                            value={state.modals.add.field.type}
-                            options={Object.entries(FIELD_TYPES).map(([value, label]) => ({
-                                value,
-                                label,
-                            }))}
-                            onChange={type => handleFieldChange('add', 'type', type)}
-                        />
-                        
-                        {state.modals.add.field.type === 'select' && (
-                            <div className="field-options">
-                                <label htmlFor="field-options">
-                                    {__('Options', 'bcgov-design-system')}
-                                </label>
-                                <p className="field-options-help">
-                                    {__('Enter each option on a new line:', 'bcgov-design-system')}
-                                </p>
-                                <div className="field-options-example">
-                                    {__('Example:', 'bcgov-design-system')} <br />
-                                    Draft<br />
-                                    In Review<br />
-                                    Approved<br />
-                                    Archived
-                                </div>
-                                <textarea
-                                    id="field-options"
-                                    value={formatOptionsToString(state.modals.add.field)}
-                                    onChange={(e) => handleOptionsChange(e, 'add')}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            e.stopPropagation();
-                                        }
-                                        if (e.key === 'Tab') {
-                                            e.preventDefault();
-                                        }
-                                    }}
-                                    rows={5}
-                                    placeholder={__('Enter your options here...', 'bcgov-design-system')}
-                                />
-                            </div>
-                        )}
-                        
-                        <div className="metadata-field-actions">
-                            <Button
-                                variant="secondary"
-                                onClick={() => handleModalClose('add')}
-                            >
-                                {__('Cancel', 'bcgov-design-system')}
-                            </Button>
-                            
-                            <Button
-                                variant="primary"
-                                onClick={handleAddField}
-                            >
-                                {__('Add Field', 'bcgov-design-system')}
-                            </Button>
-                        </div>
-                    </div>
-                </Modal>
-            )}
-            
             {/* Edit Field Modal */}
-            {state.modals.edit.isOpen && state.modals.edit.field && (
-                <Modal
-                    title={__('Edit Metadata Field', 'bcgov-design-system')}
-                    onRequestClose={() => handleModalClose('edit')}
-                    className="metadata-field-modal"
-                    isDismissible={true}
-                    shouldCloseOnClickOutside={true}
-                    shouldCloseOnEsc={true}
-                >
-                    <div className="metadata-field-form">
-                        <TextControl
-                            label={__('Field Label', 'bcgov-design-system')}
-                            help={__('Display name for the field', 'bcgov-design-system')}
-                            value={state.modals.edit.field.label}
-                            onChange={label => handleFieldChange('edit', 'label', label)}
-                            required
-                        />
-                        
-                        <div className="field-type-display">
-                            <label>{__('Field Type', 'bcgov-design-system')}</label>
-                            <div className="field-type-value">{FIELD_TYPES[state.modals.edit.field.type]}</div>
-                        </div>
-                        
-                        {state.modals.edit.field.type === 'select' && (
-                            <div className="field-options">
-                                <label htmlFor="field-options-edit">
-                                    {__('Options', 'bcgov-design-system')}
-                                </label>
-                                <p className="field-options-help">
-                                    {__('Enter each option on a new line:', 'bcgov-design-system')}
-                                </p>
-                                <div className="field-options-example">
-                                    {__('Example:', 'bcgov-design-system')} <br />
-                                    Draft<br />
-                                    In Review<br />
-                                    Approved<br />
-                                    Archived
-                                </div>
-                                <textarea
-                                    id="field-options-edit"
-                                    value={formatOptionsToString(state.modals.edit.field)}
-                                    onChange={(e) => handleOptionsChange(e, 'edit')}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            e.stopPropagation();
-                                        }
-                                        if (e.key === 'Tab') {
-                                            e.preventDefault();
-                                        }
-                                    }}
-                                    rows={5}
-                                    placeholder={__('Enter your options here...', 'bcgov-design-system')}
-                                />
-                            </div>
-                        )}
-                        
-                        <div className="metadata-field-actions">
-                            <Button
-                                variant="secondary"
-                                onClick={() => handleModalClose('edit')}
-                            >
-                                {__('Cancel', 'bcgov-design-system')}
-                            </Button>
-                            
-                            <Button
-                                variant="primary"
-                                onClick={handleSaveEditedField}
-                            >
-                                {__('Save Field', 'bcgov-design-system')}
-                            </Button>
-                        </div>
+            <MetadataModal
+                title={__('Edit Metadata Field', 'bcgov-design-system')}
+                isOpen={state.modals.edit.isOpen}
+                onClose={() => handleModalClose('edit')}
+                onSave={handleSaveEditedField}
+                isSaving={state.isSaving}
+                isDisabled={!hasChanges || !state.modals.edit.field?.label}
+            >
+                <div className="metadata-field-form">
+                    <TextControl
+                        label={__('Field Label', 'bcgov-design-system')}
+                        help={__('Display name for the field', 'bcgov-design-system')}
+                        value={state.modals.edit.field?.label || ''}
+                        onChange={label => handleFieldChange('edit', 'label', label)}
+                        required
+                    />
+                    
+                    <div className="field-type-display">
+                        <label>{__('Field Type', 'bcgov-design-system')}</label>
+                        <div className="field-type-value">{FIELD_TYPES[state.modals.edit.field?.type]}</div>
                     </div>
-                </Modal>
-            )}
+                    
+                    {state.modals.edit.field?.type === 'select' && (
+                        <TextareaControl
+                            label={__('Options', 'bcgov-design-system')}
+                            value={formatOptionsToString(state.modals.edit.field)}
+                            onChange={value => handleOptionsChange(value, 'edit')}
+                            help={__('Enter one option per line', 'bcgov-design-system')}
+                        />
+                    )}
+                </div>
+            </MetadataModal>
+
+            {/* Add Field Modal */}
+            <MetadataModal
+                title={__('Add New Metadata Field', 'bcgov-design-system')}
+                isOpen={state.modals.add.isOpen}
+                onClose={() => handleModalClose('add')}
+                onSave={handleAddField}
+                isSaving={state.isSaving}
+                isDisabled={!state.modals.add.field.label}
+            >
+                <div className="metadata-field-form">
+                    {state.modals.add.errors.submit && (
+                        <Notice status="error" isDismissible={false}>
+                            <p>{state.modals.add.errors.submit}</p>
+                        </Notice>
+                    )}
+                    
+                    <TextControl
+                        label={__('Field Label', 'bcgov-design-system')}
+                        help={__('Display name for the field', 'bcgov-design-system')}
+                        value={state.modals.add.field.label}
+                        onChange={label => handleFieldChange('add', 'label', label)}
+                        required
+                        className={state.modals.add.errors.label ? 'has-error' : ''}
+                    />
+                    {state.modals.add.errors.label && (
+                        <div className="field-error">
+                            {state.modals.add.errors.label}
+                        </div>
+                    )}
+                    
+                    <SelectControl
+                        label={__('Field Type', 'bcgov-design-system')}
+                        value={state.modals.add.field.type}
+                        options={Object.entries(FIELD_TYPES).map(([value, label]) => ({
+                            value,
+                            label,
+                        }))}
+                        onChange={type => handleFieldChange('add', 'type', type)}
+                    />
+                    
+                    {state.modals.add.field.type === 'select' && (
+                        <TextareaControl
+                            label={__('Options', 'bcgov-design-system')}
+                            value={formatOptionsToString(state.modals.add.field)}
+                            onChange={value => handleOptionsChange(value, 'add')}
+                            help={__('Enter one option per line', 'bcgov-design-system')}
+                        />
+                    )}
+                </div>
+            </MetadataModal>
 
             <DeleteFieldModal
                 isOpen={state.modals.delete.isOpen}

@@ -6,6 +6,7 @@ import apiFetch from '@wordpress/api-fetch';
 import ErrorBoundary from './ErrorBoundary';
 import DocumentTable from './DocumentTable';
 import UploadFeedback from './UploadFeedback';
+import MetadataModal from '../../../shared/components/MetadataModal';
 
 /**
  * DocumentList Component
@@ -152,7 +153,7 @@ const DocumentList = ({
                     await onDelete(operation.documentId);
                     break;
                 case 'metadata':
-                    await handleSaveMetadata(operation.documentId);
+                    await handleSaveMetadata();
                     break;
                 default:
                     console.error('Unknown operation type:', operation.type);
@@ -346,10 +347,11 @@ const DocumentList = ({
         };
         setEditingMetadata(documentToEdit);
         
-        // Initialize edited values with current metadata
+        // Initialize edited values with current metadata, preserving case
         const initialValues = {};
         metadataFields.forEach(field => {
-            initialValues[field.id] = document.metadata?.[field.id] || '';
+            // Get the exact value from the document's metadata
+            initialValues[field.id] = document.metadata?.[field.id] ?? '';
         });
         setEditedMetadataValues(initialValues);
         setMetadataErrors({});
@@ -378,7 +380,7 @@ const DocumentList = ({
                 ...prev,
                 [documentId]: {
                     ...prev[documentId],
-                    [fieldId]: value
+                    [fieldId]: value // Preserve exact case
                 }
             };
             
@@ -394,7 +396,7 @@ const DocumentList = ({
                 
                 return Object.entries(editedMetadata).some(([fieldId, editedValue]) => {
                     const originalValue = originalDoc.metadata?.[fieldId] || '';
-                    const isChanged = String(originalValue).trim() !== String(editedValue).trim();
+                    const isChanged = String(originalValue) !== String(editedValue);
                     console.log('Comparing values:', {
                         docId,
                         fieldId,
@@ -419,7 +421,7 @@ const DocumentList = ({
                         ...doc,
                         metadata: {
                             ...doc.metadata,
-                            [fieldId]: value
+                            [fieldId]: value // Preserve exact case
                         }
                     };
                 }
@@ -434,8 +436,7 @@ const DocumentList = ({
         });
     }, [localDocuments, onDocumentsUpdate]);
 
-    const handleSaveMetadata = useCallback(async (e) => {
-        e.preventDefault();
+    const handleSaveMetadata = useCallback(async () => {
         setIsSavingMetadata(true);
         
         try {
@@ -833,111 +834,92 @@ const DocumentList = ({
                 )}
 
                 {editingMetadata && (
-                    <Modal
+                    <MetadataModal
                         title={__('Edit Document Metadata', 'bcgov-design-system')}
-                        onRequestClose={() => {
+                        isOpen={!!editingMetadata}
+                        onClose={() => {
                             setEditingMetadata(null);
                             setEditedMetadataValues({});
                             setMetadataErrors({});
                         }}
-                        className="metadata-edit-modal"
+                        onSave={handleSaveMetadata}
+                        isSaving={isSavingMetadata}
+                        isDisabled={!hasMetadataChanged()}
                     >
-                        <form onSubmit={handleSaveMetadata} className="metadata-edit-form">
-                            <div className="editable-metadata">
-                                {metadataFields.map(field => {
-                                    const error = metadataErrors[field.id];
-                                    
-                                    return (
-                                        <div key={field.id} className="metadata-field">
-                                            {field.type === 'select' ? (
-                                                <SelectControl
-                                                    label={field.label}
-                                                    value={editedMetadataValues[field.id] || ''}
-                                                    options={[
-                                                        { label: __('Select...', 'bcgov-design-system'), value: '' },
-                                                        ...(Array.isArray(field.options) 
-                                                            ? (field.options || []).map(option => ({
-                                                                label: option,
-                                                                value: option
-                                                            }))
-                                                            : Object.entries(field.options || {}).map(([value, label]) => ({
-                                                                label,
-                                                                value
-                                                            }))
-                                                        )
-                                                    ]}
-                                                    onChange={value => setEditedMetadataValues(prev => ({
-                                                        ...prev,
-                                                        [field.id]: value
-                                                    }))}
-                                                />
-                                            ) : (
-                                                <TextControl
-                                                    label={field.label}
-                                                    value={editedMetadataValues[field.id] || ''}
-                                                    onChange={value => setEditedMetadataValues(prev => ({
-                                                        ...prev,
-                                                        [field.id]: value
-                                                    }))}
-                                                    type={field.type === 'date' ? 'text' : 'text'}
-                                                />
-                                            )}
-                                            {error && <div className="metadata-error">{error}</div>}
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                            
-                            <div className="non-editable-metadata">
-                                <h3>{__('Document Information', 'bcgov-design-system')}</h3>
-                                <div className="metadata-field">
-                                    <label>{__('Filename', 'bcgov-design-system')}</label>
-                                    <div className="field-value">
-                                        {(editingMetadata.metadata?.document_file_name || 
-                                         editingMetadata.filename || 
-                                         editingMetadata.title || 
-                                         '').replace(/\.pdf$/i, '') || 
-                                         __('Not available', 'bcgov-design-system')}
+                        <div className="editable-metadata">
+                            {metadataFields.map(field => {
+                                const error = metadataErrors[field.id];
+                                const currentValue = editedMetadataValues[field.id] ?? '';
+                                
+                                return (
+                                    <div key={field.id} className="metadata-field">
+                                        {field.type === 'select' ? (
+                                            <SelectControl
+                                                label={field.label}
+                                                value={currentValue}
+                                                options={[
+                                                    { label: __('Select...', 'bcgov-design-system'), value: '' },
+                                                    ...(Array.isArray(field.options) 
+                                                        ? field.options.map(option => ({
+                                                            label: option,
+                                                            value: option
+                                                        }))
+                                                        : Object.entries(field.options || {}).map(([value, label]) => ({
+                                                            label,
+                                                            value
+                                                        }))
+                                                    )
+                                                ]}
+                                                onChange={value => setEditedMetadataValues(prev => ({
+                                                    ...prev,
+                                                    [field.id]: value
+                                                }))}
+                                            />
+                                        ) : (
+                                            <TextControl
+                                                label={field.label}
+                                                value={currentValue}
+                                                onChange={value => setEditedMetadataValues(prev => ({
+                                                    ...prev,
+                                                    [field.id]: value
+                                                }))}
+                                                type={field.type === 'date' ? 'text' : 'text'}
+                                            />
+                                        )}
+                                        {error && <div className="metadata-error">{error}</div>}
                                     </div>
-                                </div>
-                                <div className="metadata-field">
-                                    <label>{__('File Type', 'bcgov-design-system')}</label>
-                                    <div className="field-value">
-                                        {editingMetadata.metadata?.document_file_type || 'PDF'}
-                                    </div>
-                                </div>
-                                <div className="metadata-field">
-                                    <label>{__('File Size', 'bcgov-design-system')}</label>
-                                    <div className="field-value">
-                                        {editingMetadata.metadata?.document_file_size ? 
-                                            formatFileSize(parseInt(editingMetadata.metadata.document_file_size)) : 
-                                            __('Not available', 'bcgov-design-system')}
-                                    </div>
+                                );
+                            })}
+                        </div>
+                        
+                        <div className="non-editable-metadata">
+                            <h3>{__('Document Information', 'bcgov-design-system')}</h3>
+                            <div className="metadata-field">
+                                <label>{__('Filename', 'bcgov-design-system')}</label>
+                                <div className="field-value">
+                                    {(editingMetadata.metadata?.document_file_name || 
+                                     editingMetadata.filename || 
+                                     editingMetadata.title || 
+                                     '').replace(/\.pdf$/i, '') || 
+                                     __('Not available', 'bcgov-design-system')}
                                 </div>
                             </div>
-
-                            <div className="modal-actions">
-                                <Button
-                                    variant="secondary"
-                                    onClick={() => {
-                                        setEditingMetadata(null);
-                                        setEditedMetadataValues({});
-                                        setMetadataErrors({});
-                                    }}
-                                >
-                                    {__('Cancel', 'bcgov-design-system')}
-                                </Button>
-                                <Button
-                                    variant="primary"
-                                    type="submit"
-                                    isBusy={isSavingMetadata}
-                                    disabled={isSavingMetadata || !hasMetadataChanged()}
-                                >
-                                    {__('Save Changes', 'bcgov-design-system')}
-                                </Button>
+                            <div className="metadata-field">
+                                <label>{__('File Type', 'bcgov-design-system')}</label>
+                                <div className="field-value">
+                                    {editingMetadata.metadata?.document_file_type || 'PDF'}
+                                </div>
                             </div>
-                        </form>
-                    </Modal>
+                            <div className="metadata-field">
+                                <label>{__('File Size', 'bcgov-design-system')}</label>
+                                <div className="field-value">
+                                    {editingMetadata.metadata?.document_file_size ? 
+                                        formatFileSize(parseInt(editingMetadata.metadata.document_file_size)) : 
+                                        __('Not available', 'bcgov-design-system')}
+                                </div>
+                            </div>
+                        </div>
+                    </MetadataModal>
                 )}
             </div>
         </ErrorBoundary>

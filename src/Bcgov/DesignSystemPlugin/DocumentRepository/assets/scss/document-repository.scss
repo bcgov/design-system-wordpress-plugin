@@ -770,4 +770,34 @@ $background-success-light: #f1f8e9;  // Light success background
     grid-template-columns: 1fr;
     gap: 1.5rem; // 24px
   }
+}
+
+.metadata-field-actions {
+    display: flex;
+    gap: 8px; // Add gap between buttons
+    align-items: center;
+
+    .components-button {
+        margin: 0; // Reset any default margins
+    }
+}
+
+.metadata-edit-form {
+    .components-base-control__label {
+        text-transform: none !important;
+    }
+
+    .components-text-control__input {
+        text-transform: none !important;
+    }
+
+    .metadata-field {
+        label {
+            text-transform: none !important;
+        }
+        
+        .field-value {
+            text-transform: none !important;
+        }
+    }
 } 
