@@ -26,7 +26,7 @@
   .metadata-field {
     margin-bottom: $spacing-lg;
     padding-bottom: $spacing-lg;
-    border-bottom: 1px solid $border-color;
+    border-bottom: 0.0625rem solid $border-color;
 
     &:last-child {
       margin-bottom: 0;
@@ -60,7 +60,7 @@
         width: 100%;
         height: 2.25rem;
         padding: $spacing-xs $spacing-sm;
-        border: 1px solid $border-color;
+        border: 0.0625rem solid $border-color;
         border-radius: $border-radius-sm;
         font-size: $font-size-base;
         color: $text-color;
@@ -83,7 +83,7 @@
         width: 100%;
         min-height: 5rem;
         padding: $spacing-xs $spacing-sm;
-        border: 1px solid $border-color;
+        border: 0.0625rem solid $border-color;
         border-radius: $border-radius-sm;
         font-size: $font-size-base;
         color: $text-color;
@@ -145,7 +145,7 @@
 
         &.is-secondary {
           color: $text-color;
-          border: 1px solid $border-color;
+          border: 0.0625rem solid $border-color;
           background-color: white;
 
           &:hover:not(:disabled) {
@@ -183,13 +183,13 @@
 
   .metadata-list {
     margin-top: $spacing-lg;
-    border: 1px solid $border-color;
+    border: 0.0625rem solid $border-color;
     border-radius: $border-radius-sm;
     overflow: hidden;
 
     .metadata-item {
       padding: $spacing-md;
-      border-bottom: 1px solid $border-color;
+      border-bottom: 0.0625rem solid $border-color;
       background-color: white;
       display: flex;
       align-items: center;
@@ -235,7 +235,7 @@
           align-items: center;
           justify-content: center;
           color: $text-secondary;
-          border: 1px solid $border-color;
+          border: 0.0625rem solid $border-color;
           background-color: white;
 
           svg {
@@ -265,7 +265,7 @@
     margin-top: $spacing-lg;
     width: 100%;
     height: 2.25rem;
-    border: 1px dashed $border-color;
+    border: 0.0625rem dashed $border-color;
     border-radius: $border-radius-sm;
     background-color: $background-light;
     color: $text-secondary;
@@ -378,7 +378,7 @@
 
         &.cancel-button {
           color: $text-color;
-          border: 1px solid $border-color;
+          border: 0.0625rem solid $border-color;
           background-color: white;
 
           &:hover:not(:disabled) {
@@ -408,36 +408,36 @@
 
 // Modal specific styles
 .metadata-field-modal {
-  max-width: 500px !important;
+  max-width: 31.25rem !important;
   
   .components-modal__header {
-    height: 56px;
-    border-bottom: 1px solid #ddd;
+    height: 3.5rem;
+    border-bottom: 0.0625rem solid #ddd;
     margin: 0;
-    padding: 0 16px;
+    padding: 0 1rem;
     position: relative;
     z-index: 1;
     background: #fff;
 
     .components-modal__header-heading {
-      font-size: 16px;
+      font-size: 1rem;
       font-weight: 600;
-      line-height: 56px;
+      line-height: 3.5rem;
       margin: 0;
     }
 
     .components-button.has-icon {
       padding: 0;
-      min-width: 24px;
-      height: 24px;
+      min-width: 1.5rem;
+      height: 1.5rem;
       position: absolute;
-      right: 16px;
-      top: 16px;
+      right: 1rem;
+      top: 1rem;
     }
   }
 
   .components-modal__content {
-    padding: 16px;
+    padding: 1rem;
     margin: 0;
     position: relative;
     overflow: hidden;
@@ -452,11 +452,11 @@
     padding: 0;
 
     .components-base-control {
-      margin-bottom: 24px;
+      margin-bottom: 1.5rem;
       width: 100%;
 
       &:last-child {
-        margin-bottom: 24px;
+        margin-bottom: 1.5rem;
       }
 
       .components-base-control__field {
@@ -465,15 +465,15 @@
 
       .components-base-control__label {
         display: block;
-        margin-bottom: 4px;
+        margin-bottom: 0.25rem;
       }
     }
 
     // Error message
     .field-error {
       color: #d63638;
-      font-size: 12px;
-      margin: 0 0 2px;
+      font-size: 0.75rem;
+      margin: 0 0 0.125rem;
       display: block;
       font-weight: 600;
       line-height: 1.4;
@@ -486,7 +486,7 @@
         
         &:focus {
           border-color: #d63638;
-          box-shadow: 0 0 0 1px #d63638;
+          box-shadow: 0 0 0 0.0625rem #d63638;
         }
       }
     }
@@ -494,8 +494,8 @@
     // Field description
     .field-description {
       color: #757575;
-      font-size: 12px;
-      margin: 4px 0 0;
+      font-size: 0.75rem;
+      margin: 0.25rem 0 0;
       display: block;
       line-height: 1.4;
     }
@@ -504,18 +504,18 @@
     .metadata-field-actions {
       display: flex;
       justify-content: flex-end;
-      gap: 8px;
-      margin-top: 24px;
-      padding-top: 16px;
-      border-top: 1px solid #ddd;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 0.0625rem solid #ddd;
 
       .components-button {
-        height: 30px;
-        min-width: 80px;
-        padding: 0 16px;
-        font-size: 13px;
+        height: 1.875rem;
+        min-width: 5rem;
+        padding: 0 1rem;
+        font-size: 0.8125rem;
         font-weight: 500;
-        border-radius: 2px;
+        border-radius: 0.125rem;
         transition: all 0.2s ease;
 
         &.is-primary {
@@ -537,7 +537,7 @@
 
         &.is-secondary {
           color: #1e1e1e;
-          border: 1px solid #ddd;
+          border: 0.0625rem solid #ddd;
           background-color: white;
 
           &:hover:not(:disabled) {
@@ -558,25 +558,25 @@
 
   // Delete Form Styles
   .document-delete-form {
-    padding: 16px;
+    padding: 1rem;
 
     .delete-warning {
       background: #fcf0f1;
-      border-left: 4px solid #cc1818;
-      padding: 12px;
-      margin-bottom: 16px;
+      border-left: 0.25rem solid #cc1818;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
 
       .warning-content {
         strong {
           display: block;
-          font-size: 13px;
+          font-size: 0.8125rem;
           font-weight: 600;
-          margin-bottom: 4px;
+          margin-bottom: 0.25rem;
           color: #1e1e1e;
         }
 
         p {
-          font-size: 13px;
+          font-size: 0.8125rem;
           color: #757575;
           margin: 0;
           line-height: 1.4;
@@ -586,21 +586,21 @@
 
     .document-info {
       background: #f0f0f1;
-      padding: 16px;
-      margin-bottom: 24px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
 
       h3 {
-        font-size: 14px;
+        font-size: 0.875rem;
         font-weight: 600;
-        margin: 0 0 12px 0;
+        margin: 0 0 0.75rem 0;
         color: #1e1e1e;
       }
 
       .info-grid {
         display: grid;
-        grid-template-columns: 80px 1fr;
-        row-gap: 8px;
-        font-size: 13px;
+        grid-template-columns: 5rem 1fr;
+        row-gap: 0.5rem;
+        font-size: 0.8125rem;
 
         .label {
           color: #757575;
@@ -617,14 +617,14 @@
     .delete-actions {
       display: flex;
       justify-content: flex-end;
-      gap: 8px;
+      gap: 0.5rem;
       padding: 0;
 
       .components-button {
-        height: 30px;
-        min-width: 72px;
-        padding: 0 12px;
-        font-size: 13px;
+        height: 1.875rem;
+        min-width: 4.5rem;
+        padding: 0 0.75rem;
+        font-size: 0.8125rem;
         font-weight: normal;
 
         &.is-secondary {
@@ -656,6 +656,6 @@
 // Loading animation keyframes
 @keyframes components-button__busy-animation {
   0% {
-    background-position: 200px 0;
+    background-position: 12.5rem 0;
   }
 } 

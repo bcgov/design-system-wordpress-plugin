@@ -19,9 +19,9 @@
   }
 
   .components-modal__header {
-    height: 56px;
-    padding: 0 16px;
-    border-bottom: 1px solid $border-color;
+    height: 3.5rem;
+    padding: 0 1rem;
+    border-bottom: 0.0625rem solid $border-color;
     margin: 0;
     display: flex;
     align-items: center;
@@ -30,23 +30,23 @@
     z-index: 1;
 
     .components-modal__header-heading {
-      font-size: 16px;
+      font-size: 1rem;
       font-weight: 600;
       color: $text-color;
       margin: 0;
-      line-height: 56px;
+      line-height: 3.5rem;
     }
 
     .components-button {
       padding: 0;
-      width: 24px;
-      height: 24px;
-      min-width: 24px;
+      width: 1.5rem;
+      height: 1.5rem;
+      min-width: 1.5rem;
       border-radius: $border-radius-sm;
       color: $text-secondary;
       position: absolute;
-      right: 16px;
-      top: 16px;
+      right: 1rem;
+      top: 1rem;
 
       &:hover {
         background-color: $background-light;
@@ -54,8 +54,8 @@
       }
 
       svg {
-        width: 20px;
-        height: 20px;
+        width: 1.25rem;
+        height: 1.25rem;
       }
     }
   }
@@ -101,7 +101,7 @@
         width: 100%;
         height: 2.25rem;
         padding: $spacing-xs $spacing-sm;
-        border: 1px solid $border-color;
+        border: 0.0625rem solid $border-color;
         border-radius: $border-radius-sm;
         font-size: $font-size-base;
         color: $text-color;
@@ -126,7 +126,7 @@
       padding: $spacing-lg;
       margin: $spacing-lg 0;
       border-radius: $border-radius-sm;
-      border: 1px solid $border-color;
+      border: 0.0625rem solid $border-color;
 
       h3 {
         font-size: $font-size-base;
@@ -168,7 +168,7 @@
       gap: $spacing-sm;
       margin-top: $spacing-lg;
       padding-top: $spacing-md;
-      border-top: 1px solid $border-color;
+      border-top: 0.0625rem solid $border-color;
 
       .components-button {
         height: 2.25rem;
@@ -198,7 +198,7 @@
 
         &.is-secondary {
           color: $text-color;
-          border: 1px solid $border-color;
+          border: 0.0625rem solid $border-color;
           background-color: white;
 
           &:hover:not(:disabled) {
@@ -237,7 +237,7 @@
       padding: $spacing-md;
       border-radius: $border-radius-sm;
       margin-bottom: $spacing-lg;
-      border: 1px solid $border-color;
+      border: 0.0625rem solid $border-color;
 
       h4 {
         margin: 0 0 $spacing-sm 0;
@@ -266,7 +266,7 @@
       margin: 0 0 $spacing-lg 0;
       padding: $spacing-sm $spacing-md;
       background: $background-error-light;
-      border: 1px solid color.adjust($error-color, $alpha: -0.8);
+      border: 0.0625rem solid color.adjust($error-color, $alpha: -0.8);
       border-radius: $border-radius-sm;
       line-height: $line-height-base;
       display: flex;
@@ -284,7 +284,7 @@
       justify-content: flex-end;
       gap: $spacing-md;
       padding-top: $spacing-md;
-      border-top: 1px solid $border-color;
+      border-top: 0.0625rem solid $border-color;
 
       .components-button {
         height: 2.25rem;
@@ -315,7 +315,7 @@
 
         &:not(.is-destructive) {
           color: $text-color;
-          border: 1px solid $border-color;
+          border: 0.0625rem solid $border-color;
           background-color: white;
 
           &:hover:not(:disabled) {
