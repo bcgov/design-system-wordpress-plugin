@@ -469,79 +469,79 @@ const DocumentList = ({
 
     return (
         <ErrorBoundary>
-            <div 
-                className={`document-list ${isDragging ? 'dragging' : ''}`}
-                onDragEnter={handleDragEnter}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-            >
-                {notice && (
-                    <Notice 
-                        status={notice.status}
-                        isDismissible={true}
-                        onRemove={() => setNotice(null)}
-                    >
-                        {notice.message}
-                    </Notice>
-                )}
-                
-                <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileInputChange}
-                    style={{ display: 'none' }}
-                    accept="application/pdf,.pdf"
-                    multiple
-                />
+            <div className="document-list">
+                {/* Upload Section */}
+                <div 
+                    className={`document-upload-section ${isDragging ? 'dragging' : ''}`}
+                    onDragEnter={handleDragEnter}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    onClick={handleUploadClick}
+                >
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        style={{ display: 'none' }}
+                        onChange={handleFileInputChange}
+                        multiple
+                        accept=".pdf"
+                    />
+                    <div className="document-upload-content">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48">
+                            <path fill="none" d="M0 0h24v24H0z"/>
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" fill="currentColor"/>
+                        </svg>
+                        <h3>{__('Drag or Click to Upload', 'bcgov-design-system')}</h3>
+                        <p>{__('Drop your files here or click to browse', 'bcgov-design-system')}</p>
+                    </div>
+                </div>
 
+                {/* Mode Toggle Buttons */}
                 <div className="document-list-actions">
                     <div className="document-list-left-actions">
-                        <div className="document-list-upload-hint-container">
-                            <button className="document-list-upload-hint" onClick={handleUploadClick}>
-                                <svg viewBox="0 0 24 24" width="16" height="16">
-                                    <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor"/>
-                                </svg>
-                                {__('Upload Documents', 'bcgov-design-system')}
-                            </button>
+                        <div className="mode-toggle">
+                            <Button
+                                variant={isSpreadsheetMode ? 'primary' : 'secondary'}
+                                onClick={() => setIsSpreadsheetMode(!isSpreadsheetMode)}
+                                className="mode-toggle-button"
+                            >
+                                {isSpreadsheetMode ? __('Exit Spreadsheet Mode', 'bcgov-design-system') : __('Spreadsheet Mode', 'bcgov-design-system')}
+                            </Button>
+                            {isSpreadsheetMode && (
+                                <Button
+                                    variant="primary"
+                                    onClick={handleSaveBulkChanges}
+                                    disabled={!hasMetadataChanges || isSavingBulk}
+                                    isBusy={isSavingBulk}
+                                    className="save-changes-button"
+                                >
+                                    {isSavingBulk 
+                                        ? __('Saving...', 'bcgov-design-system')
+                                        : __('Save Changes', 'bcgov-design-system')
+                                    }
+                                </Button>
+                            )}
                         </div>
                         {selectedDocuments.length > 0 && (
                             <Button
                                 isDestructive
                                 onClick={() => setBulkDeleteConfirmOpen(true)}
                                 className="bulk-delete-button"
-                                icon={<svg viewBox="0 0 24 24" width="16" height="16">
-                                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="currentColor"/>
-                                </svg>}
+                                disabled={isMultiDeleting}
                             >
-                                {sprintf(__('Delete Selected (%d)', 'bcgov-design-system'), selectedDocuments.length)}
+                                {isMultiDeleting ? (
+                                    __('Deleting...', 'bcgov-design-system')
+                                ) : sprintf(
+                                    __('Delete Selected (%d)', 'bcgov-design-system'),
+                                    selectedDocuments.length
+                                )}
                             </Button>
                         )}
                     </div>
-                    {localDocuments.length > 0 && (
-                        <div className="mode-toggle">
-                            <Button
-                                variant={isSpreadsheetMode ? "primary" : "secondary"}
-                                onClick={() => setIsSpreadsheetMode(!isSpreadsheetMode)}
-                            >
-                                {isSpreadsheetMode ? __('Exit Spreadsheet Mode', 'bcgov-design-system') : __('Edit as Spreadsheet', 'bcgov-design-system')}
-                            </Button>
-                            {isSpreadsheetMode && (
-                                <Button
-                                    variant="primary"
-                                    onClick={handleSaveBulkChanges}
-                                    disabled={isSavingBulk || !hasMetadataChanges}
-                                    style={{ marginLeft: '8px' }}
-                                >
-                                    {isSavingBulk ? (
-                                        <>{__('Saving...', 'bcgov-design-system')}</>
-                                    ) : __('Save All Changes', 'bcgov-design-system')}
-                                </Button>
-                            )}
-                        </div>
-                    )}
                 </div>
 
+                {/* Document Table */}
                 <DocumentTable {...documentTableProps} />
                 
                 {totalPages > 1 && (
@@ -561,18 +561,6 @@ const DocumentList = ({
                         >
                             {__('Next', 'bcgov-design-system')}
                         </Button>
-                    </div>
-                )}
-                
-                {isDragging && (
-                    <div className="document-drop-overlay">
-                        <div className="document-drop-message">
-                            <svg viewBox="0 0 64 64" width="64" height="64">
-                                <path d="M32 16v24M20 28l12-12 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                <path d="M16 48h32M12 20v28c2.2 0 4-1.8 4-4V20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                            </svg>
-                            {__('Drop files to upload', 'bcgov-design-system')}
-                        </div>
                     </div>
                 )}
                 

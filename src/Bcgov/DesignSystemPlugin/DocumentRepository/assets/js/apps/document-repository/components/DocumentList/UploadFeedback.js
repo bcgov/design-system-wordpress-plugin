@@ -1,4 +1,5 @@
 import { __, sprintf } from '@wordpress/i18n';
+import { useEffect } from '@wordpress/element';
 
 /**
  * UploadFeedback Component
@@ -34,6 +35,17 @@ const UploadFeedback = ({ uploadingFiles, showUploadFeedback, onClose }) => {
     const uploadingCount = uploadingFiles.filter(f => f.status === 'uploading').length;
     const processingCount = uploadingFiles.filter(f => f.status === 'processing').length;
     const hasPlaceholder = uploadingFiles.some(f => f.isPlaceholder);
+
+    // Auto-close after 3 seconds when all uploads are complete
+    useEffect(() => {
+        if (showUploadFeedback && uploadingCount === 0 && processingCount === 0) {
+            const timer = setTimeout(() => {
+                onClose();
+            }, 3000); // 3 seconds
+
+            return () => clearTimeout(timer);
+        }
+    }, [showUploadFeedback, uploadingCount, processingCount, onClose]);
 
     return (
         <div className="upload-feedback">

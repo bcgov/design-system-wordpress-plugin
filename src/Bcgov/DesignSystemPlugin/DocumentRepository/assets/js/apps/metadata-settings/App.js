@@ -23,6 +23,7 @@ import {
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
+import DeleteFieldModal from './components/Modals/DeleteFieldModal';
 
 /**
  * Metadata List Component
@@ -52,32 +53,10 @@ const MetadataList = ({ children }) => (
  * @param {number} props.total - Total number of items
  * @returns {JSX.Element} Metadata item with move controls
  */
-const MetadataItem = ({ children, onMoveUp, onMoveDown, index, total }) => (
+const MetadataItem = ({ children }) => (
     <div className="metadata-field-item">
         <div className="metadata-field-info">
             {children}
-        </div>
-        <div className="metadata-field-move-actions">
-            {index > 0 && (
-                <Button
-                    variant="secondary"
-                    onClick={onMoveUp}
-                    className="move-up"
-                    aria-label={__('Move Up', 'bcgov-design-system')}
-                >
-                    ↑
-                </Button>
-            )}
-            {index < total - 1 && (
-                <Button
-                    variant="secondary"
-                    onClick={onMoveDown}
-                    className="move-down"
-                    aria-label={__('Move Down', 'bcgov-design-system')}
-                >
-                    ↓
-                </Button>
-            )}
         </div>
     </div>
 );
@@ -164,10 +143,25 @@ const validateField = (field, existingFields = [], currentIndex = null) => {
         errors.label = __('Field label is required', 'bcgov-design-system');
     }
     
-    const hasDuplicate = existingFields.some(
-        (existing, index) => existing.id === field.id && index !== currentIndex
+    // Check for duplicate labels (case-insensitive)
+    const hasDuplicateLabel = existingFields.some(
+        (existing, index) => 
+            index !== currentIndex && 
+            existing.label.toLowerCase() === field.label.toLowerCase()
     );
-    if (hasDuplicate) {
+    
+    if (hasDuplicateLabel) {
+        errors.label = __('A field with this label already exists', 'bcgov-design-system');
+    }
+    
+    // Check for duplicate IDs
+    const hasDuplicateId = existingFields.some(
+        (existing, index) => 
+            index !== currentIndex && 
+            existing.id === field.id
+    );
+    
+    if (hasDuplicateId) {
         errors.id = __('A field with this ID already exists', 'bcgov-design-system');
     }
     
@@ -256,24 +250,30 @@ const MetadataApp = () => {
                     type: 'text', 
                     options: [],
                     _rawOptionsText: ''
+                },
+                errors: {
+                    label: '',
+                    submit: ''
                 }
             },
             edit: { 
                 isOpen: false,
                 field: null,
-                index: null
+                index: null,
+                errors: {
+                    label: '',
+                    submit: ''
+                }
+            },
+            delete: {
+                isOpen: false,
+                field: null
             }
         }
     });
     
     // API hooks
     const { fetchFields, saveFields } = useMetadataAPI();
-    
-    // Memoized sorted fields
-    const sortedFields = useMemo(() => 
-        [...state.fields].sort((a, b) => a.order - b.order),
-        [state.fields]
-    );
     
     // Load fields on mount
     useEffect(() => {
@@ -318,36 +318,72 @@ const MetadataApp = () => {
         const errors = validateField(field, state.fields);
         
         if (Object.keys(errors).length > 0) {
-            setState(prev => ({ ...prev, error: errors }));
+            setState(prev => ({
+                ...prev,
+                modals: {
+                    ...prev.modals,
+                    add: {
+                        ...prev.modals.add,
+                        errors
+                    }
+                }
+            }));
             return;
         }
         
         setState(prev => ({ ...prev, isSaving: true }));
         
-        const result = await saveFields([
-            ...state.fields,
-            { ...field, order: state.fields.length }
-        ]);
-        
-        if (result.success) {
+        try {
+            const result = await saveFields([
+                ...state.fields,
+                { ...field, order: state.fields.length }
+            ]);
+            
+            if (result.success) {
+                setState(prev => ({
+                    ...prev,
+                    fields: [...prev.fields, { ...field, order: prev.fields.length }],
+                    isSaving: false,
+                    modals: {
+                        ...prev.modals,
+                        add: {
+                            isOpen: false,
+                            field: { id: '', label: '', type: 'text', options: [], _rawOptionsText: '' },
+                            errors: {
+                                label: '',
+                                submit: ''
+                            }
+                        }
+                    }
+                }));
+            } else {
+                setState(prev => ({
+                    ...prev,
+                    isSaving: false,
+                    modals: {
+                        ...prev.modals,
+                        add: {
+                            ...prev.modals.add,
+                            errors: {
+                                submit: result.error || __('Failed to save field', 'bcgov-design-system')
+                            }
+                        }
+                    }
+                }));
+            }
+        } catch (error) {
             setState(prev => ({
                 ...prev,
-                fields: [...prev.fields, { ...field, order: prev.fields.length }],
-                error: null,
                 isSaving: false,
                 modals: {
                     ...prev.modals,
                     add: {
-                        isOpen: false,
-                        field: { id: '', label: '', type: 'text', options: [], _rawOptionsText: '' }
+                        ...prev.modals.add,
+                        errors: {
+                            submit: error.message || __('Failed to save field', 'bcgov-design-system')
+                        }
                     }
                 }
-            }));
-        } else {
-            setState(prev => ({
-                ...prev,
-                error: result.error,
-                isSaving: false
             }));
         }
     }, [state.modals.add.field, state.fields, saveFields]);
@@ -414,11 +450,22 @@ const MetadataApp = () => {
     };
     
     // Handle deleting a field
-    const handleDeleteField = async (fieldId) => {
-        if (!confirm(__('Are you sure you want to delete this field? This will remove this metadata from ALL documents and cannot be undone.', 'bcgov-design-system'))) {
-            return;
-        }
-
+    const handleDeleteField = async (field) => {
+        setState(prev => ({
+            ...prev,
+            modals: {
+                ...prev.modals,
+                delete: {
+                    isOpen: true,
+                    field
+                }
+            }
+        }));
+    };
+    
+    // Handle confirming field deletion
+    const handleConfirmDelete = async () => {
+        const fieldId = state.modals.delete.field.id;
         setState(prev => ({ ...prev, isSaving: true }));
         
         try {
@@ -437,7 +484,14 @@ const MetadataApp = () => {
                     ...prev, 
                     fields: updatedFields,
                     isSaving: false,
-                    error: null
+                    error: null,
+                    modals: {
+                        ...prev.modals,
+                        delete: {
+                            isOpen: false,
+                            field: null
+                        }
+                    }
                 }));
             } else {
                 setState(prev => ({ 
@@ -453,6 +507,20 @@ const MetadataApp = () => {
                 isSaving: false
             }));
         }
+    };
+
+    // Handle closing delete modal
+    const handleCloseDeleteModal = () => {
+        setState(prev => ({
+            ...prev,
+            modals: {
+                ...prev.modals,
+                delete: {
+                    isOpen: false,
+                    field: null
+                }
+            }
+        }));
     };
     
     // Format options array to string for textarea
@@ -497,7 +565,20 @@ const MetadataApp = () => {
     }, []);
 
     const handleModalClose = useCallback((modalType) => {
-        setState(prev => closeModal(prev, modalType));
+        setState(prev => ({
+            ...prev,
+            modals: {
+                ...prev.modals,
+                [modalType]: {
+                    ...prev.modals[modalType],
+                    isOpen: false,
+                    errors: {
+                        label: '',
+                        submit: ''
+                    }
+                }
+            }
+        }));
     }, []);
     
     if (state.isLoading) {
@@ -511,29 +592,6 @@ const MetadataApp = () => {
         );
     }
     
-    // Handle moving items up/down
-    const handleMoveUp = (index) => {
-        if (index <= 0) return;
-        const newFields = [...state.fields];
-        [newFields[index - 1], newFields[index]] = [newFields[index], newFields[index - 1]];
-        // Update order property
-        newFields.forEach((field, idx) => {
-            field.order = idx;
-        });
-        setState(prev => ({ ...prev, fields: newFields }));
-    };
-
-    const handleMoveDown = (index) => {
-        if (index >= state.fields.length - 1) return;
-        const newFields = [...state.fields];
-        [newFields[index], newFields[index + 1]] = [newFields[index + 1], newFields[index]];
-        // Update order property
-        newFields.forEach((field, idx) => {
-            field.order = idx;
-        });
-        setState(prev => ({ ...prev, fields: newFields }));
-    };
-
     return (
         <div className="metadata-settings">
             {state.error && (
@@ -553,7 +611,11 @@ const MetadataApp = () => {
                                 ...prev.modals, 
                                 add: { 
                                     isOpen: true,
-                                    field: getInitialFieldState()
+                                    field: getInitialFieldState(),
+                                    errors: {
+                                        label: '',
+                                        submit: ''
+                                    }
                                 } 
                             } 
                         }))}
@@ -565,7 +627,7 @@ const MetadataApp = () => {
                 
                 <CardBody>
                     <div className="metadata-fields-info">
-                        <p>{__('Customize the metadata fields that will be available for documents. Use the up/down arrows to reorder fields.', 'bcgov-design-system')}</p>
+                        <p>{__('Customize the metadata fields that will be available for documents.', 'bcgov-design-system')}</p>
                     </div>
                     
                     {state.fields.length === 0 ? (
@@ -574,19 +636,12 @@ const MetadataApp = () => {
                         </div>
                     ) : (
                         <MetadataList>
-                            {sortedFields.map((field, index) => (
-                                <MetadataItem
-                                    key={field.id}
-                                    index={index}
-                                    total={sortedFields.length}
-                                    onMoveUp={() => handleMoveUp(index)}
-                                    onMoveDown={() => handleMoveDown(index)}
-                                >
-                                    <h3>{field.label}</h3>
-                                    <div className="metadata-field-details">
-                                        <span className="metadata-field-id">
-                                            ID: {field.id.replace(/_[^_]+$/, '')}
-                                        </span>
+                            {state.fields.map((field, index) => (
+                                <MetadataItem key={field.id}>
+                                    <div className="metadata-field-info">
+                                        <h3>{field.label}</h3>
+                                        <p className="field-id">ID: {field.id}</p>
+                                        <p className="field-type">Type: {FIELD_TYPES[field.type]}</p>
                                     </div>
                                     <div className="metadata-field-actions">
                                         <Button
@@ -595,11 +650,10 @@ const MetadataApp = () => {
                                         >
                                             {__('Edit', 'bcgov-design-system')}
                                         </Button>
-                                        
                                         <Button
                                             variant="secondary"
                                             isDestructive
-                                            onClick={() => handleDeleteField(field.id)}
+                                            onClick={() => handleDeleteField(field)}
                                             disabled={state.isSaving}
                                         >
                                             {__('Delete', 'bcgov-design-system')}
@@ -618,18 +672,27 @@ const MetadataApp = () => {
                     title={__('Add New Metadata Field', 'bcgov-design-system')}
                     onRequestClose={() => handleModalClose('add')}
                     className="metadata-field-modal"
-                    isDismissible={true}
-                    shouldCloseOnClickOutside={true}
-                    shouldCloseOnEsc={true}
                 >
                     <div className="metadata-field-form">
+                        {state.modals.add.errors.submit && (
+                            <Notice status="error" isDismissible={false}>
+                                <p>{state.modals.add.errors.submit}</p>
+                            </Notice>
+                        )}
+                        
                         <TextControl
                             label={__('Field Label', 'bcgov-design-system')}
                             help={__('Display name for the field', 'bcgov-design-system')}
                             value={state.modals.add.field.label}
                             onChange={label => handleFieldChange('add', 'label', label)}
                             required
+                            className={state.modals.add.errors.label ? 'has-error' : ''}
                         />
+                        {state.modals.add.errors.label && (
+                            <div className="field-error">
+                                {state.modals.add.errors.label}
+                            </div>
+                        )}
                         
                         <SelectControl
                             label={__('Field Type', 'bcgov-design-system')}
@@ -768,6 +831,14 @@ const MetadataApp = () => {
                     </div>
                 </Modal>
             )}
+
+            <DeleteFieldModal
+                isOpen={state.modals.delete.isOpen}
+                onClose={handleCloseDeleteModal}
+                onConfirm={handleConfirmDelete}
+                field={state.modals.delete.field}
+                isDeleting={state.isSaving}
+            />
         </div>
     );
 };

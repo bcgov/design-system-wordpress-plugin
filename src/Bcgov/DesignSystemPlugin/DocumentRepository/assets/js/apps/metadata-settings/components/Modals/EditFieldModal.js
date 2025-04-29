@@ -38,6 +38,7 @@ import {
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { FIELD_TYPES } from '../../constants/fieldTypes';
+import { useState, useEffect } from '@wordpress/element';
 
 const EditFieldModal = ({ 
     isOpen,
@@ -50,6 +51,25 @@ const EditFieldModal = ({
 }) => {
     // Return null if modal is not open or no field data provided
     if (!isOpen || !field) return null;
+
+    // Track original field values for comparison
+    const [originalField, setOriginalField] = useState(null);
+    const [hasChanges, setHasChanges] = useState(false);
+
+    // Set original field values when modal opens
+    useEffect(() => {
+        if (isOpen && field) {
+            setOriginalField(JSON.stringify(field));
+        }
+    }, [isOpen, field]);
+
+    // Check for changes whenever field is updated
+    useEffect(() => {
+        if (originalField) {
+            const currentField = JSON.stringify(field);
+            setHasChanges(currentField !== originalField);
+        }
+    }, [field, originalField]);
 
     return (
         <Modal
@@ -96,7 +116,11 @@ const EditFieldModal = ({
             
             {/* Modal action buttons */}
             <div className="modal-actions">
-                <Button variant="primary" onClick={onSave}>
+                <Button 
+                    variant="primary" 
+                    onClick={onSave}
+                    disabled={!hasChanges}
+                >
                     {__('Save Changes', 'bcgov-design-system')}
                 </Button>
                 <Button variant="secondary" onClick={onClose}>

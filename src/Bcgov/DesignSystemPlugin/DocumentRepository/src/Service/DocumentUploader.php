@@ -25,6 +25,35 @@ class DocumentUploader {
      */
     public function __construct(RepositoryConfig $config) {
         $this->config = $config;
+        
+        // Add filter for custom upload directory
+        add_filter('upload_dir', [$this, 'custom_upload_dir']);
+    }
+    
+    /**
+     * Custom upload directory filter
+     * 
+     * @param array $uploads WordPress upload directory settings
+     * @return array Modified upload directory settings
+     */
+    public function custom_upload_dir($uploads) {
+        // Check if this is a document repository upload
+        $is_document_upload = (
+            (isset($_POST['action']) && $_POST['action'] === 'upload-attachment') ||
+            (isset($_POST['metadata']) && strpos($_POST['metadata'], 'document_repository') !== false)
+        );
+        
+        if ($is_document_upload) {
+            $uploads['path'] = $uploads['basedir'] . '/dswp-documents';
+            $uploads['url'] = $uploads['baseurl'] . '/dswp-documents';
+            $uploads['subdir'] = '/dswp-documents';
+            
+            // Create directory if it doesn't exist
+            if (!file_exists($uploads['path'])) {
+                wp_mkdir_p($uploads['path']);
+            }
+        }
+        return $uploads;
     }
     
     /**
@@ -35,6 +64,17 @@ class DocumentUploader {
      * @return array|WP_Error Document data or error
      */
     public function upload_document(array $file, array $metadata = []) {
+        // Add a flag to identify this as a document repository upload
+        $_POST['metadata'] = json_encode(array_merge($metadata, ['document_repository' => true]));
+        
+        // Ensure our custom upload directory exists
+        $upload_dir = wp_upload_dir();
+        $custom_dir = $upload_dir['basedir'] . '/dswp-documents';
+        
+        if (!file_exists($custom_dir)) {
+            wp_mkdir_p($custom_dir);
+        }
+
         // Check if file data is properly formed
         if (!isset($file['tmp_name']) || !isset($file['name']) || !isset($file['size']) || !isset($file['error'])) {
             return new WP_Error(
