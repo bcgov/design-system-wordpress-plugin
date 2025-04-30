@@ -1,22 +1,22 @@
 // Font Variables
 // -------------
-$font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+$font-family-base: -apple-system, blinkmacsystemfont, "Segoe UI", roboto, oxygen-sans, ubuntu, cantarell, "Helvetica Neue", sans-serif;
 $font-weight-normal: 400;
 $font-weight-medium: 500;
 $font-weight-bold: 600;
 
 // Color Variables
 // ---------------
-$primary-color: #003366;      // Main brand color
-$secondary-color: #38598A;
-$error-color: #D8292F;        // Error states and destructive actions
+$primary-color: #036;      // Main brand color
+$secondary-color: #38598a;
+$error-color: #d8292f;        // Error states and destructive actions
 $success-color: #4caf50;      // Success states
-$border-color: #E0E0E0;       // Border colors
-$text-color: #1E1E1E;         // Primary text color
+$border-color: #e0e0e0;       // Border colors
+$text-color: #1e1e1e;         // Primary text color
 $text-secondary: #505050;      // Secondary text color
-$background-light: #F8F8F8;    // Light background
+$background-light: #f8f8f8;    // Light background
 $background-primary-light: #f0f7ff;  // Light primary background
-$background-error-light: #FFF1F2;    // Light error background
+$background-error-light: #fff1f2;    // Light error background
 $background-success-light: #f1f8e9;  // Light success background
 
 // Spacing
@@ -72,18 +72,18 @@ $z-index-tooltip: 1070;
 // Mixins
 // ------
 @mixin flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 @mixin button-reset {
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
+	background: none;
+	border: none;
+	padding: 0;
+	cursor: pointer;
 }
 
 @mixin transition {
-  transition: all 0.2s ease;
-} 
+	transition: all 0.2s ease;
+}

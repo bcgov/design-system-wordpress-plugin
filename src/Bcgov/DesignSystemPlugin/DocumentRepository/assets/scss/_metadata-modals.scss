@@ -1,6 +1,6 @@
 /**
  * Metadata Modal Styles
- * 
+ *
  * This file contains styles for metadata-related modals including:
  * - Metadata edit modal
  * - Delete confirmation modal
@@ -11,326 +11,312 @@
 
 // Modal Styles (Global)
 .metadata-edit-modal {
-  font-family: $font-family-base;
+	font-family: $font-family-base;
 
-  .components-modal__content {
-    padding: 0;
-    margin: 0;
-  }
+	.components-modal__content {
+		padding: 0;
+		margin: 0;
+	}
 
-  .components-modal__header {
-    height: 3.5rem;
-    padding: 0 1rem;
-    border-bottom: 0.0625rem solid $border-color;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    background: white;
-    position: relative;
-    z-index: 1;
+	.components-modal__header {
+		height: 3.5rem;
+		padding: 0 1rem;
+		border-bottom: 0.0625rem solid $border-color;
+		margin: 0;
+		display: flex;
+		align-items: center;
+		background: #fff;
+		position: relative;
+		z-index: 1;
 
-    .components-modal__header-heading {
-      font-size: 1rem;
-      font-weight: 600;
-      color: $text-color;
-      margin: 0;
-      line-height: 3.5rem;
-    }
+		.components-modal__header-heading {
+			font-size: 1rem;
+			font-weight: 600;
+			color: $text-color;
+			margin: 0;
+			line-height: 1;
+		}
 
-    .components-button {
-      padding: 0;
-      width: 1.5rem;
-      height: 1.5rem;
-      min-width: 1.5rem;
-      border-radius: $border-radius-sm;
-      color: $text-secondary;
-      position: absolute;
-      right: 1rem;
-      top: 1rem;
+		.components-button {
+			padding: 0;
+			width: 1.5rem;
+			height: 1.5rem;
+			min-width: 1.5rem;
+			border-radius: $border-radius-sm;
+			color: $text-secondary;
+			position: absolute;
+			right: 1rem;
+			top: 1rem;
 
-      &:hover {
-        background-color: $background-light;
-        color: $text-color;
-      }
+			&:hover {
+				background-color: $background-light;
+				color: $text-color;
+			}
 
-      svg {
-        width: 1.25rem;
-        height: 1.25rem;
-      }
-    }
-  }
+			svg {
+				width: 1.25rem;
+				height: 1.25rem;
+			}
+		}
+	}
 
-  .metadata-edit-form {
-    padding: $spacing-lg;
+	.metadata-edit-form {
+		padding: $spacing-lg;
 
-    .editable-metadata {
-      margin-bottom: $spacing-lg;
+		.editable-metadata {
+			margin-bottom: $spacing-lg;
 
-      h3 {
-        font-size: $font-size-base;
-        font-weight: $font-weight-medium;
-        margin: 0 0 $spacing-md 0;
-        color: $text-color;
-      }
+			h3 {
+				font-size: $font-size-base;
+				font-weight: $font-weight-medium;
+				margin: 0 0 $spacing-md 0;
+				color: $text-color;
+			}
 
-      .metadata-field {
-        margin-bottom: $spacing-md;
+			.metadata-field {
+				margin-bottom: $spacing-md;
 
-        &:last-child {
-          margin-bottom: 0;
-        }
-      }
-    }
+				&:last-child {
+					margin-bottom: 0;
+				}
+			}
+		}
 
-    .components-base-control {
-      margin-bottom: $spacing-md;
+		.non-editable-metadata {
+			background-color: $background-light;
+			padding: $spacing-lg;
+			margin: $spacing-lg 0;
+			border-radius: $border-radius-sm;
+			border: 0.0625rem solid $border-color;
 
-      &:last-child {
-        margin-bottom: 0;
-      }
+			h3 {
+				font-size: $font-size-base;
+				font-weight: $font-weight-medium;
+				margin: 0 0 $spacing-md 0;
+				color: $text-color;
+			}
 
-      .components-base-control__label {
-        font-size: $font-size-sm;
-        font-weight: $font-weight-normal;
-        color: $text-secondary;
-        margin-bottom: $spacing-xs;
-        display: block;
-      }
+			.metadata-field {
+				margin-bottom: $spacing-sm;
+				display: flex;
+				align-items: flex-start;
 
-      .components-text-control__input {
-        width: 100%;
-        height: 2.25rem;
-        padding: $spacing-xs $spacing-sm;
-        border: 0.0625rem solid $border-color;
-        border-radius: $border-radius-sm;
-        font-size: $font-size-base;
-        color: $text-color;
-        background-color: white;
+				&:last-child {
+					margin-bottom: 0;
+				}
 
-        &:focus {
-          border-color: $primary-color;
-          box-shadow: $box-shadow-sm;
-          outline: none;
-        }
+				label {
+					font-size: $font-size-sm;
+					color: $text-secondary;
+					width: 7.5rem;
+					flex-shrink: 0;
+					padding-top: 0.125rem;
+				}
 
-        &:disabled {
-          background-color: $background-light;
-          color: $text-secondary;
-          cursor: not-allowed;
-        }
-      }
-    }
+				.field-value {
+					font-size: $font-size-base;
+					color: $text-color;
+					flex: 1;
+					word-break: break-word;
+					line-height: $line-height-base;
+				}
+			}
+		}
 
-    .non-editable-metadata {
-      background-color: $background-light;
-      padding: $spacing-lg;
-      margin: $spacing-lg 0;
-      border-radius: $border-radius-sm;
-      border: 0.0625rem solid $border-color;
+		.components-base-control {
+			margin-bottom: $spacing-md;
 
-      h3 {
-        font-size: $font-size-base;
-        font-weight: $font-weight-medium;
-        margin: 0 0 $spacing-md 0;
-        color: $text-color;
-      }
+			&:last-child {
+				margin-bottom: 0;
+			}
 
-      .metadata-field {
-        margin-bottom: $spacing-sm;
-        display: flex;
-        align-items: flex-start;
+			.components-base-control__label {
+				font-size: $font-size-sm;
+				font-weight: $font-weight-normal;
+				color: $text-secondary;
+				margin-bottom: $spacing-xs;
+				display: block;
+			}
 
-        &:last-child {
-          margin-bottom: 0;
-        }
+			.components-text-control__input {
+				width: 100%;
+				height: 2.25rem;
+				padding: $spacing-xs $spacing-sm;
+				border: 0.0625rem solid $border-color;
+				border-radius: $border-radius-sm;
+				font-size: $font-size-base;
+				color: $text-color;
+				background-color: #fff;
 
-        label {
-          font-size: $font-size-sm;
-          color: $text-secondary;
-          width: 7.5rem;
-          flex-shrink: 0;
-          padding-top: 0.125rem;
-        }
+				&:focus {
+					border-color: $primary-color;
+					box-shadow: $box-shadow-sm;
+					outline: none;
+				}
 
-        .field-value {
-          font-size: $font-size-base;
-          color: $text-color;
-          flex: 1;
-          word-break: break-word;
-          line-height: $line-height-base;
-        }
-      }
-    }
+				&:disabled {
+					background-color: $background-light;
+					color: $text-secondary;
+					cursor: not-allowed;
+				}
+			}
+		}
 
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: $spacing-sm;
-      margin-top: $spacing-lg;
-      padding-top: $spacing-md;
-      border-top: 0.0625rem solid $border-color;
+		.modal-actions {
+			display: flex;
+			justify-content: flex-end;
+			gap: $spacing-sm;
+			margin-top: $spacing-lg;
+			padding-top: $spacing-md;
+			border-top: 0.0625rem solid $border-color;
 
-      .components-button {
-        height: 2.25rem;
-        min-width: 5rem;
-        padding: 0 $spacing-lg;
-        font-size: $font-size-sm;
-        font-weight: $font-weight-medium;
-        border-radius: $border-radius-sm;
-        transition: all 0.2s ease;
+			.components-button {
+				height: 2.25rem;
+				min-width: 5rem;
+				padding: 0 $spacing-lg;
+				font-size: $font-size-sm;
+				font-weight: $font-weight-medium;
+				border-radius: $border-radius-sm;
+				transition: all 0.2s ease;
 
-        &.is-primary {
-          background-color: $primary-color;
-          color: white;
-          border: none;
+				&:disabled {
+					background-color: $background-light;
+					color: $text-secondary;
+					cursor: not-allowed;
+					opacity: 0.7;
+				}
 
-          &:hover:not(:disabled) {
-            background-color: color.adjust($primary-color, $lightness: -5%);
-          }
+				&.is-primary {
+					background-color: $primary-color;
+					color: #fff;
+					border: none;
 
-          &:disabled {
-            background-color: $background-light;
-            color: $text-secondary;
-            cursor: not-allowed;
-            opacity: 0.7;
-          }
-        }
+					&:hover:not(:disabled) {
+						background-color: color.adjust($primary-color, $lightness: -5%);
+					}
+				}
 
-        &.is-secondary {
-          color: $text-color;
-          border: 0.0625rem solid $border-color;
-          background-color: white;
+				&.is-secondary {
+					color: $text-color;
+					border: 0.0625rem solid $border-color;
+					background-color: #fff;
 
-          &:hover:not(:disabled) {
-            background-color: $background-light;
-            border-color: color.adjust($border-color, $lightness: -5%);
-          }
-
-          &:disabled {
-            background-color: $background-light;
-            color: $text-secondary;
-            cursor: not-allowed;
-            opacity: 0.7;
-          }
-        }
-      }
-    }
-  }
+					&:hover:not(:disabled) {
+						background-color: $background-light;
+						border-color: color.adjust($border-color, $lightness: -5%);
+					}
+				}
+			}
+		}
+	}
 }
 
 // Delete Confirmation Modal
 .components-modal__screen-overlay {
-  font-family: $font-family-base;
-  
-  .delete-confirmation-content {
-    padding: $spacing-lg;
+	font-family: $font-family-base;
 
-    p {
-      font-size: $font-size-base;
-      color: $text-color;
-      margin: 0 0 $spacing-lg 0;
-      line-height: $line-height-base;
-    }
+	.delete-confirmation-content {
+		padding: $spacing-lg;
 
-    .documents-to-delete {
-      background: $background-light;
-      padding: $spacing-md;
-      border-radius: $border-radius-sm;
-      margin-bottom: $spacing-lg;
-      border: 0.0625rem solid $border-color;
+		p {
+			font-size: $font-size-base;
+			color: $text-color;
+			margin: 0 0 $spacing-lg 0;
+			line-height: $line-height-base;
+		}
 
-      h4 {
-        margin: 0 0 $spacing-sm 0;
-        font-size: $font-size-base;
-        font-weight: $font-weight-medium;
-        color: $text-color;
-      }
+		.documents-to-delete {
+			background: $background-light;
+			padding: $spacing-md;
+			border-radius: $border-radius-sm;
+			margin-bottom: $spacing-lg;
+			border: 0.0625rem solid $border-color;
 
-      ul {
-        margin: 0;
-        padding: 0;
-        list-style: none;
+			h4 {
+				margin: 0 0 $spacing-sm 0;
+				font-size: $font-size-base;
+				font-weight: $font-weight-medium;
+				color: $text-color;
+			}
 
-        li {
-          font-size: $font-size-sm;
-          color: $text-color;
-          line-height: $line-height-base;
-          padding: $spacing-xs 0;
-        }
-      }
-    }
+			ul {
+				margin: 0;
+				padding: 0;
+				list-style: none;
 
-    .delete-warning {
-      color: $error-color;
-      font-size: $font-size-sm;
-      margin: 0 0 $spacing-lg 0;
-      padding: $spacing-sm $spacing-md;
-      background: $background-error-light;
-      border: 0.0625rem solid color.adjust($error-color, $alpha: -0.8);
-      border-radius: $border-radius-sm;
-      line-height: $line-height-base;
-      display: flex;
-      align-items: center;
-      gap: $spacing-sm;
+				li {
+					font-size: $font-size-sm;
+					color: $text-color;
+					line-height: $line-height-base;
+					padding: $spacing-xs 0;
+				}
+			}
+		}
 
-      &::before {
-        content: "⚠";
-        font-size: $font-size-base;
-      }
-    }
+		.delete-warning {
+			color: $error-color;
+			font-size: $font-size-sm;
+			margin: 0 0 $spacing-lg 0;
+			padding: $spacing-sm $spacing-md;
+			background: $background-error-light;
+			border: 0.0625rem solid color.adjust($error-color, $alpha: -0.8);
+			border-radius: $border-radius-sm;
+			line-height: $line-height-base;
+			display: flex;
+			align-items: center;
+			gap: $spacing-sm;
 
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: $spacing-md;
-      padding-top: $spacing-md;
-      border-top: 0.0625rem solid $border-color;
+			&::before {
+				content: "⚠";
+				font-size: $font-size-base;
+			}
+		}
 
-      .components-button {
-        height: 2.25rem;
-        min-width: 5rem;
-        padding: 0 $spacing-md;
-        font-size: $font-size-sm;
-        font-weight: $font-weight-medium;
-        border-radius: $border-radius-sm;
-        transition: all 0.2s ease;
-        margin: 0 $spacing-xs;
+		.modal-actions {
+			display: flex;
+			justify-content: flex-end;
+			gap: $spacing-md;
+			padding-top: $spacing-md;
+			border-top: 0.0625rem solid $border-color;
 
-        &.is-destructive {
-          background-color: $error-color !important;
-          color: white !important;
-          border: none !important;
+			.components-button {
+				height: 2.25rem;
+				min-width: 5rem;
+				padding: 0 $spacing-md;
+				font-size: $font-size-sm;
+				font-weight: $font-weight-medium;
+				border-radius: $border-radius-sm;
+				transition: all 0.2s ease;
+				margin: 0 $spacing-xs;
 
-          &:hover:not(:disabled) {
-            background-color: color.adjust($error-color, $lightness: -5%) !important;
-          }
+				&:disabled {
+					background-color: $background-light;
+					color: $text-secondary;
+					cursor: not-allowed;
+					opacity: 0.7;
+				}
 
-          &:disabled {
-            background-color: $background-light !important;
-            color: $text-secondary !important;
-            cursor: not-allowed;
-            opacity: 0.7;
-          }
-        }
+				&.is-destructive {
+					background-color: $error-color !important;
+					color: #fff !important;
+					border: none !important;
 
-        &:not(.is-destructive) {
-          color: $text-color;
-          border: 0.0625rem solid $border-color;
-          background-color: white;
+					&:hover:not(:disabled) {
+						background-color: color.adjust($error-color, $lightness: -5%) !important;
+					}
+				}
 
-          &:hover:not(:disabled) {
-            background-color: $background-light;
-            border-color: color.adjust($border-color, $lightness: -5%);
-          }
+				&:not(.is-destructive) {
+					color: $text-color;
+					border: 0.0625rem solid $border-color;
+					background-color: #fff;
 
-          &:disabled {
-            background-color: $background-light;
-            color: $text-secondary;
-            cursor: not-allowed;
-            opacity: 0.7;
-          }
-        }
-      }
-    }
-  }
-} 
+					&:hover:not(:disabled) {
+						background-color: $background-light;
+						border-color: color.adjust($border-color, $lightness: -5%);
+					}
+				}
+			}
+		}
+	}
+}

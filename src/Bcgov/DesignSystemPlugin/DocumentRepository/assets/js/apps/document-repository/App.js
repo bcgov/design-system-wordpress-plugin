@@ -139,6 +139,8 @@ const App = () => {
     // Add new state for managing multiple file uploads
     const [uploadQueue, setUploadQueue] = useState([]);
     const [currentUploadIndex, setCurrentUploadIndex] = useState(0);
+    const [isUploading, setIsUploading] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
 
     /**
      * Handle multiple file uploads
@@ -149,29 +151,43 @@ const App = () => {
      * @function handleMultipleFiles
      * @param {FileList|Array<File>} files - Files to upload
      */
-    const handleMultipleFiles = (files) => {
-        // Convert to array if it's not already
-        const fileArray = Array.isArray(files) ? files : Array.from(files);
-        console.log('Multiple files to upload:', fileArray);
-        
-        // Filter out any non-PDF files
-        const pdfFiles = fileArray.filter(file => 
-            file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')
-        );
+    const handleMultipleFiles = async (files) => {
+        try {
+            // Filter for PDF files and validate
+            const pdfFiles = Array.from(files).filter(file => {
+                const isPdf = file.type.includes('pdf') || file.name.toLowerCase().endsWith('.pdf');
+                if (!isPdf) {
+                    console.warn(`Skipping non-PDF file: ${file.name}`);
+                }
+                return isPdf;
+            });
 
-        if (pdfFiles.length === 0) {
-            setError('No valid PDF files found.');
-            return;
+            if (pdfFiles.length === 0) {
+                throw new Error('No valid PDF files found');
+            }
+
+            // Set loading state
+            setIsUploading(true);
+            setUploadProgress(0);
+
+            // Process files sequentially
+            for (let i = 0; i < pdfFiles.length; i++) {
+                try {
+                    await handleFileDrop(pdfFiles[i]);
+                    setUploadProgress(((i + 1) / pdfFiles.length) * 100);
+                } catch (error) {
+                    console.error(`Error uploading file ${pdfFiles[i].name}:`, error);
+                    setError(`Failed to upload ${pdfFiles[i].name}: ${error.message}`);
+                    // Continue with next file even if one fails
+                }
+            }
+        } catch (error) {
+            console.error('Error processing files:', error);
+            setError(error.message);
+        } finally {
+            setIsUploading(false);
+            setUploadProgress(0);
         }
-
-        if (pdfFiles.length !== fileArray.length) {
-            console.warn('Some files were skipped because they are not PDFs');
-        }
-
-        setUploadQueue(pdfFiles);
-        setCurrentUploadIndex(0);
-        setSelectedFileForUpload(pdfFiles[0]);
-        setShowUploadModal(true);
     };
 
     /**
@@ -210,23 +226,72 @@ const App = () => {
      */
     const handleFileDrop = async (file) => {
         try {
+            // Validate file type
+            if (!file.type.includes('pdf') && !file.name.toLowerCase().endsWith('.pdf')) {
+                throw new Error('Only PDF files are allowed');
+            }
+
             // Create FormData object
             const formData = new FormData();
             formData.append('file', file);
             formData.append('title', file.name.split('.')[0]); // Use filename without extension as title
 
-            // Upload the file
-            const response = await apiFetch({
-                path: '/bcgov-document-repository/v1/documents',
-                method: 'POST',
-                body: formData,
+            // Get the nonce from WordPress settings
+            const nonce = window.documentRepositorySettings?.nonce;
+            if (!nonce) {
+                throw new Error('Security token not found');
+            }
+
+            // Create XMLHttpRequest for upload with progress tracking
+            const xhr = new XMLHttpRequest();
+            
+            const uploadPromise = new Promise((resolve, reject) => {
+                xhr.open('POST', `${window.documentRepositorySettings.apiRoot}${window.documentRepositorySettings.apiNamespace}/documents`);
+                xhr.setRequestHeader('X-WP-Nonce', nonce);
+                
+                // Track upload progress
+                xhr.upload.onprogress = (event) => {
+                    if (event.lengthComputable) {
+                        const progress = Math.round((event.loaded / event.total) * 100);
+                        setUploadProgress(progress);
+                    }
+                };
+                
+                xhr.onload = () => {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            resolve(response);
+                        } catch (error) {
+                            reject(new Error(`Error uploading "${file.name}": Server returned invalid response`));
+                        }
+                    } else {
+                        let errorMessage;
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            errorMessage = response.message || response.error || xhr.statusText;
+                        } catch (e) {
+                            errorMessage = xhr.statusText || 'Server error';
+                        }
+                        reject(new Error(`Error uploading "${file.name}": ${errorMessage}`));
+                    }
+                };
+                
+                xhr.onerror = () => {
+                    reject(new Error(`Network error while uploading "${file.name}". Please check your connection and try again.`));
+                };
+                
+                xhr.send(formData);
             });
 
+            // Wait for upload to complete
+            const result = await uploadPromise;
+
             // Handle successful upload
-            console.log('File uploaded successfully:', response);
-            handleUploadSuccess(response);
+            handleUploadSuccess(result);
         } catch (error) {
             console.error('Error uploading file:', error);
+            setError(error.message || 'Failed to upload file');
             throw error;
         }
     };

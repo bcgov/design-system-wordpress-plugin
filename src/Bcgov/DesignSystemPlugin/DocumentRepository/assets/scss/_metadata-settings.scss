@@ -1,661 +1,686 @@
 @use "sass:color";
 @use "variables" as *;
 
-.metadata-settings {
-  max-width: 50rem;
-  margin: 0 auto;
-  padding: $spacing-lg;
-  background: white;
-  border-radius: $border-radius-sm;
-  box-shadow: $box-shadow-sm;
-
-  &-loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 12.5rem;
-  }
-
-  h2 {
-    font-size: $font-size-xl;
-    font-weight: $font-weight-medium;
-    margin: 0 0 $spacing-lg 0;
-    color: $text-color;
-  }
-
-  .metadata-field {
-    margin-bottom: $spacing-lg;
-    padding-bottom: $spacing-lg;
-    border-bottom: 0.0625rem solid $border-color;
-
-    &:last-child {
-      margin-bottom: 0;
-      padding-bottom: 0;
-      border-bottom: none;
-    }
-
-    h3 {
-      font-size: $font-size-base;
-      font-weight: $font-weight-medium;
-      margin: 0 0 $spacing-md 0;
-      color: $text-color;
-    }
-
-    .components-base-control {
-      margin-bottom: $spacing-md;
-
-      &:last-child {
-        margin-bottom: 0;
-      }
-
-      .components-base-control__label {
-        font-size: $font-size-sm;
-        font-weight: $font-weight-normal;
-        color: $text-secondary;
-        margin-bottom: $spacing-xs;
-        display: block;
-      }
-
-      .components-text-control__input {
-        width: 100%;
-        height: 2.25rem;
-        padding: $spacing-xs $spacing-sm;
-        border: 0.0625rem solid $border-color;
-        border-radius: $border-radius-sm;
-        font-size: $font-size-base;
-        color: $text-color;
-        background-color: white;
-
-        &:focus {
-          border-color: $primary-color;
-          box-shadow: $box-shadow-sm;
-          outline: none;
-        }
-
-        &:disabled {
-          background-color: $background-light;
-          color: $text-secondary;
-          cursor: not-allowed;
-        }
-      }
-
-      .components-textarea-control__input {
-        width: 100%;
-        min-height: 5rem;
-        padding: $spacing-xs $spacing-sm;
-        border: 0.0625rem solid $border-color;
-        border-radius: $border-radius-sm;
-        font-size: $font-size-base;
-        color: $text-color;
-        background-color: white;
-        line-height: $line-height-base;
-
-        &:focus {
-          border-color: $primary-color;
-          box-shadow: $box-shadow-sm;
-          outline: none;
-        }
-
-        &:disabled {
-          background-color: $background-light;
-          color: $text-secondary;
-          cursor: not-allowed;
-        }
-      }
-    }
-
-    .field-description {
-      font-size: $font-size-sm;
-      color: $text-secondary;
-      margin: $spacing-xs 0 0 0;
-      line-height: $line-height-base;
-    }
-
-    .field-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: $spacing-sm;
-      margin-top: $spacing-md;
-
-      .components-button {
-        height: 2.25rem;
-        min-width: 5rem;
-        padding: 0 $spacing-lg;
-        font-size: $font-size-sm;
-        font-weight: $font-weight-medium;
-        border-radius: $border-radius-sm;
-        transition: all 0.2s ease;
-
-        &.is-primary {
-          background-color: $primary-color;
-          color: white;
-          border: none;
-
-          &:hover:not(:disabled) {
-            background-color: color.adjust($primary-color, $lightness: -5%);
-          }
-
-          &:disabled {
-            background-color: $background-light;
-            color: $text-secondary;
-            cursor: not-allowed;
-            opacity: 0.7;
-          }
-        }
-
-        &.is-secondary {
-          color: $text-color;
-          border: 0.0625rem solid $border-color;
-          background-color: white;
-
-          &:hover:not(:disabled) {
-            background-color: $background-light;
-            border-color: color.adjust($border-color, $lightness: -5%);
-          }
-
-          &:disabled {
-            background-color: $background-light;
-            color: $text-secondary;
-            cursor: not-allowed;
-            opacity: 0.7;
-          }
-        }
-
-        &.is-destructive {
-          background-color: $error-color;
-          color: white;
-          border: none;
-
-          &:hover:not(:disabled) {
-            background-color: color.adjust($error-color, $lightness: -5%);
-          }
-
-          &:disabled {
-            background-color: $background-light;
-            color: $text-secondary;
-            cursor: not-allowed;
-            opacity: 0.7;
-          }
-        }
-      }
-    }
-  }
-
-  .metadata-list {
-    margin-top: $spacing-lg;
-    border: 0.0625rem solid $border-color;
-    border-radius: $border-radius-sm;
-    overflow: hidden;
-
-    .metadata-item {
-      padding: $spacing-md;
-      border-bottom: 0.0625rem solid $border-color;
-      background-color: white;
-      display: flex;
-      align-items: center;
-      gap: $spacing-md;
-
-      &:last-child {
-        border-bottom: none;
-      }
-
-      &:hover {
-        background-color: $background-light;
-      }
-
-      .item-content {
-        flex: 1;
-
-        h4 {
-          font-size: $font-size-base;
-          font-weight: $font-weight-medium;
-          margin: 0 0 $spacing-xs 0;
-          color: $text-color;
-        }
-
-        p {
-          font-size: $font-size-sm;
-          color: $text-secondary;
-          margin: 0;
-          line-height: $line-height-base;
-        }
-      }
-
-      .item-actions {
-        display: flex;
-        gap: $spacing-sm;
-
-        .components-button {
-          height: 2rem;
-          width: 2rem;
-          min-width: 2rem;
-          padding: 0;
-          border-radius: $border-radius-sm;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: $text-secondary;
-          border: 0.0625rem solid $border-color;
-          background-color: white;
-
-          svg {
-            width: $spacing-md;
-            height: $spacing-md;
-          }
-
-          &:hover:not(:disabled) {
-            background-color: $background-light;
-            border-color: color.adjust($border-color, $lightness: -5%);
-            color: $text-color;
-          }
-
-          &.is-destructive {
-            &:hover:not(:disabled) {
-              background-color: $error-color;
-              border-color: $error-color;
-              color: white;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  .add-metadata-button {
-    margin-top: $spacing-lg;
-    width: 100%;
-    height: 2.25rem;
-    border: 0.0625rem dashed $border-color;
-    border-radius: $border-radius-sm;
-    background-color: $background-light;
-    color: $text-secondary;
-    font-size: $font-size-sm;
-    font-weight: $font-weight-medium;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: $spacing-xs;
-    transition: all 0.2s ease;
-
-    svg {
-      width: $spacing-md;
-      height: $spacing-md;
-    }
-
-    &:hover:not(:disabled) {
-      background-color: white;
-      border-color: $primary-color;
-      color: $primary-color;
-    }
-
-    &:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-    }
-  }
-
-  .document-delete-form {
-    padding: $spacing-lg;
-
-    .delete-warning {
-      display: flex;
-      gap: $spacing-md;
-      padding: $spacing-md;
-      background-color: $background-error-light;
-      border-radius: $border-radius-sm;
-      margin-bottom: $spacing-lg;
-
-      .warning-icon {
-        svg {
-          width: 1.5rem;
-          height: 1.5rem;
-          fill: $error-color;
-        }
-      }
-
-      .warning-content {
-        strong {
-          display: block;
-          font-size: $font-size-base;
-          font-weight: $font-weight-medium;
-          color: $error-color;
-          margin-bottom: $spacing-xs;
-        }
-
-        p {
-          font-size: $font-size-sm;
-          color: $text-color;
-          margin: 0;
-          line-height: $line-height-base;
-        }
-      }
-    }
-
-    .document-info {
-      background-color: $background-light;
-      padding: $spacing-md;
-      border-radius: $border-radius-sm;
-      margin-bottom: $spacing-lg;
-
-      h3 {
-        font-size: $font-size-base;
-        font-weight: $font-weight-medium;
-        margin: 0 0 $spacing-md 0;
-        color: $text-color;
-      }
-
-      .info-grid {
-        display: grid;
-        grid-template-columns: auto 1fr;
-        gap: $spacing-sm $spacing-md;
-        font-size: $font-size-sm;
-
-        .label {
-          color: $text-secondary;
-          font-weight: $font-weight-normal;
-        }
-
-        .value {
-          color: $text-color;
-          font-weight: $font-weight-medium;
-        }
-      }
-    }
-
-    .delete-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: $spacing-sm;
-
-      .components-button {
-        height: 2.25rem;
-        min-width: 5rem;
-        padding: 0 $spacing-lg;
-        font-size: $font-size-sm;
-        font-weight: $font-weight-medium;
-        border-radius: $border-radius-sm;
-        transition: all 0.2s ease;
-
-        &.cancel-button {
-          color: $text-color;
-          border: 0.0625rem solid $border-color;
-          background-color: white;
-
-          &:hover:not(:disabled) {
-            background-color: $background-light;
-            border-color: color.adjust($border-color, $lightness: -5%);
-          }
-        }
-
-        &.delete-button {
-          background-color: $error-color;
-          color: white;
-          border: none;
-
-          &:hover:not(:disabled) {
-            background-color: color.adjust($error-color, $lightness: -5%);
-          }
-        }
-
-        &:disabled {
-          opacity: 0.7;
-          cursor: not-allowed;
-        }
-      }
-    }
-  }
-}
-
 // Modal specific styles
 .metadata-field-modal {
-  max-width: 31.25rem !important;
-  
-  .components-modal__header {
-    height: 3.5rem;
-    border-bottom: 0.0625rem solid #ddd;
-    margin: 0;
-    padding: 0 1rem;
-    position: relative;
-    z-index: 1;
-    background: #fff;
+	max-width: 31.25rem !important;
 
-    .components-modal__header-heading {
-      font-size: 1rem;
-      font-weight: 600;
-      line-height: 3.5rem;
-      margin: 0;
-    }
+	.components-modal__header {
+		height: 3.5rem;
+		border-bottom: 0.0625rem solid #ddd;
+		margin: 0;
+		padding: 0 1rem;
+		position: relative;
+		z-index: 1;
+		background: #fff;
 
-    .components-button.has-icon {
-      padding: 0;
-      min-width: 1.5rem;
-      height: 1.5rem;
-      position: absolute;
-      right: 1rem;
-      top: 1rem;
-    }
-  }
+		.components-modal__header-heading {
+			font-size: 1rem;
+			font-weight: 600;
+			line-height: 3.5;
+			margin: 0;
+		}
 
-  .components-modal__content {
-    padding: 1rem;
-    margin: 0;
-    position: relative;
-    overflow: hidden;
+		.components-button.has-icon {
+			padding: 0;
+			min-width: 1.5rem;
+			height: 1.5rem;
+			position: absolute;
+			right: 1rem;
+			top: 1rem;
+		}
+	}
 
-    > div {
-      height: auto;
-    }
-  }
+	.components-modal__content {
+		padding: 1rem;
+		margin: 0;
+		position: relative;
+		overflow: hidden;
 
-  // Form styles
-  .metadata-field-form {
-    padding: 0;
+		> div {
+			height: auto;
+		}
+	}
 
-    .components-base-control {
-      margin-bottom: 1.5rem;
-      width: 100%;
+	// Form styles
+	.metadata-field-form {
+		padding: 0;
 
-      &:last-child {
-        margin-bottom: 1.5rem;
-      }
+		.components-base-control {
+			margin-bottom: 1.5rem;
+			width: 100%;
 
-      .components-base-control__field {
-        margin-bottom: 0;
-      }
+			&:last-child {
+				margin-bottom: 1.5rem;
+			}
 
-      .components-base-control__label {
-        display: block;
-        margin-bottom: 0.25rem;
-      }
-    }
+			.components-base-control__field {
+				margin-bottom: 0;
+			}
 
-    // Error message
-    .field-error {
-      color: #d63638;
-      font-size: 0.75rem;
-      margin: 0 0 0.125rem;
-      display: block;
-      font-weight: 600;
-      line-height: 1.4;
-    }
+			.components-base-control__label {
+				display: block;
+				margin-bottom: 0.25rem;
+			}
+		}
 
-    // Input field styling with error state
-    .components-text-control__input {
-      &.has-error {
-        border-color: #d63638;
-        
-        &:focus {
-          border-color: #d63638;
-          box-shadow: 0 0 0 0.0625rem #d63638;
-        }
-      }
-    }
+		// Error message
+		.field-error {
+			color: #d63638;
+			font-size: 0.75rem;
+			margin: 0 0 0.125rem;
+			display: block;
+			font-weight: 600;
+			line-height: 1.4;
+		}
 
-    // Field description
-    .field-description {
-      color: #757575;
-      font-size: 0.75rem;
-      margin: 0.25rem 0 0;
-      display: block;
-      line-height: 1.4;
-    }
+		// Input field styling with error state
+		.components-text-control__input {
+			width: 100%;
+			height: 2.25rem;
+			padding: $spacing-xs $spacing-sm;
+			border: 0.0625rem solid $border-color;
+			border-radius: $border-radius-sm;
+			font-size: $font-size-base;
+			color: $text-color;
+			background-color: #fff;
 
-    // Form actions (buttons container)
-    .metadata-field-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 0.5rem;
-      margin-top: 1.5rem;
-      padding-top: 1rem;
-      border-top: 0.0625rem solid #ddd;
+			&.has-error {
+				border-color: #d63638;
 
-      .components-button {
-        height: 1.875rem;
-        min-width: 5rem;
-        padding: 0 1rem;
-        font-size: 0.8125rem;
-        font-weight: 500;
-        border-radius: 0.125rem;
-        transition: all 0.2s ease;
+				&:focus {
+					border-color: #d63638;
+					box-shadow: 0 0 0 0.0625rem #d63638;
+				}
+			}
 
-        &.is-primary {
-          background-color: #135e96;
-          color: white;
-          border: none;
+			&:focus {
+				border-color: $primary-color;
+				box-shadow: $box-shadow-sm;
+				outline: none;
+			}
 
-          &:hover:not(:disabled) {
-            background-color: darken(#135e96, 5%);
-          }
+			&:disabled {
+				background-color: $background-light;
+				color: $text-secondary;
+				cursor: not-allowed;
+			}
+		}
 
-          &:disabled {
-            background-color: #f0f0f0;
-            color: #757575;
-            cursor: not-allowed;
-            opacity: 0.7;
-          }
-        }
+		// Field description
+		.field-description {
+			color: #757575;
+			font-size: 0.75rem;
+			margin: 0.25rem 0 0;
+			display: block;
+			line-height: 1.4;
+		}
 
-        &.is-secondary {
-          color: #1e1e1e;
-          border: 0.0625rem solid #ddd;
-          background-color: white;
+		// Form actions (buttons container)
+		.metadata-field-actions {
+			display: flex;
+			justify-content: flex-end;
+			gap: 0.5rem;
+			margin-top: 1.5rem;
+			padding-top: 1rem;
+			border-top: 0.0625rem solid #ddd;
 
-          &:hover:not(:disabled) {
-            background-color: #f0f0f0;
-            border-color: darken(#ddd, 5%);
-          }
+			.components-button {
+				height: 1.875rem;
+				min-width: 5rem;
+				padding: 0 1rem;
+				font-size: 0.8125rem;
+				font-weight: 500;
+				border-radius: 0.125rem;
+				transition: all 0.2s ease;
 
-          &:disabled {
-            background-color: #f0f0f0;
-            color: #757575;
-            cursor: not-allowed;
-            opacity: 0.7;
-          }
-        }
-      }
-    }
-  }
+				&:disabled {
+					background-color: #f0f0f0;
+					color: #757575;
+					cursor: not-allowed;
+					opacity: 0.7;
+				}
 
-  // Delete Form Styles
-  .document-delete-form {
-    padding: 1rem;
+				&.is-primary {
+					background-color: #135e96;
+					color: #fff;
+					border: none;
 
-    .delete-warning {
-      background: #fcf0f1;
-      border-left: 0.25rem solid #cc1818;
-      padding: 0.75rem;
-      margin-bottom: 1rem;
+					&:hover:not(:disabled) {
+						background-color: color.adjust(#135e96, $lightness: -5%);
+					}
+				}
 
-      .warning-content {
-        strong {
-          display: block;
-          font-size: 0.8125rem;
-          font-weight: 600;
-          margin-bottom: 0.25rem;
-          color: #1e1e1e;
-        }
+				&.is-secondary {
+					color: #1e1e1e;
+					border: 0.0625rem solid #ddd;
+					background-color: #fff;
 
-        p {
-          font-size: 0.8125rem;
-          color: #757575;
-          margin: 0;
-          line-height: 1.4;
-        }
-      }
-    }
+					&:hover:not(:disabled) {
+						background-color: #f0f0f0;
+						border-color: color.adjust(#ddd, $lightness: -5%);
+					}
+				}
+			}
+		}
+	}
 
-    .document-info {
-      background: #f0f0f1;
-      padding: 1rem;
-      margin-bottom: 1.5rem;
+	// Delete Form Styles
+	.document-delete-form {
+		padding: 1rem;
 
-      h3 {
-        font-size: 0.875rem;
-        font-weight: 600;
-        margin: 0 0 0.75rem 0;
-        color: #1e1e1e;
-      }
+		.delete-warning {
+			background: #fcf0f1;
+			border-left: 0.25rem solid #cc1818;
+			padding: 0.75rem;
+			margin-bottom: 1rem;
 
-      .info-grid {
-        display: grid;
-        grid-template-columns: 5rem 1fr;
-        row-gap: 0.5rem;
-        font-size: 0.8125rem;
+			.warning-content {
 
-        .label {
-          color: #757575;
-          font-weight: normal;
-        }
+				strong {
+					display: block;
+					font-size: 0.8125rem;
+					font-weight: 600;
+					margin-bottom: 0.25rem;
+					color: #1e1e1e;
+				}
 
-        .value {
-          color: #1e1e1e;
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-        }
-      }
-    }
+				p {
+					font-size: 0.8125rem;
+					color: #757575;
+					margin: 0;
+					line-height: 1.4;
+				}
+			}
+		}
 
-    .delete-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 0.5rem;
-      padding: 0;
+		.document-info {
+			background: #f0f0f1;
+			padding: 1rem;
+			margin-bottom: 1.5rem;
 
-      .components-button {
-        height: 1.875rem;
-        min-width: 4.5rem;
-        padding: 0 0.75rem;
-        font-size: 0.8125rem;
-        font-weight: normal;
+			h3 {
+				font-size: 0.875rem;
+				font-weight: 600;
+				margin: 0 0 0.75rem 0;
+				color: #1e1e1e;
+			}
 
-        &.is-secondary {
-          color: #1e1e1e;
-          border-color: #ddd;
-          background: #f6f7f7;
-          
-          &:hover:not(:disabled) {
-            border-color: #999;
-            color: #1e1e1e;
-            background: #f0f0f1;
-          }
-        }
+			.info-grid {
+				display: grid;
+				grid-template-columns: 5rem 1fr;
+				row-gap: 0.5rem;
+				font-size: 0.8125rem;
 
-        &.is-destructive {
-          background: #d63638;
-          color: white;
-          border: none;
+				.label {
+					color: #757575;
+					font-weight: 400;
+				}
 
-          &:hover:not(:disabled) {
-            background: #b32d2e;
-          }
-        }
-      }
-    }
-  }
+				.value {
+					color: #1e1e1e;
+					font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+				}
+			}
+		}
+
+		.delete-actions {
+			display: flex;
+			justify-content: flex-end;
+			gap: 0.5rem;
+			padding: 0;
+
+			.components-button {
+				height: 1.875rem;
+				min-width: 4.5rem;
+				padding: 0 0.75rem;
+				font-size: 0.8125rem;
+				font-weight: 400;
+
+				&:disabled {
+					opacity: 0.7;
+					cursor: not-allowed;
+				}
+
+				&.is-secondary {
+					color: #1e1e1e;
+					border-color: #ddd;
+					background: #f6f7f7;
+
+					&:hover:not(:disabled) {
+						border-color: #999;
+						color: #1e1e1e;
+						background: #f0f0f1;
+					}
+				}
+
+				&.is-destructive {
+					background: #d63638;
+					color: #fff;
+					border: none;
+
+					&:hover:not(:disabled) {
+						background: #b32d2e;
+					}
+				}
+			}
+		}
+	}
+}
+
+// Main metadata settings styles
+.metadata-settings {
+	max-width: 50rem;
+	margin: 0 auto;
+	padding: $spacing-lg;
+	background: #fff;
+	border-radius: $border-radius-sm;
+	box-shadow: $box-shadow-sm;
+
+	&-loading {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 12.5rem;
+	}
+
+	h2 {
+		font-size: $font-size-xl;
+		font-weight: $font-weight-medium;
+		margin: 0 0 $spacing-lg 0;
+		color: $text-color;
+	}
+
+	.metadata-field {
+		margin-bottom: $spacing-lg;
+		padding-bottom: $spacing-lg;
+		border-bottom: 0.0625rem solid $border-color;
+
+		&:last-child {
+			margin-bottom: 0;
+			padding-bottom: 0;
+			border-bottom: none;
+		}
+
+		h3 {
+			font-size: $font-size-base;
+			font-weight: $font-weight-medium;
+			margin: 0 0 $spacing-md 0;
+			color: $text-color;
+		}
+
+		.components-base-control {
+			margin-bottom: $spacing-md;
+
+			&:last-child {
+				margin-bottom: 0;
+			}
+
+			.components-base-control__label {
+				font-size: $font-size-sm;
+				font-weight: $font-weight-normal;
+				color: $text-secondary;
+				margin-bottom: $spacing-xs;
+				display: block;
+			}
+
+			.components-text-control__input {
+				width: 100%;
+				height: 2.25rem;
+				padding: $spacing-xs $spacing-sm;
+				border: 0.0625rem solid $border-color;
+				border-radius: $border-radius-sm;
+				font-size: $font-size-base;
+				color: $text-color;
+				background-color: #fff;
+
+				&:focus {
+					border-color: $primary-color;
+					box-shadow: $box-shadow-sm;
+					outline: none;
+				}
+
+				&:disabled {
+					background-color: $background-light;
+					color: $text-secondary;
+					cursor: not-allowed;
+				}
+			}
+
+			.components-textarea-control__input {
+				width: 100%;
+				min-height: 5rem;
+				padding: $spacing-xs $spacing-sm;
+				border: 0.0625rem solid $border-color;
+				border-radius: $border-radius-sm;
+				font-size: $font-size-base;
+				color: $text-color;
+				background-color: #fff;
+				line-height: 1.5;
+
+				&:focus {
+					border-color: $primary-color;
+					box-shadow: $box-shadow-sm;
+					outline: none;
+				}
+
+				&:disabled {
+					background-color: $background-light;
+					color: $text-secondary;
+					cursor: not-allowed;
+				}
+			}
+		}
+
+		.field-description {
+			font-size: $font-size-sm;
+			color: $text-secondary;
+			margin: $spacing-xs 0 0 0;
+			line-height: 1.5;
+		}
+
+		.field-actions {
+			display: flex;
+			justify-content: flex-end;
+			gap: $spacing-sm;
+			margin-top: $spacing-md;
+
+			.components-button {
+				height: 2.25rem;
+				min-width: 5rem;
+				padding: 0 $spacing-lg;
+				font-size: $font-size-sm;
+				font-weight: $font-weight-medium;
+				border-radius: $border-radius-sm;
+				transition: all 0.2s ease;
+
+				&.is-primary {
+					background-color: $primary-color;
+					color: #fff;
+					border: none;
+
+					&:disabled {
+						background-color: $background-light;
+						color: $text-secondary;
+						cursor: not-allowed;
+						opacity: 0.7;
+					}
+
+					&:hover:not(:disabled) {
+						background-color: color.adjust($primary-color, $lightness: -5%);
+					}
+				}
+
+				&.is-secondary {
+					color: $text-color;
+					border: 0.0625rem solid $border-color;
+					background-color: #fff;
+
+					&:disabled {
+						background-color: $background-light;
+						color: $text-secondary;
+						cursor: not-allowed;
+						opacity: 0.7;
+					}
+
+					&:hover:not(:disabled) {
+						background-color: $background-light;
+						border-color: color.adjust($border-color, $lightness: -5%);
+					}
+				}
+
+				&.is-destructive {
+					background-color: $error-color;
+					color: #fff;
+					border: none;
+
+					&:disabled {
+						background-color: $background-light;
+						color: $text-secondary;
+						cursor: not-allowed;
+						opacity: 0.7;
+					}
+
+					&:hover:not(:disabled) {
+						background-color: color.adjust($error-color, $lightness: -5%);
+					}
+				}
+			}
+		}
+	}
+
+	.metadata-list {
+		margin-top: $spacing-lg;
+		border: 0.0625rem solid $border-color;
+		border-radius: $border-radius-sm;
+		overflow: hidden;
+
+		.metadata-item {
+			padding: $spacing-md;
+			border-bottom: 0.0625rem solid $border-color;
+			background-color: #fff;
+			display: flex;
+			align-items: center;
+			gap: $spacing-md;
+
+			&:last-child {
+				border-bottom: none;
+			}
+
+			&:hover {
+				background-color: $background-light;
+			}
+
+			.item-content {
+				flex: 1;
+
+				h4 {
+					font-size: $font-size-base;
+					font-weight: $font-weight-medium;
+					margin: 0 0 $spacing-xs 0;
+					color: $text-color;
+				}
+
+				p {
+					font-size: $font-size-sm;
+					color: $text-secondary;
+					margin: 0;
+					line-height: 1.5;
+				}
+			}
+
+			.item-actions {
+				display: flex;
+				gap: $spacing-sm;
+
+				.components-button {
+					height: 2rem;
+					width: 2rem;
+					min-width: 2rem;
+					padding: 0;
+					border-radius: $border-radius-sm;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					color: $text-secondary;
+					border: 0.0625rem solid $border-color;
+					background-color: #fff;
+
+					svg {
+						width: $spacing-md;
+						height: $spacing-md;
+					}
+
+					&:hover:not(:disabled) {
+						background-color: $background-light;
+						border-color: color.adjust($border-color, $lightness: -5%);
+						color: $text-color;
+					}
+
+					&.is-destructive {
+
+						&:hover:not(:disabled) {
+							background-color: $error-color;
+							border-color: $error-color;
+							color: #fff;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	.add-metadata-button {
+		margin-top: $spacing-lg;
+		width: 100%;
+		height: 2.25rem;
+		border: 0.0625rem dashed $border-color;
+		border-radius: $border-radius-sm;
+		background-color: $background-light;
+		color: $text-secondary;
+		font-size: $font-size-sm;
+		font-weight: $font-weight-medium;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: $spacing-xs;
+		transition: all 0.2s ease;
+
+		svg {
+			width: $spacing-md;
+			height: $spacing-md;
+		}
+
+		&:disabled {
+			opacity: 0.7;
+			cursor: not-allowed;
+		}
+
+		&:hover:not(:disabled) {
+			background-color: #fff;
+			border-color: $primary-color;
+			color: $primary-color;
+		}
+	}
+
+	.document-delete-form {
+		padding: $spacing-lg;
+
+		.delete-warning {
+			display: flex;
+			gap: $spacing-md;
+			padding: $spacing-md;
+			background-color: $background-error-light;
+			border-radius: $border-radius-sm;
+			margin-bottom: $spacing-lg;
+
+			.warning-icon {
+
+				svg {
+					width: 1.5rem;
+					height: 1.5rem;
+					fill: $error-color;
+				}
+			}
+
+			.warning-content {
+
+				strong {
+					display: block;
+					font-size: $font-size-base;
+					font-weight: $font-weight-medium;
+					color: $error-color;
+					margin-bottom: $spacing-xs;
+				}
+
+				p {
+					font-size: $font-size-sm;
+					color: $text-color;
+					margin: 0;
+					line-height: 1.5;
+				}
+			}
+		}
+
+		.document-info {
+			background-color: $background-light;
+			padding: $spacing-md;
+			border-radius: $border-radius-sm;
+			margin-bottom: $spacing-lg;
+
+			h3 {
+				font-size: $font-size-base;
+				font-weight: $font-weight-medium;
+				margin: 0 0 $spacing-md 0;
+				color: $text-color;
+			}
+
+			.info-grid {
+				display: grid;
+				grid-template-columns: auto 1fr;
+				gap: $spacing-sm $spacing-md;
+				font-size: $font-size-sm;
+
+				.label {
+					color: $text-secondary;
+					font-weight: $font-weight-normal;
+				}
+
+				.value {
+					color: $text-color;
+					font-weight: $font-weight-medium;
+				}
+			}
+		}
+
+		.delete-actions {
+			display: flex;
+			justify-content: flex-end;
+			gap: $spacing-sm;
+
+			.components-button {
+				height: 2.25rem;
+				min-width: 5rem;
+				padding: 0 $spacing-lg;
+				font-size: $font-size-sm;
+				font-weight: $font-weight-medium;
+				border-radius: $border-radius-sm;
+				transition: all 0.2s ease;
+
+				&:disabled {
+					opacity: 0.7;
+					cursor: not-allowed;
+				}
+
+				&.cancel-button {
+					color: $text-color;
+					border: 0.0625rem solid $border-color;
+					background-color: #fff;
+
+					&:hover:not(:disabled) {
+						background-color: $background-light;
+						border-color: color.adjust($border-color, $lightness: -5%);
+					}
+				}
+
+				&.delete-button {
+					background-color: $error-color;
+					color: #fff;
+					border: none;
+
+					&:hover:not(:disabled) {
+						background-color: color.adjust($error-color, $lightness: -5%);
+					}
+				}
+			}
+		}
+	}
 }
 
 // Loading animation keyframes
 @keyframes components-button__busy-animation {
-  0% {
-    background-position: 12.5rem 0;
-  }
-} 
+
+	0% {
+		background-position: 12.5rem 0;
+	}
+}

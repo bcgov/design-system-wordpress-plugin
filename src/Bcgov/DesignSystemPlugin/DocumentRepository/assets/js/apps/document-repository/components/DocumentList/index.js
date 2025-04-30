@@ -265,74 +265,78 @@ const DocumentList = ({
 
     const handleFiles = useCallback((files) => {
         // Show immediate feedback before any processing
-        setShowUploadFeedback(true);
-        setUploadingFiles([{
-            id: 'placeholder',
-            name: sprintf(__('Preparing %d files...', 'bcgov-design-system'), files.length),
-            status: 'processing',
-            error: null,
-            isPlaceholder: true
-        }]);
-
-        // Process files immediately
-        const processedFiles = files.map(file => ({
-            id: Math.random().toString(36).substr(2, 9),
+        const newFiles = Array.from(files).map(file => ({
             name: file.name,
-            status: 'processing',
-            error: null
+            status: 'uploading',
+            progress: 0
         }));
-        setUploadingFiles(processedFiles);
         
+        setUploadingFiles(prev => [...prev, ...newFiles]);
+
         // Filter for PDF files
-        const pdfFiles = files.filter(file => 
-            file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')
-        );
-        
+        const pdfFiles = Array.from(files).filter(file => {
+            const isPdf = file.type.includes('pdf') || file.name.toLowerCase().endsWith('.pdf');
+            if (!isPdf) {
+                setUploadingFiles(prev => prev.map(f => 
+                    f.name === file.name ? { ...f, status: 'error', error: 'Only PDF files are allowed' } : f
+                ));
+            }
+            return isPdf;
+        });
+
         if (pdfFiles.length === 0) {
-            setUploadingFiles(prev => prev.map(f => ({
-                ...f,
-                status: 'error',
-                error: 'Only PDF files are allowed.'
-            })));
-            setNotice({
-                status: 'error',
-                message: __('Only PDF files are allowed.', 'bcgov-design-system')
-            });
             return;
-        }
-
-        // Update file statuses
-        setUploadingFiles(prev => prev.map(f => {
-            const isPdf = f.name.toLowerCase().endsWith('.pdf');
-            return {
-                ...f,
-                status: isPdf ? 'uploading' : 'error',
-                error: isPdf ? null : 'Not a PDF file'
-            };
-        }));
-
-        if (files.length !== pdfFiles.length) {
-            setNotice({
-                status: 'warning',
-                message: __('Some files were skipped because they are not PDFs.', 'bcgov-design-system')
-            });
         }
 
         // Handle each PDF file
         pdfFiles.forEach((file) => {
-            onFileDrop(file)
-                .then(() => {
+            // Create XMLHttpRequest for upload with progress tracking
+            const xhr = new XMLHttpRequest();
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('title', file.name.split('.')[0]);
+
+            xhr.open('POST', `${window.documentRepositorySettings.apiRoot}${window.documentRepositorySettings.apiNamespace}/documents`);
+            xhr.setRequestHeader('X-WP-Nonce', window.documentRepositorySettings.nonce);
+
+            // Track upload progress
+            xhr.upload.onprogress = (event) => {
+                if (event.lengthComputable) {
+                    const progress = Math.round((event.loaded / event.total) * 100);
                     setUploadingFiles(prev => prev.map(f => 
-                        f.name === file.name ? { ...f, status: 'success' } : f
+                        f.name === file.name ? { ...f, progress } : f
                     ));
-                })
-                .catch(error => {
+                }
+            };
+
+            xhr.onload = () => {
+                if (xhr.status >= 200 && xhr.status < 300) {
                     setUploadingFiles(prev => prev.map(f => 
-                        f.name === file.name ? { ...f, status: 'error', error: error.message } : f
+                        f.name === file.name ? { ...f, status: 'success', progress: 100 } : f
                     ));
-                });
+                } else {
+                    let errorMessage;
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        errorMessage = response.message || response.error || xhr.statusText;
+                    } catch (e) {
+                        errorMessage = xhr.statusText || 'Server error';
+                    }
+                    setUploadingFiles(prev => prev.map(f => 
+                        f.name === file.name ? { ...f, status: 'error', error: errorMessage, progress: 0 } : f
+                    ));
+                }
+            };
+
+            xhr.onerror = () => {
+                setUploadingFiles(prev => prev.map(f => 
+                    f.name === file.name ? { ...f, status: 'error', error: 'Network error', progress: 0 } : f
+                ));
+            };
+
+            xhr.send(formData);
         });
-    }, [onFileDrop]);
+    }, []);
 
     const handleUploadClick = useCallback(() => {
         if (fileInputRef.current) {
@@ -610,6 +614,32 @@ const DocumentList = ({
         );
     }, [failedOperations, retryOperation]);
 
+    // Add upload status display component
+    const renderUploadStatus = () => {
+        if (uploadingFiles.length === 0) return null;
+
+        return (
+            <div className="upload-status">
+                {uploadingFiles.map((file, index) => (
+                    <div key={`${file.name}-${index}`} className={`upload-status-item ${file.status}`}>
+                        <span className="filename">{file.name}</span>
+                        {file.status === 'uploading' && (
+                            <div className="progress-bar">
+                                <div className="progress" style={{width: `${file.progress}%`}}></div>
+                            </div>
+                        )}
+                        {file.status === 'error' && (
+                            <span className="error-message">{file.error}</span>
+                        )}
+                        {file.status === 'success' && (
+                            <span className="success-message">Upload complete</span>
+                        )}
+                    </div>
+                ))}
+            </div>
+        );
+    };
+
     // Memoize the document table props to prevent unnecessary re-renders
     const documentTableProps = useMemo(() => ({
         documents: localDocuments,
@@ -667,6 +697,9 @@ const DocumentList = ({
                         <p>{__('Drop your files here or click to browse', 'bcgov-design-system')}</p>
                     </div>
                 </div>
+
+                {/* Upload Status Display */}
+                {renderUploadStatus()}
 
                 {/* Mode Toggle Buttons */}
                 <div className="document-list-actions">
