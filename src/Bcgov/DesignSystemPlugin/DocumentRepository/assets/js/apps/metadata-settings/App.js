@@ -20,6 +20,7 @@ import {
     CheckboxControl,
     Notice,
     Modal,
+    TextareaControl,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
@@ -292,8 +293,7 @@ const MetadataApp = () => {
     }, [fetchFields]);
     
     // Memoized handlers
-    const handleOptionsChange = useCallback((e, fieldType) => {
-        const value = e.target.value;
+    const handleOptionsChange = useCallback((value, modalType) => {
         const options = value.split('\n')
             .map(line => line.trim())
             .filter(line => line.length > 0);
@@ -302,10 +302,10 @@ const MetadataApp = () => {
             ...prev,
             modals: {
                 ...prev.modals,
-                [fieldType]: {
-                    ...prev.modals[fieldType],
+                [modalType]: {
+                    ...prev.modals[modalType],
                     field: {
-                        ...prev.modals[fieldType].field,
+                        ...prev.modals[modalType].field,
                         _rawOptionsText: value,
                         options
                     }
@@ -760,7 +760,7 @@ const MetadataApp = () => {
                             <TextareaControl
                                 label={__('Options', 'bcgov-design-system')}
                                 value={formatOptionsToString(state.modals.edit.field)}
-                                onChange={value => handleOptionsChange(value, 'edit')}
+                                onChange={(value) => handleOptionsChange(value, 'edit')}
                                 help={__('Enter one option per line', 'bcgov-design-system')}
                             />
                         )}
@@ -811,7 +811,7 @@ const MetadataApp = () => {
                             <TextareaControl
                                 label={__('Options', 'bcgov-design-system')}
                                 value={formatOptionsToString(state.modals.add.field)}
-                                onChange={value => handleOptionsChange(value, 'add')}
+                                onChange={(value) => handleOptionsChange(value, 'add')}
                                 help={__('Enter one option per line', 'bcgov-design-system')}
                             />
                         )}

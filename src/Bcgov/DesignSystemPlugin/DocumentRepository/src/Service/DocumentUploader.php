@@ -37,22 +37,16 @@ class DocumentUploader {
      * @return array Modified upload directory settings.
      */
     public function custom_upload_dir( $uploads ) {
-        // Check if this is a document repository upload.
-        $is_document_upload = (
-            ( isset( $_POST['action'] ) && 'upload-attachment' === $_POST['action'] && check_ajax_referer( 'media-form', false, false ) ) ||
-            ( isset( $_POST['metadata'] ) && false !== strpos( $_POST['metadata'], 'document_repository' ) && check_ajax_referer( 'document_repository_upload', false, false ) )
-        );
+        // Always use dswp-documents directory for document repository uploads.
+        $uploads['path']   = $uploads['basedir'] . '/dswp-documents';
+        $uploads['url']    = $uploads['baseurl'] . '/dswp-documents';
+        $uploads['subdir'] = '/dswp-documents';
 
-        if ( $is_document_upload ) {
-            $uploads['path']   = $uploads['basedir'] . '/dswp-documents';
-            $uploads['url']    = $uploads['baseurl'] . '/dswp-documents';
-            $uploads['subdir'] = '/dswp-documents';
-
-            // Create directory if it doesn't exist.
-            if ( ! file_exists( $uploads['path'] ) ) {
-                wp_mkdir_p( $uploads['path'] );
-            }
+        // Create directory if it doesn't exist.
+        if ( ! file_exists( $uploads['path'] ) ) {
+            wp_mkdir_p( $uploads['path'] );
         }
+
         return $uploads;
     }
 

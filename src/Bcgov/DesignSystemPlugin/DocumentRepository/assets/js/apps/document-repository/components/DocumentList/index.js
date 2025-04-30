@@ -172,52 +172,17 @@ const DocumentList = ({
 
     // Update handleBulkDelete with better error handling
     const handleBulkDelete = useCallback(async () => {
+        setIsMultiDeleting(true);
         try {
-            setIsMultiDeleting(true);
-            const results = await Promise.allSettled(
-                selectedDocuments.map(docId => onDelete(docId))
-            );
-            
-            // Process results
-            const failed = results
-                .map((result, index) => ({ result, docId: selectedDocuments[index] }))
-                .filter(({ result }) => result.status === 'rejected');
-
-            if (failed.length > 0) {
-                failed.forEach(({ result, docId }) => {
-                    handleOperationError('delete', docId, result.reason);
-                });
-
-                setNotice({
-                    status: 'warning',
-                    message: sprintf(
-                        __('%d of %d documents failed to delete. You can retry the failed operations.', 'bcgov-design-system'),
-                        failed.length,
-                        selectedDocuments.length
-                    )
-                });
-            } else {
-                setNotice({
-                    status: 'success',
-                    message: sprintf(
-                        __('Successfully deleted %d documents.', 'bcgov-design-system'),
-                        selectedDocuments.length
-                    )
-                });
-            }
-
+            await Promise.all(selectedDocuments.map(docId => onDelete(docId)));
             setBulkDeleteConfirmOpen(false);
             onSelectAll(false);
         } catch (error) {
-            console.error('Error in bulk delete:', error);
-            setNotice({
-                status: 'error',
-                message: __('Failed to process bulk delete operation.', 'bcgov-design-system')
-            });
+            console.error('Error during bulk delete:', error);
         } finally {
             setIsMultiDeleting(false);
         }
-    }, [selectedDocuments, onDelete, onSelectAll, handleOperationError]);
+    }, [selectedDocuments, onDelete, onSelectAll]);
 
     const handleDragEnter = useCallback((e) => {
         e.preventDefault();
@@ -265,78 +230,74 @@ const DocumentList = ({
 
     const handleFiles = useCallback((files) => {
         // Show immediate feedback before any processing
-        const newFiles = Array.from(files).map(file => ({
+        setShowUploadFeedback(true);
+        setUploadingFiles([{
+            id: 'placeholder',
+            name: sprintf(__('Preparing %d files...', 'bcgov-design-system'), files.length),
+            status: 'processing',
+            error: null,
+            isPlaceholder: true
+        }]);
+
+        // Process files immediately
+        const processedFiles = files.map(file => ({
+            id: Math.random().toString(36).substr(2, 9),
             name: file.name,
-            status: 'uploading',
-            progress: 0
+            status: 'processing',
+            error: null
         }));
+        setUploadingFiles(processedFiles);
         
-        setUploadingFiles(prev => [...prev, ...newFiles]);
-
         // Filter for PDF files
-        const pdfFiles = Array.from(files).filter(file => {
-            const isPdf = file.type.includes('pdf') || file.name.toLowerCase().endsWith('.pdf');
-            if (!isPdf) {
-                setUploadingFiles(prev => prev.map(f => 
-                    f.name === file.name ? { ...f, status: 'error', error: 'Only PDF files are allowed' } : f
-                ));
-            }
-            return isPdf;
-        });
-
+        const pdfFiles = files.filter(file => 
+            file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')
+        );
+        
         if (pdfFiles.length === 0) {
+            setUploadingFiles(prev => prev.map(f => ({
+                ...f,
+                status: 'error',
+                error: 'Only PDF files are allowed.'
+            })));
+            setNotice({
+                status: 'error',
+                message: __('Only PDF files are allowed.', 'bcgov-design-system')
+            });
             return;
+        }
+
+        // Update file statuses
+        setUploadingFiles(prev => prev.map(f => {
+            const isPdf = f.name.toLowerCase().endsWith('.pdf');
+            return {
+                ...f,
+                status: isPdf ? 'uploading' : 'error',
+                error: isPdf ? null : 'Not a PDF file'
+            };
+        }));
+
+        if (files.length !== pdfFiles.length) {
+            setNotice({
+                status: 'warning',
+                message: __('Some files were skipped because they are not PDFs.', 'bcgov-design-system')
+            });
         }
 
         // Handle each PDF file
         pdfFiles.forEach((file) => {
-            // Create XMLHttpRequest for upload with progress tracking
-            const xhr = new XMLHttpRequest();
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('title', file.name.split('.')[0]);
-
-            xhr.open('POST', `${window.documentRepositorySettings.apiRoot}${window.documentRepositorySettings.apiNamespace}/documents`);
-            xhr.setRequestHeader('X-WP-Nonce', window.documentRepositorySettings.nonce);
-
-            // Track upload progress
-            xhr.upload.onprogress = (event) => {
-                if (event.lengthComputable) {
-                    const progress = Math.round((event.loaded / event.total) * 100);
+            onFileDrop(file)
+                .then(() => {
                     setUploadingFiles(prev => prev.map(f => 
-                        f.name === file.name ? { ...f, progress } : f
+                        f.name === file.name ? { ...f, status: 'success' } : f
                     ));
-                }
-            };
-
-            xhr.onload = () => {
-                if (xhr.status >= 200 && xhr.status < 300) {
+                })
+                .catch(error => {
                     setUploadingFiles(prev => prev.map(f => 
-                        f.name === file.name ? { ...f, status: 'success', progress: 100 } : f
+                        f.name === file.name ? { ...f, status: 'error', error: error.message } : f
                     ));
-                } else {
-                    let errorMessage;
-                    try {
-                        const response = JSON.parse(xhr.responseText);
-                        errorMessage = response.message || response.error || xhr.statusText;
-                    } catch (e) {
-                        errorMessage = xhr.statusText || 'Server error';
-                    }
-                    setUploadingFiles(prev => prev.map(f => 
-                        f.name === file.name ? { ...f, status: 'error', error: errorMessage, progress: 0 } : f
-                    ));
-                }
-            };
-
-            xhr.onerror = () => {
-                setUploadingFiles(prev => prev.map(f => 
-                    f.name === file.name ? { ...f, status: 'error', error: 'Network error', progress: 0 } : f
-                ));
-            };
-
-            xhr.send(formData);
+                });
         });
-    }, []);
+    }, [onFileDrop]);
 
     const handleUploadClick = useCallback(() => {
         if (fileInputRef.current) {
@@ -614,32 +575,6 @@ const DocumentList = ({
         );
     }, [failedOperations, retryOperation]);
 
-    // Add upload status display component
-    const renderUploadStatus = () => {
-        if (uploadingFiles.length === 0) return null;
-
-        return (
-            <div className="upload-status">
-                {uploadingFiles.map((file, index) => (
-                    <div key={`${file.name}-${index}`} className={`upload-status-item ${file.status}`}>
-                        <span className="filename">{file.name}</span>
-                        {file.status === 'uploading' && (
-                            <div className="progress-bar">
-                                <div className="progress" style={{width: `${file.progress}%`}}></div>
-                            </div>
-                        )}
-                        {file.status === 'error' && (
-                            <span className="error-message">{file.error}</span>
-                        )}
-                        {file.status === 'success' && (
-                            <span className="success-message">Upload complete</span>
-                        )}
-                    </div>
-                ))}
-            </div>
-        );
-    };
-
     // Memoize the document table props to prevent unnecessary re-renders
     const documentTableProps = useMemo(() => ({
         documents: localDocuments,
@@ -698,35 +633,9 @@ const DocumentList = ({
                     </div>
                 </div>
 
-                {/* Upload Status Display */}
-                {renderUploadStatus()}
-
-                {/* Mode Toggle Buttons */}
+                {/* Bulk Delete Button and Spreadsheet Mode Toggle */}
                 <div className="document-list-actions">
                     <div className="document-list-left-actions">
-                        <div className="mode-toggle">
-                            <Button
-                                variant={isSpreadsheetMode ? 'primary' : 'secondary'}
-                                onClick={() => setIsSpreadsheetMode(!isSpreadsheetMode)}
-                                className={`mode-toggle-button ${!isSpreadsheetMode ? 'spreadsheet-mode' : ''}`}
-                            >
-                                {isSpreadsheetMode ? __('Exit Spreadsheet Mode', 'bcgov-design-system') : __('Spreadsheet Mode', 'bcgov-design-system')}
-                            </Button>
-                            {isSpreadsheetMode && (
-                                <Button
-                                    variant="primary"
-                                    onClick={handleSaveBulkChanges}
-                                    disabled={!hasMetadataChanges || isSavingBulk}
-                                    isBusy={isSavingBulk}
-                                    className="save-changes-button"
-                                >
-                                    {isSavingBulk 
-                                        ? __('Saving...', 'bcgov-design-system')
-                                        : __('Save Changes', 'bcgov-design-system')
-                                    }
-                                </Button>
-                            )}
-                        </div>
                         {selectedDocuments.length > 0 && (
                             <Button
                                 isDestructive
@@ -740,6 +649,29 @@ const DocumentList = ({
                                     __('Delete Selected (%d)', 'bcgov-design-system'),
                                     selectedDocuments.length
                                 )}
+                            </Button>
+                        )}
+                        <div className="mode-toggle">
+                            <Button
+                                isPrimary={isSpreadsheetMode}
+                                onClick={() => setIsSpreadsheetMode(!isSpreadsheetMode)}
+                            >
+                                {isSpreadsheetMode ? (
+                                    __('Exit Spreadsheet Mode', 'bcgov-design-system')
+                                ) : (
+                                    __('Enter Spreadsheet Mode', 'bcgov-design-system')
+                                )}
+                            </Button>
+                        </div>
+                        {isSpreadsheetMode && hasMetadataChanges && (
+                            <Button
+                                isPrimary
+                                onClick={handleSaveBulkChanges}
+                                disabled={isSavingBulk}
+                            >
+                                {isSavingBulk ? (
+                                    __('Saving Changes...', 'bcgov-design-system')
+                                ) : __('Save Changes', 'bcgov-design-system')}
                             </Button>
                         )}
                     </div>
@@ -777,6 +709,54 @@ const DocumentList = ({
                     }}
                 />
 
+                {/* Bulk Delete Confirmation Modal */}
+                {bulkDeleteConfirmOpen && (
+                    <Modal
+                        title={__('Delete Selected Documents', 'bcgov-design-system')}
+                        onRequestClose={() => setBulkDeleteConfirmOpen(false)}
+                    >
+                        <div className="delete-confirmation-content">
+                            <p>
+                                {sprintf(
+                                    __('Are you sure you want to delete %d selected document(s)?', 'bcgov-design-system'),
+                                    selectedDocuments.length
+                                )}
+                            </p>
+                            <div className="documents-to-delete">
+                                <h4>{__('Documents to be deleted:', 'bcgov-design-system')}</h4>
+                                <ul>
+                                    {documents
+                                        .filter(doc => selectedDocuments.includes(doc.id))
+                                        .map(doc => (
+                                            <li key={doc.id}>{doc.title || doc.filename}</li>
+                                        ))
+                                    }
+                                </ul>
+                            </div>
+                            <p className="delete-warning">
+                                {__('This action cannot be undone.', 'bcgov-design-system')}
+                            </p>
+                            <div className="modal-actions">
+                                <Button
+                                    isDestructive
+                                    onClick={handleBulkDelete}
+                                    disabled={isMultiDeleting}
+                                >
+                                    {isMultiDeleting ? (
+                                        __('Deleting...', 'bcgov-design-system')
+                                    ) : __('Delete Selected', 'bcgov-design-system')}
+                                </Button>
+                                <Button
+                                    onClick={() => setBulkDeleteConfirmOpen(false)}
+                                    disabled={isMultiDeleting}
+                                >
+                                    {__('Cancel', 'bcgov-design-system')}
+                                </Button>
+                            </div>
+                        </div>
+                    </Modal>
+                )}
+
                 {deleteDocument && (
                     <Modal
                         title={__('Delete Document', 'bcgov-design-system')}
@@ -809,55 +789,6 @@ const DocumentList = ({
                                 <Button
                                     onClick={() => setDeleteDocument(null)}
                                     disabled={isDeleting}
-                                >
-                                    {__('Cancel', 'bcgov-design-system')}
-                                </Button>
-                            </div>
-                        </div>
-                    </Modal>
-                )}
-
-                {bulkDeleteConfirmOpen && (
-                    <Modal
-                        title={__('Delete Selected Documents', 'bcgov-design-system')}
-                        onRequestClose={() => setBulkDeleteConfirmOpen(false)}
-                    >
-                        <div className="delete-confirmation-content">
-                            <p>
-                                {sprintf(
-                                    __('Are you sure you want to delete %d selected document(s)?', 'bcgov-design-system'),
-                                    selectedDocuments.length
-                                )}
-                            </p>
-                            <div className="documents-to-delete">
-                                <h4>{__('Documents to be deleted:', 'bcgov-design-system')}</h4>
-                                <ul>
-                                    {localDocuments
-                                        .filter(doc => selectedDocuments.includes(doc.id))
-                                        .map(doc => (
-                                            <li key={doc.id}>
-                                                {doc.title || doc.filename}
-                                            </li>
-                                        ))
-                                    }
-                                </ul>
-                            </div>
-                            <p className="delete-warning">
-                                {__('This action cannot be undone.', 'bcgov-design-system')}
-                            </p>
-                            <div className="modal-actions">
-                                <Button
-                                    isDestructive
-                                    onClick={handleBulkDelete}
-                                    disabled={isMultiDeleting}
-                                >
-                                    {isMultiDeleting ? (
-                                        <>{__('Deleting...', 'bcgov-design-system')}</>
-                                    ) : __('Delete Selected', 'bcgov-design-system')}
-                                </Button>
-                                <Button
-                                    onClick={() => setBulkDeleteConfirmOpen(false)}
-                                    disabled={isMultiDeleting}
                                 >
                                     {__('Cancel', 'bcgov-design-system')}
                                 </Button>
@@ -916,7 +847,7 @@ const DocumentList = ({
                                                     ...prev,
                                                     [field.id]: value
                                                 }))}
-                                                type={field.type === 'date' ? 'text' : 'text'}
+                                                type={field.type === 'date' ? 'date' : 'text'}
                                             />
                                         )}
                                         {error && <div className="metadata-error">{error}</div>}

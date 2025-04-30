@@ -225,8 +225,8 @@ $background-success-light: #f1f8e9;  // Light success background
 			transition: all 0.3s ease;
 
 			svg {
-				width: 4rem;
-				height: 4rem;
+				width: 2.5rem;
+				height: 2.5rem;
 				color: $primary-color;
 				transition: all 0.3s ease;
 				margin-bottom: 0.5rem;
@@ -565,9 +565,8 @@ $background-success-light: #f1f8e9;  // Light success background
 		align-items: center;
 		gap: 0.5rem;
 
-		.dashicons {
+		svg {
 			color: $primary-color;
-			font-size: 1.125rem;
 			width: 1.125rem;
 			height: 1.125rem;
 		}

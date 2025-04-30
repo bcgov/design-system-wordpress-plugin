@@ -79,7 +79,7 @@ const DocumentTableRow = ({
                         />
                     ) : field.type === 'date' ? (
                         <TextControl
-                            type="text"
+                            type="date"
                             value={bulkEditedMetadata[document.id]?.[field.id] || ''}
                             onChange={(value) => onMetadataChange(document.id, field.id, value)}
                             className="metadata-input"
