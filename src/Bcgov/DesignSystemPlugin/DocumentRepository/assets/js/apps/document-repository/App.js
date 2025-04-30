@@ -29,7 +29,7 @@ import AppErrorBoundary from '../../shared/components/AppErrorBoundary';
  */
 const App = () => {
     // API data loading state
-    const [isLoading, setIsLoading] = useState(true);
+    const [isInitializing, setIsInitializing] = useState(true);
     const [error, setError] = useState(null);
     
     // Metadata fields configuration
@@ -48,6 +48,8 @@ const App = () => {
         fetchDocuments,
         deleteDocument,
         isDeleting,
+        isLoading: isLoadingDocuments,
+        error: documentsError,
         searchParams,
         setSearchParams,
     } = useDocuments();
@@ -63,35 +65,55 @@ const App = () => {
     // Selected documents for bulk actions
     const [selectedDocuments, setSelectedDocuments] = useState([]);
     
-    /**
-     * Load metadata fields configuration on component mount
-     * 
-     * Fetches the metadata field definitions from the API
-     * and updates the component state.
-     * 
-     * @async
-     * @function fetchMetadataFields
-     */
+    // Initialize data on component mount
     useEffect(() => {
-        const fetchMetadataFields = async () => {
+        const initializeData = async () => {
             try {
-                const { apiNamespace } = window.documentRepositorySettings;
-                
-                // Fetch metadata fields from API
-                const fields = await apiFetch({
-                    path: `/${apiNamespace}/metadata-fields`,
-                });
-                
-                setMetadataFields(fields);
-                setIsLoading(false);
-            } catch (err) {
-                setError(err.message || 'Error loading metadata fields');
-                setIsLoading(false);
+                setIsInitializing(true);
+                setError(null);
+
+                // Check for required settings
+                const settings = window.documentRepositorySettings;
+                if (!settings?.apiRoot || !settings?.apiNamespace || !settings?.nonce) {
+                    throw new Error(__('Document Repository settings not found. Make sure the script is properly enqueued in WordPress.', 'bcgov-design-system'));
+                }
+
+                // Fetch metadata fields
+                const response = await fetch(
+                    `${settings.apiRoot}${settings.apiNamespace}/metadata-fields`,
+                    {
+                        headers: {
+                            'X-WP-Nonce': settings.nonce,
+                        },
+                    }
+                );
+
+                if (!response.ok) {
+                    let errorMessage;
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.message || errorData.error;
+                    } catch (e) {
+                        errorMessage = response.statusText;
+                    }
+                    throw new Error(__('Failed to fetch metadata fields: ', 'bcgov-design-system') + errorMessage);
+                }
+
+                const data = await response.json();
+                setMetadataFields(data);
+
+                // Fetch initial documents
+                await fetchDocuments();
+            } catch (error) {
+                console.error('Error initializing data:', error);
+                setError(error.message || __('Failed to initialize document repository', 'bcgov-design-system'));
+            } finally {
+                setIsInitializing(false);
             }
         };
         
-        fetchMetadataFields();
-    }, []);
+        initializeData();
+    }, [fetchDocuments]);
     
     /**
      * Handle document selection for bulk actions
@@ -100,13 +122,15 @@ const App = () => {
      * @param {number} documentId - ID of the document to select/deselect
      */
     const handleDocumentSelection = (documentId) => {
-        setSelectedDocuments((prev) => {
-            if (prev.includes(documentId)) {
-                return prev.filter(id => id !== documentId);
-            } else {
-                return [...prev, documentId];
-            }
-        });
+        try {
+            const newSelectedDocuments = selectedDocuments.includes(documentId)
+                ? selectedDocuments.filter(id => id !== documentId)
+                : [...selectedDocuments, documentId];
+            setSelectedDocuments(newSelectedDocuments);
+        } catch (error) {
+            console.error('Error selecting document:', error);
+            setError(__('Failed to select document', 'bcgov-design-system'));
+        }
     };
     
     /**
@@ -116,10 +140,11 @@ const App = () => {
      * @param {boolean} isSelected - Whether to select or deselect all documents
      */
     const handleSelectAll = (isSelected) => {
-        if (isSelected) {
-            setSelectedDocuments(documents.map(doc => doc.id));
-        } else {
-            setSelectedDocuments([]);
+        try {
+            setSelectedDocuments(isSelected ? documents.map(doc => doc.id) : []);
+        } catch (error) {
+            console.error('Error selecting all documents:', error);
+            setError(__('Failed to select documents', 'bcgov-design-system'));
         }
     };
     
@@ -129,11 +154,47 @@ const App = () => {
      * @function handlePageChange
      * @param {number} newPage - New page number to navigate to
      */
-    const handlePageChange = (newPage) => {
-        setSearchParams(prev => ({
-            ...prev,
-            page: newPage
-        }));
+    const handlePageChange = async (newPage) => {
+        try {
+            setIsInitializing(true);
+            setError(null);
+            
+            const nonce = window.documentRepositorySettings?.nonce;
+            if (!nonce) {
+                throw new Error(__('Security token not found', 'bcgov-design-system'));
+            }
+
+            const response = await fetch(
+                `${window.documentRepositorySettings.apiRoot}${window.documentRepositorySettings.apiNamespace}/documents?page=${newPage}`,
+                {
+                    headers: {
+                        'X-WP-Nonce': nonce,
+                    },
+                }
+            );
+
+            if (!response.ok) {
+                let errorMessage;
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.message || errorData.error;
+                } catch (e) {
+                    errorMessage = response.statusText;
+                }
+                throw new Error(__('Failed to fetch documents: ', 'bcgov-design-system') + errorMessage);
+            }
+
+            const data = await response.json();
+            setDocuments(data.documents);
+            setTotalDocuments(data.total);
+            setTotalPages(data.totalPages);
+            setCurrentPage(newPage);
+        } catch (error) {
+            console.error('Error changing page:', error);
+            setError(error.message || __('Failed to change page', 'bcgov-design-system'));
+        } finally {
+            setIsInitializing(false);
+        }
     };
     
     // Add new state for managing multiple file uploads
@@ -153,40 +214,26 @@ const App = () => {
      */
     const handleMultipleFiles = async (files) => {
         try {
-            // Filter for PDF files and validate
-            const pdfFiles = Array.from(files).filter(file => {
-                const isPdf = file.type.includes('pdf') || file.name.toLowerCase().endsWith('.pdf');
-                if (!isPdf) {
-                    console.warn(`Skipping non-PDF file: ${file.name}`);
-                }
-                return isPdf;
-            });
+            // Filter out non-PDF files
+            const pdfFiles = Array.from(files).filter(file => 
+                file.type.includes('pdf') || file.name.toLowerCase().endsWith('.pdf')
+            );
 
             if (pdfFiles.length === 0) {
-                throw new Error('No valid PDF files found');
+                throw new Error(__('No valid PDF files found', 'bcgov-design-system'));
             }
 
-            // Set loading state
-            setIsUploading(true);
-            setUploadProgress(0);
-
-            // Process files sequentially
-            for (let i = 0; i < pdfFiles.length; i++) {
-                try {
-                    await handleFileDrop(pdfFiles[i]);
-                    setUploadProgress(((i + 1) / pdfFiles.length) * 100);
-                } catch (error) {
-                    console.error(`Error uploading file ${pdfFiles[i].name}:`, error);
-                    setError(`Failed to upload ${pdfFiles[i].name}: ${error.message}`);
-                    // Continue with next file even if one fails
-                }
+            if (files.length !== pdfFiles.length) {
+                setError(__('Some files were skipped because they are not PDFs', 'bcgov-design-system'));
             }
+
+            setUploadQueue(pdfFiles);
+            setCurrentUploadIndex(0);
+            setSelectedFileForUpload(pdfFiles[0]);
+            setShowUploadModal(true);
         } catch (error) {
             console.error('Error processing files:', error);
-            setError(error.message);
-        } finally {
-            setIsUploading(false);
-            setUploadProgress(0);
+            setError(error.message || __('Failed to process files', 'bcgov-design-system'));
         }
     };
 
@@ -296,8 +343,22 @@ const App = () => {
         }
     };
     
+    // Show error if either initialization or documents error occurs
+    const displayError = error || documentsError;
+
+    // Handle error auto-dismissal
+    useEffect(() => {
+        if (displayError) {
+            const timer = setTimeout(() => {
+                setError(null);
+            }, 3000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [displayError]);
+    
     // Loading state
-    if (isLoading) {
+    if (isInitializing) {
         return (
             <div className="dswp-document-repository-loading">
                 <Spinner />
@@ -306,22 +367,24 @@ const App = () => {
         );
     }
     
-    // Error state
-    if (error) {
-        return (
-            <Notice status="error" isDismissible={false}>
-                <p>{error}</p>
-            </Notice>
-        );
-    }
-    
     // Main application render
     return (
         <AppErrorBoundary>
             <div className="dswp-document-repository">
+                {displayError && (
+                    <Notice 
+                        status="error" 
+                        isDismissible={true}
+                        onDismiss={() => setError(null)}
+                        className="document-repository-error"
+                    >
+                        <p>{displayError}</p>
+                    </Notice>
+                )}
+                
                 <DocumentList
                     documents={documents || []}
-                    isLoading={isLoading}
+                    isLoading={isLoadingDocuments}
                     totalItems={totalDocuments}
                     currentPage={currentPage || 1}
                     totalPages={totalPages || 1}

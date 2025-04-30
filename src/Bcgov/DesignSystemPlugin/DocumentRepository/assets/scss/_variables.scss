@@ -1,6 +1,8 @@
 // Font Variables
 // -------------
-$font-family-base: -apple-system, blinkmacsystemfont, "Segoe UI", roboto, oxygen-sans, ubuntu, cantarell, "Helvetica Neue", sans-serif;
+@use "sass:color";
+
+$font-family-base: bcsans, blinkmacsystemfont, "Segoe UI", roboto, oxygen-sans, ubuntu, cantarell, "Helvetica Neue", sans-serif;
 $font-weight-normal: 400;
 $font-weight-medium: 500;
 $font-weight-bold: 600;
@@ -68,6 +70,191 @@ $z-index-modal-backdrop: 1040;
 $z-index-modal: 1050;
 $z-index-popover: 1060;
 $z-index-tooltip: 1070;
+
+// Modal Base Styles
+// ----------------
+$modal-header-height: 3.5rem;
+$modal-padding: 1rem;
+$modal-border-color: #ddd;
+$modal-background: #fff;
+
+// Modal Mixins
+@mixin modal-header {
+	height: $modal-header-height;
+	border-bottom: 0.0625rem solid $modal-border-color;
+	margin: 0;
+	padding: 0 $modal-padding;
+	position: relative;
+	z-index: 1;
+	background: $modal-background;
+
+	.components-modal__header-heading {
+		font-size: $font-size-base;
+		font-weight: $font-weight-bold;
+		line-height: 3.5;
+		margin: 0;
+	}
+
+	.components-button.has-icon {
+		padding: 0;
+		min-width: 1.5rem;
+		height: 1.5rem;
+		position: absolute;
+		right: $modal-padding;
+		top: $modal-padding;
+	}
+}
+
+@mixin modal-content {
+	padding: $modal-padding;
+	margin: 0;
+}
+
+@mixin modal-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.5rem;
+	margin-top: 1.5rem;
+	padding-top: 1rem;
+	border-top: 0.0625rem solid #ddd;
+}
+
+// Button Variables
+$button-height-base: 2.25rem;
+$button-height-sm: 2rem;
+$button-padding-base: 0.75rem 1rem;
+$button-padding-sm: 0.5rem;
+$button-border-radius: 0.25rem;
+$button-font-size: 0.875rem;
+$button-font-weight: 500;
+$button-transition: all 0.2s ease;
+
+// Button Mixins
+@mixin button-base {
+	height: $button-height-base;
+	padding: $button-padding-base;
+	border-radius: $button-border-radius;
+	font-size: $button-font-size;
+	font-weight: $button-font-weight;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	transition: $button-transition;
+	cursor: pointer;
+	border: 0.0625rem solid $border-color;
+	background-color: #fff;
+	color: $text-color;
+	text-decoration: none;
+	gap: $spacing-xs;
+
+	&:disabled {
+		opacity: 0.7;
+		cursor: not-allowed;
+		background-color: $background-light;
+		color: $text-secondary;
+		border-color: $border-color;
+	}
+
+	&:hover:not(:disabled) {
+		background-color: $background-light;
+		border-color: color.adjust($border-color, $lightness: -5%);
+		color: $text-color;
+	}
+
+	&:focus:not(:disabled) {
+		box-shadow: 0 0 0 0.125rem rgba($primary-color, 0.2);
+		outline: none;
+	}
+
+	svg {
+		width: $spacing-md;
+		height: $spacing-md;
+	}
+}
+
+@mixin button-primary {
+
+	@include button-base;
+	background-color: $primary-color;
+	border-color: $primary-color;
+	color: #fff;
+
+	&:hover:not(:disabled) {
+		background-color: color.adjust($primary-color, $lightness: -5%);
+		border-color: color.adjust($primary-color, $lightness: -5%);
+		color: #fff;
+	}
+
+	&:focus:not(:disabled) {
+		box-shadow: 0 0 0 0.125rem rgba($primary-color, 0.2);
+	}
+
+	&:disabled {
+		background-color: color.adjust($primary-color, $alpha: -0.5);
+		border-color: color.adjust($primary-color, $alpha: -0.5);
+		color: #fff;
+	}
+}
+
+@mixin button-secondary {
+
+	@include button-base;
+	background-color: transparent;
+	border-color: $border-color;
+	color: $text-color;
+
+	&:hover:not(:disabled) {
+		background-color: $background-light;
+		border-color: color.adjust($border-color, $lightness: -5%);
+		color: $text-color;
+	}
+}
+
+@mixin button-destructive {
+
+	@include button-base;
+	background-color: $error-color;
+	border-color: $error-color;
+	color: #fff;
+
+	&:hover:not(:disabled) {
+		background-color: color.adjust($error-color, $lightness: -5%);
+		border-color: color.adjust($error-color, $lightness: -5%);
+		color: #fff;
+	}
+
+	&:focus:not(:disabled) {
+		box-shadow: 0 0 0 0.125rem rgba($error-color, 0.2);
+	}
+
+	&:disabled {
+		background-color: color.adjust($error-color, $alpha: -0.5);
+		border-color: color.adjust($error-color, $alpha: -0.5);
+	}
+}
+
+@mixin button-icon {
+
+	@include button-base;
+	width: $button-height-sm;
+	height: $button-height-sm;
+	min-width: $button-height-sm;
+	padding: 0;
+	border-radius: $button-border-radius;
+
+	svg {
+		width: $spacing-md;
+		height: $spacing-md;
+	}
+}
+
+// Info Box Base Styles
+// ------------------
+@mixin info-box {
+	background: #f0f0f1;
+	padding: 1rem;
+	margin-bottom: 1.5rem;
+}
 
 // Mixins
 // ------

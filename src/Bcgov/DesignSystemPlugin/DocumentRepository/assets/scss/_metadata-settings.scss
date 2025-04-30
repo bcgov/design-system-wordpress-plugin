@@ -1,270 +1,46 @@
 @use "sass:color";
 @use "variables" as *;
 
-// Modal specific styles
-.metadata-field-modal {
-	max-width: 31.25rem !important;
+// Base styles for shared components
+.components-button {
 
-	.components-modal__header {
-		height: 3.5rem;
-		border-bottom: 0.0625rem solid #ddd;
-		margin: 0;
-		padding: 0 1rem;
-		position: relative;
-		z-index: 1;
-		background: #fff;
+	&.is-primary {
+		background-color: $primary-color;
+		color: #fff;
+		border: none;
 
-		.components-modal__header-heading {
-			font-size: 1rem;
-			font-weight: 600;
-			line-height: 3.5;
-			margin: 0;
+		&:hover:not(:disabled) {
+			background-color: color.adjust($primary-color, $lightness: -5%);
 		}
 
-		.components-button.has-icon {
-			padding: 0;
-			min-width: 1.5rem;
-			height: 1.5rem;
-			position: absolute;
-			right: 1rem;
-			top: 1rem;
+		&:disabled {
+			background-color: color.adjust($primary-color, $alpha: -0.5);
+			color: #fff;
+			cursor: not-allowed;
+			opacity: 0.7;
 		}
 	}
 
-	.components-modal__content {
-		padding: 1rem;
-		margin: 0;
-		position: relative;
-		overflow: hidden;
+	&.is-destructive {
+		background-color: $error-color;
+		color: #fff;
+		border: none;
 
-		> div {
-			height: auto;
+		&:hover:not(:disabled) {
+			background-color: color.adjust($error-color, $lightness: -5%);
+		}
+
+		&:disabled {
+			background-color: color.adjust($error-color, $alpha: -0.5);
+			color: #fff;
+			cursor: not-allowed;
+			opacity: 0.7;
 		}
 	}
 
-	// Form styles
-	.metadata-field-form {
-		padding: 0;
-
-		.components-base-control {
-			margin-bottom: 1.5rem;
-			width: 100%;
-
-			&:last-child {
-				margin-bottom: 1.5rem;
-			}
-
-			.components-base-control__field {
-				margin-bottom: 0;
-			}
-
-			.components-base-control__label {
-				display: block;
-				margin-bottom: 0.25rem;
-			}
-		}
-
-		// Error message
-		.field-error {
-			color: #d63638;
-			font-size: 0.75rem;
-			margin: 0 0 0.125rem;
-			display: block;
-			font-weight: 600;
-			line-height: 1.4;
-		}
-
-		// Input field styling with error state
-		.components-text-control__input {
-			width: 100%;
-			height: 2.25rem;
-			padding: $spacing-xs $spacing-sm;
-			border: 0.0625rem solid $border-color;
-			border-radius: $border-radius-sm;
-			font-size: $font-size-base;
-			color: $text-color;
-			background-color: #fff;
-
-			&.has-error {
-				border-color: #d63638;
-
-				&:focus {
-					border-color: #d63638;
-					box-shadow: 0 0 0 0.0625rem #d63638;
-				}
-			}
-
-			&:focus {
-				border-color: $primary-color;
-				box-shadow: $box-shadow-sm;
-				outline: none;
-			}
-
-			&:disabled {
-				background-color: $background-light;
-				color: $text-secondary;
-				cursor: not-allowed;
-			}
-		}
-
-		// Field description
-		.field-description {
-			color: #757575;
-			font-size: 0.75rem;
-			margin: 0.25rem 0 0;
-			display: block;
-			line-height: 1.4;
-		}
-
-		// Form actions (buttons container)
-		.metadata-field-actions {
-			display: flex;
-			justify-content: flex-end;
-			gap: 0.5rem;
-			margin-top: 1.5rem;
-			padding-top: 1rem;
-			border-top: 0.0625rem solid #ddd;
-
-			.components-button {
-				height: 1.875rem;
-				min-width: 5rem;
-				padding: 0 1rem;
-				font-size: 0.8125rem;
-				font-weight: 500;
-				border-radius: 0.125rem;
-				transition: all 0.2s ease;
-
-				&:disabled {
-					background-color: #f0f0f0;
-					color: #757575;
-					cursor: not-allowed;
-					opacity: 0.7;
-				}
-
-				&.is-primary {
-					background-color: #135e96;
-					color: #fff;
-					border: none;
-
-					&:hover:not(:disabled) {
-						background-color: color.adjust(#135e96, $lightness: -5%);
-					}
-				}
-
-				&.is-secondary {
-					color: #1e1e1e;
-					border: 0.0625rem solid #ddd;
-					background-color: #fff;
-
-					&:hover:not(:disabled) {
-						background-color: #f0f0f0;
-						border-color: color.adjust(#ddd, $lightness: -5%);
-					}
-				}
-			}
-		}
-	}
-
-	// Delete Form Styles
-	.document-delete-form {
-		padding: 1rem;
-
-		.delete-warning {
-			background: #fcf0f1;
-			border-left: 0.25rem solid #cc1818;
-			padding: 0.75rem;
-			margin-bottom: 1rem;
-
-			.warning-content {
-
-				strong {
-					display: block;
-					font-size: 0.8125rem;
-					font-weight: 600;
-					margin-bottom: 0.25rem;
-					color: #1e1e1e;
-				}
-
-				p {
-					font-size: 0.8125rem;
-					color: #757575;
-					margin: 0;
-					line-height: 1.4;
-				}
-			}
-		}
-
-		.document-info {
-			background: #f0f0f1;
-			padding: 1rem;
-			margin-bottom: 1.5rem;
-
-			h3 {
-				font-size: 0.875rem;
-				font-weight: 600;
-				margin: 0 0 0.75rem 0;
-				color: #1e1e1e;
-			}
-
-			.info-grid {
-				display: grid;
-				grid-template-columns: 5rem 1fr;
-				row-gap: 0.5rem;
-				font-size: 0.8125rem;
-
-				.label {
-					color: #757575;
-					font-weight: 400;
-				}
-
-				.value {
-					color: #1e1e1e;
-					font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-				}
-			}
-		}
-
-		.delete-actions {
-			display: flex;
-			justify-content: flex-end;
-			gap: 0.5rem;
-			padding: 0;
-
-			.components-button {
-				height: 1.875rem;
-				min-width: 4.5rem;
-				padding: 0 0.75rem;
-				font-size: 0.8125rem;
-				font-weight: 400;
-
-				&:disabled {
-					opacity: 0.7;
-					cursor: not-allowed;
-				}
-
-				&.is-secondary {
-					color: #1e1e1e;
-					border-color: #ddd;
-					background: #f6f7f7;
-
-					&:hover:not(:disabled) {
-						border-color: #999;
-						color: #1e1e1e;
-						background: #f0f0f1;
-					}
-				}
-
-				&.is-destructive {
-					background: #d63638;
-					color: #fff;
-					border: none;
-
-					&:hover:not(:disabled) {
-						background: #b32d2e;
-					}
-				}
-			}
-		}
+	svg {
+		width: $spacing-md;
+		height: $spacing-md;
 	}
 }
 
@@ -276,6 +52,181 @@
 	background: #fff;
 	border-radius: $border-radius-sm;
 	box-shadow: $box-shadow-sm;
+
+	// Modal specific styles
+	.metadata-field-modal {
+		max-width: 31.25rem !important;
+
+		.components-modal__header {
+			padding: 1rem;
+			border-bottom: 1px solid $border-color;
+			margin-bottom: 0;
+
+			.components-modal__header-heading-container {
+
+				h1.components-modal__header-heading {
+					font-size: 1.25rem;
+					font-weight: 600;
+					margin: 0;
+					line-height: 1.4;
+					color: $text-color;
+				}
+			}
+
+			.components-button {
+				padding: 0.5rem;
+				height: auto;
+				min-width: auto;
+
+				svg {
+					width: 1.25rem;
+					height: 1.25rem;
+				}
+			}
+		}
+
+		.components-modal__content {
+
+			@include modal-content;
+			padding: 1.5rem;
+
+			> div {
+				height: auto;
+			}
+		}
+
+		// Delete Metadata Field Modal
+		.document-delete-form {
+			padding: 1.5rem;
+
+			// Question text
+			> p {
+				font-size: 1rem;
+				margin: 0 0 1.25rem;
+				color: $text-color;
+			}
+
+			// Warning with icon
+			.delete-warning {
+				background-color: #fcf0f0;
+				border: 1px solid #f5c2c7;
+				border-radius: 4px;
+				padding: 0.75rem;
+				margin-bottom: 1.5rem;
+				display: flex;
+				align-items: flex-start;
+				gap: 0.75rem;
+
+				.warning-icon {
+					flex-shrink: 0;
+					color: #d63638;
+
+					svg {
+						width: 1.25rem;
+						height: 1.25rem;
+						fill: currentcolor;
+					}
+				}
+
+				.warning-content {
+
+					strong {
+						display: block;
+						font-size: 0.875rem;
+						font-weight: 600;
+						margin-bottom: 0.375rem;
+						color: #842029;
+					}
+
+					p {
+						font-size: 0.875rem;
+						line-height: 1.5;
+						color: #842029;
+						margin: 0;
+					}
+				}
+			}
+
+			// Document/Field information box
+			.document-info {
+				background: #f0f0f0;
+				padding: 1rem;
+				border-radius: 4px;
+				margin-bottom: 1.5rem;
+
+				h3 {
+					font-size: 0.875rem;
+					font-weight: 600;
+					margin: 0 0 0.75rem;
+					color: $text-color;
+				}
+
+				.info-grid {
+					display: grid;
+					grid-template-columns: auto 1fr;
+					column-gap: 1rem;
+					row-gap: 0.5rem;
+					font-size: 0.875rem;
+
+					.label {
+						color: $text-secondary;
+					}
+
+					.value {
+						color: $text-color;
+					}
+				}
+			}
+
+			// Action buttons
+			.delete-actions {
+				display: flex;
+				justify-content: flex-end;
+				gap: 0.75rem;
+				margin-top: 1.5rem;
+				border-top: none;
+				padding-top: 0;
+
+				.components-button {
+					min-width: 5rem;
+					justify-content: center;
+					height: 2.25rem;
+					padding: 0 1rem;
+
+					&.cancel-button,
+					&.is-secondary {
+						background-color: #f6f7f7;
+						border: 1px solid #dcdcde;
+						color: $text-color;
+
+						&:hover:not(:disabled) {
+							background-color: #f0f0f1;
+							border-color: #8c8f94;
+						}
+					}
+
+					&.delete-button,
+					&.is-destructive {
+						background-color: #d63638;
+						border-color: #d63638;
+						color: #fff;
+
+						&:hover:not(:disabled) {
+							background-color: #b32d2e;
+							border-color: #b32d2e;
+						}
+
+						&:disabled {
+							background-color: rgba(214, 54, 56, 0.7);
+							border-color: rgba(214, 54, 56, 0.7);
+							color: #fff;
+							opacity: 1;
+						}
+					}
+				}
+			}
+		}
+	}
 
 	&-loading {
 		display: flex;
@@ -303,14 +254,13 @@
 		}
 
 		h3 {
-			font-size: $font-size-base;
-			font-weight: $font-weight-medium;
-			margin: 0 0 $spacing-md 0;
+			font-size: 1.125rem;
+			margin: 0 0 1rem;
 			color: $text-color;
 		}
 
 		.components-base-control {
-			margin-bottom: $spacing-md;
+			margin-bottom: 1rem;
 
 			&:last-child {
 				margin-bottom: 0;
@@ -386,64 +336,22 @@
 			margin-top: $spacing-md;
 
 			.components-button {
-				height: 2.25rem;
-				min-width: 5rem;
-				padding: 0 $spacing-lg;
-				font-size: $font-size-sm;
-				font-weight: $font-weight-medium;
-				border-radius: $border-radius-sm;
-				transition: all 0.2s ease;
+
+				@include button-base;
 
 				&.is-primary {
-					background-color: $primary-color;
-					color: #fff;
-					border: none;
 
-					&:disabled {
-						background-color: $background-light;
-						color: $text-secondary;
-						cursor: not-allowed;
-						opacity: 0.7;
-					}
-
-					&:hover:not(:disabled) {
-						background-color: color.adjust($primary-color, $lightness: -5%);
-					}
+					@include button-primary;
 				}
 
 				&.is-secondary {
-					color: $text-color;
-					border: 0.0625rem solid $border-color;
-					background-color: #fff;
 
-					&:disabled {
-						background-color: $background-light;
-						color: $text-secondary;
-						cursor: not-allowed;
-						opacity: 0.7;
-					}
-
-					&:hover:not(:disabled) {
-						background-color: $background-light;
-						border-color: color.adjust($border-color, $lightness: -5%);
-					}
+					@include button-secondary;
 				}
 
 				&.is-destructive {
-					background-color: $error-color;
-					color: #fff;
-					border: none;
 
-					&:disabled {
-						background-color: $background-light;
-						color: $text-secondary;
-						cursor: not-allowed;
-						opacity: 0.7;
-					}
-
-					&:hover:not(:disabled) {
-						background-color: color.adjust($error-color, $lightness: -5%);
-					}
+					@include button-destructive;
 				}
 			}
 		}
@@ -507,23 +415,12 @@
 					background-color: #fff;
 
 					svg {
-						width: $spacing-md;
-						height: $spacing-md;
+						width: 1rem;
+						height: 1rem;
 					}
 
 					&:hover:not(:disabled) {
 						background-color: $background-light;
-						border-color: color.adjust($border-color, $lightness: -5%);
-						color: $text-color;
-					}
-
-					&.is-destructive {
-
-						&:hover:not(:disabled) {
-							background-color: $error-color;
-							border-color: $error-color;
-							color: #fff;
-						}
 					}
 				}
 			}
@@ -547,8 +444,9 @@
 		transition: all 0.2s ease;
 
 		svg {
-			width: $spacing-md;
-			height: $spacing-md;
+			width: 1rem;
+			height: 1rem;
+			margin-right: 0.5rem;
 		}
 
 		&:disabled {
@@ -562,119 +460,6 @@
 			color: $primary-color;
 		}
 	}
-
-	.document-delete-form {
-		padding: $spacing-lg;
-
-		.delete-warning {
-			display: flex;
-			gap: $spacing-md;
-			padding: $spacing-md;
-			background-color: $background-error-light;
-			border-radius: $border-radius-sm;
-			margin-bottom: $spacing-lg;
-
-			.warning-icon {
-
-				svg {
-					width: 1.5rem;
-					height: 1.5rem;
-					fill: $error-color;
-				}
-			}
-
-			.warning-content {
-
-				strong {
-					display: block;
-					font-size: $font-size-base;
-					font-weight: $font-weight-medium;
-					color: $error-color;
-					margin-bottom: $spacing-xs;
-				}
-
-				p {
-					font-size: $font-size-sm;
-					color: $text-color;
-					margin: 0;
-					line-height: 1.5;
-				}
-			}
-		}
-
-		.document-info {
-			background-color: $background-light;
-			padding: $spacing-md;
-			border-radius: $border-radius-sm;
-			margin-bottom: $spacing-lg;
-
-			h3 {
-				font-size: $font-size-base;
-				font-weight: $font-weight-medium;
-				margin: 0 0 $spacing-md 0;
-				color: $text-color;
-			}
-
-			.info-grid {
-				display: grid;
-				grid-template-columns: auto 1fr;
-				gap: $spacing-sm $spacing-md;
-				font-size: $font-size-sm;
-
-				.label {
-					color: $text-secondary;
-					font-weight: $font-weight-normal;
-				}
-
-				.value {
-					color: $text-color;
-					font-weight: $font-weight-medium;
-				}
-			}
-		}
-
-		.delete-actions {
-			display: flex;
-			justify-content: flex-end;
-			gap: $spacing-sm;
-
-			.components-button {
-				height: 2.25rem;
-				min-width: 5rem;
-				padding: 0 $spacing-lg;
-				font-size: $font-size-sm;
-				font-weight: $font-weight-medium;
-				border-radius: $border-radius-sm;
-				transition: all 0.2s ease;
-
-				&:disabled {
-					opacity: 0.7;
-					cursor: not-allowed;
-				}
-
-				&.cancel-button {
-					color: $text-color;
-					border: 0.0625rem solid $border-color;
-					background-color: #fff;
-
-					&:hover:not(:disabled) {
-						background-color: $background-light;
-						border-color: color.adjust($border-color, $lightness: -5%);
-					}
-				}
-
-				&.delete-button {
-					background-color: $error-color;
-					color: #fff;
-					border: none;
-
-					&:hover:not(:disabled) {
-						background-color: color.adjust($error-color, $lightness: -5%);
-					}
-				}
-			}
-		}
-	}
 }
 
 // Loading animation keyframes
@@ -682,5 +467,285 @@
 
 	0% {
 		background-position: 12.5rem 0;
+	}
+}
+
+// Delete modal styles - shared for both document and metadata delete modals
+.components-modal__content {
+	max-width: 30rem;
+	padding: 0;
+
+	// Modal header
+	.components-modal__header {
+		padding: 1rem;
+		border-bottom: 1px solid #ddd;
+		margin-bottom: 0;
+	}
+
+	// Delete document modal styles
+	> div > p {
+		padding: 1.5rem 1.5rem 0;
+		margin: 0;
+		font-size: 1rem;
+		color: #333;
+	}
+
+	// Document/field info section
+	.document-info {
+		background: #f0f0f0;
+		margin: 1rem 1.5rem;
+		padding: 1rem;
+		border-radius: 4px;
+
+		h3 {
+			font-size: 0.875rem;
+			font-weight: 600;
+			margin: 0 0 0.75rem;
+			color: #333;
+		}
+
+		.info-grid {
+			display: grid;
+			grid-template-columns: auto 1fr;
+			column-gap: 1rem;
+			row-gap: 0.5rem;
+			font-size: 0.875rem;
+
+			.label {
+				color: #666;
+			}
+
+			.value {
+				color: #333;
+			}
+		}
+	}
+
+	// Warning message
+	.delete-warning,
+	div[role="alert"] {
+		background-color: #fcf0f0;
+		border: 1px solid #f5c2c7;
+		border-radius: 4px;
+		padding: 0.75rem 1rem;
+		margin: 1rem 1.5rem;
+		color: #842029;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+
+		svg,
+		.dashicon {
+			color: #d63638;
+			width: 1rem;
+			height: 1rem;
+		}
+	}
+
+	// Action buttons container
+	.delete-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: 0.75rem;
+		padding: 1rem 1.5rem 1.5rem;
+		margin-top: 0.5rem;
+	}
+
+	// Button styles
+	.components-button {
+		height: 2.25rem;
+		min-width: 5rem;
+		justify-content: center;
+		padding: 0 1rem;
+
+		&.delete-button,
+		&.is-destructive,
+		&[type="button"]:not(.is-secondary):not(.cancel-button):not(.cancel) {
+			background-color: #d63638;
+			border-color: #d63638;
+			color: #fff;
+
+			&:hover:not(:disabled) {
+				background-color: #b32d2e;
+				border-color: #b32d2e;
+			}
+		}
+
+		&.cancel-button,
+		&.is-secondary,
+		&.cancel {
+			background-color: #f6f7f7;
+			border: 1px solid #dcdcde;
+			color: #333;
+
+			&:hover:not(:disabled) {
+				background-color: #f0f0f1;
+				border-color: #8c8f94;
+			}
+		}
+	}
+}
+
+// Specific fixes for the metadata delete modal
+.delete-metadata-field {
+
+	.components-modal__content {
+
+		div:not(.components-modal__header) {
+			padding: 1.5rem;
+			display: flex;
+			flex-direction: column;
+		}
+
+		// Icon and warning
+		.dashicon,
+		svg {
+			width: 1.25rem;
+			height: 1.25rem;
+			color: #d63638;
+			margin-right: 0.5rem;
+		}
+
+		// Warning message
+		> div > div:first-of-type {
+			background-color: #fcf0f0;
+			border: 1px solid #f5c2c7;
+			border-radius: 4px;
+			padding: 0.75rem;
+			margin-bottom: 1.5rem;
+			display: flex;
+			align-items: flex-start;
+		}
+
+		// Field information
+		h2,
+		.field-information {
+			margin-bottom: 1rem;
+		}
+
+		h2 {
+			font-size: 1rem;
+			font-weight: 600;
+			color: #333;
+		}
+
+		// Field info section
+		.field-information {
+			background: #f0f0f0;
+			padding: 1rem;
+			border-radius: 4px;
+			margin-bottom: 1.5rem;
+		}
+
+		// Action buttons
+		> div > div:last-child {
+			display: flex;
+			justify-content: flex-end;
+			gap: 0.75rem;
+			margin-top: auto;
+		}
+	}
+}
+
+// Delete Metadata Field Modal (newer version)
+.components-modal__content[role="document"] {
+	padding: 0;
+
+	// Reposition the content to match document delete modal
+	> div {
+		padding: 1.5rem;
+	}
+
+	// Warning with icon
+	div:has(svg) + p {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.5rem;
+		margin-bottom: 1rem;
+	}
+
+	// Field information section
+	.field-information {
+		background: #f0f0f0;
+		padding: 1rem;
+		border-radius: 4px;
+		margin: 1rem 0 1.5rem;
+
+		h3 {
+			font-size: 0.875rem;
+			font-weight: 600;
+			margin: 0 0 0.75rem;
+			color: #333;
+		}
+	}
+}
+
+// Button styles shared across all modals and forms
+.components-button {
+
+	&.is-secondary,
+	&.cancel-button,
+	&.cancel,
+	&:not(.is-destructive):not(.is-primary) {
+		background-color: #f6f7f7 !important;
+		border: 1px solid #dcdcde !important;
+		color: #333 !important;
+
+		&:hover:not(:disabled) {
+			background-color: #f0f0f1 !important;
+			border-color: #8c8f94 !important;
+		}
+	}
+
+	&.is-destructive,
+	&.delete-button,
+	&.is-primary.is-destructive {
+		background-color: #d63638 !important;
+		border-color: #d63638 !important;
+		color: #fff !important;
+
+		&:hover:not(:disabled) {
+			background-color: #b32d2e !important;
+			border-color: #b32d2e !important;
+		}
+	}
+}
+
+// Override for delete document modal cancel button
+.components-modal__content .delete-actions button:not(.delete-button),
+.components-modal__content .delete-actions button.cancel,
+.components-modal__content .delete-actions button.is-secondary {
+	background-color: #f6f7f7 !important;
+	border: 1px solid #dcdcde !important;
+	color: #333 !important;
+
+	&:hover:not(:disabled) {
+		background-color: #f0f0f1 !important;
+		border-color: #8c8f94 !important;
+	}
+}
+
+// Ensure no other styles override this
+.components-modal__content button[type="button"] {
+
+	&.cancel,
+	&:not(.is-primary):not(.is-destructive):not(.delete-button) {
+		background-color: #f6f7f7 !important;
+		border: 1px solid #dcdcde !important;
+		color: #333 !important;
+	}
+}
+
+// Document delete form - swap button positions
+.components-modal__content[role="dialog"] .delete-actions {
+
+	button.delete-button,
+	button[type="button"]:not(.cancel):not(.is-secondary) {
+		order: 2;
+	}
+
+	button.cancel,
+	button.is-secondary {
+		order: 1;
 	}
 }

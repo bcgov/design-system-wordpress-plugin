@@ -259,10 +259,6 @@ const DocumentList = ({
                 status: 'error',
                 error: 'Only PDF files are allowed.'
             })));
-            setNotice({
-                status: 'error',
-                message: __('Only PDF files are allowed.', 'bcgov-design-system')
-            });
             return;
         }
 
@@ -275,13 +271,6 @@ const DocumentList = ({
                 error: isPdf ? null : 'Not a PDF file'
             };
         }));
-
-        if (files.length !== pdfFiles.length) {
-            setNotice({
-                status: 'warning',
-                message: __('Some files were skipped because they are not PDFs.', 'bcgov-design-system')
-            });
-        }
 
         // Handle each PDF file
         pdfFiles.forEach((file) => {
@@ -656,6 +645,9 @@ const DocumentList = ({
                                 isPrimary={isSpreadsheetMode}
                                 onClick={() => setIsSpreadsheetMode(!isSpreadsheetMode)}
                             >
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                                    <path d="M4 4h16v16H4V4zm5.333 0v16m5.334-16v16M4 9.333h16m-16 5.334h16" strokeWidth="2" stroke="currentColor" fill="none" />
+                                </svg>
                                 {isSpreadsheetMode ? (
                                     __('Exit Spreadsheet Mode', 'bcgov-design-system')
                                 ) : (
@@ -777,6 +769,12 @@ const DocumentList = ({
                             </p>
                             <div className="modal-actions">
                                 <Button
+                                    onClick={() => setDeleteDocument(null)}
+                                    disabled={isDeleting}
+                                >
+                                    {__('Cancel', 'bcgov-design-system')}
+                                </Button>
+                                <Button
                                     isDestructive
                                     onClick={() => {
                                         onDelete(deleteDocument.id);
@@ -785,12 +783,6 @@ const DocumentList = ({
                                     disabled={isDeleting}
                                 >
                                     {isDeleting ? __('Deleting...', 'bcgov-design-system') : __('Delete', 'bcgov-design-system')}
-                                </Button>
-                                <Button
-                                    onClick={() => setDeleteDocument(null)}
-                                    disabled={isDeleting}
-                                >
-                                    {__('Cancel', 'bcgov-design-system')}
                                 </Button>
                             </div>
                         </div>

@@ -39,7 +39,7 @@ export const useDocuments = () => {
     const [totalPages, setTotalPages] = useState(1);
     
     // Loading and error states
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [error, setError] = useState(null);
     
@@ -62,6 +62,11 @@ export const useDocuments = () => {
      * @throws {Error} If API request fails or response is invalid
      */
     const fetchDocuments = useCallback(async () => {
+        if (!window.documentRepositorySettings?.apiNamespace) {
+            setError('Document Repository settings not found. Make sure the script is properly enqueued in WordPress.');
+            return;
+        }
+
         setIsLoading(true);
         setError(null);
         
@@ -98,9 +103,13 @@ export const useDocuments = () => {
             setTotalDocuments(response.total || 0);
             setCurrentPage(response.current_page || 1);
             setTotalPages(response.total_pages || 1);
-            setIsLoading(false);
         } catch (err) {
+            console.error('Error fetching documents:', err);
             setError(err.message || 'Error loading documents');
+            setDocuments([]);
+            setTotalDocuments(0);
+            setTotalPages(1);
+        } finally {
             setIsLoading(false);
         }
     }, [searchParams]);

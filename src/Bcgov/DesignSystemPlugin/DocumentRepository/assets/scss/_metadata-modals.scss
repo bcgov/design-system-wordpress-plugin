@@ -9,116 +9,32 @@
 @use "sass:color";
 @use "variables" as *;
 
-// Delete Confirmation Modal
-.components-modal__screen-overlay {
-	font-family: $font-family-base;
+// Base Modal Styles
+.components-button {
 
-	.delete-confirmation-content {
-		padding: $spacing-lg;
+	&.is-destructive {
 
-		p {
-			font-size: $font-size-base;
-			color: $text-color;
-			margin: 0 0 $spacing-lg 0;
-			line-height: $line-height-base;
-		}
+		@include button-destructive;
+		color: #fff !important;
 
-		.documents-to-delete {
-			background: $background-light;
-			padding: $spacing-md;
-			border-radius: $border-radius-sm;
-			margin-bottom: $spacing-lg;
-			border: 0.0625rem solid $border-color;
+		&:not(.is-primary):not(.is-secondary):not(.is-tertiary):not(.is-link) {
+			color: #fff !important;
+			background-color: $error-color;
+			border-color: $error-color;
 
-			h4 {
-				margin: 0 0 $spacing-sm 0;
-				font-size: $font-size-base;
-				font-weight: $font-weight-medium;
-				color: $text-color;
-			}
-
-			ul {
-				margin: 0;
-				padding: 0;
-				list-style: none;
-
-				li {
-					font-size: $font-size-sm;
-					color: $text-color;
-					line-height: $line-height-base;
-					padding: $spacing-xs 0;
-				}
-			}
-		}
-
-		.delete-warning {
-			color: $error-color;
-			font-size: $font-size-sm;
-			margin: 0 0 $spacing-lg 0;
-			padding: $spacing-sm $spacing-md;
-			background: $background-error-light;
-			border: 0.0625rem solid color.adjust($error-color, $alpha: -0.8);
-			border-radius: $border-radius-sm;
-			line-height: $line-height-base;
-			display: flex;
-			align-items: center;
-			gap: $spacing-sm;
-
-			&::before {
-				content: "⚠";
-				font-size: $font-size-base;
-			}
-		}
-
-		.modal-actions {
-			display: flex;
-			justify-content: flex-end;
-			gap: $spacing-md;
-			padding-top: $spacing-md;
-			border-top: 0.0625rem solid $border-color;
-
-			.components-button {
-				height: 2.25rem;
-				min-width: 5rem;
-				padding: 0 $spacing-md;
-				font-size: $font-size-sm;
-				font-weight: $font-weight-medium;
-				border-radius: $border-radius-sm;
-				transition: all 0.2s ease;
-				margin: 0 $spacing-xs;
-
-				&:disabled {
-					background-color: $background-light;
-					color: $text-secondary;
-					cursor: not-allowed;
-					opacity: 0.7;
-				}
-
-				&:not(.is-destructive) {
-					color: $text-color;
-					border: 0.0625rem solid $border-color;
-					background-color: #fff;
-
-					&:hover:not(:disabled) {
-						background-color: $background-light;
-						border-color: color.adjust($border-color, $lightness: -5%);
-					}
-				}
-
-				&.is-destructive {
-					background-color: $error-color !important;
-					color: #fff !important;
-					border: none !important;
-
-					&:hover:not(:disabled) {
-						background-color: color.adjust($error-color, $lightness: -5%) !important;
-					}
-				}
+			&:hover:not(:disabled) {
+				color: #fff !important;
+				background-color: color.adjust($error-color, $lightness: -5%);
+				border-color: color.adjust($error-color, $lightness: -5%);
 			}
 		}
 	}
-}
 
+	&.is-secondary {
+
+		@include button-secondary;
+	}
+}
 
 // Modal Styles (Global)
 .metadata-edit-modal {
@@ -130,76 +46,46 @@
 	}
 
 	.components-modal__header {
-		height: 3.5rem;
-		padding: 0 1rem;
-		border-bottom: 0.0625rem solid $border-color;
-		margin: 0;
-		display: flex;
-		align-items: center;
-		background: #fff;
-		position: relative;
-		z-index: 1;
 
-		.components-modal__header-heading {
-			font-size: 1rem;
-			font-weight: 600;
-			color: $text-color;
-			margin: 0;
-			line-height: 1;
-		}
-
-		.components-button {
-			padding: 0;
-			width: 1.5rem;
-			height: 1.5rem;
-			min-width: 1.5rem;
-			border-radius: $border-radius-sm;
-			color: $text-secondary;
-			position: absolute;
-			right: 1rem;
-			top: 1rem;
-
-			&:hover {
-				background-color: $background-light;
-				color: $text-color;
-			}
-
-			svg {
-				width: 1.25rem;
-				height: 1.25rem;
-			}
-		}
+		@include modal-header;
 	}
 
 	.metadata-edit-form {
 		padding: $spacing-lg;
 
-		// Base button styles first
 		.modal-actions {
-			display: flex;
-			justify-content: flex-end;
-			gap: $spacing-sm;
-			margin-top: $spacing-lg;
-			padding-top: $spacing-lg;
-			border-top: 0.0625rem solid $border-color;
+
+			@include modal-actions;
 
 			.components-button {
+
+				@include button-base;
 				min-width: 6.25rem;
 				justify-content: center;
 
-				&:disabled {
-					opacity: 0.6;
-					cursor: not-allowed;
+				&.is-primary {
+
+					@include button-primary;
+
+					&:disabled {
+						background-color: #e0e0e0;
+						border-color: #e0e0e0;
+						color: #666;
+						opacity: 1;
+					}
+				}
+
+				&.is-secondary {
+
+					@include button-secondary;
 				}
 			}
 		}
 
 		.non-editable-metadata {
-			background-color: $background-light;
-			padding: $spacing-lg;
+
+			@include info-box;
 			margin: $spacing-lg 0;
-			border-radius: $border-radius-sm;
-			border: 0.0625rem solid $border-color;
 
 			h3 {
 				font-size: $font-size-base;
@@ -270,6 +156,86 @@
 					background-color: $background-light;
 					color: $text-secondary;
 					cursor: not-allowed;
+				}
+			}
+		}
+	}
+}
+
+// Delete Confirmation Modal
+.components-modal__screen-overlay {
+	font-family: $font-family-base;
+
+	.delete-confirmation-content {
+		padding: $spacing-lg;
+
+		p {
+			font-size: $font-size-base;
+			color: $text-color;
+			margin: 0 0 $spacing-lg 0;
+			line-height: $line-height-base;
+		}
+
+		.documents-to-delete {
+
+			@include info-box;
+
+			h4 {
+				margin: 0 0 $spacing-sm 0;
+				font-size: $font-size-base;
+				font-weight: $font-weight-medium;
+				color: $text-color;
+			}
+
+			ul {
+				margin: 0;
+				padding: 0;
+				list-style: none;
+
+				li {
+					font-size: $font-size-sm;
+					color: $text-color;
+					line-height: $line-height-base;
+					padding: $spacing-xs 0;
+				}
+			}
+		}
+
+		.delete-warning {
+			color: $error-color;
+			font-size: $font-size-sm;
+			margin: 0 0 $spacing-lg 0;
+			padding: $spacing-sm $spacing-md;
+			background: $background-error-light;
+			border: 0.0625rem solid color.adjust($error-color, $alpha: -0.8);
+			border-radius: $border-radius-sm;
+			line-height: $line-height-base;
+			display: flex;
+			align-items: center;
+			gap: $spacing-sm;
+
+			&::before {
+				content: "⚠";
+				font-size: $font-size-base;
+			}
+		}
+
+		.modal-actions {
+
+			@include modal-actions;
+
+			.components-button {
+
+				@include button-base;
+
+				&:not(.is-destructive) {
+
+					@include button-secondary;
+				}
+
+				&.is-destructive {
+
+					@include button-destructive;
 				}
 			}
 		}
