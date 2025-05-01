@@ -204,6 +204,7 @@ table {
 	gap: 1.5rem;
 	margin-bottom: 2rem;
 	padding: 0.5rem;
+	align-items: stretch;
 	
 	// Document list actions
 	.document-list-actions {
@@ -267,9 +268,14 @@ table {
 	overflow: hidden;
 	font-size: 0.875rem;
 	display: table;
-	width: 100%;
-	margin-bottom: 1.5rem;
+	width: auto;
+	min-width: unset;
+	max-width: 100%;
+	margin: 0 0 1.5rem 0;
 	background-color: #fff;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	align-self: flex-start;
+	table-layout: auto;
 
 	// Table header styles
 	.document-table-header {
@@ -319,8 +325,9 @@ table {
 		padding: 0.75rem 1rem;
 		border-bottom: 0.0625rem solid $border-color;
 		vertical-align: middle;
-		overflow: hidden;
-		text-overflow: ellipsis;
+		overflow: visible;
+		text-overflow: clip;
+		white-space: normal;
 
 		&.header {
 			padding-top: 1rem;
@@ -364,10 +371,10 @@ table {
 	// Title cell specifically
 	.document-table-cell:nth-child(2) {
 		min-width: 12rem;
-		max-width: 20rem;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
+		max-width: none;
+		white-space: normal;
+		overflow: visible;
+		text-overflow: clip;
 	}
 
 	// Actions cell specifically
