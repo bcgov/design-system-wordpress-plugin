@@ -95,10 +95,10 @@ const AddFieldModal = ({
             
             {/* Modal action buttons */}
             <div className="modal-actions">
-                <Button variant="primary" onClick={onSave} className="save-button">
+                <Button onClick={onSave} className="doc-repo-button save-button">
                     {__('Add Field', 'bcgov-design-system')}
                 </Button>
-                <Button variant="secondary" onClick={onClose} className="cancel-button">
+                <Button onClick={onClose} className="doc-repo-button cancel-button">
                     {__('Cancel', 'bcgov-design-system')}
                 </Button>
             </div>

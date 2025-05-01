@@ -39,19 +39,17 @@ const MetadataModal = ({
 
                 <div className="modal-actions">
                     <Button
-                        variant="secondary"
                         onClick={onClose}
                         disabled={isSaving}
-                        className="cancel-button"
+                        className="doc-repo-button cancel-button"
                     >
                         {__('Cancel', 'bcgov-design-system')}
                     </Button>
                     <Button
-                        variant="primary"
                         type="submit"
                         isBusy={isSaving}
                         disabled={isSaving || isDisabled}
-                        className="save-button"
+                        className="doc-repo-button save-button"
                     >
                         {__('Save Changes', 'bcgov-design-system')}
                     </Button>

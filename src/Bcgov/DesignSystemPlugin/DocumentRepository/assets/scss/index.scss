@@ -1,0 +1,20 @@
+/**
+ * Document Repository Styles - Index File
+ *
+ * This is the main entry point for all stylesheets in the Document Repository.
+ * It imports all component style files in the correct order.
+ */
+
+// Import variables first (needed by all other files)
+@use "variables" as vars;
+
+// Import component styles in order of specificity
+@use "button-styles";
+@use "drag-drop";
+@use "upload-status";
+@use "upload-feedback";
+@use "metadata-modals";
+@use "metadata-settings";
+
+// Import main document repository styles last
+@use "document-repository";

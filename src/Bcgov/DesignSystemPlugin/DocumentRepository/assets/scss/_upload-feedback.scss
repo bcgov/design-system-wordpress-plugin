@@ -1,0 +1,198 @@
+/**
+ * Upload Feedback Styles
+ *
+ * This file contains styles for the upload feedback popup in the Document
+ * Repository.
+ */
+
+@use "variables" as vars;
+
+/* =========================================
+   SVG Common Styles
+   ========================================= */
+
+// Base SVG styling used across all SVG elements
+%upload-feedback-svg {
+	width: 16px;
+	height: 16px;
+}
+
+/* =========================================
+   Upload Feedback Container
+   ========================================= */
+
+.upload-feedback {
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	width: 350px;
+	max-width: calc(100vw - 40px);
+	background-color: #fff;
+	border-radius: 4px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+	z-index: 1000;
+	font-family: vars.$font-family-base;
+	overflow: hidden;
+	border: 1px solid #ddd;
+}
+
+/* =========================================
+   SVG Styles by Element - Listed in specificity order
+   ========================================= */
+
+// All SVG styles grouped to avoid descending specificity issues
+.upload-feedback-item svg {
+
+	@extend %upload-feedback-svg;
+	flex-shrink: 0;
+}
+
+.upload-feedback-close svg {
+
+	@extend %upload-feedback-svg;
+}
+
+.upload-feedback-title svg {
+
+	@extend %upload-feedback-svg;
+	color: vars.$primary-color;
+}
+
+.upload-feedback-summary div svg {
+
+	@extend %upload-feedback-svg;
+}
+
+.upload-feedback-item.success svg {
+	color: vars.$success-color;
+}
+
+.upload-feedback-item.error svg {
+	color: vars.$error-color;
+}
+
+/* =========================================
+   Header Styles
+   ========================================= */
+
+.upload-feedback-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px 15px;
+	background-color: #f8f9fa;
+	border-bottom: 1px solid #eee;
+}
+
+.upload-feedback-title {
+	font-weight: 600;
+	font-size: 0.9rem;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.upload-feedback-close {
+	background: transparent;
+	border: none;
+	padding: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	color: #666;
+}
+
+.upload-feedback-close:hover {
+	color: #333;
+}
+
+/* =========================================
+   Items List Styles
+   ========================================= */
+
+.upload-feedback-items {
+	max-height: 200px;
+	overflow-y: auto;
+	padding: 10px 15px;
+}
+
+.upload-feedback-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 8px 10px;
+	margin-bottom: 8px;
+	background-color: #f8f9fa;
+	border: 1px solid #eee;
+	border-radius: 4px;
+	font-size: 0.85rem;
+}
+
+.upload-feedback-item:last-child {
+	margin-bottom: 0;
+}
+
+.upload-feedback-item.success {
+	border-color: #d4edda;
+	background-color: #f8fff9;
+}
+
+.upload-feedback-item.error {
+	border-color: #f5c2c7;
+	background-color: #fff8f8;
+}
+
+.upload-feedback-item.uploading,
+.upload-feedback-item.processing {
+	border-color: #e6f2ff;
+	background-color: #f5f9ff;
+}
+
+.upload-feedback-item-name {
+	flex: 1;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	margin-right: 10px;
+}
+
+.upload-feedback-item-error {
+	color: vars.$error-color;
+	font-size: 0.8rem;
+	margin-left: 5px;
+}
+
+/* =========================================
+   Summary Footer Styles
+   ========================================= */
+
+.upload-feedback-summary {
+	padding: 10px 15px;
+	border-top: 1px solid #eee;
+	background-color: #f8f9fa;
+}
+
+.upload-feedback-summary div {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 0.85rem;
+}
+
+.upload-feedback-summary div:not(:last-child) {
+	margin-bottom: 5px;
+}
+
+.upload-feedback-summary div.success {
+	color: vars.$success-color;
+}
+
+.upload-feedback-summary div.error {
+	color: vars.$error-color;
+}
+
+.upload-feedback-summary div.processing,
+.upload-feedback-summary div.uploading {
+	color: vars.$primary-color;
+}

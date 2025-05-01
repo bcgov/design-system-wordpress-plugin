@@ -671,7 +671,7 @@ const MetadataApp = () => {
                     <CardHeader>
                         <h2>{__('Document Metadata Fields', 'bcgov-design-system')}</h2>
                         <Button
-                            variant="primary"
+                            className="doc-repo-button save-button"
                             onClick={() => setState(prev => ({ 
                                 ...prev, 
                                 modals: { 
@@ -712,14 +712,13 @@ const MetadataApp = () => {
                                         </div>
                                         <div className="metadata-field-actions">
                                             <Button
-                                                variant="secondary"
+                                                className="doc-repo-button edit-button"
                                                 onClick={() => handleEditField(field, index)}
                                             >
                                                 {__('Edit', 'bcgov-design-system')}
                                             </Button>
                                             <Button
-                                                variant="secondary"
-                                                isDestructive
+                                                className="doc-repo-button delete-button"
                                                 onClick={() => handleDeleteField(field)}
                                                 disabled={state.isSaving}
                                             >

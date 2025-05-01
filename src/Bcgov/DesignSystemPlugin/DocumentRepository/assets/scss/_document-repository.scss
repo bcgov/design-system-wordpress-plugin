@@ -1,0 +1,437 @@
+/* stylelint-disable no-descending-specificity */
+/* stylelint-disable rule-empty-line-before, comment-empty-line-before */
+/* stylelint-disable no-eol-whitespace, block-closing-brace-newline-before */
+
+/**
+ * Document Repository Styles
+ *
+ * This file contains styles for the Document Repository interface.
+ * It includes styles for the document list, table, and various UI components 
+ * used throughout the application.
+ */
+
+@use "variables" as vars;
+@use "sass:color";
+
+/* =========================================
+   Variables - For document table
+   ========================================= */
+
+// Variables that may be missing
+$border-color: #e0e0e0;
+$background-light: #f9f9f9;
+$background-primary-light: #f0f7ff;
+$background-error-light: #fcf0f1;
+$font-size-sm: 0.875rem;
+$font-weight-bold: 600;
+$spacing-sm: 0.5rem;
+
+/* =========================================
+   Base Element Styles - Least Specific
+   ========================================= */
+
+// Basic SVG icon styles - less specific SVG selectors first
+svg {
+	width: 1.25rem;
+	height: 1.25rem;
+	transition: all 0.2s ease;
+}
+
+// Basic paragraph styles
+p {
+	line-height: 1.5;
+	margin: 0 0 1rem;
+}
+
+/* =========================================
+   General Components - Medium Specificity
+   ========================================= */
+
+// Table styles
+table {
+	width: 100%;
+	border-collapse: collapse;
+
+	th {
+		text-align: left;
+		padding: 0.75rem 1rem;
+		font-weight: 600;
+		border-bottom: 0.0625rem solid #ddd;
+	}
+
+	td {
+		padding: 0.75rem 1rem;
+		border-bottom: 0.0625rem solid #eee;
+		vertical-align: middle;
+	}
+}
+
+// Notice component
+.components-notice {
+	display: flex;
+	align-items: flex-start;
+	padding: 1rem;
+	border-radius: 0.25rem;
+	margin-bottom: 1rem;
+
+	&.is-error {
+		background-color: #fcf0f1;
+		border-left: 0.25rem solid vars.$error-color;
+	}
+
+	&.is-success {
+		background-color: #edf7ed;
+		border-left: 0.25rem solid vars.$success-color;
+	}
+
+	.components-notice__content {
+		flex: 1;
+		font-size: 0.875rem;
+	}
+
+	.components-notice__dismiss {
+		padding: 0.25rem;
+		background: none;
+		border: none;
+
+		svg {
+			width: 1rem;
+			height: 1rem;
+			color: #666;
+		}
+	}
+}
+
+/* =========================================
+   Document Repository Components - Higher Specificity
+   ========================================= */
+
+// Document Repository main container
+.document-repository {
+	font-family: vars.$font-family-base;
+	color: vars.$text-color;
+	max-width: 100%;
+
+	// Header section
+	.header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1.5rem;
+
+		h2 {
+			font-size: 1.5rem;
+			font-weight: 600;
+			margin: 0;
+		}
+
+		.actions {
+			display: flex;
+			gap: 0.75rem;
+		}
+	}
+
+	// Document controls section - organizing controls from less to more specific
+	.document-controls {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1.5rem;
+		flex-wrap: wrap;
+		gap: 1rem;
+
+		// View controls section
+		.view-controls {
+			display: flex;
+			gap: 0.5rem;
+		}
+
+		// Search filter section
+		.search-filter {
+			display: flex;
+			gap: 0.75rem;
+			flex: 1;
+			max-width: 40rem;
+
+			.components-search-control {
+				flex: 1;
+
+				input {
+					height: 2.5rem;
+					padding: 0 1rem;
+					border-radius: 0.25rem;
+					border: 0.0625rem solid #ddd;
+					font-size: 0.875rem;
+				}
+			}
+
+			.components-dropdown {
+				.components-button {
+					height: 2.5rem;
+					border: 0.0625rem solid #ddd;
+					background-color: #fff;
+
+					svg {
+						margin-left: 0.5rem;
+					}
+				}
+			}
+		}
+	}
+
+	// Document table container
+	.document-table-container {
+		border: 0.0625rem solid #ddd;
+		border-radius: 0.25rem;
+		overflow: hidden;
+		margin-bottom: 1.5rem;
+
+		table {
+			margin: 0;
+
+			th {
+				background-color: #f6f7f7;
+				white-space: nowrap;
+			}
+		}
+	}
+}
+
+/* Document List and Document Table */
+.document-list {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	margin-bottom: 2rem;
+	padding: 0.5rem;
+	
+	// Document list actions
+	.document-list-actions {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 1rem;
+
+		.document-list-left-actions {
+			display: flex;
+			gap: 0.5rem;
+			align-items: center;
+			flex-wrap: wrap;
+
+			.mode-toggle {
+				display: flex;
+				align-items: center;
+
+				.components-button {
+					svg {
+						margin-right: 0.5rem;
+					}
+				}
+			}
+
+			.bulk-delete-button {
+				display: flex;
+				align-items: center;
+			}
+		}
+	}
+
+	// Enter Spreadsheet Mode button
+	.components-button-group {
+		display: flex;
+		gap: 0.5rem;
+	}
+	
+	// Pagination
+	.pagination {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 1rem;
+		margin: 1.5rem 0;
+
+		.page-info {
+			font-size: 0.875rem;
+			color: #666;
+		}
+
+		.components-button {
+			min-width: 5rem;
+		}
+	}
+}
+
+/* Document Table - Applied directly to top-level element */
+.document-table {
+	border: 0.0625rem solid $border-color;
+	border-radius: 0.25rem;
+	overflow: hidden;
+	font-size: 0.875rem;
+	display: table;
+	width: 100%;
+	margin-bottom: 1.5rem;
+	background-color: #fff;
+
+	// Table header styles
+	.document-table-header {
+		display: table-header-group;
+		background-color: $background-light;
+
+		.document-table-row {
+			border-bottom: 0.125rem solid $border-color;
+		}
+
+		.header {
+			font-weight: $font-weight-bold;
+			color: #333;
+			position: sticky;
+			top: 0;
+			background-color: $background-light;
+			z-index: 2;
+		}
+	}
+
+	// Table body styles
+	.document-table-body {
+		display: table-row-group;
+	}
+
+	// Table row styles
+	.document-table-row {
+		display: table-row;
+		transition: background-color 0.2s ease;
+
+		&:hover {
+			background-color: color.adjust($background-light, $lightness: 1%);
+		}
+
+		&:nth-child(even) {
+			background-color: color.adjust($background-light, $lightness: 1.5%);
+
+			&:hover {
+				background-color: color.adjust($background-light, $lightness: 0.5%);
+			}
+		}
+	}
+
+	// Table cell styles
+	.document-table-cell {
+		display: table-cell;
+		padding: 0.75rem 1rem;
+		border-bottom: 0.0625rem solid $border-color;
+		vertical-align: middle;
+		overflow: hidden;
+		text-overflow: ellipsis;
+
+		&.header {
+			padding-top: 1rem;
+			padding-bottom: 1rem;
+		}
+
+		// Spreadsheet mode cell styling
+		.components-text-control__input,
+		.components-select-control__input {
+			width: 100%;
+			min-height: 36px;
+			font-size: 0.875rem;
+		}
+
+		// Action buttons
+		.action-buttons {
+			display: flex;
+			justify-content: flex-end;
+			gap: 0.25rem;
+
+			.table-action-button {
+				svg {
+					margin: 0;
+				}
+			}
+		}
+	}
+
+	// Checkbox cell specifically
+	.document-table-cell:first-child {
+		width: 3rem;
+		min-width: 3rem;
+		max-width: 3rem;
+		text-align: center;
+
+		.components-checkbox-control__input-container {
+			margin: 0 auto;
+		}
+	}
+
+	// Title cell specifically
+	.document-table-cell:nth-child(2) {
+		min-width: 12rem;
+		max-width: 20rem;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	// Actions cell specifically
+	.document-table-cell:last-child {
+		width: 6rem;
+		min-width: 6rem;
+		max-width: 8rem;
+
+		&.actions {
+			white-space: nowrap;
+		}
+	}
+
+	// Metadata column specifically
+	.metadata-column {
+		min-width: 10rem;
+		max-width: 15rem;
+	}
+}
+
+/* Document Table - Upload and drag/drop area */
+.drag-drop-area {
+	border: 0.125rem dashed #ccc;
+	border-radius: 0.25rem;
+	padding: 2rem;
+	text-align: center;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	margin-bottom: 1.5rem;
+	background-color: #fafafa;
+
+	&:hover,
+	&.is-drag-active {
+		background-color: #f0f0f0;
+		border-color: #999;
+	}
+
+	.drag-drop-content {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 1rem;
+
+		.drag-drop-icon {
+			margin-bottom: 0.5rem;
+			color: #666;
+		}
+
+		h3 {
+			margin: 0;
+			font-size: 1.25rem;
+			font-weight: 500;
+			color: #333;
+		}
+
+		p {
+			margin: 0;
+			font-size: 0.875rem;
+			color: #666;
+		}
+
+		.upload-button {
+			margin-top: 0.5rem;
+		}
+	}
+}

@@ -64,19 +64,16 @@ const DeleteFieldModal = ({
                 {/* Action buttons */}
                 <div className="delete-actions">
                     <Button
-                        variant="secondary"
                         onClick={onClose}
-                        className="cancel-button"
+                        className="doc-repo-button cancel-button"
                         disabled={isDeleting}
                     >
                         {__('Cancel', 'bcgov-design-system')}
                     </Button>
                     <Button
-                        variant="primary"
                         onClick={onConfirm}
-                        className="delete-button"
+                        className="doc-repo-button delete-button"
                         disabled={isDeleting}
-                        isDestructive
                     >
                         {isDeleting 
                             ? __('Deleting...', 'bcgov-design-system')

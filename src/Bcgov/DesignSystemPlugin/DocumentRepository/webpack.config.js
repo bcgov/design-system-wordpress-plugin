@@ -7,9 +7,9 @@ module.exports = {
     entry: {
         'metadata-settings': './assets/js/apps/metadata-settings/index.js',
         'document-repository': [
-            './assets/js/apps/document-repository/index.js',
-            './assets/scss/document-repository.scss'
-        ]
+            './assets/js/apps/document-repository/index.js'
+        ],
+        'index': './assets/scss/index.scss'
     },
     output: {
         path: path.resolve(__dirname, 'build'),

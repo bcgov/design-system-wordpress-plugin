@@ -344,11 +344,11 @@ const DocumentList = ({
         });
     }, [onFileDrop, setNotice]);
 
-    const handleUploadClick = useCallback(() => {
+    const handleUploadClick = () => {
         if (fileInputRef.current) {
             fileInputRef.current.click();
         }
-    }, []);
+    };
 
     const handleEditMetadata = useCallback((document) => {
         const documentToEdit = {
@@ -681,14 +681,8 @@ const DocumentList = ({
                         <h3>{__('Drag & Drop or Click to Upload', 'bcgov-design-system')}</h3>
                         <p>{__('Upload PDF documents to the repository', 'bcgov-design-system')}</p>
                         <Button 
-                            variant="secondary"
-                            className="upload-button"
-                            icon={
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
-                                    <path fill="none" d="M0 0h24v24H0z"/>
-                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/>
-                                </svg>
-                            }
+                            className="doc-repo-button edit-button upload-button"
+                            onClick={handleUploadClick}
                         >
                             {__('Choose Files', 'bcgov-design-system')}
                         </Button>
@@ -700,13 +694,11 @@ const DocumentList = ({
                     <div className="document-list-left-actions">
                         {selectedDocuments.length > 0 && (
                             <Button
-                                className="custom-destructive-button bulk-delete-button"
+                                className="doc-repo-button delete-button bulk-delete-button"
                                 onClick={() => setBulkDeleteConfirmOpen(true)}
                                 disabled={isMultiDeleting}
                             >
-                                {isMultiDeleting ? (
-                                    __('Deleting...', 'bcgov-design-system')
-                                ) : sprintf(
+                                {sprintf(
                                     __('Delete Selected (%d)', 'bcgov-design-system'),
                                     selectedDocuments.length
                                 )}
@@ -714,7 +706,7 @@ const DocumentList = ({
                         )}
                         <div className="mode-toggle">
                             <Button
-                                isPrimary={isSpreadsheetMode}
+                                className="doc-repo-button edit-button"
                                 onClick={() => setIsSpreadsheetMode(!isSpreadsheetMode)}
                             >
                                 <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
@@ -802,16 +794,20 @@ const DocumentList = ({
                             </p>
                             <div className="modal-actions">
                                 <Button
-                                    className="custom-destructive-button"
+                                    className="doc-repo-button delete-button"
                                     onClick={handleBulkDelete}
                                     disabled={isMultiDeleting}
                                 >
                                     {isMultiDeleting ? (
                                         __('Deleting...', 'bcgov-design-system')
-                                    ) : __('Delete Selected', 'bcgov-design-system')}
+                                    ) : sprintf(
+                                        __('Delete Selected (%d)', 'bcgov-design-system'),
+                                        selectedDocuments.length
+                                    )}
                                 </Button>
                                 <Button
                                     onClick={() => setBulkDeleteConfirmOpen(false)}
+                                    className="doc-repo-button cancel-button"
                                     disabled={isMultiDeleting}
                                 >
                                     {__('Cancel', 'bcgov-design-system')}
@@ -842,13 +838,13 @@ const DocumentList = ({
                             <div className="modal-actions">
                                 <Button
                                     onClick={() => setDeleteDocument(null)}
-                                    className="cancel-button"
+                                    className="doc-repo-button cancel-button"
                                     disabled={isDeleting}
                                 >
                                     {__('Cancel', 'bcgov-design-system')}
                                 </Button>
                                 <Button
-                                    className="custom-destructive-button delete-button"
+                                    className="doc-repo-button delete-button"
                                     onClick={() => {
                                         onDelete(deleteDocument.id);
                                         setDeleteDocument(null);

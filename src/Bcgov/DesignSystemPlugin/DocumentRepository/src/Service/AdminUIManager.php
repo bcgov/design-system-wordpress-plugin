@@ -109,15 +109,6 @@ class AdminUIManager {
 
         // Localize script with data.
         $this->localize_scripts( $hook );
-
-        // Enqueue button fix script
-        wp_enqueue_script(
-            'bcgov-document-repository-button-fix',
-            plugin_dir_url(dirname(dirname(__FILE__))) . 'assets/js/button-fix.js',
-            array('jquery'),
-            filemtime(plugin_dir_path(dirname(dirname(__FILE__))) . 'assets/js/button-fix.js'),
-            true
-        );
     }
 
     /**
@@ -166,7 +157,7 @@ class AdminUIManager {
         // Styles.
         wp_register_style(
             $this->config->get( 'css_handle' ),
-            $plugin_url . '/src/Bcgov/DesignSystemPlugin/DocumentRepository/build/document-repository.css',
+            $plugin_url . '/src/Bcgov/DesignSystemPlugin/DocumentRepository/build/index.css',
             [ 'wp-components' ],
             $version
         );

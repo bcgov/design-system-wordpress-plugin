@@ -42,7 +42,7 @@ class RepositoryConfig {
 
         // Frontend scripts.
         'js_handle'          => 'document-repository',
-        'css_handle'         => 'document-repository-styles',
+        'css_handle'         => 'document-repository-index',
 
         // Cache settings.
         'cache_ttl'          => 60 * 60, // 1 hour.
