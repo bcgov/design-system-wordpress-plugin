@@ -1,3 +1,7 @@
+/* stylelint-disable no-descending-specificity */
+/* stylelint-disable rule-empty-line-before, comment-empty-line-before */
+/* stylelint-disable no-eol-whitespace, block-closing-brace-newline-before */
+
 /**
  * Document Repository Styles
  *
@@ -11,150 +15,353 @@
 @use "metadata-modals" as *;
 @use "metadata-settings" as *;
 
-// Base styles for shared components
-// -------------------------------
-.components-button {
+/* =========================================
+   Variables - For document table
+   ========================================= */
 
-	@include button-base;
+// Variables that may be missing
+$border-color: #e0e0e0;
+$background-light: #f9f9f9;
+$background-primary-light: #f0f7ff;
+$background-error-light: #fcf0f1;
+$font-size-sm: 0.875rem;
+$font-weight-bold: 600;
+$spacing-sm: 0.5rem;
 
-	svg {
-		width: $spacing-md;
-		height: $spacing-md;
-	}
+/* =========================================
+   Base Element Styles - Least Specific
+   ========================================= */
 
-	&:disabled {
-		opacity: 0.7;
-		cursor: not-allowed;
-	}
-
-	&:hover:not(:disabled) {
-		background-color: $background-light;
-		border-color: color.adjust($border-color, $lightness: -5%);
-		color: $text-color;
-	}
-
-	&:focus:not(:disabled) {
-		box-shadow: 0 0 0 0.125rem rgba($primary-color, 0.2);
-		outline: none;
-	}
-
-	&.is-primary {
-
-		@include button-primary;
-	}
-
-	&.is-secondary {
-
-		@include button-secondary;
-	}
-
-	&.is-destructive {
-
-		@include button-destructive;
-	}
-
-	&.is-icon {
-
-		@include button-icon;
-	}
-}
-
-// Color Variables
-// ---------------
-$primary-color: #007cba;      // Main brand color
-$error-color: #cc1818;        // Error states and destructive actions
-$success-color: #4caf50;      // Success states
-$border-color: #e0e0e0;       // Border colors
-$text-color: #1e1e1e;         // Primary text color
-$text-secondary: #666;         // Secondary text color
-$background-light: #f9f9f9;    // Light background
-$background-primary-light: #f0f7ff;  // Light primary background
-$background-error-light: #fcf0f1;    // Light error background
-$background-success-light: #f1f8e9;  // Light success background
-
-// Mixins
-// ------
-@mixin flex-center {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-@mixin button-reset {
-	background: none;
-	border: none;
-	padding: 0;
-	cursor: pointer;
-}
-
-@mixin transition {
+// Basic SVG icon styles - less specific SVG selectors first
+svg {
+	width: 1.25rem;
+	height: 1.25rem;
 	transition: all 0.2s ease;
 }
 
-// Document List Styles
-// ------------------
-.document-list {
-	background-color: #fff;
-	border-radius: 0.25rem;
-	box-shadow: 0 0.063rem 0.188rem rgba(0, 0, 0, 0.1);
-	overflow: hidden;
-	border: 1px solid $border-color;
+// Basic paragraph styles
+p {
+	line-height: 1.5;
+	margin: 0 0 1rem;
+}
 
-	@include transition;
-	position: relative;
+// Global button styles - less specific button selectors first
+.components-button {
+	height: 2.5rem;
+	padding: 0 1rem;
+	font-size: 0.875rem;
+	transition: all 0.2s ease;
 
-	&:hover {
-		border-color: #b4d6f3;
-		box-shadow: 0 0 0 0.063rem rgba($primary-color, 0.1);
+	svg {
+		width: 1rem;
+		height: 1rem;
+		margin-right: 0.5rem;
 	}
 
-	.document-list-actions {
-		padding: 1rem;
-		border-bottom: 1px solid $border-color;
+	&.has-icon {
+		svg {
+			margin-right: 0;
+		}
+	}
+
+	/* Fix button styling for different button types */
+
+	/* Default button reset to avoid unintended styling */
+	&[variant="primary"],
+	&[variant="secondary"],
+	&.is-primary,
+	&.is-secondary,
+	&.is-destructive,
+	&.delete-button,
+	&.custom-destructive-button,
+	&.cancel-button,
+	&.cancel {
+		&.override-reset {
+			all: initial;
+			font-family: inherit;
+		}
+	}
+}
+
+/* =========================================
+   General Components - Medium Specificity
+   ========================================= */
+
+// Table styles
+table {
+	width: 100%;
+	border-collapse: collapse;
+
+	th {
+		text-align: left;
+		padding: 0.75rem 1rem;
+		font-weight: 600;
+		border-bottom: 0.0625rem solid #ddd;
+	}
+
+	td {
+		padding: 0.75rem 1rem;
+		border-bottom: 0.0625rem solid #eee;
+		vertical-align: middle;
+	}
+}
+
+// Notice component
+.components-notice {
+	display: flex;
+	align-items: flex-start;
+	padding: 1rem;
+	border-radius: 0.25rem;
+	margin-bottom: 1rem;
+
+	&.is-error {
+		background-color: #fcf0f1;
+		border-left: 0.25rem solid $error-color;
+	}
+
+	&.is-success {
+		background-color: #edf7ed;
+		border-left: 0.25rem solid $success-color;
+	}
+
+	.components-notice__content {
+		flex: 1;
+		font-size: 0.875rem;
+	}
+
+	.components-notice__dismiss {
+		padding: 0.25rem;
+		background: none;
+		border: none;
+
+		svg {
+			width: 1rem;
+			height: 1rem;
+			color: #666;
+		}
+	}
+}
+
+/* =========================================
+   Document Repository Components - Higher Specificity
+   ========================================= */
+
+// Document Repository main container
+.document-repository {
+	font-family: $font-family-base;
+	color: $text-color;
+	max-width: 100%;
+
+	// Header section
+	.header {
 		display: flex;
-		gap: 1rem;
+		justify-content: space-between;
 		align-items: center;
+		margin-bottom: 1.5rem;
 
-		.document-list-left-actions {
+		h2 {
+			font-size: 1.5rem;
+			font-weight: 600;
+			margin: 0;
+		}
+
+		.actions {
 			display: flex;
-			gap: 1rem;
-			align-items: center;
+			gap: 0.75rem;
+		}
+	}
 
-			.mode-toggle {
+	// Document controls section - organizing controls from less to more specific
+	.document-controls {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1.5rem;
+		flex-wrap: wrap;
+		gap: 1rem;
 
+		// Generic buttons within controls first
+		.components-button {
+			// Base styles for all buttons in controls
+		}
+
+		// View controls section with buttons
+		.view-controls {
+			display: flex;
+			gap: 0.5rem;
+
+			.components-button {
+				width: 2.5rem;
+				padding: 0;
+				justify-content: center;
+				border: 0.0625rem solid #ddd;
+				background-color: #fff;
+
+				&.is-active {
+					background-color: $primary-color;
+					border-color: $primary-color;
+					color: #fff;
+				}
+			}
+		}
+
+		// Search filter section
+		.search-filter {
+			display: flex;
+			gap: 0.75rem;
+			flex: 1;
+			max-width: 40rem;
+
+			.components-search-control {
+				flex: 1;
+
+				input {
+					height: 2.5rem;
+					padding: 0 1rem;
+					border-radius: 0.25rem;
+					border: 0.0625rem solid #ddd;
+					font-size: 0.875rem;
+				}
+			}
+
+			.components-dropdown {
 				.components-button {
+					height: 2.5rem;
+					border: 0.0625rem solid #ddd;
+					background-color: #fff;
 
 					svg {
-						width: 16px;
-						height: 16px;
-						fill: currentcolor;
+						margin-left: 0.5rem;
+					}
+				}
+			}
+		}
+	}
+
+	// Document table container
+	.document-table-container {
+		border: 0.0625rem solid #ddd;
+		border-radius: 0.25rem;
+		overflow: hidden;
+		margin-bottom: 1.5rem;
+
+		table {
+			margin: 0;
+
+			th {
+				background-color: #f6f7f7;
+				white-space: nowrap;
+
+				&.document-name {
+					width: 30%;
+				}
+
+				&.document-type {
+					width: 15%;
+				}
+
+				&.document-size {
+					width: 10%;
+				}
+
+				&.document-date {
+					width: 15%;
+				}
+
+				&.document-actions {
+					width: 10%;
+					text-align: right;
+				}
+			}
+
+			td {
+				// Name cell (less specific first)
+				&.document-name {
+					font-weight: 500;
+					display: flex;
+					align-items: center;
+					gap: 0.75rem;
+
+					a {
+						color: $primary-color;
+						text-decoration: none;
+
+						&:hover {
+							color: $primary-color;
+						}
 					}
 
-					display: inline-flex;
-					align-items: center;
-					gap: 0.5rem;
-					height: 2.25rem;
-					padding: 0.5rem 1rem;
-					border-radius: 0.25rem;
-					font-size: 0.875rem;
-					font-weight: 500;
-					border: 1px solid $border-color;
-					background-color: #fff;
-					color: $text-color;
-
-					&.is-primary {
-						background-color: $primary-color;
-						border-color: $primary-color;
-						color: #fff;
-
-						&:hover:not(:disabled) {
-							background-color: color.adjust($primary-color, $lightness: -5%);
-							border-color: color.adjust($primary-color, $lightness: -5%);
-							color: #fff;
-						}
+					// Document icon within name cell
+					.document-icon {
+						flex-shrink: 0;
+						width: 2rem;
+						height: 2rem;
+						border-radius: 0.25rem;
+						background-color: #f0f0f0;
+						display: flex;
+						align-items: center;
+						justify-content: center;
 
 						svg {
-							fill: #fff;
+							color: #666;
+						}
+					}
+				}
+
+				// Actions cell (more specific)
+				&.document-actions {
+					text-align: right;
+					white-space: nowrap;
+
+					.action-buttons {
+						display: flex;
+						justify-content: flex-end;
+						gap: 0.5rem;
+
+						.components-button {
+							width: 2rem;
+							height: 2rem;
+							min-width: 2rem;
+							padding: 0;
+							justify-content: center;
+							border: 0.0625rem solid #ddd;
+							background-color: #fff;
+							color: #666;
+							transition: background-color 0.2s ease;
+
+							&:hover:not(:disabled) {
+								background-color: #f0f7ff;
+								border-color: #ddd;
+								color: #666;
+							}
+
+							svg {
+								width: 16px;
+								height: 16px;
+								display: block;
+								margin: 0;
+							}
+
+							&:hover:not(:disabled) svg {
+								transform: none;
+							}
+
+							&.is-destructive {
+								background-color: $error-color;
+								border-color: $error-color;
+								color: #fff;
+
+								&:hover:not(:disabled) {
+									background-color: color.adjust($error-color, $lightness: -5%);
+									border-color: $error-color;
+									color: #fff;
+								}
+							}
+
+							&:focus {
+								outline: none;
+								border-color: #036;
+							}
 						}
 					}
 				}
@@ -162,426 +369,406 @@ $background-success-light: #f1f8e9;  // Light success background
 		}
 	}
 
-	.document-upload-section {
-		background-color: $background-primary-light;
-		border: 0.125rem dashed $primary-color;
-		border-radius: 0.5rem;
-		padding: 2.5rem;
-		margin-bottom: 1.5rem;
-		text-align: center;
-		cursor: pointer;
-		transition: all 0.3s ease;
-		position: relative;
-		z-index: 1;
+	// Pagination container
+	.pagination-container {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
 
-		.document-upload-content {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			gap: 1rem;
-			transition: all 0.3s ease;
-
-			p {
-				font-size: 0.875rem;
-				color: $text-secondary;
-				margin: 0;
-			}
-
-			svg {
-				width: 2.5rem;
-				height: 2.5rem;
-				color: $primary-color;
-				transition: all 0.3s ease;
-				margin-bottom: 0.5rem;
-				filter: drop-shadow(0 0.125rem 0.25rem rgba($primary-color, 0.2));
-			}
-		}
-	}
-}
-
-// Document Table Cell Styles
-// ------------------------
-.document-table-cell {
-
-	&.actions {
-
-		.action-buttons {
-
-			.components-button {
-
-				@include button-icon;
-			}
-		}
-	}
-}
-
-// Upload Progress
-// -------------
-.upload-progress {
-	margin-bottom: 1.5rem;
-
-	p {
-		margin: 0;
-		text-align: center;
-		font-size: 0.75rem;
-		color: $text-secondary;
-	}
-
-	progress {
-		width: 100%;
-		height: 0.75rem;
-		border-radius: 0.375rem;
-		overflow: hidden;
-		margin-bottom: 0.5rem;
-
-		&::-webkit-progress-bar {
-			background-color: #f0f0f0;
-			border-radius: 0.375rem;
-		}
-
-		&::-webkit-progress-value {
-			background-color: $primary-color;
-			border-radius: 0.375rem;
-		}
-
-		&::-moz-progress-bar {
-			background-color: $primary-color;
-			border-radius: 0.375rem;
-		}
-	}
-}
-
-// Upload Feedback
-// -------------
-.upload-feedback-title {
-	font-weight: $font-weight-bold;
-	font-size: 0.875rem;
-	color: $text-color;
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-
-	svg {
-		color: $primary-color;
-		width: 1.125rem;
-		height: 1.125rem;
-	}
-}
-
-// Main Document Repository Container
-// --------------------------------
-.dswp-document-repository {
-	margin: 1.25rem 0;
-	font-family: $font-family-base;
-
-	// Document Upload Modal
-	.document-uploader {
-
-		.components-card {
-			max-width: 50rem;
-			margin: 0 auto;
-		}
-
-		&-file-select {
-			margin-bottom: 1.5rem;
-		}
-
-		&-modal {
-
-			.components-modal__content {
-				padding: 1.5rem;
-			}
-		}
-	}
-
-	// Upload Feedback Modal
-	.upload-feedback {
-		position: fixed;
-		bottom: 1.25rem;
-		right: 1.25rem;
-		background: #fff;
-		border-radius: 0.5rem;
-		box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15);
-		padding: 1rem;
-		width: 25rem;
-		z-index: 100000;
-		border: 1px solid #ddd;
-		animation: slide-in 0.3s ease-out;
-
-		&-header {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			margin-bottom: 1rem;
-			padding-bottom: 0.75rem;
-			border-bottom: 1px solid #eee;
-		}
-
-		&-title {
-			font-weight: $font-weight-bold;
-			font-size: 0.875rem;
-			color: $text-color;
-			display: flex;
-			align-items: center;
-			gap: 0.5rem;
-
-			svg {
-				color: $primary-color;
-				width: 1.125rem;
-				height: 1.125rem;
-			}
-		}
-
-		&-close {
-
-			@include button-icon;
-			background: transparent;
-			border: none;
-			padding: $button-padding-sm;
-		}
-
-		&-items {
-			max-height: 18.75rem;
-			overflow-y: auto;
-			margin: -0.25rem;
-			padding: 0.25rem;
-		}
-
-		&-item {
-			padding: 0.75rem;
-			border-radius: 0.375rem;
-			margin-bottom: 0.5rem;
-			background: #f8f9fa;
-			font-size: 0.813rem;
+		.per-page-controls {
 			display: flex;
 			align-items: center;
 			gap: 0.75rem;
+			font-size: 0.875rem;
 
-			@include transition;
-			border: 1px solid $border-color;
-			position: relative;
-			overflow: hidden;
-
-			&:last-child {
-				margin-bottom: 0;
-			}
-
-			&-name {
-				flex: 1;
-				overflow: hidden;
-				text-overflow: ellipsis;
-				white-space: nowrap;
-			}
-
-			&-error {
-				color: $error-color;
-			}
-
-			&.uploading {
-				background: $background-primary-light;
-				border-color: #90caf9;
-
-				&::after {
-					content: "";
-					position: absolute;
-					top: 0;
-					left: 0;
-					height: 0.125rem;
-					background: $primary-color;
-					animation: progress 2s infinite linear;
-					width: 100%;
-				}
-			}
-
-			&.success {
-				background: $background-success-light;
-				border-color: #a5d6a7;
-				color: #2e7d32;
-				animation: success-pulse 1s ease-out;
-			}
-
-			&.error {
-				background: #fef2f2;
-				border-color: #fecaca;
-				color: $error-color;
-			}
-
-			&.processing {
-				background: #f5f5f5;
-				border-color: $border-color;
-				color: $text-secondary;
-
-				&::after {
-					content: "";
-					position: absolute;
-					top: 0;
-					left: 0;
-					height: 0.125rem;
-					background: $text-secondary;
-					animation: processing 1.5s infinite linear;
-					width: 100%;
-				}
-			}
-		}
-	}
-
-	// Error Notice
-	.error-notice {
-		position: fixed;
-		top: 32px;
-		left: 50%;
-		transform: translateX(-50%);
-		z-index: 1000;
-		animation: fade-in-out 3s ease-in-out forwards;
-		max-width: 600px;
-		width: 90%;
-		margin: 0 auto;
-		text-align: center;
-
-		.components-notice {
-			margin: 0;
-		}
-	}
-
-	&-loading {
-
-		@include flex-center;
-		flex-direction: column;
-		padding: 2.5rem;
-		text-align: center;
-	}
-
-	&-tabs {
-		margin-bottom: 1.25rem;
-
-		.components-tab-panel__tabs {
-			border-bottom: 1px solid $border-color;
-			margin-bottom: 1.25rem;
-
-			&-item {
-				padding: 0.75rem 1rem;
+			select {
+				height: 2.25rem;
+				padding: 0 0.75rem;
+				border-radius: 0.25rem;
+				border: 0.0625rem solid #ddd;
+				background-color: #fff;
 				font-size: 0.875rem;
-				font-weight: $font-weight-medium;
 			}
 		}
 
-		.active-tab {
-			border-bottom: 0.125rem solid $primary-color;
-			color: $primary-color;
+		.pagination-controls {
+			display: flex;
+			gap: 0.25rem;
+
+			.components-button {
+				height: 2.25rem;
+				min-width: 2.25rem;
+				padding: 0 0.5rem;
+				border: 0.0625rem solid #ddd;
+				background-color: #fff;
+
+				&.is-active {
+					background-color: $primary-color;
+					border-color: $primary-color;
+					color: #fff;
+				}
+
+				&:disabled {
+					opacity: 0.5;
+					cursor: not-allowed;
+				}
+			}
 		}
 	}
 
-	.document-repository-error {
-		margin-bottom: 1rem;
-		animation: fade-in-out 3s ease forwards;
+	// Document list (grid view)
+	.document-list {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+		gap: 1.5rem;
+		margin-bottom: 1.5rem;
 
-		&.components-notice {
-			margin-left: 0;
-			margin-right: 0;
-		}
+		.document-card {
+			border: 0.0625rem solid #ddd;
+			border-radius: 0.25rem;
+			overflow: hidden;
+			transition: box-shadow 0.2s ease, transform 0.2s ease;
 
-		.components-notice__content {
-			margin-right: 0;
-		}
+			&:hover {
+				box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+				transform: translateY(-0.125rem);
+			}
 
-		.components-notice__dismiss {
-			align-self: center;
+			.card-header {
+				height: 8rem;
+				background-color: #f6f7f7;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+
+				svg {
+					width: 3rem;
+					height: 3rem;
+					color: #666;
+				}
+			}
+
+			.card-content {
+				padding: 1rem;
+
+				.document-name {
+					font-weight: 500;
+					margin-bottom: 0.5rem;
+					font-size: 1rem;
+					white-space: nowrap;
+					overflow: hidden;
+					text-overflow: ellipsis;
+
+					a {
+						color: $text-color;
+						text-decoration: none;
+
+						&:hover {
+							color: $primary-color;
+						}
+					}
+				}
+
+				.document-meta {
+					display: flex;
+					justify-content: space-between;
+					font-size: 0.75rem;
+					color: #666;
+				}
+			}
+
+			.card-footer {
+				padding: 0.75rem 1rem;
+				background-color: #f6f7f7;
+				display: flex;
+				justify-content: flex-end;
+				gap: 0.5rem;
+
+				.components-button {
+					width: 2rem;
+					height: 2rem;
+					min-width: 2rem;
+					padding: 0;
+					justify-content: center;
+
+					svg {
+						margin: 0;
+					}
+				}
+			}
 		}
 	}
-}
 
-// Error Boundary
-// -------------
-.error-boundary {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	min-height: 18.75rem;
-	padding: 1.5rem;
-	text-align: center;
-
-	.error-content {
-		background: #fff;
-		border-radius: 0.5rem;
-		box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+	// Upload area
+	.upload-area {
+		border: 0.125rem dashed #ddd;
+		border-radius: 0.25rem;
 		padding: 2rem;
-		max-width: 31.25rem;
-		width: 100%;
+		text-align: center;
+		margin-bottom: 1.5rem;
+		transition: all 0.2s ease;
 
-		h2 {
-			color: #1a1a1a;
-			font-size: 1.5rem;
-			margin-bottom: 1rem;
+		&.is-active {
+			border-color: $primary-color;
+			background-color: rgba($primary-color, 0.05);
+		}
+
+		.upload-icon {
+			width: 3rem;
+			height: 3rem;
+			margin: 0 auto 1rem;
+			color: #666;
+		}
+
+		h3 {
+			font-size: 1.125rem;
+			font-weight: 600;
+			margin: 0 0 0.5rem;
 		}
 
 		p {
-			color: #4a4a4a;
-			font-size: 0.875rem;
-			line-height: 1.5;
-			margin-bottom: 1.5rem;
+			color: #666;
+			margin: 0 0 1rem;
 		}
 
-		details {
-			margin: 1.5rem 0;
-			text-align: left;
+		.components-button {
+			margin: 0 auto;
+		}
+	}
 
-			summary {
+	// Upload feedback
+	.upload-feedback {
+		position: fixed;
+		bottom: 20px;
+		right: 20px;
+		width: 350px;
+		max-width: calc(100vw - 40px);
+		background-color: #fff;
+		border-radius: 4px;
+		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+		z-index: 999999;
+		overflow: hidden;
+		animation: slideIn 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+		border: 1px solid #ddd;
+		
+		@keyframes slideIn {
+			from {
+				transform: translateX(100%);
+				opacity: 0;
+			}
+			to {
+				transform: translateX(0);
+				opacity: 1;
+			}
+		}
+
+		// Header with title and close button
+		.upload-feedback-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 0.75rem 1rem;
+			background-color: #f5f5f5;
+			border-bottom: 1px solid #eee;
+
+			.upload-feedback-title {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				font-weight: 500;
+				color: $text-color;
+				
+				svg {
+					color: $primary-color;
+				}
+			}
+
+			.upload-feedback-close {
+				background: none;
+				border: none;
 				color: #666;
 				cursor: pointer;
-				font-size: 0.813rem;
-				margin-bottom: 0.5rem;
-			}
+				padding: 0.25rem;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				border-radius: 3px;
+				transition: all 0.2s ease;
 
-			pre {
-				background: #f8f8f8;
-				border-radius: 0.25rem;
-				color: #cc1818;
-				font-family: monospace;
-				font-size: 0.75rem;
-				line-height: 1.4;
-				margin: 0;
-				overflow-x: auto;
-				padding: 1rem;
-				white-space: pre-wrap;
+				&:hover {
+					background-color: rgba(0, 0, 0, 0.05);
+					color: #333;
+				}
+				
+				&:focus {
+					outline: 1px solid $primary-color;
+					box-shadow: 0 0 0 1px $primary-color;
+				}
 			}
 		}
 
-		button {
-			margin-top: 1rem;
+		// List of files being uploaded
+		.upload-feedback-items {
+			max-height: 200px;
+			overflow-y: auto;
+			padding: 0.5rem 0;
+			
+			&::-webkit-scrollbar {
+				width: 6px;
+			}
+			
+			&::-webkit-scrollbar-track {
+				background: #f1f1f1;
+			}
+			
+			&::-webkit-scrollbar-thumb {
+				background: #ccc;
+				border-radius: 3px;
+			}
+
+			.upload-feedback-item {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 0.5rem 1rem;
+				border-bottom: 1px solid #f5f5f5;
+				min-height: 30px;
+				
+				&:last-child {
+					border-bottom: none;
+				}
+				
+				&.success {
+					svg {
+						color: #46b450;
+					}
+				}
+				
+				&.error {
+					background-color: rgba(220, 50, 50, 0.05);
+					
+					svg {
+						color: #dc3232;
+					}
+					
+					.upload-feedback-item-error {
+						display: block;
+						color: #dc3232;
+						font-size: 0.75rem;
+						margin-top: 0.25rem;
+					}
+				}
+				
+				&.uploading,
+				&.processing {
+					position: relative;
+					animation: pulse 2s infinite;
+					
+					@keyframes pulse {
+						0% {
+							background-color: rgba($primary-color, 0);
+						}
+						50% {
+							background-color: rgba($primary-color, 0.05);
+						}
+						100% {
+							background-color: rgba($primary-color, 0);
+						}
+					}
+				}
+				
+				&.placeholder {
+					font-style: italic;
+					color: #666;
+				}
+				
+				.upload-feedback-item-name {
+					font-size: 0.875rem;
+					color: $text-color;
+					flex: 1;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+					margin-right: 0.5rem;
+				}
+			}
+		}
+
+		// Summary section
+		.upload-feedback-summary {
+			padding: 0.75rem 1rem;
+			background-color: #f9f9f9;
+			border-top: 1px solid #eee;
+			font-size: 0.8125rem;
+			
+			> div {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				margin-bottom: 0.25rem;
+				
+				&:last-child {
+					margin-bottom: 0;
+				}
+				
+				&.processing,
+				&.uploading {
+					color: $primary-color;
+				}
+
+				&.success {
+					color: #46b450;
+				}
+				
+				&.error {
+					color: #dc3232;
+				}
+				
+				svg {
+					flex-shrink: 0;
+				}
+			}
+		}
+	}
+
+	// Error boundary
+	.error-boundary {
+		padding: 2rem;
+		text-align: center;
+		background-color: #fcf0f1;
+		border-radius: 0.25rem;
+		margin-bottom: 1.5rem;
+
+		.error-icon {
+			width: 3rem;
+			height: 3rem;
+			margin: 0 auto 1rem;
+			color: $error-color;
+		}
+
+		h3 {
+			font-size: 1.125rem;
+			font-weight: 600;
+			margin: 0 0 0.5rem;
+			color: $error-color;
+		}
+
+		p {
+			color: #666;
+			margin: 0 0 1rem;
+		}
+
+		.components-button {
+			margin: 0 auto;
 		}
 	}
 }
 
-// Metadata Field Actions
-// --------------------
-.metadata-field-actions {
-	display: flex;
-	gap: 8px;
-	align-items: center;
+/* =========================================
+   Document Table Styles - Original
+   ========================================= */
 
-	.components-button {
-
-		@include button-base;
-
-		&.is-primary {
-
-			@include button-primary;
-		}
-
-		&.is-secondary {
-
-			@include button-secondary;
-		}
-
-		&.is-destructive {
-
-			@include button-destructive;
-		}
-	}
-}
-
-// Document Table Styles
-// -------------------
+// Document table styles - restoring original layout
 .document-table {
 	width: auto;
 	min-width: 50rem;
@@ -611,8 +798,7 @@ $background-success-light: #f1f8e9;  // Light success background
 		display: table-row;
 		border-bottom: 1px solid $border-color;
 		background-color: #fff;
-
-		@include transition;
+		transition: all 0.2s ease;
 
 		&:hover {
 			background-color: $background-light;
@@ -705,7 +891,6 @@ $background-success-light: #f1f8e9;  // Light success background
 		padding: 0.5rem;
 
 		&.actions {
-
 			.action-buttons {
 				display: flex;
 				gap: $spacing-sm;
@@ -713,8 +898,32 @@ $background-success-light: #f1f8e9;  // Light success background
 				align-items: center;
 
 				.components-button {
+					width: 2rem;
+					height: 2rem;
+					min-width: 2rem;
+					padding: 0;
+					justify-content: center;
+					border: 0.0625rem solid #ddd;
+					background-color: #fff;
+					color: #666;
+					transition: background-color 0.2s ease;
 
-					@include button-icon;
+					&:hover:not(:disabled) {
+						background-color: #f0f7ff;
+						border-color: #ddd;
+						color: #666;
+					}
+
+					svg {
+						width: 16px;
+						height: 16px;
+						display: block;
+						margin: 0;
+					}
+
+					&:hover:not(:disabled) svg {
+						transform: none;
+					}
 
 					&.is-destructive {
 						background-color: $error-color;
@@ -722,16 +931,15 @@ $background-success-light: #f1f8e9;  // Light success background
 						color: #fff;
 
 						&:hover:not(:disabled) {
-							background-color: color.adjust($error-color, $lightness: 10%);
-							border-color: color.adjust($error-color, $lightness: 10%);
+							background-color: color.adjust($error-color, $lightness: -5%);
+							border-color: $error-color;
 							color: #fff;
 						}
 					}
 
-					svg {
-						width: 16px;
-						height: 16px;
-						display: block;
+					&:focus {
+						outline: none;
+						border-color: #036;
 					}
 				}
 			}
@@ -770,183 +978,18 @@ $background-success-light: #f1f8e9;  // Light success background
 	}
 }
 
-// Metadata Settings
-// ----------------
-.metadata-settings {
-	max-width: 50rem;
-	margin: 0 auto;
-	padding: 1.5rem;
-	background: #fff;
-	border-radius: 0.5rem;
-	box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.05);
+/* =========================================
+   Upload Status Styles - Original
+   ========================================= */
 
-	&-loading {
-
-		@include flex-center;
-		min-height: 12.5rem;
-	}
-}
-
-// Animations
-// ---------
-@keyframes slide-in {
-
-	from {
-		transform: translateY(100%);
-		opacity: 0;
-	}
-
-	to {
-		transform: translateY(0);
-		opacity: 1;
-	}
-}
-
-@keyframes progress {
-
-	0% {
-		transform: translateX(-100%);
-	}
-
-	100% {
-		transform: translateX(100%);
-	}
-}
-
-@keyframes success-pulse {
-
-	0% {
-		transform: scale(1);
-	}
-
-	50% {
-		transform: scale(1.02);
-	}
-
-	100% {
-		transform: scale(1);
-	}
-}
-
-@keyframes processing {
-
-	0% {
-		transform: translateX(-100%);
-		opacity: 0;
-	}
-
-	50% {
-		opacity: 1;
-	}
-
-	100% {
-		transform: translateX(100%);
-		opacity: 0;
-	}
-}
-
-@keyframes fade-in-out {
-
-	0% {
-		opacity: 0;
-		transform: translateY(-20px);
-	}
-
-	10% {
-		opacity: 1;
-		transform: translateY(0);
-	}
-
-	90% {
-		opacity: 1;
-		transform: translateY(0);
-	}
-
-	100% {
-		opacity: 0;
-		transform: translateY(-20px);
-	}
-}
-
-// Responsive Styles
-// ---------------
-@media screen and (max-width: 48.875rem) {
-
-	.document-table {
-		min-width: 100%;
-		display: block;
-		overflow-x: auto;
-
-		&-header,
-		&-body,
-		&-row {
-			display: table-row;
-		}
-
-		&-cell {
-			display: table-cell;
-			padding: 0.5rem;
-
-			&:nth-child(n) {
-				width: auto;
-			}
-
-			&.metadata-column {
-				width: 7.5rem;
-				min-width: 6.25rem;
-			}
-		}
-	}
-
-	.document-list-actions {
-		flex-direction: column;
-		gap: 1rem;
-
-		.mode-toggle {
-			width: 100%;
-			justify-content: center;
-		}
-	}
-
-	.upload-feedback {
-		width: calc(100% - 2.5rem);
-		margin: 0 1.25rem;
-	}
-
-	.metadata-edit-form {
-		grid-template-columns: 1fr;
-		gap: 1.5rem;
-	}
-}
-
-.metadata-edit-form {
-
-	.components-base-control__label {
-		text-transform: none !important;
-	}
-
-	.components-text-control__input {
-		text-transform: none !important;
-	}
-
-	.metadata-field {
-
-		label {
-			text-transform: none !important;
-		}
-
-		.field-value {
-			text-transform: none !important;
-		}
-	}
-}
-
+// Document Upload Status box
 .upload-status {
 	margin: 1rem 0;
 	padding: 1rem;
 	background: #f8f9fa;
 	border-radius: 4px;
 	border: 1px solid #dee2e6;
+	font-family: $font-family-base;
 
 	.upload-status-item {
 		display: flex;
@@ -1001,4 +1044,1640 @@ $background-success-light: #f1f8e9;  // Light success background
 			background: #f8fff9;
 		}
 	}
+}
+
+// Document Upload Status styles
+.document-upload-status {
+	position: fixed;
+	top: 32px;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 1000;
+	background-color: #fff;
+	border-radius: 4px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+	width: 400px;
+	max-width: 90vw;
+	font-family: $font-family-base;
+
+	.document-upload-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 0.75rem 1rem;
+		border-bottom: 1px solid #eee;
+		background-color: #f8f9fa;
+		border-top-left-radius: 4px;
+		border-top-right-radius: 4px;
+
+		h3 {
+			margin: 0;
+			font-size: 1rem;
+			font-weight: 600;
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+
+			svg {
+				width: 1.25rem;
+				height: 1.25rem;
+				color: $primary-color;
+			}
+		}
+
+		.close-button {
+			background: transparent;
+			border: none;
+			padding: 0.25rem;
+			cursor: pointer;
+			color: #666;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+
+			svg {
+				width: 1rem;
+				height: 1rem;
+			}
+
+			&:hover {
+				color: #333;
+			}
+		}
+	}
+
+	.document-upload-content {
+		padding: 1rem;
+		max-height: 300px;
+		overflow-y: auto;
+
+		.upload-file-item {
+			display: flex;
+			align-items: center;
+			padding: 0.5rem;
+			background-color: #f8f9fa;
+			border: 1px solid #eee;
+			border-radius: 4px;
+			margin-bottom: 0.5rem;
+
+			&:last-child {
+				margin-bottom: 0;
+			}
+
+			&.success {
+				border-color: #d4edda;
+				background-color: #f8fff9;
+
+				svg {
+					color: #28a745;
+				}
+			}
+
+			&.error {
+				border-color: #f5c2c7;
+				background-color: #fff8f8;
+
+				svg {
+					color: #dc3545;
+				}
+			}
+
+			.file-icon {
+				margin-right: 0.75rem;
+				color: #666;
+
+				svg {
+					width: 1.25rem;
+					height: 1.25rem;
+				}
+			}
+
+			.file-info {
+				flex: 1;
+				overflow: hidden;
+
+				.file-name {
+					font-weight: 500;
+					font-size: 0.875rem;
+					white-space: nowrap;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					margin-bottom: 0.25rem;
+				}
+
+				.file-status {
+					font-size: 0.75rem;
+					color: #666;
+
+					&.success {
+						color: #28a745;
+					}
+
+					&.error {
+						color: #dc3545;
+					}
+				}
+			}
+
+			.status-icon {
+				margin-left: 0.75rem;
+
+				svg {
+					width: 1rem;
+					height: 1rem;
+				}
+			}
+		}
+	}
+
+	.success-message {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1rem;
+		background-color: #f8fff9;
+		border-bottom-left-radius: 4px;
+		border-bottom-right-radius: 4px;
+		color: #28a745;
+		font-weight: 500;
+		font-size: 0.875rem;
+
+		svg {
+			width: 1rem;
+			height: 1rem;
+		}
+	}
+}
+
+/* =========================================
+   Responsive Styles
+   ========================================= */
+
+@media (max-width: 768px) {
+	.document-repository {
+		.document-controls {
+			flex-direction: column;
+			align-items: stretch;
+
+			.search-filter,
+			.view-controls {
+				width: 100%;
+				justify-content: flex-start;
+			}
+		}
+
+		.document-table-container {
+			overflow-x: auto;
+
+			table {
+				th,
+				td {
+					&.document-type,
+					&.document-size,
+					&.document-date {
+						display: none;
+					}
+				}
+			}
+		}
+
+		.pagination-container {
+			flex-direction: column;
+			gap: 1rem;
+
+			.per-page-controls,
+			.pagination-controls {
+				width: 100%;
+				justify-content: center;
+			}
+		}
+	}
+}
+
+/* =========================================
+   Current Upload Status - Match Screenshot
+   ========================================= */
+
+// This targets the upload status box shown in the screenshot
+.dswp-document-repository .upload-feedback {
+	position: fixed;
+	bottom: 1.25rem;
+	right: 1.25rem;
+	background: #fff;
+	border-radius: 0.5rem;
+	box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15);
+	padding: 1rem;
+	width: 25rem;
+	max-width: calc(100vw - 3rem);
+	z-index: 100000;
+	border: 1px solid #ddd;
+	animation: slide-in 0.3s ease-out;
+	font-family: $font-family-base;
+
+	&-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1rem;
+		padding-bottom: 0.75rem;
+		border-bottom: 1px solid #eee;
+	}
+
+	&-title {
+		font-weight: $font-weight-bold;
+		font-size: 0.875rem;
+		color: $text-color;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+
+		svg {
+			color: $primary-color;
+			width: 1.125rem;
+			height: 1.125rem;
+		}
+	}
+
+	&-close {
+		background: transparent;
+		border: none;
+		padding: 0.25rem;
+		cursor: pointer;
+		color: #666;
+		
+		svg {
+			width: 1rem;
+			height: 1rem;
+		}
+	}
+
+	&-items {
+		max-height: 18.75rem;
+		overflow-y: auto;
+		margin: -0.25rem;
+		padding: 0.25rem;
+	}
+
+	&-item {
+		padding: 0.75rem;
+		border-radius: 0.375rem;
+		margin-bottom: 0.5rem;
+		background: #f8f9fa;
+		font-size: 0.813rem;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		border: 1px solid $border-color;
+		position: relative;
+		overflow: hidden;
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+
+		&-name {
+			flex: 1;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		&-error {
+			color: $error-color;
+		}
+
+		&.uploading {
+			background: $background-primary-light;
+			border-color: #90caf9;
+
+			&::after {
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				height: 0.125rem;
+				background: $primary-color;
+				animation: progress 2s infinite linear;
+				width: 100%;
+			}
+		}
+
+		&.success {
+			background: #f1f8e9;
+			border-color: #a5d6a7;
+			color: #2e7d32;
+			animation: success-pulse 1s ease-out;
+		}
+
+		&.error {
+			background: #fef2f2;
+			border-color: #fecaca;
+			color: $error-color;
+		}
+
+		&.processing {
+			background: #f5f5f5;
+			border-color: $border-color;
+			color: $text-secondary;
+
+			&::after {
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				height: 0.125rem;
+				background: $text-secondary;
+				animation: processing 1.5s infinite linear;
+				width: 100%;
+			}
+		}
+	}
+}
+
+// Animation keyframes for upload feedback
+@keyframes slide-in {
+	from {
+		transform: translateY(100%);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+
+@keyframes progress {
+	0% {
+		transform: translateX(-100%);
+	}
+	100% {
+		transform: translateX(100%);
+	}
+}
+
+@keyframes success-pulse {
+	0% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(1.02);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+@keyframes processing {
+	0% {
+		transform: translateX(-100%);
+		opacity: 0;
+	}
+	50% {
+		opacity: 1;
+	}
+	100% {
+		transform: translateX(100%);
+		opacity: 0;
+	}
+}
+
+// Fix for the specific display in the screenshot
+[class^="upload-status"],
+[class*=" upload-status"] {
+	position: fixed;
+	top: 40px;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+	width: 400px;
+	max-width: 90%;
+	background-color: #f8f9fa;
+	border: 1px solid #dee2e6;
+	border-radius: 4px;
+	box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
+	padding: 1rem;
+	z-index: 10000;
+	
+	h3 {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.875rem;
+		font-weight: 600;
+		margin: 0 0 0.75rem;
+		
+		svg {
+			width: 1.25rem;
+			height: 1.25rem;
+		}
+	}
+	
+	.close-button {
+		position: absolute;
+		top: 0.5rem;
+		right: 0.5rem;
+		background: transparent;
+		border: none;
+		padding: 0.25rem;
+		cursor: pointer;
+		
+		svg {
+			width: 1rem;
+			height: 1rem;
+		}
+	}
+	
+	p {
+		margin: 0.5rem 0;
+		font-size: 0.8125rem;
+	}
+}
+
+/* =========================================
+   Drag and Drop Upload Area - Fix Styling
+   ========================================= */
+
+.dswp-document-repository {
+	// Upload/drag area styling
+	.drag-drop-area {
+		background-color: #f5f5f5;
+		border-radius: 4px;
+		padding: 2rem 1.5rem;
+		margin-bottom: 1.5rem;
+		text-align: center;
+		border: 2px dashed #ddd;
+		transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+		position: relative;
+		overflow: hidden;
+
+		&:hover,
+		&:focus,
+		&:focus-within {
+			border-color: $primary-color;
+			background-color: rgba($primary-color, 0.05);
+			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+			cursor: pointer;
+			outline: none;
+		}
+
+		&.is-drag-active {
+			border-color: $primary-color;
+			background-color: rgba($primary-color, 0.1);
+			transform: scale(1.01);
+			box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+			
+			&::after {
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: linear-gradient(135deg, rgba($primary-color, 0.05) 0%, rgba($primary-color, 0.1) 100%);
+				pointer-events: none;
+			}
+		}
+		
+		.drag-drop-content {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.drag-drop-icon {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 80px;
+			height: 80px;
+			border-radius: 50%;
+			background-color: rgba($primary-color, 0.1);
+			margin-bottom: 1rem;
+			color: $primary-color;
+			transition: all 0.3s ease;
+			
+			svg {
+				transition: transform 0.3s ease;
+			}
+		}
+		
+		&:hover .drag-drop-icon,
+		&.is-drag-active .drag-drop-icon {
+			background-color: rgba($primary-color, 0.2);
+			transform: scale(1.05);
+			
+			svg {
+				transform: translateY(-2px);
+			}
+		}
+
+		h3 {
+			font-size: 1.125rem;
+			font-weight: 600;
+			margin: 0 0 0.75rem;
+			color: $text-color;
+			transition: color 0.2s ease;
+		}
+
+		p {
+			margin: 0 0 1.5rem;
+			color: $text-secondary;
+			font-size: 0.875rem;
+			transition: color 0.2s ease;
+		}
+
+		.components-button {
+			&.is-secondary {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5rem;
+				background-color: #fff;
+				border: 1px solid #ddd;
+				box-shadow: none;
+				transition: all 0.2s ease;
+				
+				&:hover,
+				&:focus {
+					background-color: #f9f9f9;
+					border-color: #ccc;
+				}
+				
+				svg {
+					width: 1rem;
+					height: 1rem;
+					transition: transform 0.2s ease;
+				}
+				
+				&:hover svg {
+					transform: scale(1.1);
+				}
+			}
+		}
+		
+		.upload-button {
+			padding: 0.5rem 1rem;
+			font-size: 0.875rem;
+		}
+	}
+
+	// Document upload section - additional styling to match drag and drop area
+	.document-upload-section {
+		transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+		
+		&.dragging {
+			transform: scale(1.01);
+		}
+	}
+	
+	// Enter spreadsheet mode button
+	.spreadsheet-mode-button {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-top: 1rem;
+		padding: 0.5rem 1rem;
+		font-size: 0.875rem;
+		border: 1px solid #ddd;
+		border-radius: 4px;
+		background-color: #fff;
+		cursor: pointer;
+		transition: all 0.2s ease;
+
+		&:hover {
+			background-color: #f9f9f9;
+		}
+
+		svg {
+			width: 1rem;
+			height: 1rem;
+		}
+	}
+
+	// Metadata modal styling
+	.components-modal__frame {
+		max-width: 550px;
+		
+		.components-modal__header {
+			margin-bottom: 0;
+		}
+		
+		// Metadata edit form styling
+		.metadata-edit-form {
+			padding: 0;
+			margin-top: 1rem;
+		}
+		
+		// Editable metadata fields
+		.editable-metadata {
+			margin-bottom: 2rem;
+			padding-bottom: 1.5rem;
+			border-bottom: 1px solid #eee;
+			
+			.metadata-field {
+				margin-bottom: 1.25rem;
+				
+				&:last-child {
+					margin-bottom: 0;
+				}
+
+				.components-base-control__label {
+					display: block;
+					font-weight: 500;
+					margin-bottom: 0.5rem;
+					color: $text-color;
+				}
+				
+				.components-text-control__input,
+				.components-select-control__input {
+					width: 100%;
+					border: 1px solid #ddd;
+					border-radius: 4px;
+					padding: 0.5rem 0.75rem;
+					font-size: 0.875rem;
+					transition: all 0.2s ease;
+					
+					&:focus {
+						border-color: $primary-color;
+						box-shadow: 0 0 0 1px $primary-color;
+					}
+				}
+				
+				.metadata-error {
+					color: $error-color;
+					font-size: 0.75rem;
+					margin-top: 0.5rem;
+				}
+			}
+		}
+		
+		// Non-editable document information section
+		.non-editable-metadata {
+			background-color: #f9f9f9;
+			border-radius: 4px;
+			padding: 1.25rem;
+			margin-bottom: 1.5rem;
+			
+			h3 {
+				margin: 0 0 1rem;
+				font-size: 1rem;
+				font-weight: 600;
+				color: $text-color;
+				padding-bottom: 0.75rem;
+				border-bottom: 1px solid #eee;
+			}
+
+			.metadata-field {
+				display: grid;
+				grid-template-columns: 90px 1fr;
+				align-items: center;
+				margin-bottom: 0.75rem;
+				
+				&:last-child {
+					margin-bottom: 0;
+				}
+
+				label {
+					font-size: 0.8125rem;
+					color: $text-secondary;
+					font-weight: 500;
+				}
+
+				.field-value {
+					font-size: 0.875rem;
+					color: $text-color;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+				}
+			}
+		}
+		
+		// Modal actions
+		.modal-actions {
+			display: flex;
+			justify-content: flex-end;
+			gap: 0.75rem;
+			padding-top: 1rem;
+			border-top: 1px solid #eee;
+			
+			.components-button {
+				height: 2.5rem;
+				padding: 0 1rem;
+				font-size: 0.875rem;
+				
+				&.is-primary {
+					&:disabled {
+						background-color: #e0e0e0;
+						border-color: #e0e0e0;
+						color: #666;
+						opacity: 1;
+					}
+				}
+			}
+		}
+	}
+
+	// Destructive button styling override
+	.components-button.is-destructive:not(.is-primary):not(.is-secondary):not(.is-tertiary):not(.is-link),
+	.components-button.is-destructive.delete-button,
+	.delete-confirmation-content .modal-actions .components-button.is-destructive,
+	.action-buttons .components-button.is-destructive,
+	.document-actions .components-button.is-destructive,
+	button.components-button.is-destructive {
+		color: #fff !important;
+		background-color: $error-color !important;
+		border-color: $error-color !important;
+		
+		&:hover:not(:disabled),
+		&:focus:not(:disabled) {
+			color: #fff !important;
+			background-color: color.adjust($error-color, $lightness: -5%) !important;
+			border-color: color.adjust($error-color, $lightness: -5%) !important;
+		}
+		
+		&:disabled {
+			opacity: 0.65;
+			color: #fff !important;
+			background-color: color.adjust($error-color, $lightness: 10%) !important;
+			border-color: color.adjust($error-color, $lightness: 10%) !important;
+		}
+	}
+
+	// Specific targeting for individual instances
+	.bulk-delete-button {
+		color: #fff !important;
+	}
+	
+	.delete-button {
+		color: #fff !important;
+	}
+	
+	.document-table {
+		.action-buttons {
+			.components-button.is-destructive {
+				color: #fff !important;
+			}
+		}
+	}
+	
+	.modal-actions {
+		.components-button.is-destructive {
+			color: #fff !important;
+		}
+	}
+
+	// Custom destructive button styling
+	.custom-destructive-button {
+		background-color: $error-color;
+		border-color: $error-color;
+		color: #fff;
+		
+		&:hover:not(:disabled),
+		&:focus:not(:disabled) {
+			background-color: color.adjust($error-color, $lightness: -5%);
+			border-color: color.adjust($error-color, $lightness: -5%);
+			color: #fff;
+		}
+		
+		&:disabled {
+			opacity: 0.65;
+			color: #fff;
+			background-color: color.adjust($error-color, $lightness: 10%);
+			border-color: color.adjust($error-color, $lightness: 10%);
+		}
+	}
+
+	// Delete confirmation modal styling
+	.components-modal__frame .components-modal__content .delete-confirmation-content {
+		padding-top: 0;
+		margin-top: 0;
+		
+		> p:first-child {
+			margin-top: 0.5rem;
+			margin-bottom: 1rem;
+		}
+		
+		p {
+			margin-bottom: 1rem;
+		}
+
+		.documents-to-delete {
+			background-color: #f5f5f5;
+			border-radius: 6px;
+			padding: 1rem;
+			margin: 1rem 0;
+			border: 1px solid #e0e0e0;
+			
+			h4 {
+				margin: 0 0 0.75rem;
+				font-size: 0.875rem;
+				font-weight: 600;
+				color: #333;
+			}
+			
+			ul {
+				margin: 0;
+				padding: 0.5rem;
+				max-height: 150px !important;
+				overflow-y: auto !important;
+				display: block !important;
+				position: relative !important;
+				z-index: 100 !important;
+				background-color: #fff;
+				border-radius: 4px;
+				border: 1px solid #e0e0e0;
+				list-style-type: none !important;
+				
+				&::-webkit-scrollbar {
+					width: 6px;
+				}
+				
+				&::-webkit-scrollbar-track {
+					background: #f1f1f1;
+					border-radius: 3px;
+				}
+				
+				&::-webkit-scrollbar-thumb {
+					background: #ccc;
+					border-radius: 3px;
+				}
+				
+				li {
+					font-size: 0.875rem;
+					margin-bottom: 0.5rem;
+					line-height: 1.4;
+					word-break: break-word;
+					color: #444;
+					display: list-item !important;
+					position: static !important;
+					list-style-type: none !important;
+
+					&:last-child {
+						margin-bottom: 0;
+					}
+				}
+			}
+		}
+
+		.delete-warning {
+			color: $error-color;
+			font-weight: 500;
+			font-size: 0.875rem;
+			margin: 1rem 0;
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+			
+			&::before {
+				content: "⚠️";
+				font-size: 1rem;
+			}
+		}
+		
+		.modal-actions {
+			display: flex;
+			justify-content: flex-end;
+			gap: 0.75rem;
+			margin-top: 1.5rem;
+			padding: 1rem 0 0;
+			border-top: 1px solid #eee;
+		}
+	}
+
+	// Add or modify the document-list-actions class
+	.document-list-actions {
+		display: flex;
+		justify-content: flex-start; // Changed from space-between to flex-start
+		align-items: center;
+		margin-bottom: 1rem;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+
+		.document-list-left-actions {
+			display: flex;
+			align-items: center;
+			gap: 0.75rem;
+			flex-wrap: nowrap; // Changed from wrap to nowrap
+		}
+
+		// Spreadsheet mode toggle styling
+		.mode-toggle {
+			margin-left: 0; // In case there was a margin
+			
+			.components-button {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5rem;
+				height: 2.5rem;
+				padding: 0 1rem;
+				font-size: 0.875rem;
+				border-radius: 4px;
+				transition: all 0.2s ease;
+				border: 2px solid #036; // Add thicker border with BC Gov blue color
+				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); // Add subtle shadow
+				
+				&:not(.is-primary) {
+					background-color: #fff;
+					border: 2px solid #036; // BC Gov blue border
+					color: $text-color;
+					
+					&:hover:not(:disabled) {
+						background-color: #f9f9f9;
+						border-color: #036; // Darker border on hover
+					}
+				}
+				
+				&.is-primary {
+					background-color: $primary-color;
+					border-color: $primary-color;
+					color: #fff;
+					border-width: 2px; // Keep consistent border width
+					
+					&:hover:not(:disabled) {
+						background-color: color.adjust($primary-color, $lightness: -5%);
+						border-color: color.adjust($primary-color, $lightness: -10%);
+					}
+				}
+			}
+		}
+
+		// Bulk delete button styling
+		.bulk-delete-button {
+			height: 2.5rem;
+			padding: 0 1rem;
+			font-size: 0.875rem;
+			display: inline-flex;
+			align-items: center;
+			gap: 0.5rem;
+			margin-right: 0; // Ensure no right margin
+		}
+	}
+}
+
+/* Add this at the end of the file for maximum specificity */
+/* Force document list scrolling */
+.components-modal__content .delete-confirmation-content .documents-to-delete ul {
+	height: auto !important;
+	max-height: 150px !important;
+	overflow-y: auto !important;
+	display: block !important;
+	list-style-type: none !important;
+}
+
+/* Target direct children to fix potential display issues */
+.components-modal__content .delete-confirmation-content .documents-to-delete ul > li {
+	display: list-item !important;
+	position: static !important;
+	height: auto !important;
+	margin-bottom: 0.5rem !important;
+	word-break: break-word !important;
+	color: #444 !important;
+	list-style-type: none !important;
+}
+
+/* Add !important to all scrollbar rules */
+.components-modal__content .delete-confirmation-content .documents-to-delete ul::-webkit-scrollbar {
+	width: 6px !important;
+	display: block !important;
+}
+
+.components-modal__content .delete-confirmation-content .documents-to-delete ul::-webkit-scrollbar-track {
+	background: #f1f1f1 !important;
+	border-radius: 3px !important;
+}
+
+.components-modal__content .delete-confirmation-content .documents-to-delete ul::-webkit-scrollbar-thumb {
+	background: #ccc !important;
+	border-radius: 3px !important;
+}
+
+/* Firefox-specific fix for scrollable lists */
+@-moz-document url-prefix() {
+	.components-modal__content .delete-confirmation-content .documents-to-delete ul,
+	.delete-confirmation-content .documents-to-delete ul {
+		overflow-y: scroll !important;
+		max-height: 150px !important;
+		scrollbar-width: thin;
+		scrollbar-color: #ccc #f1f1f1;
+	}
+}
+
+/* Ultra-specific scrollable list fix - Add to the very end of the file */
+html body .components-modal__content .delete-confirmation-content .documents-to-delete ul {
+	position: static !important;
+	display: block !important;
+	height: auto !important;
+	max-height: 150px !important;
+	overflow-y: scroll !important;
+	overflow-x: hidden !important;
+	z-index: 999999 !important;
+	scrollbar-width: thin !important;
+	scrollbar-color: #ccc #f1f1f1 !important;
+	box-sizing: border-box !important;
+	width: 100% !important;
+	border: 1px solid #e0e0e0 !important;
+	background-color: #fff !important;
+	padding: 0.5rem !important;
+	margin: 0 !important;
+	list-style-type: none !important;
+}
+
+html body .components-modal__content .delete-confirmation-content .documents-to-delete ul > li {
+	display: list-item !important;
+	position: static !important;
+	height: auto !important;
+	margin-bottom: 0.5rem !important;
+	word-break: break-word !important;
+	color: #444 !important;
+	list-style-type: none !important;
+}
+
+html body .components-modal__content .delete-confirmation-content .documents-to-delete {
+	position: relative !important;
+	overflow: visible !important;
+	margin: 1rem 0 !important;
+	padding: 1rem !important;
+}
+
+/* Firefox specific scrolling fix */
+@-moz-document url-prefix() {
+	html body .components-modal__content .delete-confirmation-content .documents-to-delete ul {
+		overflow-y: scroll !important;
+		max-height: 150px !important;
+		scrollbar-width: thin !important;
+		scrollbar-color: #ccc #f1f1f1 !important;
+	}
+}
+
+/* WebKit scrollbar styling with maximum specificity */
+html body .components-modal__content .delete-confirmation-content .documents-to-delete ul::-webkit-scrollbar {
+	width: 6px !important;
+	display: block !important;
+}
+
+html body .components-modal__content .delete-confirmation-content .documents-to-delete ul::-webkit-scrollbar-track {
+	background: #f1f1f1 !important;
+	border-radius: 3px !important;
+}
+
+html body .components-modal__content .delete-confirmation-content .documents-to-delete ul::-webkit-scrollbar-thumb {
+	background: #ccc !important;
+	border-radius: 3px !important;
+}
+
+/* Delete confirmation button styling with maximum specificity */
+html body .components-modal__content .delete-confirmation-content .modal-actions .components-button:not(.is-destructive),
+html body .components-modal__frame .delete-confirmation-content .modal-actions button.components-button:not(.is-destructive) {
+	background-color: #f6f7f7 !important;
+	border-color: #ddd !important;
+	color: #555 !important;
+	height: 2.5rem !important;
+	padding: 0 1rem !important;
+	border-radius: 2px !important;
+}
+
+.components-modal__content .delete-confirmation-content .modal-actions button:nth-child(1),
+.components-modal__content .delete-confirmation-content .modal-actions .components-button:nth-child(1) {
+	background-color: #bc2929 !important;
+	color: #fff !important;
+	border: 1px solid #bc2929 !important;
+	font-size: 13px !important;
+	line-height: 2.15384615 !important;
+	min-height: 30px !important;
+	padding: 0 10px !important;
+}
+
+/* EXTREME DIRECT ELEMENT STYLING */
+.delete-confirmation-content .modal-actions button[type="button"]:first-child {
+	background-color: #bc2929 !important;
+	color: #fff !important;
+	border: 1px solid #bc2929 !important;
+}
+
+.delete-confirmation-content .modal-actions button[type="button"]:last-child {
+	background-color: #f6f7f7 !important;
+	color: #555 !important;
+	border: 1px solid #ddd !important;
+}
+
+/* COPY EXACT STYLES FROM THE INSPECTOR */
+html body .components-modal__content .delete-confirmation-content .modal-actions .components-button:not(.is-destructive) {
+	height: 2.5rem !important;
+	padding: 0 1rem !important;
+	border-radius: 2px !important;
+	background-color: #f6f7f7 !important;
+	border-color: #ddd !important;
+	color: #555 !important;
+}
+
+.components-modal__content .delete-confirmation-content .modal-actions button:nth-child(1) {
+	background-color: #bc2929 !important;
+	color: #fff !important;
+	border: 1px solid #bc2929 !important;
+	border-radius: 4px !important;
+	font-size: 13px !important;
+	line-height: 2.15384615 !important;
+	min-height: 30px !important;
+	padding: 0 10px !important;
+}
+
+/* IMPORTANT: FINAL OVERRIDE */
+button.components-button.custom-destructive-button {
+	background-color: #bc2929 !important;
+	color: #fff !important;
+	border: 1px solid #bc2929 !important;
+}
+
+/* Add this to the end of the file for ultimate specificity */
+.components-modal__frame[role="dialog"] .components-modal__content[role="document"] {
+    margin-top: 0 !important;
+
+    > div > .delete-confirmation-content {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+    }
+}
+
+/* Also adjust the modal header for delete modals */
+.components-modal__frame[role="dialog"] .components-modal__header {
+    margin-bottom: 0 !important;
+}
+
+/* Add this to target primary buttons in all modals correctly */
+.components-modal__frame .components-button.is-primary,
+.components-modal__frame .components-button[variant="primary"],
+.components-modal__frame button.components-button[variant="primary"],
+.edit-metadata-field button[type="button"]:not(.cancel):not(.components-button):not(.is-link),
+.edit-metadata-field .components-button:not(.cancel):not(.is-destructive):not(.is-link):not(.is-secondary),
+.components-modal__content button:not(.cancel-button):not(.is-destructive):not(.is-link):not([class*="secondary"]):not(.cancel):not(.components-notice__dismiss) {
+    color: #fff !important;
+    border-color: #036 !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    
+    &:hover:not(:disabled) {
+        background-color: #003366dd !important;
+        color: #fff !important;
+        border-color: #003366dd !important;
+    }
+    
+    &:disabled {
+        background-color: #e0e0e0 !important;
+        border-color: #e0e0e0 !important;
+        color: #666 !important;
+        opacity: 0.7 !important;
+    }
+}
+
+/* Also target the specific Save Changes button */
+.components-modal__content .modal-actions button:not(.cancel-button):not(.is-destructive):not(.is-link):not(.is-secondary),
+.components-modal__content .modal-actions button[type="button"]:last-of-type:not(.components-button),
+.components-modal__frame .modal-actions .components-button:not(.cancel-button):not(.is-destructive):not(.is-link):not(.is-secondary),
+.components-modal__frame .components-button[variant="primary"] {
+     /* BC Gov blue */
+    color: #fff !important; 
+    border-color: #036 !important;
+    border-radius: 4px !important;
+    padding: 0 15px !important;
+    height: 2.5rem !important;
+    min-width: 80px !important;
+}
+
+/* 1. Save Changes / Primary buttons */
+.components-modal__frame button[type="button"]:not(.is-destructive):not(.cancel-button):not(.cancel):not([class*="secondary"]):not(.components-notice__dismiss):not(.is-link):not(.delete-button):not(.custom-destructive-button),
+.components-modal__frame .components-button[variant="primary"]:not(.is-destructive):not(.delete-button):not(.custom-destructive-button),
+.components-modal__frame .components-button.is-primary:not(.is-destructive):not(.delete-button):not(.custom-destructive-button) {
+     /* BC Gov blue */
+    color: #fff !important;
+    border-color: #036 !important;
+    border-radius: 4px !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+}
+
+/* 2. Delete / Destructive buttons */
+.components-modal__frame .components-button.is-destructive,
+.components-modal__frame .components-button.delete-button,
+.components-modal__frame .components-button.custom-destructive-button,
+.components-modal__frame .components-button[isDestructive="true"],
+.components-modal__frame .components-button[variant="primary"].delete-button,
+.components-modal__frame button[type="button"].delete-button {
+    background-color: #bc2929 !important;
+    color: #fff !important;
+    border-color: #bc2929 !important;
+    border-radius: 4px !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    padding: 0 15px !important;
+    height: 2.5rem !important;
+    min-width: 80px !important;
+    
+    &:hover:not(:disabled) {
+        background-color: #a72020 !important;
+        color: #fff !important;
+        border-color: #a72020 !important;
+    }
+    
+    &:disabled {
+        background-color: rgba(188, 41, 41, 0.7) !important;
+        border-color: rgba(188, 41, 41, 0.7) !important;
+        color: #fff !important;
+        opacity: 0.7 !important;
+    }
+}
+
+/* 3. Cancel / Secondary buttons */
+.components-modal__frame .components-button[variant="secondary"],
+.components-modal__frame .components-button.is-secondary,
+.components-modal__frame .components-button.cancel-button,
+.components-modal__frame .components-button.cancel,
+.components-modal__content .modal-actions button.cancel-button,
+.components-modal__content .modal-actions button.is-secondary,
+.components-modal__content .modal-actions button.cancel,
+.metadata-field-modal .delete-actions button.cancel-button,
+.metadata-field-modal .delete-actions button[variant="secondary"] {
+    background-color: #f6f7f7 !important;
+    color: #555 !important;
+    border-color: #ddd !important;
+    border-radius: 4px !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    padding: 0 15px !important;
+    height: 2.5rem !important;
+    min-width: 80px !important;
+    
+    &:hover:not(:disabled) {
+        background-color: #f0f0f1 !important;
+        color: #333 !important;
+        border-color: #999 !important;
+    }
+    
+    &:disabled {
+        background-color: #f6f7f7 !important;
+        border-color: #ddd !important;
+        color: #999 !important;
+        opacity: 0.7 !important;
+    }
+}
+
+/* Specific styling for save-button */
+.components-modal__frame button.components-button.save-button,
+.modal-actions button.components-button.save-button,
+button.components-button.save-button {
+     /* BC Gov blue */
+    color: #fff !important;
+    border-color: #036 !important;
+    border-radius: 4px !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    padding: 0 15px !important;
+    height: 2.5rem !important;
+    min-width: 80px !important;
+    
+    &:hover:not(:disabled) {
+        background-color: #003366dd !important;
+        color: #fff !important;
+        border-color: #003366dd !important;
+    }
+    
+    &:disabled {
+        background-color: #e0e0e0 !important;
+        border-color: #e0e0e0 !important;
+        color: #666 !important;
+        opacity: 0.7 !important;
+    }
+}
+
+/* Add comprehensive button styling with explicit classes */
+
+/* 1. Save button styling */
+.components-button.save-button,
+button.save-button,
+.modal-actions .components-button.save-button {
+     /* BC Gov blue */
+    color: #fff !important;
+    border-color: #036 !important;
+    border-radius: 4px !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    padding: 0 15px !important;
+    height: 2.5rem !important;
+    min-width: 80px !important;
+    
+    &:hover:not(:disabled) {
+        background-color: #003366dd !important;
+        color: #fff !important;
+        border-color: #003366dd !important;
+    }
+    
+    &:disabled {
+        background-color: #e0e0e0 !important;
+        border-color: #e0e0e0 !important;
+        color: #666 !important;
+        opacity: 0.7 !important;
+    }
+}
+
+/* 2. Delete button styling */
+.components-button.delete-button,
+.components-button.is-destructive,
+.components-button.custom-destructive-button,
+button.delete-button,
+.modal-actions .components-button.delete-button,
+.modal-actions .components-button.is-destructive,
+.modal-actions .components-button.custom-destructive-button,
+.delete-actions .components-button.delete-button,
+.delete-actions .components-button.is-destructive {
+    background-color: #bc2929 !important;
+    color: #fff !important;
+    border-color: #bc2929 !important;
+    border-radius: 4px !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    padding: 0 15px !important;
+    height: 2.5rem !important;
+    min-width: 80px !important;
+    
+    &:hover:not(:disabled) {
+        background-color: #a72020 !important;
+        color: #fff !important;
+        border-color: #a72020 !important;
+    }
+    
+    &:disabled {
+        background-color: rgba(188, 41, 41, 0.7) !important;
+        border-color: rgba(188, 41, 41, 0.7) !important;
+        color: #fff !important;
+        opacity: 0.7 !important;
+    }
+}
+
+/* 3. Cancel button styling */
+.components-button.cancel-button,
+.components-button.is-secondary,
+.components-button.cancel,
+button.cancel-button,
+button.cancel,
+.modal-actions .components-button.cancel-button,
+.modal-actions .components-button.is-secondary,
+.modal-actions .components-button.cancel,
+.delete-actions .components-button.cancel-button,
+.delete-actions .components-button.is-secondary {
+    background-color: #f6f7f7 !important;
+    color: #555 !important;
+    border-color: #ddd !important;
+    border-radius: 4px !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    padding: 0 15px !important;
+    height: 2.5rem !important;
+    min-width: 80px !important;
+    
+    &:hover:not(:disabled) {
+        background-color: #f0f0f1 !important;
+        color: #333 !important;
+        border-color: #999 !important;
+    }
+    
+    &:disabled {
+        background-color: #f6f7f7 !important;
+        border-color: #ddd !important;
+        color: #999 !important;
+        opacity: 0.7 !important;
+    }
+}
+
+/* Fix close buttons in modals */
+.components-modal__frame .components-button.has-icon {
+    &[aria-label="Close"] {
+        background-color: transparent !important;
+        color: #555 !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0.25rem !important;
+        height: auto !important;
+        min-width: auto !important;
+        width: auto !important;
+        
+        &:hover:not(:disabled) {
+            background-color: #f0f0f1 !important;
+        }
+    }
+}
+
+/* Reset table action buttons styling */
+.document-table .action-buttons .components-button,
+.action-buttons .components-button {
+    width: 2rem !important;
+    height: 2rem !important;
+    min-width: 2rem !important;
+    max-width: 2rem !important;
+    padding: 0 !important;
+    justify-content: center !important;
+    border: 0.0625rem solid #ddd !important;
+    background-color: #fff !important;
+    color: #666 !important;
+    
+    &:hover:not(:disabled) {
+        background-color: #f0f7ff !important;
+        border-color: #ddd !important;
+        color: #666 !important;
+    }
+    
+    svg {
+        width: 16px !important;
+        height: 16px !important;
+        display: block !important;
+        margin: 0 !important;
+    }
+    
+    &.is-destructive {
+        background-color: $error-color !important;
+        border-color: $error-color !important;
+        color: #fff !important;
+        
+        &:hover:not(:disabled) {
+            background-color: color.adjust($error-color, $lightness: -5%) !important;
+            border-color: $error-color !important;
+            color: #fff !important;
+        }
+    }
+    
+    &:focus {
+        outline: none !important;
+        border-color: #036 !important;
+    }
+}
+
+/* Add explicit styling for Save Changes buttons */
+.components-modal__frame .modal-actions .components-button[variant="primary"],
+.components-modal__frame .modal-actions .components-button.is-primary,
+.components-modal__frame .modal-actions button[type="submit"],
+.metadata-edit-form .modal-actions .components-button[variant="primary"],
+.metadata-edit-modal .modal-actions .components-button[variant="primary"],
+.metadata-field-modal .modal-actions .components-button[variant="primary"]:not(.delete-button):not(.is-destructive):not(.custom-destructive-button),
+button.save-button {
+     /* BC Gov blue */
+    color: #fff !important;
+    border-color: #036 !important;
+    border-radius: 4px !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    padding: 0 15px !important;
+    height: 2.5rem !important;
+    min-width: 80px !important;
+    
+    &:hover:not(:disabled) {
+        background-color: #003366dd !important;
+        color: #fff !important;
+        border-color: #003366dd !important;
+    }
+    
+    &:disabled {
+        background-color: #e0e0e0 !important;
+        border-color: #e0e0e0 !important;
+        color: #666 !important;
+        opacity: 0.7 !important;
+    }
+}
+
+/* Specific styling for table action buttons */
+.action-buttons .components-button.table-action-button {
+    width: 2rem !important;
+    height: 2rem !important;
+    min-width: 2rem !important;
+    max-width: 2rem !important;
+    padding: 0 !important;
+    justify-content: center !important;
+    border: 0.0625rem solid #ddd !important;
+    background-color: #fff !important;
+    color: #666 !important;
+    
+    &:hover:not(:disabled) {
+        background-color: #f0f7ff !important;
+        border-color: #ddd !important;
+        color: #666 !important;
+    }
+    
+    svg {
+        width: 16px !important;
+        height: 16px !important;
+        display: block !important;
+        margin: 0 !important;
+    }
+    
+    &.custom-destructive-button {
+        background-color: $error-color !important;
+        border-color: $error-color !important;
+        color: #fff !important;
+        
+        &:hover:not(:disabled) {
+            background-color: color.adjust($error-color, $lightness: -5%) !important;
+            border-color: $error-color !important;
+            color: #fff !important;
+        }
+    }
+}
+
+/* Fix close buttons in modals - ensure they don't have a background */
+.components-modal__frame .components-modal__header .components-button {
+    background-color: transparent !important;
+    color: #555 !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0.25rem !important;
+    height: auto !important;
+    min-width: auto !important;
+    width: auto !important;
+    
+    &:hover:not(:disabled) {
+        background-color: #f0f0f1 !important;
+    }
+}
+
+/* Direct and specific targeting for Save Changes buttons */
+button.components-button.save-button,
+.components-button.is-primary,
+.components-button[variant="primary"],
+button[type="submit"],
+.modal-actions button:not(.cancel-button):not(.delete-button):not(.is-destructive),
+.metadata-edit-form .modal-actions button:not(.cancel-button) {
+     /* BC Gov blue */
+    color: #fff !important;
+    border-color: #036 !important;
+    border-radius: 4px !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    padding: 0 15px !important;
+    height: 2.5rem !important;
+    min-width: 80px !important;
+    
+    &:hover:not(:disabled) {
+        background-color: #003366dd !important;
+        color: #fff !important;
+        border-color: #003366dd !important;
+    }
+    
+    &:disabled {
+        background-color: #e0e0e0 !important;
+        border-color: #e0e0e0 !important;
+        color: #666 !important;
+        opacity: 0.7 !important;
+    }
+}
+
+/* Enhanced styling for modal close buttons */
+.components-modal__frame .components-modal__header .components-button[aria-label="Close"],
+.components-modal__header .components-button.modal-close-button,
+.components-modal__header .components-button.has-icon[aria-label="Close"] {
+    background-color: transparent !important;
+    color: #777 !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 50% !important;
+    padding: 4px !important;
+    width: 28px !important;
+    height: 28px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease !important;
+    
+    svg {
+        width: 18px !important;
+        height: 18px !important;
+        fill: #777 !important;
+    }
+    
+    &:hover,
+    &:hover:not(:disabled),
+    &:focus:not(:disabled),
+    &:active:not(:disabled) {
+        background-color: #f1f1f1 !important;
+        color: #555 !important;
+        border-color: #ccc !important;
+        box-shadow: none !important;
+        outline: none !important;
+        
+        svg {
+            fill: #555 !important;
+        }
+    }
+    
+    &:focus {
+        box-shadow: 0 0 0 1px #ccc !important;
+        outline: none !important;
+    }
+}
+
+/* Additional overrides to prevent WordPress default styles */
+.components-modal__header .components-button:not(.save-button):not(.delete-button):not(.cancel-button),
+.components-modal__header button:not(.save-button):not(.delete-button):not(.cancel-button) {
+    &:hover,
+    &:active,
+    &:focus {
+        background-color: #f1f1f1 !important;
+        color: #555 !important;
+    }
 }

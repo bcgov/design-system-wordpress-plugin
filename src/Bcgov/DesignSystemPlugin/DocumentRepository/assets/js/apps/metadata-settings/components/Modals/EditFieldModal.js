@@ -120,10 +120,11 @@ const EditFieldModal = ({
                     variant="primary" 
                     onClick={onSave}
                     disabled={!hasChanges}
+                    className="save-button"
                 >
                     {__('Save Changes', 'bcgov-design-system')}
                 </Button>
-                <Button variant="secondary" onClick={onClose}>
+                <Button variant="secondary" onClick={onClose} className="cancel-button">
                     {__('Cancel', 'bcgov-design-system')}
                 </Button>
             </div>

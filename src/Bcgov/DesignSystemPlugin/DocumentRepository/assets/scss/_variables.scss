@@ -131,105 +131,96 @@ $button-transition: all 0.2s ease;
 
 // Button Mixins
 @mixin button-base {
-	height: $button-height-base;
-	padding: $button-padding-base;
-	border-radius: $button-border-radius;
-	font-size: $button-font-size;
-	font-weight: $button-font-weight;
+	height: auto;
+	min-height: 2.25rem;
+	min-width: 3.75rem;
+	padding: 0.5rem 1rem;
+	font-size: $font-size-sm;
+	font-weight: $font-weight-medium;
+	border-radius: $border-radius-sm;
+	cursor: pointer;
+	transition: all 0.2s ease;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	transition: $button-transition;
-	cursor: pointer;
-	border: 0.0625rem solid $border-color;
-	background-color: #fff;
-	color: $text-color;
 	text-decoration: none;
-	gap: $spacing-xs;
 
 	&:disabled {
-		opacity: 0.7;
 		cursor: not-allowed;
-		background-color: $background-light;
-		color: $text-secondary;
-		border-color: $border-color;
-	}
-
-	&:hover:not(:disabled) {
-		background-color: $background-light;
-		border-color: color.adjust($border-color, $lightness: -5%);
-		color: $text-color;
+		opacity: 0.7;
 	}
 
 	&:focus:not(:disabled) {
-		box-shadow: 0 0 0 0.125rem rgba($primary-color, 0.2);
 		outline: none;
+		box-shadow: 0 0 0 0.125rem rgba(35, 107, 168, 0.25);
 	}
 
-	svg {
-		width: $spacing-md;
-		height: $spacing-md;
+	&:hover:not(:disabled) {
+		text-decoration: none;
 	}
 }
 
 @mixin button-primary {
-
-	@include button-base;
 	background-color: $primary-color;
-	border-color: $primary-color;
+	border: 0.0625rem solid $primary-color;
 	color: #fff;
-
-	&:hover:not(:disabled) {
-		background-color: color.adjust($primary-color, $lightness: -5%);
-		border-color: color.adjust($primary-color, $lightness: -5%);
-		color: #fff;
-	}
-
-	&:focus:not(:disabled) {
-		box-shadow: 0 0 0 0.125rem rgba($primary-color, 0.2);
-	}
 
 	&:disabled {
 		background-color: color.adjust($primary-color, $alpha: -0.5);
 		border-color: color.adjust($primary-color, $alpha: -0.5);
 		color: #fff;
 	}
+
+	&:focus:not(:disabled) {
+		background-color: color.adjust($primary-color, $lightness: -2%);
+		border-color: color.adjust($primary-color, $lightness: -2%);
+	}
+
+	&:hover:not(:disabled) {
+		background-color: color.adjust($primary-color, $lightness: -5%);
+		border-color: color.adjust($primary-color, $lightness: -5%);
+	}
 }
 
 @mixin button-secondary {
-
-	@include button-base;
 	background-color: transparent;
-	border-color: $border-color;
+	border: 0.0625rem solid $border-color;
 	color: $text-color;
+
+	&:disabled {
+		background-color: $background-light;
+		color: $text-secondary;
+	}
+
+	&:focus:not(:disabled) {
+		border-color: $primary-color;
+	}
 
 	&:hover:not(:disabled) {
 		background-color: $background-light;
-		border-color: color.adjust($border-color, $lightness: -5%);
-		color: $text-color;
+		border-color: color.adjust($border-color, $lightness: -10%);
 	}
 }
 
 @mixin button-destructive {
-
-	@include button-base;
 	background-color: $error-color;
-	border-color: $error-color;
+	border: 0.0625rem solid $error-color;
 	color: #fff;
-
-	&:hover:not(:disabled) {
-		background-color: color.adjust($error-color, $lightness: -5%);
-		border-color: color.adjust($error-color, $lightness: -5%);
-		color: #fff;
-	}
-
-	&:focus:not(:disabled) {
-		box-shadow: 0 0 0 0.125rem rgba($error-color, 0.2);
-	}
 
 	&:disabled {
 		background-color: color.adjust($error-color, $alpha: -0.5);
 		border-color: color.adjust($error-color, $alpha: -0.5);
+		color: #fff;
+	}
+
+	&:focus:not(:disabled) {
+		background-color: color.adjust($error-color, $lightness: -2%);
+		border-color: color.adjust($error-color, $lightness: -2%);
+	}
+
+	&:hover:not(:disabled) {
+		background-color: color.adjust($error-color, $lightness: -5%);
+		border-color: color.adjust($error-color, $lightness: -5%);
 	}
 }
 

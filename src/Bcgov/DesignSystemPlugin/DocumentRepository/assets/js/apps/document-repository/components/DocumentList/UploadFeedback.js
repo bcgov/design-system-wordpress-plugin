@@ -36,16 +36,16 @@ const UploadFeedback = ({ uploadingFiles, showUploadFeedback, onClose }) => {
     const processingCount = uploadingFiles.filter(f => f.status === 'processing').length;
     const hasPlaceholder = uploadingFiles.some(f => f.isPlaceholder);
 
-    // Auto-close after 3 seconds when all uploads are complete or have errors
+    // Auto-close after 3 seconds only when all uploads are complete or have errors
     useEffect(() => {
-        if (showUploadFeedback && uploadingCount === 0 && processingCount === 0) {
+        if (showUploadFeedback && uploadingCount === 0 && processingCount === 0 && !hasPlaceholder) {
             const timer = setTimeout(() => {
                 onClose();
-            }, 3000); // 3 seconds to match error notice
+            }, 3000); // 3 seconds to match error notice timing
 
             return () => clearTimeout(timer);
         }
-    }, [showUploadFeedback, uploadingCount, processingCount, onClose]);
+    }, [showUploadFeedback, uploadingCount, processingCount, hasPlaceholder, onClose]);
 
     return (
         <div className="upload-feedback">

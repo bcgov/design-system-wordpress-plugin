@@ -231,6 +231,17 @@ const DocumentList = ({
     const handleFiles = useCallback((files) => {
         // Show immediate feedback before any processing
         setShowUploadFeedback(true);
+        
+        if (!files || files.length === 0) {
+            setNotice({
+                status: 'error',
+                message: __('No files were selected for upload.', 'bcgov-design-system')
+            });
+            setShowUploadFeedback(false);
+            return;
+        }
+        
+        // Display placeholder while processing files
         setUploadingFiles([{
             id: 'placeholder',
             name: sprintf(__('Preparing %d files...', 'bcgov-design-system'), files.length),
@@ -239,54 +250,99 @@ const DocumentList = ({
             isPlaceholder: true
         }]);
 
-        // Process files immediately
+        // Process files and create file objects for display
         const processedFiles = files.map(file => ({
             id: Math.random().toString(36).substr(2, 9),
             name: file.name,
+            originalFile: file,
             status: 'processing',
             error: null
         }));
+        
+        // Update UI with processing files
         setUploadingFiles(processedFiles);
         
-        // Filter for PDF files
-        const pdfFiles = files.filter(file => 
-            file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')
+        // Filter for PDF files and check file types
+        const pdfFiles = [];
+        const nonPdfFiles = [];
+        
+        files.forEach(file => {
+            if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+                pdfFiles.push(file);
+            } else {
+                nonPdfFiles.push(file);
+            }
+        });
+        
+        // Update UI with file validation results
+        setUploadingFiles(prev => 
+            prev.map(f => {
+                const originalFile = files.find(file => file.name === f.name);
+                const isPdf = originalFile && 
+                    (originalFile.type === 'application/pdf' || originalFile.name.toLowerCase().endsWith('.pdf'));
+                
+                return {
+                    ...f,
+                    status: isPdf ? 'uploading' : 'error',
+                    error: isPdf ? null : __('Not a PDF file. Only PDF files are allowed.', 'bcgov-design-system')
+                };
+            })
         );
         
+        // Show error notice if any files were skipped
+        if (nonPdfFiles.length > 0) {
+            setNotice({
+                status: 'warning',
+                message: sprintf(
+                    __('%d of %d files were skipped because they are not PDFs.', 'bcgov-design-system'),
+                    nonPdfFiles.length,
+                    files.length
+                )
+            });
+            
+            // Auto-dismiss notice after 3 seconds
+            setTimeout(() => setNotice(null), 3000);
+        }
+        
+        // If no valid files, return
         if (pdfFiles.length === 0) {
-            setUploadingFiles(prev => prev.map(f => ({
-                ...f,
-                status: 'error',
-                error: 'Only PDF files are allowed.'
-            })));
             return;
         }
 
-        // Update file statuses
-        setUploadingFiles(prev => prev.map(f => {
-            const isPdf = f.name.toLowerCase().endsWith('.pdf');
-            return {
-                ...f,
-                status: isPdf ? 'uploading' : 'error',
-                error: isPdf ? null : 'Not a PDF file'
-            };
-        }));
-
-        // Handle each PDF file
+        // Upload each valid PDF file
         pdfFiles.forEach((file) => {
             onFileDrop(file)
                 .then(() => {
+                    // Update UI with success
                     setUploadingFiles(prev => prev.map(f => 
                         f.name === file.name ? { ...f, status: 'success' } : f
                     ));
                 })
                 .catch(error => {
+                    // Update UI with error details
                     setUploadingFiles(prev => prev.map(f => 
-                        f.name === file.name ? { ...f, status: 'error', error: error.message } : f
+                        f.name === file.name ? { 
+                            ...f, 
+                            status: 'error', 
+                            error: error.message || __('Upload failed. Please try again.', 'bcgov-design-system')
+                        } : f
                     ));
+                    
+                    // Show error notice
+                    setNotice({
+                        status: 'error',
+                        message: sprintf(
+                            __('Error uploading "%s": %s', 'bcgov-design-system'),
+                            file.name,
+                            error.message || __('Upload failed', 'bcgov-design-system')
+                        )
+                    });
+                    
+                    // Auto-dismiss notice after 3 seconds
+                    setTimeout(() => setNotice(null), 3000);
                 });
         });
-    }, [onFileDrop]);
+    }, [onFileDrop, setNotice]);
 
     const handleUploadClick = useCallback(() => {
         if (fileInputRef.current) {
@@ -595,14 +651,17 @@ const DocumentList = ({
         <ErrorBoundary>
             <div className="document-list">
                 {renderRetryNotice()}
-                {/* Upload Section */}
+                {/* Upload Section - Improved Drag and Drop Area */}
                 <div 
-                    className={`document-upload-section ${isDragging ? 'dragging' : ''}`}
+                    className={`drag-drop-area ${isDragging ? 'is-drag-active' : ''}`}
                     onDragEnter={handleDragEnter}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
                     onClick={handleUploadClick}
+                    tabIndex="0"
+                    role="button"
+                    aria-label={__('Click or drag files to upload', 'bcgov-design-system')}
                 >
                     <input
                         type="file"
@@ -611,14 +670,28 @@ const DocumentList = ({
                         onChange={handleFileInputChange}
                         multiple
                         accept=".pdf"
+                        aria-hidden="true"
                     />
-                    <div className="document-upload-content">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48">
-                            <path fill="none" d="M0 0h24v24H0z"/>
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" fill="currentColor"/>
-                        </svg>
-                        <h3>{__('Drag or Click to Upload', 'bcgov-design-system')}</h3>
-                        <p>{__('Drop your files here or click to browse', 'bcgov-design-system')}</p>
+                    <div className="drag-drop-content">
+                        <div className="drag-drop-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48">
+                                <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" fill="currentColor"/>
+                            </svg>
+                        </div>
+                        <h3>{__('Drag & Drop or Click to Upload', 'bcgov-design-system')}</h3>
+                        <p>{__('Upload PDF documents to the repository', 'bcgov-design-system')}</p>
+                        <Button 
+                            variant="secondary"
+                            className="upload-button"
+                            icon={
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
+                                    <path fill="none" d="M0 0h24v24H0z"/>
+                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/>
+                                </svg>
+                            }
+                        >
+                            {__('Choose Files', 'bcgov-design-system')}
+                        </Button>
                     </div>
                 </div>
 
@@ -627,9 +700,8 @@ const DocumentList = ({
                     <div className="document-list-left-actions">
                         {selectedDocuments.length > 0 && (
                             <Button
-                                isDestructive
+                                className="custom-destructive-button bulk-delete-button"
                                 onClick={() => setBulkDeleteConfirmOpen(true)}
-                                className="bulk-delete-button"
                                 disabled={isMultiDeleting}
                             >
                                 {isMultiDeleting ? (
@@ -730,7 +802,7 @@ const DocumentList = ({
                             </p>
                             <div className="modal-actions">
                                 <Button
-                                    isDestructive
+                                    className="custom-destructive-button"
                                     onClick={handleBulkDelete}
                                     disabled={isMultiDeleting}
                                 >
@@ -770,12 +842,13 @@ const DocumentList = ({
                             <div className="modal-actions">
                                 <Button
                                     onClick={() => setDeleteDocument(null)}
+                                    className="cancel-button"
                                     disabled={isDeleting}
                                 >
                                     {__('Cancel', 'bcgov-design-system')}
                                 </Button>
                                 <Button
-                                    isDestructive
+                                    className="custom-destructive-button delete-button"
                                     onClick={() => {
                                         onDelete(deleteDocument.id);
                                         setDeleteDocument(null);

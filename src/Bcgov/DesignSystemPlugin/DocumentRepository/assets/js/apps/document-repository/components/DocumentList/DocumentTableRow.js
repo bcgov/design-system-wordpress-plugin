@@ -118,7 +118,7 @@ const DocumentTableRow = ({
                     <Button
                         variant="secondary"
                         onClick={() => window.open(document.metadata.document_file_url, '_blank')}
-                        className="icon-button"
+                        className="icon-button table-action-button"
                         title={__('Download', 'bcgov-design-system')}
                         aria-label={__('Download', 'bcgov-design-system')}
                     >
@@ -131,7 +131,7 @@ const DocumentTableRow = ({
                     <Button
                         variant="secondary"
                         onClick={() => onEdit(document)}
-                        className="icon-button"
+                        className="icon-button table-action-button"
                         title={__('Edit Metadata', 'bcgov-design-system')}
                         aria-label={__('Edit Metadata', 'bcgov-design-system')}
                     >
@@ -142,10 +142,9 @@ const DocumentTableRow = ({
 
                     {/* Delete button */}
                     <Button
-                        isDestructive
+                        className="custom-destructive-button icon-button table-action-button"
                         onClick={() => onDelete(document)}
                         disabled={isDeleting}
-                        className="icon-button"
                         title={__('Delete', 'bcgov-design-system')}
                         aria-label={__('Delete', 'bcgov-design-system')}
                     >

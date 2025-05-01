@@ -1,3 +1,6 @@
+/* stylelint-disable no-descending-specificity, no-duplicate-selectors */
+/* stylelint-disable comment-empty-line-before */
+
 /**
  * Metadata Modal Styles
  *
@@ -9,153 +12,436 @@
 @use "sass:color";
 @use "variables" as *;
 
-// Base Modal Styles
+/* =========================================
+   Basic Modal Elements - Least Specific
+   ========================================= */
+
+// Basic modal overlay
+.components-modal__screen-overlay {
+	background-color: rgba(0, 0, 0, 0.5);
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 100000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+// Base button styling for modal buttons
 .components-button {
 
-	&.is-destructive {
+	&.modal-close-button {
+		position: absolute;
+		top: 0.75rem;
+		right: 0.75rem;
+		padding: 0.5rem;
+		width: 2rem;
+		height: 2rem;
+		border: none;
+		background: none;
+		z-index: 10;
 
-		@include button-destructive;
-		color: #fff !important;
-
-		&:not(.is-primary):not(.is-secondary):not(.is-tertiary):not(.is-link) {
-			color: #fff !important;
-			background-color: $error-color;
-			border-color: $error-color;
-
-			&:hover:not(:disabled) {
-				color: #fff !important;
-				background-color: color.adjust($error-color, $lightness: -5%);
-				border-color: color.adjust($error-color, $lightness: -5%);
-			}
+		svg {
+			width: 1rem;
+			height: 1rem;
+			color: #666;
 		}
-	}
 
-	&.is-secondary {
-
-		@include button-secondary;
+		&:hover {
+			background: #f6f7f7;
+		}
 	}
 }
 
-// Modal Styles (Global)
+/* =========================================
+   Modal Component Styles - Medium Specificity
+   ========================================= */
+
+// Base modal content
+.components-modal__content {
+	background-color: #fff;
+	max-width: 40rem;
+	width: 100%;
+	position: relative;
+	padding: 0;
+	border-radius: 0.25rem;
+	box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+	overflow: hidden;
+	max-height: calc(100vh - 3rem);
+	display: flex;
+	flex-direction: column;
+}
+
+// Modal header
+.components-modal__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	background-color: #fff;
+	padding: 1rem 1.5rem;
+	border-bottom: 0.0625rem solid #ddd;
+	position: relative;
+}
+
+// Modal form
+.modal-form {
+	padding: 1.5rem;
+	flex: 1;
+	overflow-y: auto;
+}
+
+// Modal actions
+.modal-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.75rem;
+	padding: 1rem 1.5rem;
+	border-top: 0.0625rem solid #ddd;
+	background-color: #f6f7f7;
+
+	.components-button {
+		min-width: 5rem;
+
+		&.is-secondary {
+
+			@include button-secondary;
+		}
+
+		&.is-primary {
+
+			@include button-primary;
+
+			&:disabled {
+				background-color: #e0e0e0;
+				border-color: #e0e0e0;
+				color: #666;
+				opacity: 1;
+			}
+		}
+
+		&.is-destructive {
+
+			@include button-destructive;
+
+			&:disabled {
+				background-color: rgba($error-color, 0.3);
+				border-color: rgba($error-color, 0.3);
+				color: #fff;
+				opacity: 1;
+			}
+		}
+	}
+}
+
+/* =========================================
+   Metadata-Specific Modal Components - Higher Specificity
+   ========================================= */
+
+// Metadata edit modal
 .metadata-edit-modal {
 	font-family: $font-family-base;
 
-	.components-modal__content {
+	// Target the wrapper div between header and form
+	> div {
 		padding: 0;
 		margin: 0;
 	}
 
-	.components-modal__header {
-
-		@include modal-header;
-	}
-
 	.metadata-edit-form {
-		padding: $spacing-lg;
+		padding: 0 $spacing-lg $spacing-lg;
 
-		.modal-actions {
+		.metadata-fields {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+			gap: 1.5rem;
+		}
 
-			@include modal-actions;
+		// Add padding to the first element in the form instead of the form itself
+		.metadata-field-form {
+			padding-top: 0.75rem;
+		}
 
-			.components-button {
+		.metadata-field {
+			display: flex;
+			flex-direction: column;
+			gap: 0.5rem;
+			margin-bottom: 0.75rem;
 
-				@include button-base;
-				min-width: 6.25rem;
-				justify-content: center;
+			&:first-child {
+				margin-top: 0;
+			}
 
-				&.is-primary {
+			label {
+				font-size: 0.875rem;
+				font-weight: 600;
+				color: #333;
+				margin-bottom: 0.25rem;
+			}
 
-					@include button-primary;
+			.field-input {
+				display: flex;
+				flex-direction: column;
+				gap: 0.25rem;
 
-					&:disabled {
-						background-color: #e0e0e0;
-						border-color: #e0e0e0;
-						color: #666;
-						opacity: 1;
+				.components-text-control__input,
+				.components-select-control__input {
+					width: 100%;
+					padding: 0.5rem;
+					font-size: 0.875rem;
+					border: 0.0625rem solid #ddd;
+					border-radius: 0.25rem;
+
+					&:focus {
+						border-color: $primary-color;
+						box-shadow: 0 0 0 0.125rem rgba($primary-color, 0.2);
+						outline: none;
 					}
 				}
 
-				&.is-secondary {
-
-					@include button-secondary;
+				.error-message {
+					font-size: 0.75rem;
+					color: $error-color;
 				}
 			}
 		}
+	}
+}
 
-		.non-editable-metadata {
+// Delete field modal
+.delete-field-modal,
+.metadata-field-modal {
+	// Target the wrapper div between header and content
+	> div {
+		padding: 0;
+		margin: 0;
+	}
 
-			@include info-box;
-			margin: $spacing-lg 0;
+	// Remove extra padding from the document delete form
+	.document-delete-form {
+		padding: 0;
+	}
 
-			h3 {
-				font-size: $font-size-base;
-				font-weight: $font-weight-medium;
-				margin: 0 0 $spacing-md 0;
-				color: $text-color;
-			}
+	.warning-message,
+	.delete-warning {
+		display: flex;
+		gap: 1rem;
+		padding: 1rem;
+		background-color: #fff7f7;
+		border-radius: 0.25rem;
+		margin: 1rem 1.5rem 1.5rem;
 
-			.metadata-field {
-				margin-bottom: $spacing-sm;
-				display: flex;
-				align-items: flex-start;
-
-				&:last-child {
-					margin-bottom: 0;
-				}
-
-				label {
-					font-size: $font-size-sm;
-					color: $text-secondary;
-					width: 7.5rem;
-					flex-shrink: 0;
-					padding-top: 0.125rem;
-				}
-
-				.field-value {
-					font-size: $font-size-base;
-					color: $text-color;
-					flex: 1;
-					word-break: break-word;
-					line-height: $line-height-base;
-				}
-			}
+		.warning-icon {
+			color: $error-color;
+			font-size: 1.5rem;
+			flex-shrink: 0;
 		}
 
-		.components-base-control {
-			margin-bottom: $spacing-md;
+		.warning-content {
+			flex: 1;
 
-			&:last-child {
-				margin-bottom: 0;
-			}
-
-			.components-base-control__label {
-				font-size: $font-size-sm;
-				font-weight: $font-weight-normal;
-				color: $text-secondary;
-				margin-bottom: $spacing-xs;
+			h3,
+			strong {
+				font-size: 1rem;
+				color: #333;
+				margin: 0 0 0.5rem;
 				display: block;
 			}
 
-			.components-text-control__input {
-				width: 100%;
-				height: 2.25rem;
-				padding: $spacing-xs $spacing-sm;
-				border: 0.0625rem solid $border-color;
-				border-radius: $border-radius-sm;
-				font-size: $font-size-base;
-				color: $text-color;
-				background-color: #fff;
+			p {
+				font-size: 0.875rem;
+				color: #666;
+				margin: 0;
+			}
+		}
+	}
 
-				&:focus {
-					border-color: $primary-color;
-					box-shadow: $box-shadow-sm;
-					outline: none;
+	.field-details,
+	.document-info {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		gap: 0.5rem 1rem;
+		margin: 0 1.5rem 1.5rem;
+		padding: 1rem;
+		background: #f0f0f0;
+		border-radius: 0.25rem;
+
+		h3 {
+			font-size: 0.875rem;
+			font-weight: 600;
+			margin: 0 0 0.75rem;
+			color: #333;
+			grid-column: 1 / -1;
+		}
+
+		.field-label,
+		.label {
+			font-size: 0.875rem;
+			color: #666;
+			font-weight: 400;
+		}
+
+		.field-value,
+		.value {
+			font-size: 0.875rem;
+			color: #333;
+			font-weight: 500;
+		}
+	}
+
+	// Style the action buttons
+	.delete-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: 0.75rem;
+		padding: 1rem 1.5rem;
+		border-top: 0.0625rem solid #ddd;
+		background-color: #f6f7f7;
+		margin: 0;
+	}
+}
+
+// View metadata modal
+.view-metadata-modal {
+
+	.metadata-fields {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+		gap: 1.5rem;
+
+		.metadata-field {
+			display: flex;
+			flex-direction: column;
+			gap: 0.5rem;
+
+			.field-label {
+				font-size: 0.75rem;
+				color: #666;
+			}
+
+			.field-value {
+				font-size: 0.875rem;
+				color: #333;
+				font-weight: 500;
+			}
+		}
+	}
+
+	.system-metadata {
+		margin-top: 1.5rem;
+		padding-top: 1.5rem;
+		border-top: 0.0625rem solid #ddd;
+
+		h3 {
+			font-size: 0.875rem;
+			font-weight: 600;
+			color: #333;
+			margin: 0 0 1rem;
+		}
+
+		.metadata-fields {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+			gap: 1rem;
+		}
+	}
+}
+
+// Add field modal
+.add-field-modal {
+
+	.field-form {
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+
+		.form-row {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+			gap: 1.5rem;
+
+			.form-field {
+				display: flex;
+				flex-direction: column;
+				gap: 0.5rem;
+
+				label {
+					font-size: 0.875rem;
+					font-weight: 600;
+					color: #333;
 				}
 
-				&:disabled {
-					background-color: $background-light;
-					color: $text-secondary;
-					cursor: not-allowed;
+				.components-text-control__input,
+				.components-select-control__input {
+					width: 100%;
+					padding: 0.5rem;
+					font-size: 0.875rem;
+					border: 0.0625rem solid #ddd;
+					border-radius: 0.25rem;
+
+					&:focus {
+						border-color: $primary-color;
+						box-shadow: 0 0 0 0.125rem rgba($primary-color, 0.2);
+						outline: none;
+					}
+				}
+
+				.error-message {
+					font-size: 0.75rem;
+					color: $error-color;
+				}
+			}
+		}
+
+		.options-section {
+
+			h3 {
+				font-size: 0.875rem;
+				font-weight: 600;
+				color: #333;
+				margin: 0 0 1rem;
+			}
+
+			.options-list {
+				display: flex;
+				flex-direction: column;
+				gap: 0.75rem;
+
+				.option-item {
+					display: flex;
+					align-items: center;
+					gap: 0.75rem;
+
+					.components-text-control__input {
+						flex: 1;
+					}
+
+					.components-button {
+						height: 2rem;
+						width: 2rem;
+						min-width: 2rem;
+						padding: 0;
+						color: $error-color;
+
+						svg {
+							width: 1rem;
+							height: 1rem;
+						}
+					}
+				}
+			}
+
+			.add-option-button {
+				margin-top: 1rem;
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+
+				svg {
+					width: 1rem;
+					height: 1rem;
 				}
 			}
 		}
@@ -166,6 +452,13 @@
 .components-modal__screen-overlay {
 	font-family: $font-family-base;
 
+	// Using less specific selectors first
+	.components-button {
+		// Button base styles
+		@include button-base;
+	}
+
+	// Then more specific selectors
 	.delete-confirmation-content {
 		padding: $spacing-lg;
 
@@ -189,14 +482,34 @@
 
 			ul {
 				margin: 0;
-				padding: 0;
-				list-style: none;
+				padding-left: 1.5rem;
+				list-style: disc;
+				max-height: 150px;
+				overflow-y: auto;
+				overflow: auto;
+
+				/* Ensure scrollbar appearance */
+				&::-webkit-scrollbar {
+					width: 6px;
+					height: 6px;
+				}
+
+				&::-webkit-scrollbar-track {
+					background: #f1f1f1;
+					border-radius: 3px;
+				}
+
+				&::-webkit-scrollbar-thumb {
+					background: #ccc;
+					border-radius: 3px;
+				}
 
 				li {
 					font-size: $font-size-sm;
 					color: $text-color;
 					line-height: $line-height-base;
 					padding: $spacing-xs 0;
+					display: list-item;
 				}
 			}
 		}
@@ -223,21 +536,6 @@
 		.modal-actions {
 
 			@include modal-actions;
-
-			.components-button {
-
-				@include button-base;
-
-				&:not(.is-destructive) {
-
-					@include button-secondary;
-				}
-
-				&.is-destructive {
-
-					@include button-destructive;
-				}
-			}
 		}
 	}
 }

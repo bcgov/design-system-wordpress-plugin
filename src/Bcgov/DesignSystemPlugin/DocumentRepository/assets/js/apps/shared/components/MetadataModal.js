@@ -42,6 +42,7 @@ const MetadataModal = ({
                         variant="secondary"
                         onClick={onClose}
                         disabled={isSaving}
+                        className="cancel-button"
                     >
                         {__('Cancel', 'bcgov-design-system')}
                     </Button>
@@ -50,6 +51,7 @@ const MetadataModal = ({
                         type="submit"
                         isBusy={isSaving}
                         disabled={isSaving || isDisabled}
+                        className="save-button"
                     >
                         {__('Save Changes', 'bcgov-design-system')}
                     </Button>
