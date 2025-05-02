@@ -66,15 +66,14 @@ class DocumentRepository {
     public function __construct( RepositoryConfig $config = null ) {
         // Initialize configuration or use provided one.
         $this->config = $config ?? new RepositoryConfig();
-
-        // Register all WordPress hooks.
-        $this->register();
     }
 
     /**
-     * Register WordPress hooks and integrations.
+     * Initialize the plugin by registering WordPress hooks and integrations.
+     * 
+     * @return void
      */
-    public function register(): void {
+    public function init(): void {
         // Core WordPress integration hooks.
         add_action( 'init', [ $this, 'register_post_types' ] );
         add_action( 'rest_api_init', [ $this, 'register_rest_routes' ], 10 );

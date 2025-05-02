@@ -344,7 +344,12 @@ const DocumentList = ({
         });
     }, [onFileDrop, setNotice]);
 
-    const handleUploadClick = () => {
+    const handleUploadClick = (e) => {
+        // If event exists, prevent it from bubbling up to parent elements
+        if (e) {
+            e.stopPropagation();
+        }
+        
         if (fileInputRef.current) {
             fileInputRef.current.click();
         }
@@ -682,7 +687,10 @@ const DocumentList = ({
                         <p>{__('Upload PDF documents to the repository', 'bcgov-design-system')}</p>
                         <Button 
                             className="doc-repo-button edit-button upload-button"
-                            onClick={handleUploadClick}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleUploadClick();
+                            }}
                         >
                             {__('Choose Files', 'bcgov-design-system')}
                         </Button>

@@ -188,3 +188,4 @@ $in_page_nav = new InPageNav();
 
 // Initialize the DocumentRepository.
 $document_repository = new DocumentRepository();
+$document_repository->init();
