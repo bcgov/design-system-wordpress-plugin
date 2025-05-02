@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from '@wordpress/element';
+import { useState, useCallback, useMemo } from '@wordpress/element';
 import { Button, Modal, Notice, SelectControl, TextControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { sprintf } from '@wordpress/i18n';
@@ -10,6 +10,12 @@ import MetadataModal from '../../../shared/components/MetadataModal';
 import UploadArea from './UploadArea';
 import PaginationControls from './PaginationControls';
 import RetryNotice from './RetryNotice';
+
+// Import custom hooks
+import useNotifications from './hooks/useNotifications';
+import useErrorHandling from './hooks/useErrorHandling';
+import useMetadataManagement from './hooks/useMetadataManagement';
+import useFileHandling from './hooks/useFileHandling';
 
 /**
  * DocumentList Component
@@ -32,7 +38,6 @@ import RetryNotice from './RetryNotice';
  * @param {Function} props.onDocumentsUpdate - Callback when documents are updated
  * @param {Array} props.metadataFields - Array of metadata field definitions
  */
-
 const DocumentList = ({
     documents = [],
     currentPage = 1,
@@ -47,29 +52,12 @@ const DocumentList = ({
     onDocumentsUpdate,
     metadataFields = [],
 }) => {
-    // State management
-    const [localDocuments, setLocalDocuments] = useState(documents);
+    // State for delete confirmation
     const [deleteDocument, setDeleteDocument] = useState(null);
-    const [showUploadFeedback, setShowUploadFeedback] = useState(false);
-    const [uploadingFiles, setUploadingFiles] = useState([]);
     const [bulkDeleteConfirmOpen, setBulkDeleteConfirmOpen] = useState(false);
     const [isMultiDeleting, setIsMultiDeleting] = useState(false);
-    const [editingMetadata, setEditingMetadata] = useState(null);
-    const [editedMetadataValues, setEditedMetadataValues] = useState({});
-    const [metadataErrors, setMetadataErrors] = useState({});
-    const [isSavingMetadata, setIsSavingMetadata] = useState(false);
-    const [isSpreadsheetMode, setIsSpreadsheetMode] = useState(false);
-    const [bulkEditedMetadata, setBulkEditedMetadata] = useState({});
-    const [isSavingBulk, setIsSavingBulk] = useState(false);
-    const [notice, setNotice] = useState(null);
-    const [hasMetadataChanges, setHasMetadataChanges] = useState(false);
-    const [failedOperations, setFailedOperations] = useState([]);
-    const [retryCount, setRetryCount] = useState({});
-
-    // Memoize document IDs for performance
-    const documentIds = useMemo(() => localDocuments.map(doc => doc.id), [localDocuments]);
-
-    // Memoize formatFileSize to prevent recreation on each render
+    
+    // Memoize formatFileSize function
     const formatFileSize = useMemo(() => (bytes) => {
         if (bytes === 0) return '0 Bytes';
         const k = 1024;
@@ -87,120 +75,75 @@ const DocumentList = ({
         return settings?.apiNamespace || 'wp/v2';
     }, []);
 
-    // Effects
-    useEffect(() => {
-        setLocalDocuments(documents);
-    }, [documents]);
+    // Use notifications hook
+    const { 
+        notice, 
+        showNotification, 
+        clearNotification 
+    } = useNotifications();
 
-    /**
-     * Handles errors and tracks failed operations
-     * @param {string} operationType - Type of operation that failed (delete, metadata, upload)
-     * @param {number|string} documentId - ID of the document or operation that failed
-     * @param {Error|Object} error - Error object
-     * @param {Object} options - Additional options
-     * @param {boolean} options.addToRetryQueue - Whether to add to the retry queue
-     * @param {boolean} options.showNotice - Whether to show a notification
-     * @param {string} options.customMessage - Custom message to display instead of the default
-     */
-    const handleOperationError = useCallback((operationType, documentId, error, options = {}) => {
-        const { 
-            addToRetryQueue = true, 
-            showNotice = true,
-            customMessage = null 
-        } = options;
+    // Use error handling hook
+    const { 
+        failedOperations, 
+        handleOperationError, 
+        retryOperation, 
+        retryAllOperations 
+    } = useErrorHandling({ 
+        onShowNotification: showNotification 
+    });
+
+    // Use metadata management hook - critical for spreadsheet mode
+    const {
+        // Single document editing
+        editingMetadata,
+        editedValues,
+        errors: metadataErrors,
+        isSaving: isSavingMetadata,
+        hasMetadataChanged,
+        handleEditMetadata,
+        updateEditedField,
+        handleSaveMetadata,
         
-        // Log for debugging
-        console.error(`Operation ${operationType} failed:`, { documentId, error });
+        // Spreadsheet mode 
+        isSpreadsheetMode,
+        hasMetadataChanges,
+        bulkEditedMetadata,
+        isSavingBulk,
+        handleMetadataChange,
+        toggleSpreadsheetMode,
+        handleSaveBulkChanges,
         
-        // Add to retry queue if needed
-        if (addToRetryQueue) {
-            setFailedOperations(prev => [...prev, { type: operationType, documentId, error }]);
-            setRetryCount(prev => ({
-                ...prev,
-                [documentId]: (prev[documentId] || 0) + 1
-            }));
-        }
+        // Document state
+        localDocuments
+    } = useMetadataManagement({
+        documents,
+        metadataFields,
+        apiNamespace,
+        onUpdateDocuments: onDocumentsUpdate,
+        onError: handleOperationError,
+        onShowNotification: showNotification
+    });
 
-        // Show notification if needed
-        if (showNotice) {
-            const errorMessage = customMessage || 
-                error.message || 
-                error.data?.message || 
-                __('An unknown error occurred.', 'bcgov-design-system');
-                
-            setNotice({
-                status: 'error',
-                message: documentId ? 
-                    sprintf(
-                        __('Operation failed for document %d: %s', 'bcgov-design-system'),
-                        documentId,
-                        errorMessage
-                    ) : errorMessage
-            });
-            
-            // Auto-dismiss notice after 3 seconds
-            setTimeout(() => setNotice(null), 3000);
-        }
-    }, []);
+    // Use file handling hook
+    const {
+        uploadingFiles,
+        showUploadFeedback,
+        handleFiles,
+        closeUploadFeedback
+    } = useFileHandling({
+        onFileDrop,
+        onShowNotification: showNotification,
+        onError: handleOperationError
+    });
 
-    /**
-     * Display a notification message
-     * @param {string} status - Status of the notification (success, error, warning)
-     * @param {string} message - Message to display
-     * @param {number} timeout - Time in ms before auto-dismissing (0 to disable)
-     */
-    const showNotification = useCallback((status, message, timeout = 3000) => {
-        setNotice({ status, message });
-        
-        if (timeout > 0) {
-            setTimeout(() => setNotice(null), timeout);
-        }
-    }, []);
-
-    /**
-     * Retry failed operations
-     * @param {Object} operation - Failed operation to retry
-     */
-    const retryOperation = useCallback(async (operation) => {
-        const maxRetries = 3;
-        if (retryCount[operation.documentId] >= maxRetries) {
-            setNotice({
-                status: 'error',
-                message: sprintf(
-                    __('Maximum retry attempts reached for document %d', 'bcgov-design-system'),
-                    operation.documentId
-                )
-            });
-            return;
-        }
-
-        try {
-            switch (operation.type) {
-                case 'delete':
-                    await onDelete(operation.documentId);
-                    break;
-                case 'metadata':
-                    await handleSaveMetadata();
-                    break;
-                default:
-                    console.error('Unknown operation type:', operation.type);
-            }
-
-            // Remove from failed operations if successful
-            setFailedOperations(prev => 
-                prev.filter(op => 
-                    !(op.type === operation.type && op.documentId === operation.documentId)
-                )
-            );
-        } catch (error) {
-            handleOperationError(operation.type, operation.documentId, error);
-        }
-    }, [onDelete, handleSaveMetadata, retryCount]);
-
-    // Handler for retrying all failed operations
+    // Handler to retry all failed operations
     const handleRetryAll = useCallback(() => {
-        failedOperations.forEach(retryOperation);
-    }, [failedOperations, retryOperation]);
+        const operationHandlers = {
+            'delete': onDelete,
+            'metadata': handleSaveMetadata
+        };
+        retryAllOperations(operationHandlers);
+    }, [onDelete, handleSaveMetadata, retryAllOperations]);
 
     // Update handleBulkDelete with better error handling
     const handleBulkDelete = useCallback(async () => {
@@ -219,308 +162,6 @@ const DocumentList = ({
             setIsMultiDeleting(false);
         }
     }, [selectedDocuments, onDelete, onSelectAll, handleOperationError, showNotification]);
-
-    // Updated version of handleFiles with standardized error handling
-    const handleFiles = useCallback((files) => {
-        // Show immediate feedback before any processing
-        setShowUploadFeedback(true);
-        
-        if (!files || files.length === 0) {
-            showNotification('error', __('No files were selected for upload.', 'bcgov-design-system'));
-            setShowUploadFeedback(false);
-            return;
-        }
-        
-        // Display placeholder while processing files
-        setUploadingFiles([{
-            id: 'placeholder',
-            name: sprintf(__('Preparing %d files...', 'bcgov-design-system'), files.length),
-            status: 'processing',
-            error: null,
-            isPlaceholder: true
-        }]);
-
-        // Process files and create file objects for display
-        const processedFiles = files.map(file => ({
-            id: Math.random().toString(36).substr(2, 9),
-            name: file.name,
-            originalFile: file,
-            status: 'processing',
-            error: null
-        }));
-        
-        // Update UI with processing files
-        setUploadingFiles(processedFiles);
-        
-        // Filter for PDF files and check file types
-        const pdfFiles = [];
-        const nonPdfFiles = [];
-        
-        files.forEach(file => {
-            if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
-                pdfFiles.push(file);
-            } else {
-                nonPdfFiles.push(file);
-            }
-        });
-        
-        // Update UI with file validation results
-        setUploadingFiles(prev => 
-            prev.map(f => {
-                const originalFile = files.find(file => file.name === f.name);
-                const isPdf = originalFile && 
-                    (originalFile.type === 'application/pdf' || originalFile.name.toLowerCase().endsWith('.pdf'));
-                
-                return {
-                    ...f,
-                    status: isPdf ? 'uploading' : 'error',
-                    error: isPdf ? null : __('Not a PDF file. Only PDF files are allowed.', 'bcgov-design-system')
-                };
-            })
-        );
-        
-        // Show error notice if any files were skipped
-        if (nonPdfFiles.length > 0) {
-            showNotification('warning', sprintf(
-                __('%d of %d files were skipped because they are not PDFs.', 'bcgov-design-system'),
-                nonPdfFiles.length,
-                files.length
-            ));
-        }
-        
-        // If no valid files, return
-        if (pdfFiles.length === 0) {
-            return;
-        }
-
-        // Upload each valid PDF file
-        pdfFiles.forEach((file) => {
-            onFileDrop(file)
-                .then(() => {
-                    // Update UI with success
-                    setUploadingFiles(prev => prev.map(f => 
-                        f.name === file.name ? { ...f, status: 'success' } : f
-                    ));
-                })
-                .catch(error => {
-                    // Update UI with error details
-                    setUploadingFiles(prev => prev.map(f => 
-                        f.name === file.name ? { 
-                            ...f, 
-                            status: 'error', 
-                            error: error.message || __('Upload failed. Please try again.', 'bcgov-design-system')
-                        } : f
-                    ));
-                    
-                    handleOperationError('upload', file.name, error, {
-                        addToRetryQueue: false,
-                        customMessage: sprintf(
-                            __('Error uploading "%s": %s', 'bcgov-design-system'),
-                            file.name,
-                            error.message || __('Upload failed', 'bcgov-design-system')
-                        )
-                    });
-                });
-        });
-    }, [onFileDrop, showNotification, handleOperationError]);
-
-    const handleEditMetadata = useCallback((document) => {
-        const documentToEdit = {
-            ...document,
-            upload_date: document.date || document.upload_date || document.metadata?.upload_date
-        };
-        setEditingMetadata(documentToEdit);
-        
-        // Initialize edited values with current metadata, preserving case
-        const initialValues = {};
-        metadataFields.forEach(field => {
-            // Get the exact value from the document's metadata
-            initialValues[field.id] = document.metadata?.[field.id] ?? '';
-        });
-        setEditedMetadataValues(initialValues);
-        setMetadataErrors({});
-    }, [metadataFields]);
-
-    const hasMetadataChanged = useCallback(() => {
-        if (!editingMetadata) return false;
-        return metadataFields.some(field => {
-            const currentValue = editingMetadata.metadata?.[field.id] || '';
-            const editedValue = editedMetadataValues[field.id] || '';
-            return currentValue !== editedValue;
-        });
-    }, [editingMetadata, editedMetadataValues, metadataFields]);
-
-    const handleMetadataChange = useCallback((documentId, fieldId, value) => {
-        // Get the original document to compare values
-        const originalDoc = localDocuments.find(doc => doc.id === documentId);
-        const originalValue = originalDoc?.metadata?.[fieldId] || '';
-        
-        // Update bulk edited metadata for saving later
-        setBulkEditedMetadata(prev => {
-            const newBulkMetadata = {
-                ...prev,
-                [documentId]: {
-                    ...prev[documentId],
-                    [fieldId]: value // Preserve exact case
-                }
-            };
-            
-            // Check if there are any changes in the new bulk metadata
-            const hasChanged = Object.entries(newBulkMetadata).some(([docId, editedMetadata]) => {
-                const originalDoc = localDocuments.find(doc => doc.id === parseInt(docId));
-                if (!originalDoc) {
-                    return false;
-                }
-                
-                return Object.entries(editedMetadata).some(([fieldId, editedValue]) => {
-                    const originalValue = originalDoc.metadata?.[fieldId] || '';
-                    const isChanged = String(originalValue) !== String(editedValue);
-                    return isChanged;
-                });
-            });
-            
-            setHasMetadataChanges(hasChanged);
-            return newBulkMetadata;
-        });
-
-        // Always update local documents to reflect changes in the UI
-        setLocalDocuments(prev => {
-            const newDocs = prev.map(doc => {
-                if (doc.id === documentId) {
-                    return {
-                        ...doc,
-                        metadata: {
-                            ...doc.metadata,
-                            [fieldId]: value // Preserve exact case
-                        }
-                    };
-                }
-                return doc;
-            });
-            
-            if (typeof onDocumentsUpdate === 'function') {
-                onDocumentsUpdate(newDocs);
-            }
-            
-            return newDocs;
-        });
-    }, [localDocuments, onDocumentsUpdate]);
-
-    const handleSaveMetadata = useCallback(async () => {
-        setIsSavingMetadata(true);
-        
-        try {
-            await apiFetch({
-                path: `/${apiNamespace}/documents/${editingMetadata.id}/metadata`,
-                method: 'POST',
-                data: editedMetadataValues
-            });
-
-            setLocalDocuments(prev => prev.map(doc => 
-                doc.id === editingMetadata.id 
-                    ? { ...doc, metadata: { ...doc.metadata, ...editedMetadataValues } }
-                    : doc
-            ));
-            
-            setEditingMetadata(null);
-            setEditedMetadataValues({});
-            setMetadataErrors({});
-            
-            showNotification('success', __('Document metadata updated successfully', 'bcgov-design-system'));
-        } catch (error) {
-            if (error.data?.errors) {
-                setMetadataErrors(error.data.errors);
-            }
-            
-            handleOperationError('metadata', editingMetadata.id, error, {
-                customMessage: error.data?.message || __('Failed to update metadata', 'bcgov-design-system')
-            });
-        } finally {
-            setIsSavingMetadata(false);
-        }
-    }, [editingMetadata, editedMetadataValues, apiNamespace, showNotification, handleOperationError]);
-
-    // Initialize bulk edit metadata when entering spreadsheet mode
-    useEffect(() => {
-        if (isSpreadsheetMode) {
-            const initialBulkMetadata = {};
-            localDocuments.forEach(doc => {
-                initialBulkMetadata[doc.id] = { ...(doc.metadata || {}) };
-            });
-            setBulkEditedMetadata(initialBulkMetadata);
-            setHasMetadataChanges(false);
-        } else {
-            setBulkEditedMetadata({});
-            setHasMetadataChanges(false);
-        }
-    }, [isSpreadsheetMode]);
-
-    const hasBulkMetadataChanged = useCallback(() => {
-        if (!bulkEditedMetadata || Object.keys(bulkEditedMetadata).length === 0) {
-            return false;
-        }
-        
-        const hasChanges = Object.entries(bulkEditedMetadata).some(([docId, editedMetadata]) => {
-            const originalDoc = localDocuments.find(doc => doc.id === parseInt(docId));
-            if (!originalDoc) {
-                return false;
-            }
-            
-            const hasDocChanges = Object.entries(editedMetadata).some(([fieldId, value]) => {
-                const originalValue = originalDoc.metadata?.[fieldId] || '';
-                const editedValue = value || '';
-                const isChanged = String(originalValue).trim() !== String(editedValue).trim();
-                return isChanged;
-            });
-            
-            return hasDocChanges;
-        });
-        
-        return hasChanges;
-    }, [bulkEditedMetadata, localDocuments]);
-
-    // Update handleSaveBulkChanges with better error handling
-    const handleSaveBulkChanges = useCallback(async () => {
-        setIsSavingBulk(true);
-        const results = await Promise.allSettled(
-            Object.entries(bulkEditedMetadata).map(([docId, metadata]) => 
-                apiFetch({
-                    path: `/${apiNamespace}/documents/${docId}/metadata`,
-                    method: 'POST',
-                    data: metadata
-                })
-            )
-        );
-
-        // Process results
-        const failed = results
-            .map((result, index) => ({
-                result,
-                docId: Object.keys(bulkEditedMetadata)[index]
-            }))
-            .filter(({ result }) => result.status === 'rejected');
-
-        if (failed.length > 0) {
-            failed.forEach(({ result, docId }) => {
-                handleOperationError('metadata', docId, result.reason, {
-                    showNotice: false // Don't show individual notices
-                });
-            });
-
-            showNotification('warning', sprintf(
-                __('%d of %d metadata updates failed. You can retry the failed operations.', 'bcgov-design-system'),
-                failed.length,
-                Object.keys(bulkEditedMetadata).length
-            ), 0); // Don't auto-dismiss
-        } else {
-            showNotification('success', __('All metadata changes saved successfully.', 'bcgov-design-system'));
-            setBulkEditedMetadata({});
-            setHasMetadataChanges(false);
-            setIsSpreadsheetMode(false);
-        }
-
-        setIsSavingBulk(false);
-    }, [bulkEditedMetadata, apiNamespace, handleOperationError, showNotification]);
 
     // Memoize the document table props to prevent unnecessary re-renders
     const documentTableProps = useMemo(() => ({
@@ -546,7 +187,8 @@ const DocumentList = ({
         isSpreadsheetMode,
         bulkEditedMetadata,
         handleEditMetadata,
-        handleMetadataChange
+        handleMetadataChange,
+        formatFileSize
     ]);
 
     return (
@@ -581,7 +223,7 @@ const DocumentList = ({
                         <div className="mode-toggle">
                             <Button
                                 className="doc-repo-button edit-button"
-                                onClick={() => setIsSpreadsheetMode(!isSpreadsheetMode)}
+                                onClick={() => toggleSpreadsheetMode(!isSpreadsheetMode)}
                             >
                                 <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
                                     <path d="M4 4h16v16H4V4zm5.333 0v16m5.334-16v16M4 9.333h16m-16 5.334h16" strokeWidth="2" stroke="currentColor" fill="none" />
@@ -593,6 +235,7 @@ const DocumentList = ({
                                 )}
                             </Button>
                         </div>
+                        {/* Critical for spreadsheet mode: Save Changes button appears when changes are made */}
                         {isSpreadsheetMode && hasMetadataChanges && (
                             <Button
                                 isPrimary
@@ -620,10 +263,7 @@ const DocumentList = ({
                 <UploadFeedback
                     uploadingFiles={uploadingFiles}
                     showUploadFeedback={showUploadFeedback}
-                    onClose={() => {
-                        setShowUploadFeedback(false);
-                        setUploadingFiles([]);
-                    }}
+                    onClose={closeUploadFeedback}
                 />
 
                 {/* Bulk Delete Confirmation Modal */}
@@ -724,9 +364,7 @@ const DocumentList = ({
                         title={__('Edit Document Metadata', 'bcgov-design-system')}
                         isOpen={!!editingMetadata}
                         onClose={() => {
-                            setEditingMetadata(null);
-                            setEditedMetadataValues({});
-                            setMetadataErrors({});
+                            handleEditMetadata(null);
                         }}
                         onSave={handleSaveMetadata}
                         isSaving={isSavingMetadata}
@@ -735,7 +373,7 @@ const DocumentList = ({
                         <div className="editable-metadata">
                             {metadataFields.map(field => {
                                 const error = metadataErrors[field.id];
-                                const currentValue = editedMetadataValues[field.id] ?? '';
+                                const currentValue = editedValues[field.id] ?? '';
                                 
                                 return (
                                     <div key={field.id} className="metadata-field">
@@ -756,19 +394,13 @@ const DocumentList = ({
                                                         }))
                                                     )
                                                 ]}
-                                                onChange={value => setEditedMetadataValues(prev => ({
-                                                    ...prev,
-                                                    [field.id]: value
-                                                }))}
+                                                onChange={value => updateEditedField(field.id, value)}
                                             />
                                         ) : (
                                             <TextControl
                                                 label={field.label}
                                                 value={currentValue}
-                                                onChange={value => setEditedMetadataValues(prev => ({
-                                                    ...prev,
-                                                    [field.id]: value
-                                                }))}
+                                                onChange={value => updateEditedField(field.id, value)}
                                                 type={field.type === 'date' ? 'date' : 'text'}
                                             />
                                         )}
