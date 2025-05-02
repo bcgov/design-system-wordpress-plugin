@@ -382,12 +382,9 @@ const DocumentList = ({
     }, [editingMetadata, editedMetadataValues, metadataFields]);
 
     const handleMetadataChange = useCallback((documentId, fieldId, value) => {
-        console.log('Metadata change:', { documentId, fieldId, value });
-        
         // Get the original document to compare values
         const originalDoc = localDocuments.find(doc => doc.id === documentId);
         const originalValue = originalDoc?.metadata?.[fieldId] || '';
-        console.log('Original value:', originalValue);
         
         // Update bulk edited metadata for saving later
         setBulkEditedMetadata(prev => {
@@ -399,31 +396,20 @@ const DocumentList = ({
                 }
             };
             
-            console.log('New bulk metadata:', newBulkMetadata);
-            
             // Check if there are any changes in the new bulk metadata
             const hasChanged = Object.entries(newBulkMetadata).some(([docId, editedMetadata]) => {
                 const originalDoc = localDocuments.find(doc => doc.id === parseInt(docId));
                 if (!originalDoc) {
-                    console.log('No original doc found for:', docId);
                     return false;
                 }
                 
                 return Object.entries(editedMetadata).some(([fieldId, editedValue]) => {
                     const originalValue = originalDoc.metadata?.[fieldId] || '';
                     const isChanged = String(originalValue) !== String(editedValue);
-                    console.log('Comparing values:', {
-                        docId,
-                        fieldId,
-                        originalValue,
-                        editedValue,
-                        isChanged
-                    });
                     return isChanged;
                 });
             });
             
-            console.log('Has changes:', hasChanged);
             setHasMetadataChanges(hasChanged);
             return newBulkMetadata;
         });
@@ -495,36 +481,26 @@ const DocumentList = ({
     // Initialize bulk edit metadata when entering spreadsheet mode
     useEffect(() => {
         if (isSpreadsheetMode) {
-            console.log('Entering spreadsheet mode');
             const initialBulkMetadata = {};
             localDocuments.forEach(doc => {
-                console.log('Processing document:', doc.id, doc);
                 initialBulkMetadata[doc.id] = { ...(doc.metadata || {}) };
             });
-            console.log('Initial bulk metadata:', initialBulkMetadata);
             setBulkEditedMetadata(initialBulkMetadata);
             setHasMetadataChanges(false);
         } else {
-            console.log('Exiting spreadsheet mode');
             setBulkEditedMetadata({});
             setHasMetadataChanges(false);
         }
     }, [isSpreadsheetMode]);
 
     const hasBulkMetadataChanged = useCallback(() => {
-        console.log('Checking for bulk metadata changes...');
-        console.log('Bulk edited metadata:', bulkEditedMetadata);
-        console.log('Local documents:', localDocuments);
-        
         if (!bulkEditedMetadata || Object.keys(bulkEditedMetadata).length === 0) {
-            console.log('No bulk edited metadata');
             return false;
         }
         
         const hasChanges = Object.entries(bulkEditedMetadata).some(([docId, editedMetadata]) => {
             const originalDoc = localDocuments.find(doc => doc.id === parseInt(docId));
             if (!originalDoc) {
-                console.log('No original doc found for:', docId, 'Available IDs:', localDocuments.map(d => d.id));
                 return false;
             }
             
@@ -532,21 +508,12 @@ const DocumentList = ({
                 const originalValue = originalDoc.metadata?.[fieldId] || '';
                 const editedValue = value || '';
                 const isChanged = String(originalValue).trim() !== String(editedValue).trim();
-                console.log('Comparing:', {
-                    docId,
-                    fieldId,
-                    originalValue,
-                    editedValue,
-                    isChanged
-                });
                 return isChanged;
             });
             
-            console.log('Document changes:', { docId, hasDocChanges });
             return hasDocChanges;
         });
         
-        console.log('Overall changes detected:', hasChanges);
         return hasChanges;
     }, [bulkEditedMetadata, localDocuments]);
 
