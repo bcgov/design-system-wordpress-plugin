@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from '@wordpress/element';
+import { useState, useEffect, useCallback, useMemo } from '@wordpress/element';
 import { Button, Modal, Notice, SelectControl, TextControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { sprintf } from '@wordpress/i18n';
@@ -7,6 +7,9 @@ import ErrorBoundary from './ErrorBoundary';
 import DocumentTable from './DocumentTable';
 import UploadFeedback from './UploadFeedback';
 import MetadataModal from '../../../shared/components/MetadataModal';
+import UploadArea from './UploadArea';
+import PaginationControls from './PaginationControls';
+import RetryNotice from './RetryNotice';
 
 /**
  * DocumentList Component
@@ -47,9 +50,8 @@ const DocumentList = ({
     // State management
     const [localDocuments, setLocalDocuments] = useState(documents);
     const [deleteDocument, setDeleteDocument] = useState(null);
-    const [isDragging, setIsDragging] = useState(false);
-    const [uploadingFiles, setUploadingFiles] = useState([]);
     const [showUploadFeedback, setShowUploadFeedback] = useState(false);
+    const [uploadingFiles, setUploadingFiles] = useState([]);
     const [bulkDeleteConfirmOpen, setBulkDeleteConfirmOpen] = useState(false);
     const [isMultiDeleting, setIsMultiDeleting] = useState(false);
     const [editingMetadata, setEditingMetadata] = useState(null);
@@ -63,10 +65,6 @@ const DocumentList = ({
     const [hasMetadataChanges, setHasMetadataChanges] = useState(false);
     const [failedOperations, setFailedOperations] = useState([]);
     const [retryCount, setRetryCount] = useState({});
-
-    // Refs
-    const fileInputRef = useRef(null);
-    const dragTimeoutRef = useRef(null);
 
     // Memoize document IDs for performance
     const documentIds = useMemo(() => localDocuments.map(doc => doc.id), [localDocuments]);
@@ -94,40 +92,69 @@ const DocumentList = ({
         setLocalDocuments(documents);
     }, [documents]);
 
-    // Cleanup drag timeout on unmount
-    useEffect(() => {
-        return () => {
-            if (dragTimeoutRef.current) {
-                clearTimeout(dragTimeoutRef.current);
-            }
-        };
+    /**
+     * Handles errors and tracks failed operations
+     * @param {string} operationType - Type of operation that failed (delete, metadata, upload)
+     * @param {number|string} documentId - ID of the document or operation that failed
+     * @param {Error|Object} error - Error object
+     * @param {Object} options - Additional options
+     * @param {boolean} options.addToRetryQueue - Whether to add to the retry queue
+     * @param {boolean} options.showNotice - Whether to show a notification
+     * @param {string} options.customMessage - Custom message to display instead of the default
+     */
+    const handleOperationError = useCallback((operationType, documentId, error, options = {}) => {
+        const { 
+            addToRetryQueue = true, 
+            showNotice = true,
+            customMessage = null 
+        } = options;
+        
+        // Log for debugging
+        console.error(`Operation ${operationType} failed:`, { documentId, error });
+        
+        // Add to retry queue if needed
+        if (addToRetryQueue) {
+            setFailedOperations(prev => [...prev, { type: operationType, documentId, error }]);
+            setRetryCount(prev => ({
+                ...prev,
+                [documentId]: (prev[documentId] || 0) + 1
+            }));
+        }
+
+        // Show notification if needed
+        if (showNotice) {
+            const errorMessage = customMessage || 
+                error.message || 
+                error.data?.message || 
+                __('An unknown error occurred.', 'bcgov-design-system');
+                
+            setNotice({
+                status: 'error',
+                message: documentId ? 
+                    sprintf(
+                        __('Operation failed for document %d: %s', 'bcgov-design-system'),
+                        documentId,
+                        errorMessage
+                    ) : errorMessage
+            });
+            
+            // Auto-dismiss notice after 3 seconds
+            setTimeout(() => setNotice(null), 3000);
+        }
     }, []);
 
     /**
-     * Handles errors and tracks failed operations
-     * @param {string} operationType - Type of operation that failed
-     * @param {number} documentId - ID of the document that failed
-     * @param {Error} error - Error object
+     * Display a notification message
+     * @param {string} status - Status of the notification (success, error, warning)
+     * @param {string} message - Message to display
+     * @param {number} timeout - Time in ms before auto-dismissing (0 to disable)
      */
-    const handleOperationError = useCallback((operationType, documentId, error) => {
-        setFailedOperations(prev => [...prev, { type: operationType, documentId, error }]);
-        setRetryCount(prev => ({
-            ...prev,
-            [documentId]: (prev[documentId] || 0) + 1
-        }));
-
-        const errorMessage = error.message || __('An unknown error occurred.', 'bcgov-design-system');
-        setNotice({
-            status: 'error',
-            message: sprintf(
-                __('Operation failed for document %d: %s', 'bcgov-design-system'),
-                documentId,
-                errorMessage
-            )
-        });
-
-        // Log for debugging
-        console.error(`Operation ${operationType} failed for document ${documentId}:`, error);
+    const showNotification = useCallback((status, message, timeout = 3000) => {
+        setNotice({ status, message });
+        
+        if (timeout > 0) {
+            setTimeout(() => setNotice(null), timeout);
+        }
     }, []);
 
     /**
@@ -170,6 +197,11 @@ const DocumentList = ({
         }
     }, [onDelete, handleSaveMetadata, retryCount]);
 
+    // Handler for retrying all failed operations
+    const handleRetryAll = useCallback(() => {
+        failedOperations.forEach(retryOperation);
+    }, [failedOperations, retryOperation]);
+
     // Update handleBulkDelete with better error handling
     const handleBulkDelete = useCallback(async () => {
         setIsMultiDeleting(true);
@@ -177,66 +209,24 @@ const DocumentList = ({
             await Promise.all(selectedDocuments.map(docId => onDelete(docId)));
             setBulkDeleteConfirmOpen(false);
             onSelectAll(false);
+            showNotification('success', __('Selected documents were deleted successfully.', 'bcgov-design-system'));
         } catch (error) {
-            console.error('Error during bulk delete:', error);
+            handleOperationError('bulk-delete', null, error, {
+                addToRetryQueue: false,
+                customMessage: __('Error deleting one or more documents.', 'bcgov-design-system')
+            });
         } finally {
             setIsMultiDeleting(false);
         }
-    }, [selectedDocuments, onDelete, onSelectAll]);
+    }, [selectedDocuments, onDelete, onSelectAll, handleOperationError, showNotification]);
 
-    const handleDragEnter = useCallback((e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsDragging(true);
-    }, []);
-
-    const handleDragOver = useCallback((e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (!isDragging) {
-            setIsDragging(true);
-        }
-    }, [isDragging]);
-
-    const handleDragLeave = useCallback((e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const isLeavingContainer = !e.currentTarget.contains(e.relatedTarget);
-        if (isLeavingContainer) {
-            // Use timeout to prevent flickering
-            dragTimeoutRef.current = setTimeout(() => {
-                setIsDragging(false);
-            }, 50);
-        }
-    }, []);
-
-    const handleDrop = useCallback((e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsDragging(false);
-        
-        const droppedFiles = e.dataTransfer.files;
-        if (droppedFiles && droppedFiles.length > 0) {
-            handleFiles(Array.from(droppedFiles));
-        }
-    }, []);
-
-    const handleFileInputChange = useCallback((e) => {
-        const files = Array.from(e.target.files);
-        if (files.length > 0) {
-            handleFiles(files);
-        }
-    }, []);
-
+    // Updated version of handleFiles with standardized error handling
     const handleFiles = useCallback((files) => {
         // Show immediate feedback before any processing
         setShowUploadFeedback(true);
         
         if (!files || files.length === 0) {
-            setNotice({
-                status: 'error',
-                message: __('No files were selected for upload.', 'bcgov-design-system')
-            });
+            showNotification('error', __('No files were selected for upload.', 'bcgov-design-system'));
             setShowUploadFeedback(false);
             return;
         }
@@ -291,17 +281,11 @@ const DocumentList = ({
         
         // Show error notice if any files were skipped
         if (nonPdfFiles.length > 0) {
-            setNotice({
-                status: 'warning',
-                message: sprintf(
-                    __('%d of %d files were skipped because they are not PDFs.', 'bcgov-design-system'),
-                    nonPdfFiles.length,
-                    files.length
-                )
-            });
-            
-            // Auto-dismiss notice after 3 seconds
-            setTimeout(() => setNotice(null), 3000);
+            showNotification('warning', sprintf(
+                __('%d of %d files were skipped because they are not PDFs.', 'bcgov-design-system'),
+                nonPdfFiles.length,
+                files.length
+            ));
         }
         
         // If no valid files, return
@@ -328,32 +312,17 @@ const DocumentList = ({
                         } : f
                     ));
                     
-                    // Show error notice
-                    setNotice({
-                        status: 'error',
-                        message: sprintf(
+                    handleOperationError('upload', file.name, error, {
+                        addToRetryQueue: false,
+                        customMessage: sprintf(
                             __('Error uploading "%s": %s', 'bcgov-design-system'),
                             file.name,
                             error.message || __('Upload failed', 'bcgov-design-system')
                         )
                     });
-                    
-                    // Auto-dismiss notice after 3 seconds
-                    setTimeout(() => setNotice(null), 3000);
                 });
         });
-    }, [onFileDrop, setNotice]);
-
-    const handleUploadClick = (e) => {
-        // If event exists, prevent it from bubbling up to parent elements
-        if (e) {
-            e.stopPropagation();
-        }
-        
-        if (fileInputRef.current) {
-            fileInputRef.current.click();
-        }
-    };
+    }, [onFileDrop, showNotification, handleOperationError]);
 
     const handleEditMetadata = useCallback((document) => {
         const documentToEdit = {
@@ -457,26 +426,19 @@ const DocumentList = ({
             setEditedMetadataValues({});
             setMetadataErrors({});
             
-            setNotice({
-                status: 'success',
-                message: __('Document metadata updated successfully', 'bcgov-design-system')
-            });
-            
-            setTimeout(() => setNotice(null), 3000);
+            showNotification('success', __('Document metadata updated successfully', 'bcgov-design-system'));
         } catch (error) {
-            console.error('Error updating metadata:', error);
-            const errorMessage = error.data?.message || error.message || __('Failed to update metadata', 'bcgov-design-system');
             if (error.data?.errors) {
                 setMetadataErrors(error.data.errors);
             }
-            setNotice({
-                status: 'error',
-                message: errorMessage
+            
+            handleOperationError('metadata', editingMetadata.id, error, {
+                customMessage: error.data?.message || __('Failed to update metadata', 'bcgov-design-system')
             });
         } finally {
             setIsSavingMetadata(false);
         }
-    }, [editingMetadata, editedMetadataValues, apiNamespace]);
+    }, [editingMetadata, editedMetadataValues, apiNamespace, showNotification, handleOperationError]);
 
     // Initialize bulk edit metadata when entering spreadsheet mode
     useEffect(() => {
@@ -540,57 +502,25 @@ const DocumentList = ({
 
         if (failed.length > 0) {
             failed.forEach(({ result, docId }) => {
-                handleOperationError('metadata', docId, result.reason);
+                handleOperationError('metadata', docId, result.reason, {
+                    showNotice: false // Don't show individual notices
+                });
             });
 
-            setNotice({
-                status: 'warning',
-                message: sprintf(
-                    __('%d of %d metadata updates failed. You can retry the failed operations.', 'bcgov-design-system'),
-                    failed.length,
-                    Object.keys(bulkEditedMetadata).length
-                )
-            });
+            showNotification('warning', sprintf(
+                __('%d of %d metadata updates failed. You can retry the failed operations.', 'bcgov-design-system'),
+                failed.length,
+                Object.keys(bulkEditedMetadata).length
+            ), 0); // Don't auto-dismiss
         } else {
-            setNotice({
-                status: 'success',
-                message: __('All metadata changes saved successfully.', 'bcgov-design-system')
-            });
+            showNotification('success', __('All metadata changes saved successfully.', 'bcgov-design-system'));
             setBulkEditedMetadata({});
             setHasMetadataChanges(false);
             setIsSpreadsheetMode(false);
         }
 
         setIsSavingBulk(false);
-    }, [bulkEditedMetadata, apiNamespace, handleOperationError]);
-
-    // Add retry UI if there are failed operations
-    const renderRetryNotice = useCallback(() => {
-        if (failedOperations.length === 0) return null;
-
-        return (
-            <Notice
-                status="warning"
-                isDismissible={false}
-                className="retry-notice"
-            >
-                <p>
-                    {sprintf(
-                        __('There are %d failed operations that can be retried.', 'bcgov-design-system'),
-                        failedOperations.length
-                    )}
-                </p>
-                <Button
-                    variant="secondary"
-                    onClick={() => {
-                        failedOperations.forEach(retryOperation);
-                    }}
-                >
-                    {__('Retry All', 'bcgov-design-system')}
-                </Button>
-            </Notice>
-        );
-    }, [failedOperations, retryOperation]);
+    }, [bulkEditedMetadata, apiNamespace, handleOperationError, showNotification]);
 
     // Memoize the document table props to prevent unnecessary re-renders
     const documentTableProps = useMemo(() => ({
@@ -622,47 +552,16 @@ const DocumentList = ({
     return (
         <ErrorBoundary>
             <div className="document-list">
-                {renderRetryNotice()}
-                {/* Upload Section - Improved Drag and Drop Area */}
-                <div 
-                    className={`drag-drop-area ${isDragging ? 'is-drag-active' : ''}`}
-                    onDragEnter={handleDragEnter}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                    onClick={handleUploadClick}
-                    tabIndex="0"
-                    role="button"
-                    aria-label={__('Click or drag files to upload', 'bcgov-design-system')}
-                >
-                    <input
-                        type="file"
-                        ref={fileInputRef}
-                        style={{ display: 'none' }}
-                        onChange={handleFileInputChange}
-                        multiple
-                        accept=".pdf"
-                        aria-hidden="true"
-                    />
-                    <div className="drag-drop-content">
-                        <div className="drag-drop-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48">
-                                <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" fill="currentColor"/>
-                            </svg>
-                        </div>
-                        <h3>{__('Drag & Drop or Click to Upload', 'bcgov-design-system')}</h3>
-                        <p>{__('Upload PDF documents to the repository', 'bcgov-design-system')}</p>
-                        <Button 
-                            className="doc-repo-button edit-button upload-button"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleUploadClick();
-                            }}
-                        >
-                            {__('Choose Files', 'bcgov-design-system')}
-                        </Button>
-                    </div>
-                </div>
+                <RetryNotice 
+                    failedOperations={failedOperations}
+                    onRetryAll={handleRetryAll}
+                />
+
+                {/* Upload Section */}
+                <UploadArea 
+                    onFilesSelected={handleFiles}
+                    acceptMimeTypes="application/pdf"
+                />
 
                 {/* Bulk Delete Button and Spreadsheet Mode Toggle */}
                 <div className="document-list-actions">
@@ -711,25 +610,12 @@ const DocumentList = ({
                 {/* Document Table */}
                 <DocumentTable {...documentTableProps} />
                 
-                {totalPages > 1 && (
-                    <div className="pagination">
-                        <Button
-                            onClick={() => onPageChange(currentPage - 1)}
-                            disabled={currentPage === 1}
-                        >
-                            {__('Previous', 'bcgov-design-system')}
-                        </Button>
-                        <span className="page-info">
-                            {sprintf(__('Page %d of %d', 'bcgov-design-system'), currentPage, totalPages)}
-                        </span>
-                        <Button
-                            onClick={() => onPageChange(currentPage + 1)}
-                            disabled={currentPage === totalPages}
-                        >
-                            {__('Next', 'bcgov-design-system')}
-                        </Button>
-                    </div>
-                )}
+                {/* Pagination Controls */}
+                <PaginationControls
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={onPageChange}
+                />
                 
                 <UploadFeedback
                     uploadingFiles={uploadingFiles}
