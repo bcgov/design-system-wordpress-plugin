@@ -9,20 +9,91 @@ import UploadFeedback from './UploadFeedback';
 import MetadataModal from '../../../shared/components/MetadataModal';
 
 /**
- * Custom hook to handle file uploads
+ * DocumentList Component
  * 
- * @param {Function} onFileDrop - Callback when files are dropped for processing
- * @param {Function} showNotice - Function to show notification messages
- * @returns {Object} File upload handlers and state
+ * Main component for managing and displaying a list of documents with metadata.
+ * Handles document uploads, metadata editing, bulk operations, and pagination.
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {Array} props.documents - List of document objects to display
+ * @param {number} props.currentPage - Current page number for pagination
+ * @param {number} props.totalPages - Total number of pages
+ * @param {Function} props.onPageChange - Callback when page changes
+ * @param {Function} props.onDelete - Callback when a document is deleted
+ * @param {boolean} props.isDeleting - Flag indicating if a delete operation is in progress
+ * @param {Array} props.selectedDocuments - Array of selected document IDs
+ * @param {Function} props.onSelectDocument - Callback when a document is selected
+ * @param {Function} props.onSelectAll - Callback when all documents are selected/deselected
+ * @param {Function} props.onFileDrop - Callback when files are dropped/uploaded
+ * @param {Function} props.onDocumentsUpdate - Callback when documents are updated
+ * @param {Array} props.metadataFields - Array of metadata field definitions
  */
-const useFileUpload = (onFileDrop, showNotice) => {
+
+const DocumentList = ({
+    documents = [],
+    currentPage = 1,
+    totalPages = 1,
+    onPageChange,
+    onDelete,
+    isDeleting = false,
+    selectedDocuments = [],
+    onSelectDocument,
+    onSelectAll,
+    onFileDrop,
+    onDocumentsUpdate,
+    metadataFields = [],
+}) => {
+    // State management
+    const [localDocuments, setLocalDocuments] = useState(documents);
+    const [deleteDocument, setDeleteDocument] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
     const [uploadingFiles, setUploadingFiles] = useState([]);
     const [showUploadFeedback, setShowUploadFeedback] = useState(false);
-    
+    const [bulkDeleteConfirmOpen, setBulkDeleteConfirmOpen] = useState(false);
+    const [isMultiDeleting, setIsMultiDeleting] = useState(false);
+    const [editingMetadata, setEditingMetadata] = useState(null);
+    const [editedMetadataValues, setEditedMetadataValues] = useState({});
+    const [metadataErrors, setMetadataErrors] = useState({});
+    const [isSavingMetadata, setIsSavingMetadata] = useState(false);
+    const [isSpreadsheetMode, setIsSpreadsheetMode] = useState(false);
+    const [bulkEditedMetadata, setBulkEditedMetadata] = useState({});
+    const [isSavingBulk, setIsSavingBulk] = useState(false);
+    const [notice, setNotice] = useState(null);
+    const [hasMetadataChanges, setHasMetadataChanges] = useState(false);
+    const [failedOperations, setFailedOperations] = useState([]);
+    const [retryCount, setRetryCount] = useState({});
+
+    // Refs
     const fileInputRef = useRef(null);
     const dragTimeoutRef = useRef(null);
-    
+
+    // Memoize document IDs for performance
+    const documentIds = useMemo(() => localDocuments.map(doc => doc.id), [localDocuments]);
+
+    // Memoize formatFileSize to prevent recreation on each render
+    const formatFileSize = useMemo(() => (bytes) => {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }, []);
+
+    // Memoize API namespace to prevent recalculation
+    const apiNamespace = useMemo(() => {
+        const settings = window.documentRepositorySettings;
+        if (!settings) {
+            console.error('Document Repository settings not found. Make sure the script is properly enqueued in WordPress.');
+        }
+        return settings?.apiNamespace || 'wp/v2';
+    }, []);
+
+    // Effects
+    useEffect(() => {
+        setLocalDocuments(documents);
+    }, [documents]);
+
     // Cleanup drag timeout on unmount
     useEffect(() => {
         return () => {
@@ -31,7 +102,88 @@ const useFileUpload = (onFileDrop, showNotice) => {
             }
         };
     }, []);
-    
+
+    /**
+     * Handles errors and tracks failed operations
+     * @param {string} operationType - Type of operation that failed
+     * @param {number} documentId - ID of the document that failed
+     * @param {Error} error - Error object
+     */
+    const handleOperationError = useCallback((operationType, documentId, error) => {
+        setFailedOperations(prev => [...prev, { type: operationType, documentId, error }]);
+        setRetryCount(prev => ({
+            ...prev,
+            [documentId]: (prev[documentId] || 0) + 1
+        }));
+
+        const errorMessage = error.message || __('An unknown error occurred.', 'bcgov-design-system');
+        setNotice({
+            status: 'error',
+            message: sprintf(
+                __('Operation failed for document %d: %s', 'bcgov-design-system'),
+                documentId,
+                errorMessage
+            )
+        });
+
+        // Log for debugging
+        console.error(`Operation ${operationType} failed for document ${documentId}:`, error);
+    }, []);
+
+    /**
+     * Retry failed operations
+     * @param {Object} operation - Failed operation to retry
+     */
+    const retryOperation = useCallback(async (operation) => {
+        const maxRetries = 3;
+        if (retryCount[operation.documentId] >= maxRetries) {
+            setNotice({
+                status: 'error',
+                message: sprintf(
+                    __('Maximum retry attempts reached for document %d', 'bcgov-design-system'),
+                    operation.documentId
+                )
+            });
+            return;
+        }
+
+        try {
+            switch (operation.type) {
+                case 'delete':
+                    await onDelete(operation.documentId);
+                    break;
+                case 'metadata':
+                    await handleSaveMetadata();
+                    break;
+                default:
+                    console.error('Unknown operation type:', operation.type);
+            }
+
+            // Remove from failed operations if successful
+            setFailedOperations(prev => 
+                prev.filter(op => 
+                    !(op.type === operation.type && op.documentId === operation.documentId)
+                )
+            );
+        } catch (error) {
+            handleOperationError(operation.type, operation.documentId, error);
+        }
+    }, [onDelete, handleSaveMetadata, retryCount]);
+
+    // Update handleBulkDelete with better error handling
+    const handleBulkDelete = useCallback(async () => {
+        setIsMultiDeleting(true);
+        try {
+            await Promise.all(selectedDocuments.map(docId => onDelete(docId)));
+            setBulkDeleteConfirmOpen(false);
+            onSelectAll(false);
+        } catch (error) {
+            console.error('Error during bulk delete:', error);
+        } finally {
+            setIsMultiDeleting(false);
+        }
+    }, [selectedDocuments, onDelete, onSelectAll]);
+
     const handleDragEnter = useCallback((e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -75,13 +227,16 @@ const useFileUpload = (onFileDrop, showNotice) => {
             handleFiles(files);
         }
     }, []);
-    
+
     const handleFiles = useCallback((files) => {
         // Show immediate feedback before any processing
         setShowUploadFeedback(true);
         
         if (!files || files.length === 0) {
-            showNotice('error', __('No files were selected for upload.', 'bcgov-design-system'));
+            setNotice({
+                status: 'error',
+                message: __('No files were selected for upload.', 'bcgov-design-system')
+            });
             setShowUploadFeedback(false);
             return;
         }
@@ -136,14 +291,17 @@ const useFileUpload = (onFileDrop, showNotice) => {
         
         // Show error notice if any files were skipped
         if (nonPdfFiles.length > 0) {
-            showNotice(
-                'warning',
-                sprintf(
+            setNotice({
+                status: 'warning',
+                message: sprintf(
                     __('%d of %d files were skipped because they are not PDFs.', 'bcgov-design-system'),
                     nonPdfFiles.length,
                     files.length
                 )
-            );
+            });
+            
+            // Auto-dismiss notice after 3 seconds
+            setTimeout(() => setNotice(null), 3000);
         }
         
         // If no valid files, return
@@ -171,19 +329,22 @@ const useFileUpload = (onFileDrop, showNotice) => {
                     ));
                     
                     // Show error notice
-                    showNotice(
-                        'error',
-                        sprintf(
+                    setNotice({
+                        status: 'error',
+                        message: sprintf(
                             __('Error uploading "%s": %s', 'bcgov-design-system'),
                             file.name,
                             error.message || __('Upload failed', 'bcgov-design-system')
                         )
-                    );
+                    });
+                    
+                    // Auto-dismiss notice after 3 seconds
+                    setTimeout(() => setNotice(null), 3000);
                 });
         });
-    }, [onFileDrop, showNotice]);
+    }, [onFileDrop, setNotice]);
 
-    const handleUploadClick = useCallback((e) => {
+    const handleUploadClick = (e) => {
         // If event exists, prevent it from bubbling up to parent elements
         if (e) {
             e.stopPropagation();
@@ -192,211 +353,7 @@ const useFileUpload = (onFileDrop, showNotice) => {
         if (fileInputRef.current) {
             fileInputRef.current.click();
         }
-    }, []);
-    
-    const closeUploadFeedback = useCallback(() => {
-        setShowUploadFeedback(false);
-        setUploadingFiles([]);
-    }, []);
-    
-    return {
-        isDragging,
-        uploadingFiles,
-        showUploadFeedback,
-        fileInputRef,
-        handleDragEnter,
-        handleDragOver,
-        handleDragLeave,
-        handleDrop,
-        handleFileInputChange,
-        handleUploadClick,
-        closeUploadFeedback
     };
-};
-
-/**
- * DocumentList Component
- * 
- * Main component for managing and displaying a list of documents with metadata.
- * Handles document uploads, metadata editing, bulk operations, and pagination.
- * 
- * @component
- * @param {Object} props - Component props
- * @param {Array} props.documents - List of document objects to display
- * @param {number} props.currentPage - Current page number for pagination
- * @param {number} props.totalPages - Total number of pages
- * @param {Function} props.onPageChange - Callback when page changes
- * @param {Function} props.onDelete - Callback when a document is deleted
- * @param {boolean} props.isDeleting - Flag indicating if a delete operation is in progress
- * @param {Array} props.selectedDocuments - Array of selected document IDs
- * @param {Function} props.onSelectDocument - Callback when a document is selected
- * @param {Function} props.onSelectAll - Callback when all documents are selected/deselected
- * @param {Function} props.onFileDrop - Callback when files are dropped/uploaded
- * @param {Function} props.onDocumentsUpdate - Callback when documents are updated
- * @param {Array} props.metadataFields - Array of metadata field definitions
- */
-
-const DocumentList = ({
-    documents = [],
-    currentPage = 1,
-    totalPages = 1,
-    onPageChange,
-    onDelete,
-    isDeleting = false,
-    selectedDocuments = [],
-    onSelectDocument,
-    onSelectAll,
-    onFileDrop,
-    onDocumentsUpdate,
-    metadataFields = [],
-}) => {
-    // State management
-    const [localDocuments, setLocalDocuments] = useState(documents);
-    const [deleteDocument, setDeleteDocument] = useState(null);
-    const [bulkDeleteConfirmOpen, setBulkDeleteConfirmOpen] = useState(false);
-    const [isMultiDeleting, setIsMultiDeleting] = useState(false);
-    const [editingMetadata, setEditingMetadata] = useState(null);
-    const [editedMetadataValues, setEditedMetadataValues] = useState({});
-    const [metadataErrors, setMetadataErrors] = useState({});
-    const [isSavingMetadata, setIsSavingMetadata] = useState(false);
-    const [isSpreadsheetMode, setIsSpreadsheetMode] = useState(false);
-    const [bulkEditedMetadata, setBulkEditedMetadata] = useState({});
-    const [isSavingBulk, setIsSavingBulk] = useState(false);
-    const [notice, setNotice] = useState(null);
-    const [hasMetadataChanges, setHasMetadataChanges] = useState(false);
-    const [failedOperations, setFailedOperations] = useState([]);
-    const [retryCount, setRetryCount] = useState({});
-
-    // Memoize document IDs for performance
-    const documentIds = useMemo(() => localDocuments.map(doc => doc.id), [localDocuments]);
-
-    // Memoize formatFileSize to prevent recreation on each render
-    const formatFileSize = useMemo(() => (bytes) => {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    }, []);
-
-    // Memoize API namespace to prevent recalculation
-    const apiNamespace = useMemo(() => {
-        const settings = window.documentRepositorySettings;
-        if (!settings) {
-            console.error('Document Repository settings not found. Make sure the script is properly enqueued in WordPress.');
-        }
-        return settings?.apiNamespace || 'wp/v2';
-    }, []);
-
-    // Helper function to show notices with auto-dismiss
-    const showNotice = useCallback((status, message, autoDismissTime = 3000) => {
-        setNotice({ status, message });
-        
-        if (autoDismissTime > 0) {
-            setTimeout(() => setNotice(null), autoDismissTime);
-        }
-    }, []);
-
-    // File upload functionality
-    const {
-        isDragging,
-        uploadingFiles,
-        showUploadFeedback,
-        fileInputRef,
-        handleDragEnter,
-        handleDragOver,
-        handleDragLeave,
-        handleDrop,
-        handleFileInputChange,
-        handleUploadClick,
-        closeUploadFeedback
-    } = useFileUpload(onFileDrop, showNotice);
-
-    // Effects
-    useEffect(() => {
-        setLocalDocuments(documents);
-    }, [documents]);
-
-    /**
-     * Handles errors and tracks failed operations
-     * @param {string} operationType - Type of operation that failed
-     * @param {number} documentId - ID of the document that failed
-     * @param {Error} error - Error object
-     */
-    const handleOperationError = useCallback((operationType, documentId, error) => {
-        setFailedOperations(prev => [...prev, { type: operationType, documentId, error }]);
-        setRetryCount(prev => ({
-            ...prev,
-            [documentId]: (prev[documentId] || 0) + 1
-        }));
-
-        const errorMessage = error.message || __('An unknown error occurred.', 'bcgov-design-system');
-        showNotice(
-            'error',
-            sprintf(
-                __('Operation failed for document %d: %s', 'bcgov-design-system'),
-                documentId,
-                errorMessage
-            )
-        );
-
-        // Log for debugging
-        console.error(`Operation ${operationType} failed for document ${documentId}:`, error);
-    }, [showNotice]);
-
-    /**
-     * Retry failed operations
-     * @param {Object} operation - Failed operation to retry
-     */
-    const retryOperation = useCallback(async (operation) => {
-        const maxRetries = 3;
-        if (retryCount[operation.documentId] >= maxRetries) {
-            showNotice(
-                'error',
-                sprintf(
-                    __('Maximum retry attempts reached for document %d', 'bcgov-design-system'),
-                    operation.documentId
-                )
-            );
-            return;
-        }
-
-        try {
-            switch (operation.type) {
-                case 'delete':
-                    await onDelete(operation.documentId);
-                    break;
-                case 'metadata':
-                    await handleSaveMetadata();
-                    break;
-                default:
-                    console.error('Unknown operation type:', operation.type);
-            }
-
-            // Remove from failed operations if successful
-            setFailedOperations(prev => 
-                prev.filter(op => 
-                    !(op.type === operation.type && op.documentId === operation.documentId)
-                )
-            );
-        } catch (error) {
-            handleOperationError(operation.type, operation.documentId, error);
-        }
-    }, [onDelete, handleSaveMetadata, retryCount, handleOperationError, showNotice]);
-
-    // Update handleBulkDelete with better error handling
-    const handleBulkDelete = useCallback(async () => {
-        setIsMultiDeleting(true);
-        try {
-            await Promise.all(selectedDocuments.map(docId => onDelete(docId)));
-            setBulkDeleteConfirmOpen(false);
-            onSelectAll(false);
-        } catch (error) {
-            console.error('Error during bulk delete:', error);
-        } finally {
-            setIsMultiDeleting(false);
-        }
-    }, [selectedDocuments, onDelete, onSelectAll]);
 
     const handleEditMetadata = useCallback((document) => {
         const documentToEdit = {
@@ -425,9 +382,12 @@ const DocumentList = ({
     }, [editingMetadata, editedMetadataValues, metadataFields]);
 
     const handleMetadataChange = useCallback((documentId, fieldId, value) => {
+        console.log('Metadata change:', { documentId, fieldId, value });
+        
         // Get the original document to compare values
         const originalDoc = localDocuments.find(doc => doc.id === documentId);
         const originalValue = originalDoc?.metadata?.[fieldId] || '';
+        console.log('Original value:', originalValue);
         
         // Update bulk edited metadata for saving later
         setBulkEditedMetadata(prev => {
@@ -439,20 +399,31 @@ const DocumentList = ({
                 }
             };
             
+            console.log('New bulk metadata:', newBulkMetadata);
+            
             // Check if there are any changes in the new bulk metadata
             const hasChanged = Object.entries(newBulkMetadata).some(([docId, editedMetadata]) => {
                 const originalDoc = localDocuments.find(doc => doc.id === parseInt(docId));
                 if (!originalDoc) {
+                    console.log('No original doc found for:', docId);
                     return false;
                 }
                 
                 return Object.entries(editedMetadata).some(([fieldId, editedValue]) => {
                     const originalValue = originalDoc.metadata?.[fieldId] || '';
                     const isChanged = String(originalValue) !== String(editedValue);
+                    console.log('Comparing values:', {
+                        docId,
+                        fieldId,
+                        originalValue,
+                        editedValue,
+                        isChanged
+                    });
                     return isChanged;
                 });
             });
             
+            console.log('Has changes:', hasChanged);
             setHasMetadataChanges(hasChanged);
             return newBulkMetadata;
         });
@@ -500,42 +471,60 @@ const DocumentList = ({
             setEditedMetadataValues({});
             setMetadataErrors({});
             
-            showNotice('success', __('Document metadata updated successfully', 'bcgov-design-system'));
+            setNotice({
+                status: 'success',
+                message: __('Document metadata updated successfully', 'bcgov-design-system')
+            });
+            
+            setTimeout(() => setNotice(null), 3000);
         } catch (error) {
             console.error('Error updating metadata:', error);
             const errorMessage = error.data?.message || error.message || __('Failed to update metadata', 'bcgov-design-system');
             if (error.data?.errors) {
                 setMetadataErrors(error.data.errors);
             }
-            showNotice('error', errorMessage);
+            setNotice({
+                status: 'error',
+                message: errorMessage
+            });
         } finally {
             setIsSavingMetadata(false);
         }
-    }, [editingMetadata, editedMetadataValues, apiNamespace, showNotice]);
+    }, [editingMetadata, editedMetadataValues, apiNamespace]);
 
     // Initialize bulk edit metadata when entering spreadsheet mode
     useEffect(() => {
         if (isSpreadsheetMode) {
+            console.log('Entering spreadsheet mode');
             const initialBulkMetadata = {};
             localDocuments.forEach(doc => {
+                console.log('Processing document:', doc.id, doc);
                 initialBulkMetadata[doc.id] = { ...(doc.metadata || {}) };
             });
+            console.log('Initial bulk metadata:', initialBulkMetadata);
             setBulkEditedMetadata(initialBulkMetadata);
             setHasMetadataChanges(false);
         } else {
+            console.log('Exiting spreadsheet mode');
             setBulkEditedMetadata({});
             setHasMetadataChanges(false);
         }
     }, [isSpreadsheetMode]);
 
     const hasBulkMetadataChanged = useCallback(() => {
+        console.log('Checking for bulk metadata changes...');
+        console.log('Bulk edited metadata:', bulkEditedMetadata);
+        console.log('Local documents:', localDocuments);
+        
         if (!bulkEditedMetadata || Object.keys(bulkEditedMetadata).length === 0) {
+            console.log('No bulk edited metadata');
             return false;
         }
         
         const hasChanges = Object.entries(bulkEditedMetadata).some(([docId, editedMetadata]) => {
             const originalDoc = localDocuments.find(doc => doc.id === parseInt(docId));
             if (!originalDoc) {
+                console.log('No original doc found for:', docId, 'Available IDs:', localDocuments.map(d => d.id));
                 return false;
             }
             
@@ -543,12 +532,21 @@ const DocumentList = ({
                 const originalValue = originalDoc.metadata?.[fieldId] || '';
                 const editedValue = value || '';
                 const isChanged = String(originalValue).trim() !== String(editedValue).trim();
+                console.log('Comparing:', {
+                    docId,
+                    fieldId,
+                    originalValue,
+                    editedValue,
+                    isChanged
+                });
                 return isChanged;
             });
             
+            console.log('Document changes:', { docId, hasDocChanges });
             return hasDocChanges;
         });
         
+        console.log('Overall changes detected:', hasChanges);
         return hasChanges;
     }, [bulkEditedMetadata, localDocuments]);
 
@@ -578,23 +576,26 @@ const DocumentList = ({
                 handleOperationError('metadata', docId, result.reason);
             });
 
-            showNotice(
-                'warning',
-                sprintf(
+            setNotice({
+                status: 'warning',
+                message: sprintf(
                     __('%d of %d metadata updates failed. You can retry the failed operations.', 'bcgov-design-system'),
                     failed.length,
                     Object.keys(bulkEditedMetadata).length
                 )
-            );
+            });
         } else {
-            showNotice('success', __('All metadata changes saved successfully.', 'bcgov-design-system'));
+            setNotice({
+                status: 'success',
+                message: __('All metadata changes saved successfully.', 'bcgov-design-system')
+            });
             setBulkEditedMetadata({});
             setHasMetadataChanges(false);
             setIsSpreadsheetMode(false);
         }
 
         setIsSavingBulk(false);
-    }, [bulkEditedMetadata, apiNamespace, handleOperationError, showNotice]);
+    }, [bulkEditedMetadata, apiNamespace, handleOperationError]);
 
     // Add retry UI if there are failed operations
     const renderRetryNotice = useCallback(() => {
@@ -766,7 +767,10 @@ const DocumentList = ({
                 <UploadFeedback
                     uploadingFiles={uploadingFiles}
                     showUploadFeedback={showUploadFeedback}
-                    onClose={closeUploadFeedback}
+                    onClose={() => {
+                        setShowUploadFeedback(false);
+                        setUploadingFiles([]);
+                    }}
                 />
 
                 {/* Bulk Delete Confirmation Modal */}
