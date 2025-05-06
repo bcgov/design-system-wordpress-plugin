@@ -4,7 +4,6 @@
  * A modal component for confirming metadata field deletion.
  * Provides a warning message and field information before deletion.
  *
- * @component
  * @param {Object}   props            - Component props
  * @param {boolean}  props.isOpen     - Whether the modal is open
  * @param {Function} props.onClose    - Callback to close the modal

@@ -5,7 +5,6 @@
  * Provides a form interface for configuring field properties including ID, label,
  * type, and options (for select fields).
  *
- * @component
  * @param {Object}   props                 - Component props
  * @param {boolean}  props.isOpen          - Whether the modal is open
  * @param {Function} props.onClose         - Callback to close the modal

@@ -4,7 +4,6 @@
  * This is the root component of the Document Repository application.
  * It sets up the application structure, context providers, and main routes.
  *
- * @component
  * @example
  * <App />
  */
@@ -12,7 +11,6 @@
 import { useState, useEffect } from '@wordpress/element';
 import { Modal, Notice, Spinner } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import apiFetch from '@wordpress/api-fetch';
 
 import DocumentList from './components/DocumentList';
 import DocumentUploader from './components/DocumentUploader';
@@ -51,7 +49,6 @@ const App = () => {
 		isDeleting,
 		isLoading: isLoadingDocuments,
 		error: documentsError,
-		searchParams,
 		setSearchParams,
 	} = useDocuments();
 
@@ -142,8 +139,7 @@ const App = () => {
 				? selectedDocuments.filter( ( id ) => id !== documentId )
 				: [ ...selectedDocuments, documentId ];
 			setSelectedDocuments( newSelectedDocuments );
-		} catch ( error ) {
-			console.error( 'Error selecting document:', error );
+		} catch ( err ) {
 			setError(
 				__( 'Failed to select document', 'bcgov-design-system' )
 			);
@@ -161,8 +157,7 @@ const App = () => {
 			setSelectedDocuments(
 				isSelected ? documents.map( ( doc ) => doc.id ) : []
 			);
-		} catch ( error ) {
-			console.error( 'Error selecting all documents:', error );
+		} catch ( err ) {
 			setError(
 				__( 'Failed to select documents', 'bcgov-design-system' )
 			);
@@ -188,10 +183,9 @@ const App = () => {
 
 			// Fetch documents with the updated search params
 			await fetchDocuments();
-		} catch ( error ) {
-			console.error( 'Error changing page:', error );
+		} catch ( err ) {
 			setError(
-				error.message ||
+				err.message ||
 					__( 'Failed to change page', 'bcgov-design-system' )
 			);
 		} finally {
@@ -202,62 +196,14 @@ const App = () => {
 	// Add new state for managing multiple file uploads
 	const [ uploadQueue, setUploadQueue ] = useState( [] );
 	const [ currentUploadIndex, setCurrentUploadIndex ] = useState( 0 );
-	const [ isUploading, setIsUploading ] = useState( false );
 	const [ uploadProgress, setUploadProgress ] = useState( 0 );
-
-	/**
-	 * Handle multiple file uploads
-	 *
-	 * Processes an array of files for upload, filtering for PDFs
-	 * and setting up the upload queue.
-	 *
-	 * @function handleMultipleFiles
-	 * @param {FileList|Array<File>} files - Files to upload
-	 */
-	const handleMultipleFiles = async ( files ) => {
-		try {
-			// Filter out non-PDF files
-			const pdfFiles = Array.from( files ).filter(
-				( file ) =>
-					file.type.includes( 'pdf' ) ||
-					file.name.toLowerCase().endsWith( '.pdf' )
-			);
-
-			if ( pdfFiles.length === 0 ) {
-				throw new Error(
-					__( 'No valid PDF files found', 'bcgov-design-system' )
-				);
-			}
-
-			if ( files.length !== pdfFiles.length ) {
-				setError(
-					__(
-						'Some files were skipped because they are not PDFs',
-						'bcgov-design-system'
-					)
-				);
-			}
-
-			setUploadQueue( pdfFiles );
-			setCurrentUploadIndex( 0 );
-			setSelectedFileForUpload( pdfFiles[ 0 ] );
-			setShowUploadModal( true );
-		} catch ( error ) {
-			console.error( 'Error processing files:', error );
-			setError(
-				error.message ||
-					__( 'Failed to process files', 'bcgov-design-system' )
-			);
-		}
-	};
 
 	/**
 	 * Handle upload success and move to next file
 	 *
 	 * @function handleUploadSuccess
-	 * @param {Object} document - The successfully uploaded document
 	 */
-	const handleUploadSuccess = ( document ) => {
+	const handleUploadSuccess = () => {
 		// Update the document list by fetching the latest documents
 		fetchDocuments();
 
@@ -298,7 +244,7 @@ const App = () => {
 			}
 
 			// Create XMLHttpRequest for upload with progress tracking
-			const xhr = new XMLHttpRequest();
+			const xhr = new window.XMLHttpRequest();
 
 			const uploadPromise = new Promise( ( resolve, reject ) => {
 				xhr.open(
@@ -322,7 +268,7 @@ const App = () => {
 						try {
 							const response = JSON.parse( xhr.responseText );
 							resolve( response );
-						} catch ( error ) {
+						} catch ( parseErr ) {
 							reject(
 								new Error(
 									`Error uploading "${ file.name }": Server returned invalid response`
@@ -363,11 +309,10 @@ const App = () => {
 			const result = await uploadPromise;
 
 			// Handle successful upload
-			handleUploadSuccess( result );
-		} catch ( error ) {
-			console.error( 'Error uploading file:', error );
-			setError( error.message || 'Failed to upload file' );
-			throw error;
+			handleUploadSuccess();
+		} catch ( err ) {
+			setError( err.message || 'Failed to upload file' );
+			throw err;
 		}
 	};
 
@@ -445,7 +390,7 @@ const App = () => {
 						}
 						onRequestClose={ () => {
 							if (
-								confirm(
+								window.confirm(
 									__(
 										'Are you sure you want to cancel the remaining uploads?',
 										'bcgov-design-system'
@@ -478,6 +423,7 @@ const App = () => {
 							onUploadSuccess={ handleUploadSuccess }
 							selectedFile={ selectedFileForUpload }
 							modalMode={ true }
+							onFileDrop={ handleFileDrop }
 						/>
 					</Modal>
 				) }

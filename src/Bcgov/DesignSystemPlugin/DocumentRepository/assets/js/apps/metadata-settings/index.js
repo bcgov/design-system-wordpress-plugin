@@ -20,7 +20,6 @@ import MetadataApp from './App';
  * 4. Handles any initialization errors gracefully
  *
  * @function initializeMetadataApp
- * @listens DOMContentLoaded
  * @throws {Error} If the container element is not found
  * @throws {Error} If there's an error during React rendering
  */
@@ -31,7 +30,6 @@ const initializeMetadataApp = () => {
 	);
 
 	if ( ! container ) {
-		console.error( 'Could not find metadata app container element' );
 		return;
 	}
 
@@ -40,7 +38,6 @@ const initializeMetadataApp = () => {
 		render( <MetadataApp />, container );
 	} catch ( error ) {
 		// Handle any errors during initialization
-		console.error( 'Error initializing metadata app:', error );
 		container.innerHTML =
 			'<div class="notice notice-error"><p>Error initializing metadata settings. Please check the console for details.</p></div>';
 	}

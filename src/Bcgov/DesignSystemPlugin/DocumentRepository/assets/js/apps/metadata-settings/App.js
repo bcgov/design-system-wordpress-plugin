@@ -8,18 +8,15 @@
  * @module MetadataApp
  */
 
-import { useState, useEffect, useMemo, useCallback } from '@wordpress/element';
+import { useState, useEffect, useCallback } from '@wordpress/element';
 import {
 	Button,
 	Card,
 	CardHeader,
 	CardBody,
-	CardFooter,
 	TextControl,
 	SelectControl,
-	CheckboxControl,
 	Notice,
-	Modal,
 	TextareaControl,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
@@ -32,8 +29,8 @@ import DeleteFieldModal from './components/Modals/DeleteFieldModal';
  *
  * Container component for displaying a list of metadata fields.
  *
- * @param {Object}          props          - Component props
- * @param {React.ReactNode} props.children - Child components to render
+ * @param {Object}      props          - Component props
+ * @param {JSX.Element} props.children - Child components to render
  * @return {JSX.Element} Metadata list container
  */
 const MetadataList = ( { children } ) => (
@@ -45,12 +42,12 @@ const MetadataList = ( { children } ) => (
  *
  * Individual metadata field item with move controls.
  *
- * @param {Object}          props            - Component props
- * @param {React.ReactNode} props.children   - Child components to render
- * @param {Function}        props.onMoveUp   - Callback for moving item up
- * @param {Function}        props.onMoveDown - Callback for moving item down
- * @param {number}          props.index      - Current item index
- * @param {number}          props.total      - Total number of items
+ * @param {Object}      props            - Component props
+ * @param {JSX.Element} props.children   - Child components to render
+ * @param {Function}    props.onMoveUp   - Callback for moving item up
+ * @param {Function}    props.onMoveDown - Callback for moving item down
+ * @param {number}      props.index      - Current item index
+ * @param {number}      props.total      - Total number of items
  * @return {JSX.Element} Metadata item with move controls
  */
 const MetadataItem = ( { children } ) => (

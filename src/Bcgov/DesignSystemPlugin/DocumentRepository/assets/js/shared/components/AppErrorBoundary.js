@@ -1,15 +1,4 @@
-/**
- * Application Error Boundary Component
- *
- * A React error boundary component that catches JavaScript errors anywhere in the
- * application, logs those errors, and displays a fallback UI instead of crashing
- * the entire application.
- *
- * @component AppErrorBoundary
- * @augments React.Component
- */
-
-import React from 'react';
+import { Component } from '@wordpress/element';
 import { Notice } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
@@ -17,11 +6,10 @@ import { __ } from '@wordpress/i18n';
  * Error boundary for the entire application
  *
  * @class AppErrorBoundary
- * @augments React.Component
- * @param {Object}          props          - Component props
- * @param {React.ReactNode} props.children - Child components to render
+ * @augments Component
+ * @param {Object} props - Component props
  */
-class AppErrorBoundary extends React.Component {
+class AppErrorBoundary extends Component {
 	/**
 	 * Creates an instance of AppErrorBoundary
 	 *
@@ -50,7 +38,6 @@ class AppErrorBoundary extends React.Component {
 	 * @param {Object} errorInfo - Additional error information including component stack
 	 */
 	componentDidCatch( error, errorInfo ) {
-		console.error( 'App error:', error, errorInfo );
 		this.setState( { errorInfo } );
 	}
 

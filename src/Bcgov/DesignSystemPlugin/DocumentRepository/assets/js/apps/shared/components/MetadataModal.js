@@ -5,16 +5,16 @@ import { useCallback } from '@wordpress/element';
 /**
  * Shared metadata modal component used across the application
  *
- * @param {Object}          props                     Component props
- * @param {string}          props.title               Modal title
- * @param {boolean}         props.isOpen              Whether the modal is open
- * @param {Function}        props.onClose             Callback when modal is closed
- * @param {Function}        props.onSave              Callback when save button is clicked
- * @param {boolean}         props.isSaving            Whether save operation is in progress
- * @param {boolean}         props.isDisabled          Whether save button should be disabled
- * @param {string}          props.saveButtonText      Custom text for the save button
- * @param {string}          props.saveButtonClassName Custom class name for the save button
- * @param {React.ReactNode} props.children            Modal content
+ * @param {Object}   props                     Component props
+ * @param {string}   props.title               Modal title
+ * @param {boolean}  props.isOpen              Whether the modal is open
+ * @param {Function} props.onClose             Callback when modal is closed
+ * @param {Function} props.onSave              Callback when save button is clicked
+ * @param {boolean}  props.isSaving            Whether save operation is in progress
+ * @param {boolean}  props.isDisabled          Whether save button should be disabled
+ * @param {string}   props.saveButtonText      Custom text for the save button
+ * @param {string}   props.saveButtonClassName Custom class name for the save button
+ * @param            props.children
  * @return {JSX.Element} Modal component
  */
 const MetadataModal = ( {

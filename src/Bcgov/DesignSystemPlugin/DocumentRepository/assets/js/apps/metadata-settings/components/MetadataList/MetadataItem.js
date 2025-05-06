@@ -4,13 +4,12 @@
  * A component that renders an individual metadata field item with move up/down controls.
  * Provides a consistent layout for metadata field items and handles reordering functionality.
  *
- * @component
- * @param {Object}          props            - Component props
- * @param {React.ReactNode} props.children   - The content of the metadata field item
- * @param {Function}        props.onMoveUp   - Callback function to move the item up in the list
- * @param {Function}        props.onMoveDown - Callback function to move the item down in the list
- * @param {number}          props.index      - The current position of the item in the list
- * @param {number}          props.total      - The total number of items in the list
+ * @param {Object}      props            - Component props
+ * @param {JSX.Element} props.children   - The content of the metadata field item
+ * @param {Function}    props.onMoveUp   - Callback function to move the item up in the list
+ * @param {Function}    props.onMoveDown - Callback function to move the item down in the list
+ * @param {number}      props.index      - The current position of the item in the list
+ * @param {number}      props.total      - The total number of items in the list
  * @return {JSX.Element} A div element containing the metadata field info and move controls
  *
  * @example

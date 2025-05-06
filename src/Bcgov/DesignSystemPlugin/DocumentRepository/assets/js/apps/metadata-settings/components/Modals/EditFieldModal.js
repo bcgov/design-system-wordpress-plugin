@@ -6,7 +6,6 @@
  * type, and options (for select fields). Similar to AddFieldModal but pre-populated
  * with existing field data.
  *
- * @component
  * @param {Object}   props                 - Component props
  * @param {boolean}  props.isOpen          - Whether the modal is open
  * @param {Function} props.onClose         - Callback to close the modal
@@ -38,7 +37,6 @@ import {
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { FIELD_TYPES } from '../../constants/fieldTypes';
-import { useState, useEffect } from '@wordpress/element';
 
 const EditFieldModal = ( {
 	isOpen,
@@ -53,25 +51,6 @@ const EditFieldModal = ( {
 	if ( ! isOpen || ! field ) {
 		return null;
 	}
-
-	// Track original field values for comparison
-	const [ originalField, setOriginalField ] = useState( null );
-	const [ hasChanges, setHasChanges ] = useState( false );
-
-	// Set original field values when modal opens
-	useEffect( () => {
-		if ( isOpen && field ) {
-			setOriginalField( JSON.stringify( field ) );
-		}
-	}, [ isOpen, field ] );
-
-	// Check for changes whenever field is updated
-	useEffect( () => {
-		if ( originalField ) {
-			const currentField = JSON.stringify( field );
-			setHasChanges( currentField !== originalField );
-		}
-	}, [ field, originalField ] );
 
 	return (
 		<Modal
