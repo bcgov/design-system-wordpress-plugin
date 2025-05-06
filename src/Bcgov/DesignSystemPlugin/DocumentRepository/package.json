@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack --config webpack.config.js",
+    "build:prod": "webpack --config webpack.config.js --mode=production",
     "start": "webpack --config webpack.config.js --watch",
     "check-engines": "wp-scripts check-engines",
     "check-licenses": "wp-scripts check-licenses",
@@ -15,6 +16,7 @@
     "lint:pkg-json": "wp-scripts lint-pkg-json",
     "packages-update": "wp-scripts packages-update",
     "test:e2e": "wp-scripts test-e2e",
+    "test:unit": "wp-scripts test-unit-js",
     "test:unit": "wp-scripts test-unit-js"
   },
   "author": "BC Gov",

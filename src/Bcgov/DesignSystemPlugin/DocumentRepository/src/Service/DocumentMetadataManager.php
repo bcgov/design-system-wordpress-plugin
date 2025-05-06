@@ -352,7 +352,6 @@ class DocumentMetadataManager {
         if ( $this->config->get( 'cache_enabled' ) ) {
             $cached = get_transient( $cache_key );
             if ( false !== $cached ) {
-                $this->log( 'Cache hit for documents query', 'debug' );
                 return $cached;
             }
         }

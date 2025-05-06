@@ -105,6 +105,11 @@ class DocumentRepository {
      * @return void
      */
     private function log( string $message, string $level = 'debug' ): void {
+        // In production, we disable all logging
+        if (defined('WP_ENVIRONMENT_TYPE') && WP_ENVIRONMENT_TYPE === 'production') {
+            return;
+        }
+        
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
             if ( function_exists( 'wp_debug_log' ) ) {
                 wp_debug_log( $message, $level );
