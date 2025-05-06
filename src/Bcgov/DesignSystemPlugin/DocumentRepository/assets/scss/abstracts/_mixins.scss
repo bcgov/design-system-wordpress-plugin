@@ -1,0 +1,178 @@
+// Responsive breakpoint mixins
+@mixin respond-to($breakpoint) {
+
+	@if $breakpoint == sm {
+
+		@media (min-width: $breakpoint-sm) {
+			@content;
+		}
+	} @else if $breakpoint == md {
+
+		@media (min-width: $breakpoint-md) {
+			@content;
+		}
+	} @else if $breakpoint == lg {
+
+		@media (min-width: $breakpoint-lg) {
+			@content;
+		}
+	} @else if $breakpoint == xl {
+
+		@media (min-width: $breakpoint-xl) {
+			@content;
+		}
+	}
+}
+
+// Flexbox mixins
+@mixin flex($direction: row, $justify: flex-start, $align: stretch, $wrap: nowrap) {
+	display: flex;
+	flex-direction: $direction;
+	justify-content: $justify;
+	align-items: $align;
+	flex-wrap: $wrap;
+}
+
+// Typography mixins
+@mixin text-truncate {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+@mixin font-size($size) {
+
+	@if $size == xs {
+		font-size: $font-size-xs;
+	} @else if $size == sm {
+		font-size: 14px;
+	} @else if $size == base {
+		font-size: $font-size-base;
+	} @else if $size == lg {
+		font-size: $font-size-lg;
+	} @else if $size == xl {
+		font-size: $font-size-xl;
+	} @else if $size == xxl {
+		font-size: $font-size-xxl;
+	}
+}
+
+// Box shadow
+@mixin box-shadow($level: 1) {
+
+	@if $level == 1 {
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+	} @else if $level == 2 {
+		box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+	} @else if $level == 3 {
+		box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+	} @else if $level == 4 {
+		box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+	}
+}
+
+// Button styles
+@mixin button-base {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 8px 16px;
+	border-radius: 4px;
+	font-weight: 700;
+	cursor: pointer;
+	transition: all 0.15s ease-in-out;
+	text-decoration: none;
+	border: 2px solid transparent;
+
+	&:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+}
+
+@mixin button-primary {
+
+	@include button-base;
+	background-color: #036;
+	color: #fff;
+
+	&:hover:not(:disabled),
+	&:focus:not(:disabled) {
+		background-color: #002952;
+	}
+}
+
+@mixin button-secondary {
+
+	@include button-base;
+	background-color: #fcba19;
+	color: #313132;
+
+	&:hover:not(:disabled),
+	&:focus:not(:disabled) {
+		background-color: #e3a714;
+	}
+}
+
+@mixin button-outline {
+
+	@include button-base;
+	background-color: transparent;
+	border: 2px solid #036;
+	color: #036;
+
+	&:hover:not(:disabled),
+	&:focus:not(:disabled) {
+		background-color: rgba(0, 51, 102, 0.1);
+	}
+}
+
+// Form control styles
+@mixin form-control {
+	display: block;
+	width: 100%;
+	padding: 8px;
+	font-size: 16px;
+	line-height: 1.5;
+	color: #313132;
+	background-color: #fff;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	transition: border-color 0.15s ease-in-out;
+
+	&:focus {
+		border-color: #66afe9;
+		outline: 0;
+	}
+}
+
+// Status colors
+@mixin status-color($status) {
+
+	@if $status == success {
+		color: #2e8540;
+	} @else if $status == warning {
+		color: #fcba19;
+	} @else if $status == error {
+		color: #d8292f;
+	} @else if $status == info {
+		color: #38598a;
+	}
+}
+
+@mixin status-bg($status) {
+
+	@if $status == success {
+		background-color: #eef9f1;
+		border-color: #2e8540;
+	} @else if $status == warning {
+		background-color: #fef8e7;
+		border-color: #fcba19;
+	} @else if $status == error {
+		background-color: #fbecec;
+		border-color: #d8292f;
+	} @else if $status == info {
+		background-color: #eef2f7;
+		border-color: #38598a;
+	}
+}

@@ -1,0 +1,248 @@
+@use "../abstracts" as *;
+
+.document-table {
+	width: 100%;
+	margin-bottom: $spacing-lg;
+	border-collapse: collapse;
+	background-color: $color-bg-lightest;
+
+	&__header {
+		background-color: $color-primary;
+		color: #fff;
+
+		th {
+			padding: $spacing-sm $spacing-md;
+			text-align: left;
+			font-weight: $font-weight-bold;
+			white-space: nowrap;
+
+			&.checkbox-column {
+				width: 40px;
+				text-align: center;
+			}
+
+			&.actions-column {
+				width: 120px;
+				text-align: center;
+			}
+		}
+	}
+
+	&__row {
+		border-bottom: 1px solid $color-border-light;
+		transition: background-color $transition-fast;
+
+		&:hover {
+			background-color: $color-bg-lighter;
+		}
+
+		td {
+			padding: $spacing-sm $spacing-md;
+			vertical-align: middle;
+
+			&.checkbox-column {
+				width: 40px;
+				text-align: center;
+			}
+
+			&.actions-column {
+				width: 120px;
+				text-align: center;
+				white-space: nowrap;
+			}
+		}
+
+		&--selected {
+			background-color: rgba($color-primary, 0.05);
+
+			&:hover {
+				background-color: rgba($color-primary, 0.1);
+			}
+		}
+	}
+
+	.document-title {
+
+		@include text-truncate;
+		max-width: 300px;
+		font-weight: $font-weight-bold;
+		color: $color-link;
+
+		&:hover {
+			color: $color-link-hover;
+			text-decoration: underline;
+		}
+	}
+
+	.file-size {
+		white-space: nowrap;
+	}
+
+	.status-indicator {
+		display: inline-block;
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		margin-right: $spacing-xs;
+
+		&--published {
+			background-color: $color-success;
+		}
+
+		&--draft {
+			background-color: $color-warning;
+		}
+
+		&--error {
+			background-color: $color-error;
+		}
+	}
+
+	.action-buttons {
+
+		@include flex(row, center, center, nowrap);
+		gap: $spacing-sm;
+
+		.edit-button,
+		.view-button,
+		.delete-button {
+			padding: $spacing-xs;
+			border-radius: $border-radius-sm;
+			transition: all $transition-fast;
+			cursor: pointer;
+
+			svg {
+				display: block;
+				width: 16px;
+				height: 16px;
+			}
+		}
+
+		.view-button {
+			color: $color-info;
+
+			&:hover {
+				background-color: rgba($color-info, 0.1);
+			}
+		}
+
+		.edit-button {
+			color: $color-primary;
+
+			&:hover {
+				background-color: rgba($color-primary, 0.1);
+			}
+		}
+
+		.delete-button {
+			color: $color-error;
+
+			&:hover {
+				background-color: rgba($color-error, 0.1);
+			}
+		}
+	}
+
+	// Make sure delete button icons in the red background are white
+	button.doc-repo-button.delete-button {
+		background-color: $color-error;
+		color: #fff;
+
+		svg {
+			fill: #fff;
+			color: #fff;
+		}
+	}
+
+	.empty-state {
+		padding: $spacing-lg;
+		text-align: center;
+		color: $color-text-light;
+	}
+
+	&__footer {
+		background-color: $color-bg-lighter;
+		border-top: 1px solid $color-border;
+
+		td {
+			padding: $spacing-sm $spacing-md;
+		}
+	}
+
+	.document-cell {
+
+		&__title {
+
+			@include text-truncate;
+			max-width: 300px;
+			display: block;
+		}
+
+		&__metadata {
+
+			@include font-size(sm);
+			color: $color-text-light;
+			margin-top: $spacing-xs;
+		}
+	}
+
+	// Spreadsheet mode styling
+	.editable-cell {
+		position: relative;
+
+		.editable-field {
+			display: block;
+			width: 100%;
+			padding: $spacing-xs;
+			border: 1px solid transparent;
+			border-radius: $border-radius-sm;
+			transition: all $transition-fast;
+
+			&:hover {
+				border-color: $color-border;
+			}
+
+			&:focus {
+				outline: none;
+				border-color: $color-border-focus;
+				background-color: #fff;
+			}
+		}
+
+		.field-error {
+			position: absolute;
+			bottom: -$spacing-md;
+			left: 0;
+			padding: $spacing-xs;
+			background-color: #fbecec;
+			border: 1px solid $color-error;
+			color: $color-error;
+			font-size: $font-size-xs;
+			border-radius: $border-radius-sm;
+			z-index: $z-index-dropdown;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			max-width: 200px;
+		}
+	}
+
+	@media screen and (max-width: $breakpoint-md) {
+		display: block;
+		overflow-x: auto;
+
+		th,
+		td {
+			min-width: 100px;
+		}
+
+		.delete-button,
+		button.doc-repo-button.delete-button {
+			background-color: $color-error;
+			color: #fff;
+
+			svg {
+				fill: #fff;
+				color: #fff;
+			}
+		}
+	}
+}

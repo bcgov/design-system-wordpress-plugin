@@ -5,6 +5,7 @@ import { sprintf } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
 import ErrorBoundary from './ErrorBoundary';
 import DocumentTable from './DocumentTable';
+import VirtualizedDocumentTable from './VirtualizedDocumentTable';
 import UploadFeedback from './UploadFeedback';
 import MetadataModal from '../../../shared/components/MetadataModal';
 import UploadArea from './UploadArea';
@@ -16,6 +17,10 @@ import useNotifications from './hooks/useNotifications';
 import useErrorHandling from './hooks/useErrorHandling';
 import useMetadataManagement from './hooks/useMetadataManagement';
 import useFileHandling from './hooks/useFileHandling';
+import useDocumentManagement from './hooks/useDocumentManagement';
+
+// Define a threshold for when to use virtualization
+const VIRTUALIZATION_THRESHOLD = 50; // Use virtualization when there are more than 50 documents
 
 /**
  * DocumentList Component
@@ -52,11 +57,6 @@ const DocumentList = ({
     onDocumentsUpdate,
     metadataFields = [],
 }) => {
-    // State for delete confirmation
-    const [deleteDocument, setDeleteDocument] = useState(null);
-    const [bulkDeleteConfirmOpen, setBulkDeleteConfirmOpen] = useState(false);
-    const [isMultiDeleting, setIsMultiDeleting] = useState(false);
-    
     // Memoize formatFileSize function
     const formatFileSize = useMemo(() => (bytes) => {
         if (bytes === 0) return '0 Bytes';
@@ -90,6 +90,23 @@ const DocumentList = ({
         retryAllOperations 
     } = useErrorHandling({ 
         onShowNotification: showNotification 
+    });
+
+    // Use document management hook
+    const {
+        deleteDocument,
+        bulkDeleteConfirmOpen,
+        isMultiDeleting,
+        setDeleteDocument,
+        handleBulkDelete,
+        handleSingleDelete,
+        openBulkDeleteConfirm,
+        closeBulkDeleteConfirm
+    } = useDocumentManagement({
+        onDelete,
+        onSelectAll,
+        onShowNotification: showNotification,
+        onError: handleOperationError
     });
 
     // Use metadata management hook - critical for spreadsheet mode
@@ -145,24 +162,6 @@ const DocumentList = ({
         retryAllOperations(operationHandlers);
     }, [onDelete, handleSaveMetadata, retryAllOperations]);
 
-    // Update handleBulkDelete with better error handling
-    const handleBulkDelete = useCallback(async () => {
-        setIsMultiDeleting(true);
-        try {
-            await Promise.all(selectedDocuments.map(docId => onDelete(docId)));
-            setBulkDeleteConfirmOpen(false);
-            onSelectAll(false);
-            showNotification('success', __('Selected documents were deleted successfully.', 'bcgov-design-system'));
-        } catch (error) {
-            handleOperationError('bulk-delete', null, error, {
-                addToRetryQueue: false,
-                customMessage: __('Error deleting one or more documents.', 'bcgov-design-system')
-            });
-        } finally {
-            setIsMultiDeleting(false);
-        }
-    }, [selectedDocuments, onDelete, onSelectAll, handleOperationError, showNotification]);
-
     // Memoize the document table props to prevent unnecessary re-renders
     const documentTableProps = useMemo(() => ({
         documents: localDocuments,
@@ -188,7 +187,8 @@ const DocumentList = ({
         bulkEditedMetadata,
         handleEditMetadata,
         handleMetadataChange,
-        formatFileSize
+        formatFileSize,
+        setDeleteDocument
     ]);
 
     return (
@@ -211,7 +211,7 @@ const DocumentList = ({
                         {selectedDocuments.length > 0 && (
                             <Button
                                 className="doc-repo-button delete-button bulk-delete-button"
-                                onClick={() => setBulkDeleteConfirmOpen(true)}
+                                onClick={openBulkDeleteConfirm}
                                 disabled={isMultiDeleting}
                             >
                                 {sprintf(
@@ -251,7 +251,11 @@ const DocumentList = ({
                 </div>
 
                 {/* Document Table */}
-                <DocumentTable {...documentTableProps} />
+                {documents.length > VIRTUALIZATION_THRESHOLD ? (
+                    <VirtualizedDocumentTable {...documentTableProps} />
+                ) : (
+                    <DocumentTable {...documentTableProps} />
+                )}
                 
                 {/* Pagination Controls */}
                 <PaginationControls
@@ -270,7 +274,7 @@ const DocumentList = ({
                 {bulkDeleteConfirmOpen && (
                     <Modal
                         title={__('Delete Selected Documents', 'bcgov-design-system')}
-                        onRequestClose={() => setBulkDeleteConfirmOpen(false)}
+                        onRequestClose={closeBulkDeleteConfirm}
                     >
                         <div className="delete-confirmation-content">
                             <p>
@@ -296,7 +300,7 @@ const DocumentList = ({
                             <div className="modal-actions">
                                 <Button
                                     className="doc-repo-button delete-button"
-                                    onClick={handleBulkDelete}
+                                    onClick={() => handleBulkDelete(selectedDocuments)}
                                     disabled={isMultiDeleting}
                                 >
                                     {isMultiDeleting ? (
@@ -307,7 +311,7 @@ const DocumentList = ({
                                     )}
                                 </Button>
                                 <Button
-                                    onClick={() => setBulkDeleteConfirmOpen(false)}
+                                    onClick={closeBulkDeleteConfirm}
                                     className="doc-repo-button cancel-button"
                                     disabled={isMultiDeleting}
                                 >
@@ -318,6 +322,7 @@ const DocumentList = ({
                     </Modal>
                 )}
 
+                {/* Single Delete Confirmation Modal */}
                 {deleteDocument && (
                     <Modal
                         title={__('Delete Document', 'bcgov-design-system')}
@@ -346,10 +351,7 @@ const DocumentList = ({
                                 </Button>
                                 <Button
                                     className="doc-repo-button delete-button"
-                                    onClick={() => {
-                                        onDelete(deleteDocument.id);
-                                        setDeleteDocument(null);
-                                    }}
+                                    onClick={() => handleSingleDelete(deleteDocument.id)}
                                     disabled={isDeleting}
                                 >
                                     {isDeleting ? __('Deleting...', 'bcgov-design-system') : __('Delete', 'bcgov-design-system')}

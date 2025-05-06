@@ -1,0 +1,149 @@
+@use "../abstracts" as *;
+
+.document-list {
+	width: 100%;
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: $spacing-md;
+
+	&-actions {
+
+		@include flex(row, space-between, center, wrap);
+		margin-bottom: $spacing-md;
+
+		.document-list-left-actions {
+
+			@include flex(row, flex-start, center);
+			gap: $spacing-md;
+			flex-wrap: wrap;
+
+			@media screen and (max-width: $breakpoint-md) {
+				width: 100%;
+				margin-bottom: $spacing-md;
+			}
+		}
+
+		.document-list-right-actions {
+
+			@include flex(row, flex-end, center);
+			gap: $spacing-md;
+			flex-wrap: wrap;
+
+			@media screen and (max-width: $breakpoint-md) {
+				width: 100%;
+			}
+		}
+	}
+
+	// Ensure delete buttons have white icons
+	.delete-button,
+	.bulk-delete-button {
+		background-color: $color-error;
+		color: #fff;
+
+		svg {
+			fill: #fff;
+			color: #fff;
+		}
+	}
+
+	.mode-toggle {
+
+		@include flex(row, flex-start, center);
+		margin-right: $spacing-md;
+
+		.doc-repo-button {
+
+			@include flex(row, center, center);
+			gap: $spacing-xs;
+
+			svg {
+				margin-right: $spacing-xs;
+			}
+		}
+	}
+
+	.delete-confirmation-content {
+		padding: $spacing-md 0;
+
+		.documents-to-delete {
+			margin: $spacing-md 0;
+			padding: $spacing-md;
+			background-color: $color-bg-lighter;
+			border-radius: $border-radius;
+			max-height: 200px;
+			overflow-y: auto;
+
+			h4 {
+				margin-bottom: $spacing-sm;
+			}
+
+			ul {
+				list-style: disc;
+				padding-left: $spacing-lg;
+
+				li {
+					padding: $spacing-xs 0;
+				}
+			}
+		}
+
+		.delete-warning {
+			color: $color-error;
+			font-weight: $font-weight-bold;
+			margin-bottom: $spacing-md;
+		}
+
+		.modal-actions {
+
+			@include flex(row, flex-end, center);
+			gap: $spacing-md;
+		}
+	}
+
+	.editable-metadata {
+		margin-bottom: $spacing-lg;
+
+		.metadata-field {
+			margin-bottom: $spacing-md;
+
+			label {
+				display: block;
+				font-weight: $font-weight-bold;
+				margin-bottom: $spacing-xs;
+			}
+
+			.metadata-error {
+				color: $color-error;
+
+				@include font-size(sm);
+				margin-top: $spacing-xs;
+			}
+		}
+	}
+
+	.non-editable-metadata {
+		padding-top: $spacing-md;
+		border-top: 1px solid $color-border-light;
+
+		h3 {
+			margin-bottom: $spacing-md;
+		}
+
+		.metadata-field {
+
+			@include flex(row, flex-start, flex-start);
+			margin-bottom: $spacing-md;
+
+			label {
+				width: 120px;
+				font-weight: $font-weight-bold;
+				color: $color-text-light;
+			}
+
+			.field-value {
+				flex: 1;
+			}
+		}
+	}
+}

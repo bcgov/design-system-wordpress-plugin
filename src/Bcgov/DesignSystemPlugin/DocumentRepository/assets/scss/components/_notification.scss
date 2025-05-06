@@ -1,0 +1,105 @@
+@use "../abstracts" as *;
+
+.notification {
+
+	@include flex(row, flex-start, center);
+	padding: $spacing-md;
+	margin-bottom: $spacing-md;
+	border-radius: $border-radius;
+	position: relative;
+	animation: notification-slide-in 0.3s ease-out;
+
+	&__icon {
+		margin-right: $spacing-md;
+
+		svg {
+			width: 20px;
+			height: 20px;
+		}
+	}
+
+	&__content {
+		flex: 1;
+	}
+
+	&__title {
+		font-weight: $font-weight-bold;
+		margin-bottom: $spacing-xs;
+	}
+
+	&__message {
+		margin: 0;
+	}
+
+	&__close {
+		background: none;
+		border: none;
+		cursor: pointer;
+		color: inherit;
+		opacity: 0.7;
+		transition: opacity $transition-fast;
+		padding: $spacing-xs;
+
+		&:hover {
+			opacity: 1;
+		}
+
+		svg {
+			width: 16px;
+			height: 16px;
+		}
+	}
+
+	&--success {
+
+		@include status-bg(success);
+		color: #1e5928;
+
+		.notification__icon {
+			color: $color-success;
+		}
+	}
+
+	&--error {
+
+		@include status-bg(error);
+		color: #a51e23;
+
+		.notification__icon {
+			color: $color-error;
+		}
+	}
+
+	&--warning {
+
+		@include status-bg(warning);
+		color: #cc9200;
+
+		.notification__icon {
+			color: #e3a714;
+		}
+	}
+
+	&--info {
+
+		@include status-bg(info);
+		color: #284366;
+
+		.notification__icon {
+			color: $color-info;
+		}
+	}
+}
+
+@keyframes notification-slide-in {
+
+	0% {
+		transform: translateY(-20px);
+		opacity: 0;
+	}
+
+	100% {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}

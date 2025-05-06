@@ -1,0 +1,51 @@
+@use "../abstracts" as *;
+
+.pagination-controls {
+
+	@include flex(row, center, center);
+	margin: $spacing-lg 0;
+
+	&__button {
+
+		@include button-outline;
+		margin: 0 $spacing-xs;
+		padding: $spacing-xs $spacing-sm;
+		min-width: 36px;
+
+		&:disabled {
+			opacity: 0.5;
+			border-color: $color-border;
+			color: $color-text-light;
+			cursor: not-allowed;
+		}
+
+		&--active {
+			background-color: $color-primary;
+			border-color: $color-primary;
+			color: #fff;
+		}
+
+		svg {
+			width: 16px;
+			height: 16px;
+		}
+	}
+
+	&__info {
+		margin: 0 $spacing-md;
+		color: $color-text-light;
+
+		@include font-size(sm);
+	}
+
+	@media screen and (max-width: $breakpoint-sm) {
+		flex-wrap: wrap;
+
+		&__info {
+			margin: $spacing-sm 0;
+			width: 100%;
+			text-align: center;
+			order: -1;
+		}
+	}
+}

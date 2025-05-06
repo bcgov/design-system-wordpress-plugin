@@ -1,0 +1,98 @@
+@use "../abstracts" as *;
+
+.retry-notice {
+	margin-bottom: $spacing-lg;
+
+	&__container {
+
+		@include status-bg(warning);
+		border: 1px solid;
+		border-radius: $border-radius;
+		padding: $spacing-md;
+	}
+
+	&__header {
+
+		@include flex(row, space-between, center);
+		margin-bottom: $spacing-sm;
+
+		h3 {
+			margin: 0;
+			color: #cc9200;
+		}
+	}
+
+	&__content {
+		margin-bottom: $spacing-sm;
+	}
+
+	&__list {
+		list-style: none;
+		padding: 0;
+		margin: 0 0 $spacing-md 0;
+
+		li {
+
+			@include flex(row, flex-start, center);
+			padding: $spacing-xs 0;
+
+			.error-icon {
+				color: $color-error;
+				margin-right: $spacing-sm;
+
+				svg {
+					width: 16px;
+					height: 16px;
+				}
+			}
+
+			.error-text {
+				flex: 1;
+			}
+
+			.retry-button {
+
+				@include button-base;
+				background-color: transparent;
+				border: 1px solid #e3a714;
+				color: #cc9200;
+				padding: $spacing-xs $spacing-sm;
+
+				@include font-size(sm);
+
+				&:hover {
+					background-color: rgba($color-warning, 0.1);
+				}
+			}
+		}
+	}
+
+	&__actions {
+
+		@include flex(row, flex-end, center);
+		gap: $spacing-sm;
+
+		.retry-all-button {
+
+			@include button-base;
+			background-color: #e3a714;
+			color: #fff;
+			border: none;
+
+			&:hover {
+				background-color: #cc9200;
+			}
+		}
+
+		.dismiss-button {
+
+			@include button-outline;
+			border-color: #e3a714;
+			color: #cc9200;
+
+			&:hover {
+				background-color: rgba($color-warning, 0.1);
+			}
+		}
+	}
+}
