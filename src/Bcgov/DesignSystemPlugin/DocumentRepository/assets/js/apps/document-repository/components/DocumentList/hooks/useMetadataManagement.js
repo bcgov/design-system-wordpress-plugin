@@ -5,7 +5,7 @@ import {
 	useReducer,
 } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
-import { __ , sprintf} from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Metadata reducer for handling metadata state
