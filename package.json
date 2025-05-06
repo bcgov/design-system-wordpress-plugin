@@ -40,7 +40,7 @@
     "build": "wp-scripts build",
     "lint:css": "wp-scripts lint-style 'src/**/*.scss' --allow-empty-input",
     "fix:css": "wp-scripts lint-style 'src/**/*.scss' --fix --allow-empty-input",
-    "lint:js": "wp-scripts lint-js src/scripts",
-    "fix:js": "wp-scripts lint-js src/scripts --fix"
+    "lint:js": "wp-scripts lint-js 'src/**/*.js'",
+    "fix:js": "wp-scripts lint-js 'src/**/*.js' --fix"
   }
 }
