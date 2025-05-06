@@ -272,9 +272,18 @@ const DocumentList = ({
 
                 {/* Bulk Delete Confirmation Modal */}
                 {bulkDeleteConfirmOpen && (
-                    <Modal
+                    <MetadataModal
                         title={__('Delete Selected Documents', 'bcgov-design-system')}
-                        onRequestClose={closeBulkDeleteConfirm}
+                        isOpen={bulkDeleteConfirmOpen}
+                        onClose={closeBulkDeleteConfirm}
+                        onSave={() => handleBulkDelete(selectedDocuments)}
+                        isSaving={isMultiDeleting}
+                        isDisabled={false}
+                        saveButtonText={isMultiDeleting 
+                            ? __('Deleting...', 'bcgov-design-system')
+                            : sprintf(__('Delete Selected (%d)', 'bcgov-design-system'), selectedDocuments.length)
+                        }
+                        saveButtonClassName="doc-repo-button delete-button"
                     >
                         <div className="delete-confirmation-content">
                             <p>
@@ -297,36 +306,21 @@ const DocumentList = ({
                             <p className="delete-warning">
                                 {__('This action cannot be undone.', 'bcgov-design-system')}
                             </p>
-                            <div className="modal-actions">
-                                <Button
-                                    className="doc-repo-button delete-button"
-                                    onClick={() => handleBulkDelete(selectedDocuments)}
-                                    disabled={isMultiDeleting}
-                                >
-                                    {isMultiDeleting ? (
-                                        __('Deleting...', 'bcgov-design-system')
-                                    ) : sprintf(
-                                        __('Delete Selected (%d)', 'bcgov-design-system'),
-                                        selectedDocuments.length
-                                    )}
-                                </Button>
-                                <Button
-                                    onClick={closeBulkDeleteConfirm}
-                                    className="doc-repo-button cancel-button"
-                                    disabled={isMultiDeleting}
-                                >
-                                    {__('Cancel', 'bcgov-design-system')}
-                                </Button>
-                            </div>
                         </div>
-                    </Modal>
+                    </MetadataModal>
                 )}
 
                 {/* Single Delete Confirmation Modal */}
                 {deleteDocument && (
-                    <Modal
+                    <MetadataModal
                         title={__('Delete Document', 'bcgov-design-system')}
-                        onRequestClose={() => setDeleteDocument(null)}
+                        isOpen={!!deleteDocument}
+                        onClose={() => setDeleteDocument(null)}
+                        onSave={() => handleSingleDelete(deleteDocument.id)}
+                        isSaving={isDeleting}
+                        isDisabled={false}
+                        saveButtonText={isDeleting ? __('Deleting...', 'bcgov-design-system') : __('Delete', 'bcgov-design-system')}
+                        saveButtonClassName="doc-repo-button delete-button"
                     >
                         <div className="delete-confirmation-content">
                             <p>
@@ -341,24 +335,8 @@ const DocumentList = ({
                             <p className="delete-warning">
                                 {__('This action cannot be undone.', 'bcgov-design-system')}
                             </p>
-                            <div className="modal-actions">
-                                <Button
-                                    onClick={() => setDeleteDocument(null)}
-                                    className="doc-repo-button cancel-button"
-                                    disabled={isDeleting}
-                                >
-                                    {__('Cancel', 'bcgov-design-system')}
-                                </Button>
-                                <Button
-                                    className="doc-repo-button delete-button"
-                                    onClick={() => handleSingleDelete(deleteDocument.id)}
-                                    disabled={isDeleting}
-                                >
-                                    {isDeleting ? __('Deleting...', 'bcgov-design-system') : __('Delete', 'bcgov-design-system')}
-                                </Button>
-                            </div>
                         </div>
-                    </Modal>
+                    </MetadataModal>
                 )}
 
                 {editingMetadata && (
@@ -366,6 +344,7 @@ const DocumentList = ({
                         title={__('Edit Document Metadata', 'bcgov-design-system')}
                         isOpen={!!editingMetadata}
                         onClose={() => {
+                            // Simply call handleEditMetadata with null to close the modal
                             handleEditMetadata(null);
                         }}
                         onSave={handleSaveMetadata}

@@ -20,7 +20,7 @@
  * 
  * <DocumentUploader
  *   metadataFields={metadataFields}
- *   onUploadSuccess={(document) => console.log('Uploaded:', document)}
+ *   onUploadSuccess={(document) => handleDocumentUploaded(document)}
  *   modalMode={true}
  * />
  */
@@ -88,18 +88,8 @@ const DocumentUploader = ({
     // Handle initial file setting from props
     useEffect(() => {
         if (selectedFile) {
-            console.log('Selected file prop detected:', selectedFile.name);
-            
-            // Directly set the file in state
-            setFile(selectedFile);
-            
-            // Set a default title from the filename (without extension)
-            const fileName = selectedFile.name;
-            const fileNameWithoutExt = fileName.includes('.') 
-                ? fileName.substring(0, fileName.lastIndexOf('.')) 
-                : fileName;
-                
-            setTitle(fileNameWithoutExt);
+            // Update the title state based on the selected file
+            setTitle(selectedFile.name.replace(/\.[^/.]+$/, "")); // Remove file extension
             
             // Also validate the file
             if (!validateFile(selectedFile)) {
@@ -148,14 +138,10 @@ const DocumentUploader = ({
     // Handle file validation and selection
     const validateAndSetFile = (selectedFile) => {
         if (!selectedFile) {
-            console.log('No file provided to validate');
             return false;
         }
         
-        console.log('Validating file:', selectedFile.name, 'Size:', selectedFile.size);
-        
         if (validateFile(selectedFile)) {
-            console.log('File validation passed, setting file and title');
             setFile(selectedFile);
             
             // Set default title from filename
@@ -180,7 +166,6 @@ const DocumentUploader = ({
     const handleDragEnter = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        console.log('DocumentUploader - Drag enter detected');
         setIsDragging(true);
     };
     
@@ -195,12 +180,14 @@ const DocumentUploader = ({
         e.preventDefault();
         e.stopPropagation();
         
-        // Only set isDragging to false if we're actually leaving the container
-        // not just moving between child elements
-        const isLeavingContainer = !e.currentTarget.contains(e.relatedTarget);
-        
-        if (isLeavingContainer) {
-            console.log('DocumentUploader - Drag leave detected - leaving container');
+        // Only set isDragging to false if we're leaving the container
+        const rect = dropzoneRef.current.getBoundingClientRect();
+        if (
+            e.clientX < rect.left ||
+            e.clientX >= rect.right ||
+            e.clientY < rect.top ||
+            e.clientY >= rect.bottom
+        ) {
             setIsDragging(false);
         }
     };
@@ -210,22 +197,17 @@ const DocumentUploader = ({
         e.stopPropagation();
         setIsDragging(false);
         
-        console.log('DocumentUploader - Drop detected');
+        const droppedFiles = Array.from(e.dataTransfer.files);
         
-        const droppedFiles = e.dataTransfer.files;
-        if (droppedFiles && droppedFiles.length > 0) {
-            console.log('DocumentUploader - File dropped:', droppedFiles[0].name);
-            validateAndSetFile(droppedFiles[0]);
-        } else {
-            console.warn('DocumentUploader - Drop event had no files');
+        if (droppedFiles.length > 0) {
+            handleFileSelect(droppedFiles[0]);
         }
     };
     
     // Click handler for the drop zone
     const handleDropzoneClick = () => {
-        console.log('DocumentUploader - Dropzone clicked');
+        // Trigger the hidden file input's click event
         if (fileInputRef.current) {
-            console.log('DocumentUploader - Triggering file input click');
             fileInputRef.current.click();
         }
     };
@@ -251,25 +233,12 @@ const DocumentUploader = ({
      * @async
      */
     const handleUpload = async () => {
-        console.log('Beginning upload process for file:', file?.name);
-        
-        // Validate required fields
-        const requiredFields = metadataFields.filter(field => field.required);
-        
-        for (const field of requiredFields) {
-            if (!metadata[field.id]) {
-                setError(__('Please fill in all required fields.', 'bcgov-design-system'));
-                return;
-            }
-        }
-        
         if (!file) {
-            setError(__('Please select a file to upload.', 'bcgov-design-system'));
+            setError('Please select a file to upload.');
             return;
         }
         
-        if (!title) {
-            setError(__('Please enter a title for the document.', 'bcgov-design-system'));
+        if (!validateFile(file)) {
             return;
         }
         
@@ -277,7 +246,6 @@ const DocumentUploader = ({
         setError(null);
         setUploadProgress(0);
         
-        // Create FormData for file upload
         const formData = new FormData();
         formData.append('file', file);
         formData.append('title', title);
@@ -286,85 +254,28 @@ const DocumentUploader = ({
         const metadataJson = JSON.stringify(metadata);
         formData.append('metadata', metadataJson);
         
-        console.log('FormData prepared, sending to server');
-        console.log('API settings check:', {
-            apiRoot: window.documentRepositorySettings.apiRoot,
-            apiNamespace: apiNamespace,
-            nonceExists: !!window.documentRepositorySettings.nonce,
-            nonceLength: window.documentRepositorySettings.nonce?.length,
-            isLoggedIn: !!document.body.classList.contains('logged-in'),
-            userRole: window.documentRepositorySettings.userRole || 'unknown',
-            currentUserId: typeof window.userSettings !== 'undefined' ? window.userSettings.uid : 'not set'
-        });
-        
         try {
-            // Create XMLHttpRequest for upload with progress tracking
-            const xhr = new XMLHttpRequest();
-            
-            const uploadPromise = new Promise((resolve, reject) => {
-                xhr.open('POST', `${window.documentRepositorySettings.apiRoot}${apiNamespace}/documents`);
-                
-                // Add WordPress nonce header
-                xhr.setRequestHeader('X-WP-Nonce', window.documentRepositorySettings.nonce);
-                
-                // Track upload progress
-                xhr.upload.onprogress = (event) => {
-                    if (event.lengthComputable) {
-                        const progress = Math.round((event.loaded / event.total) * 100);
-                        setUploadProgress(progress);
-                    }
-                };
-                
-                xhr.onload = () => {
-                    if (xhr.status >= 200 && xhr.status < 300) {
-                        try {
-                            const response = JSON.parse(xhr.responseText);
-                            console.log('Upload successful:', response);
-                            resolve(response);
-                        } catch (error) {
-                            console.error('Error parsing response:', xhr.responseText);
-                            reject(new Error(`Error uploading "${file.name}": Server returned invalid response`));
-                        }
-                    } else {
-                        console.error('HTTP error:', xhr.status, xhr.statusText);
-                        console.error('Response:', xhr.responseText);
-                        
-                        let errorMessage;
-                        try {
-                            const response = JSON.parse(xhr.responseText);
-                            errorMessage = response.message || response.error || xhr.statusText;
-                        } catch (e) {
-                            errorMessage = xhr.statusText || 'Server error';
-                        }
-                        
-                        if (xhr.status === 403) {
-                            console.error('403 Forbidden - Authentication error. Headers:', xhr.getAllResponseHeaders());
-                            reject(new Error(`Error uploading "${file.name}": Authentication error - please refresh the page and try again`));
-                        } else {
-                            reject(new Error(`Error uploading "${file.name}": ${errorMessage}`));
-                        }
-                    }
-                };
-                
-                xhr.onerror = () => {
-                    console.error('Network error during upload');
-                    reject(new Error(`Network error while uploading "${file.name}". Please check your connection and try again.`));
-                };
-                
-                xhr.send(formData);
+            const response = await fetch(`${window.documentRepositorySettings.apiRoot}${apiNamespace}/documents`, {
+                method: 'POST',
+                headers: {
+                    'X-WP-Nonce': window.documentRepositorySettings.nonce,
+                },
+                body: formData,
             });
             
-            // Wait for upload to complete
-            const uploadedDocument = await uploadPromise;
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Upload failed');
+            }
             
-            // Show success message
+            const data = await response.json();
+            
             setUploadSuccess(true);
             setIsUploading(false);
             
             // Notify parent of successful upload
             if (onUploadSuccess) {
-                console.log('Notifying parent of successful upload');
-                onUploadSuccess(uploadedDocument);
+                onUploadSuccess(data.document);
             }
             
             // Reset form if not in modal mode
@@ -375,7 +286,7 @@ const DocumentUploader = ({
             }
         } catch (err) {
             console.error('Upload error:', err);
-            setError(err.message || `Error uploading "${file.name}". Please try again or contact support.`);
+            setError(err.message || 'Failed to upload file. Please try again.');
             setIsUploading(false);
         }
     };
@@ -589,13 +500,10 @@ const DocumentUploader = ({
      */
     // If in modal mode, return a simplified layout
     if (modalMode) {
-        console.log('DocumentUploader rendering in modal mode with file:', file?.name);
-        
         // In modal mode, always ensure we have a file set
         useEffect(() => {
             if (!file && selectedFile) {
                 setFile(selectedFile);
-                console.log('Modal mode: Setting file from props', selectedFile.name);
             }
         }, [selectedFile, file]);
         

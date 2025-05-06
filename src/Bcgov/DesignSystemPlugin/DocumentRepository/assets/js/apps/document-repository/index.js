@@ -9,44 +9,38 @@
  * @requires ./App
  */
 
-import { render } from '@wordpress/element';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
 import App from './App';
 
 /**
- * Initialize the Document Repository application
- * 
- * This function is called when the DOM is fully loaded. It:
- * 1. Finds the application container element
- * 2. Creates a modal root element for WordPress modals
- * 3. Renders the main App component
- * 
- * @function initializeApp
- * @listens DOMContentLoaded
- * @throws {Error} If the app container is not found
+ * Initialize and render the Document Repository application
  */
 document.addEventListener('DOMContentLoaded', () => {
-    // Find the application container
-    const appContainer = document.getElementById('dswp-document-repository-app');
-    
-    if (appContainer) {
-        console.log('Document Repository mounting app');
+    try {
+        const appContainer = document.getElementById('dswp-document-repository-app');
         
-        /**
-         * Create a Modal root element for WordPress modals
-         * 
-         * This is required for WordPress modal components to work properly.
-         * The modal root is appended to the document body if it doesn't exist.
-         */
-        let modalRoot = document.getElementById('dswp-document-repository-modals');
-        if (!modalRoot) {
-            modalRoot = document.createElement('div');
-            modalRoot.id = 'dswp-document-repository-modals';
-            document.body.appendChild(modalRoot);
+        if (appContainer) {
+            const root = createRoot(appContainer);
+            root.render(<App />);
+        } else {
+            console.error('Document Repository app container not found. Expected element with ID: dswp-document-repository-app');
+            // Create a visible error message if container is not found
+            const errorDiv = document.createElement('div');
+            errorDiv.style.color = 'red';
+            errorDiv.style.padding = '20px';
+            errorDiv.style.border = '1px solid red';
+            errorDiv.innerHTML = '<strong>Error:</strong> Document Repository container not found. Check console for details.';
+            document.body.prepend(errorDiv);
         }
-        
-        // Render the main App component
-        render(<App />, appContainer);
-    } else {
-        console.warn('Document Repository app container not found');
+    } catch (error) {
+        console.error('Failed to initialize Document Repository app:', error);
+        // Display error on the page
+        const errorDiv = document.createElement('div');
+        errorDiv.style.color = 'red';
+        errorDiv.style.padding = '20px';
+        errorDiv.style.border = '1px solid red';
+        errorDiv.innerHTML = `<strong>Error:</strong> Failed to initialize Document Repository app: ${error.message}`;
+        document.body.prepend(errorDiv);
     }
 }); 

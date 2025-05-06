@@ -54,14 +54,6 @@ const App = () => {
         setSearchParams,
     } = useDocuments();
     
-    // For debugging
-    useEffect(() => {
-        console.log('Documents received:', documents);
-        if (documents && documents.length > 0) {
-            console.log('First document structure:', JSON.stringify(documents[0], null, 2));
-        }
-    }, [documents]);
-    
     // Selected documents for bulk actions
     const [selectedDocuments, setSelectedDocuments] = useState([]);
     
@@ -159,36 +151,14 @@ const App = () => {
             setIsInitializing(true);
             setError(null);
             
-            const nonce = window.documentRepositorySettings?.nonce;
-            if (!nonce) {
-                throw new Error(__('Security token not found', 'bcgov-design-system'));
-            }
-
-            const response = await fetch(
-                `${window.documentRepositorySettings.apiRoot}${window.documentRepositorySettings.apiNamespace}/documents?page=${newPage}`,
-                {
-                    headers: {
-                        'X-WP-Nonce': nonce,
-                    },
-                }
-            );
-
-            if (!response.ok) {
-                let errorMessage;
-                try {
-                    const errorData = await response.json();
-                    errorMessage = errorData.message || errorData.error;
-                } catch (e) {
-                    errorMessage = response.statusText;
-                }
-                throw new Error(__('Failed to fetch documents: ', 'bcgov-design-system') + errorMessage);
-            }
-
-            const data = await response.json();
-            setDocuments(data.documents);
-            setTotalDocuments(data.total);
-            setTotalPages(data.totalPages);
-            setCurrentPage(newPage);
+            // Update search params to include the new page number
+            setSearchParams(prev => ({
+                ...prev,
+                page: newPage
+            }));
+            
+            // Fetch documents with the updated search params
+            await fetchDocuments();
         } catch (error) {
             console.error('Error changing page:', error);
             setError(error.message || __('Failed to change page', 'bcgov-design-system'));
@@ -244,23 +214,14 @@ const App = () => {
      * @param {Object} document - The successfully uploaded document
      */
     const handleUploadSuccess = (document) => {
-        console.log('Upload success:', document);
-        
-        // Refresh the document list
+        // Update the document list by fetching the latest documents
         fetchDocuments();
         
-        // Move to next file if there are more in the queue
-        if (currentUploadIndex < uploadQueue.length - 1) {
-            const nextIndex = currentUploadIndex + 1;
-            setCurrentUploadIndex(nextIndex);
-            setSelectedFileForUpload(uploadQueue[nextIndex]);
-        } else {
-            // Reset upload state when all files are done
-            setUploadQueue([]);
-            setCurrentUploadIndex(0);
-            setSelectedFileForUpload(null);
-            setShowUploadModal(false);
-        }
+        // Reset upload state
+        setShowUploadModal(false);
+        setSelectedFileForUpload(null);
+        setUploadQueue([]);
+        setCurrentUploadIndex(0);
     };
 
     /**

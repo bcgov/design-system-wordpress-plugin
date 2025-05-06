@@ -145,6 +145,12 @@ const useMetadataManagement = ({
      * @param {Object} document The document to edit
      */
     const handleEditMetadata = useCallback((document) => {
+        // If document is null, clear the editing state
+        if (!document) {
+            dispatch({ type: 'CLEAR_EDITING_DOCUMENT' });
+            return;
+        }
+        
         const documentToEdit = {
             ...document,
             upload_date: document.date || document.upload_date || document.metadata?.upload_date

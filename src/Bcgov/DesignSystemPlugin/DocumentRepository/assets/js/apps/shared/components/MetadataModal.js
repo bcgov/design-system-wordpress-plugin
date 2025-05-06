@@ -1,5 +1,6 @@
 import { Modal, Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Shared metadata modal component used across the application
@@ -11,6 +12,8 @@ import { __ } from '@wordpress/i18n';
  * @param {Function} props.onSave Callback when save button is clicked
  * @param {boolean} props.isSaving Whether save operation is in progress
  * @param {boolean} props.isDisabled Whether save button should be disabled
+ * @param {string} props.saveButtonText Custom text for the save button
+ * @param {string} props.saveButtonClassName Custom class name for the save button
  * @param {React.ReactNode} props.children Modal content
  * @returns {JSX.Element} Modal component
  */
@@ -21,25 +24,45 @@ const MetadataModal = ({
     onSave,
     isSaving = false,
     isDisabled = false,
+    saveButtonText,
+    saveButtonClassName = 'doc-repo-button save-button',
     children
 }) => {
     if (!isOpen) return null;
+    
+    // Create a safe handler for closing the modal that prevents event bubbling
+    const handleClose = useCallback((e) => {
+        // Stop propagation to prevent the event from bubbling up
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        // Call the onClose callback
+        onClose();
+    }, [onClose]);
+    
+    // Create a safe handler for form submission
+    const handleSubmit = useCallback((e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onSave();
+    }, [onSave]);
 
     return (
         <Modal
             title={title}
-            onRequestClose={onClose}
+            onRequestClose={handleClose}
             className="metadata-edit-modal"
+            shouldCloseOnClickOutside={true}
+            shouldCloseOnEsc={true}
         >
-            <form onSubmit={(e) => {
-                e.preventDefault();
-                onSave();
-            }} className="metadata-edit-form">
+            <form onSubmit={handleSubmit} className="metadata-edit-form">
                 {children}
 
                 <div className="modal-actions">
                     <Button
-                        onClick={onClose}
+                        onClick={handleClose}
                         disabled={isSaving}
                         className="doc-repo-button cancel-button"
                     >
@@ -49,9 +72,9 @@ const MetadataModal = ({
                         type="submit"
                         isBusy={isSaving}
                         disabled={isSaving || isDisabled}
-                        className="doc-repo-button save-button"
+                        className={saveButtonClassName}
                     >
-                        {__('Save Changes', 'bcgov-design-system')}
+                        {saveButtonText || __('Save Changes', 'bcgov-design-system')}
                     </Button>
                 </div>
             </form>

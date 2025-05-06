@@ -400,10 +400,7 @@ const MetadataApp = () => {
             id: field.id || ''
         };
         
-        console.log('Setting original values:', originalFieldValues);
-        
         setOriginalValues(originalFieldValues);
-        setHasChanges(false);
         
         setState(prev => ({
             ...prev,
@@ -561,19 +558,7 @@ const MetadataApp = () => {
             const current = String(currentValues[field] || '').trim();
             const isDifferent = original !== current;
             
-            console.log('Comparing field:', field, {
-                original,
-                current,
-                isDifferent
-            });
-            
             return isDifferent;
-        });
-
-        console.log('Final change detection:', {
-            originalValues,
-            currentValues,
-            hasChanges
         });
 
         setHasChanges(hasChanges);

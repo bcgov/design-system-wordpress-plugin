@@ -28,6 +28,9 @@ class DocumentUploader {
 
         // Add filter for custom upload directory.
         add_filter( 'upload_dir', [ $this, 'custom_upload_dir' ] );
+        
+        // Add filter to modify attachment URLs for our documents
+        add_filter( 'wp_get_attachment_url', [ $this, 'fix_attachment_url' ], 10, 2 );
     }
 
     /**
@@ -37,17 +40,70 @@ class DocumentUploader {
      * @return array Modified upload directory settings.
      */
     public function custom_upload_dir( $uploads ) {
-        // Always use dswp-documents directory for document repository uploads.
-        $uploads['path']   = $uploads['basedir'] . '/dswp-documents';
-        $uploads['url']    = $uploads['baseurl'] . '/dswp-documents';
+        // Get the WP content directory without the site ID
+        $wp_content_dir = WP_CONTENT_DIR;
+        $wp_content_url = content_url();
+        
+        // Create a direct path without the site ID
+        $direct_path = $wp_content_dir . '/uploads/dswp-documents';
+        $direct_url = $wp_content_url . '/uploads/dswp-documents';
+        
+        // Use direct paths instead of the multisite paths
+        $uploads['path']   = $direct_path;
+        $uploads['url']    = $direct_url;
         $uploads['subdir'] = '/dswp-documents';
 
-        // Create directory if it doesn't exist.
+        // Create directory if it doesn't exist
         if ( ! file_exists( $uploads['path'] ) ) {
             wp_mkdir_p( $uploads['path'] );
         }
 
         return $uploads;
+    }
+
+    /**
+     * Fix attachment URLs to use direct path instead of multisite path.
+     *
+     * @param string $url The attachment URL.
+     * @param int    $attachment_id The attachment ID.
+     * @return string The modified URL.
+     */
+    public function fix_attachment_url( $url, $attachment_id ) {
+        // Only process URLs that contain '/sites/' (multisite structure) and dswp-documents
+        if ( strpos( $url, '/sites/' ) !== false && strpos( $url, 'dswp-documents' ) !== false ) {
+            // Get the base content URL
+            $content_url = content_url();
+            
+            // Extract filename from the URL
+            $filename = basename( $url );
+            
+            // Create direct URL
+            $direct_url = $content_url . '/uploads/dswp-documents/' . $filename;
+            
+            // If the file exists at the direct path, use that URL instead
+            $direct_path = WP_CONTENT_DIR . '/uploads/dswp-documents/' . $filename;
+            if ( file_exists( $direct_path ) ) {
+                return $direct_url;
+            }
+            
+            // If file doesn't exist at the direct path yet, copy it there
+            $url_path = parse_url($url, PHP_URL_PATH);
+            $site_path = ABSPATH . ltrim($url_path, '/');
+            
+            if (file_exists($site_path)) {
+                // Create directory if it doesn't exist
+                if (!file_exists(dirname($direct_path))) {
+                    wp_mkdir_p(dirname($direct_path));
+                }
+                
+                // Copy the file
+                copy($site_path, $direct_path);
+                
+                return $direct_url;
+            }
+        }
+        
+        return $url;
     }
 
     /**

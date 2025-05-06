@@ -85,6 +85,9 @@ class DocumentRepository {
             'bcgov_document_repository_document_uploaded',
             [ $this->get_metadata_manager(), 'clear_cache' ]
         );
+        
+        // Migrate existing files to the new direct path structure
+        add_action( 'admin_init', [ $this, 'migrate_existing_files' ] );
     }
 
     /**
@@ -257,5 +260,62 @@ class DocumentRepository {
             $this->metadata_manager = new DocumentMetadataManager( $this->config );
         }
         return $this->metadata_manager;
+    }
+
+    /**
+     * Migrate existing document files to the new direct path.
+     * This runs on plugin activation or update to ensure all files use the new structure.
+     */
+    public function migrate_existing_files() {
+        // Get the target direct path
+        $wp_content_dir = WP_CONTENT_DIR;
+        $direct_path = $wp_content_dir . '/uploads/dswp-documents';
+        
+        // Create directory if it doesn't exist
+        if (!file_exists($direct_path)) {
+            wp_mkdir_p($direct_path);
+        }
+        
+        // Get all document posts
+        $post_type = $this->config->get_post_type();
+        $documents = get_posts([
+            'post_type' => $post_type,
+            'posts_per_page' => -1,
+            'post_status' => 'any',
+        ]);
+        
+        if (empty($documents)) {
+            return;
+        }
+        
+        foreach ($documents as $document) {
+            // Get attachment ID
+            $attachment_id = get_post_meta($document->ID, 'document_file_id', true);
+            
+            if (!$attachment_id) {
+                continue;
+            }
+            
+            // Get attachment URL
+            $url = wp_get_attachment_url($attachment_id);
+            
+            // Check if URL contains /sites/ pattern
+            if (strpos($url, '/sites/') !== false && strpos($url, 'dswp-documents') !== false) {
+                // Extract filename
+                $filename = basename($url);
+                
+                // Source path (multisite)
+                $url_path = parse_url($url, PHP_URL_PATH);
+                $source_path = ABSPATH . ltrim($url_path, '/');
+                
+                // Target path (direct)
+                $target_path = $direct_path . '/' . $filename;
+                
+                // Copy file if it exists
+                if (file_exists($source_path) && !file_exists($target_path)) {
+                    copy($source_path, $target_path);
+                }
+            }
+        }
     }
 }
