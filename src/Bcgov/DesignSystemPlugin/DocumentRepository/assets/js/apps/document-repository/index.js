@@ -6,10 +6,8 @@
  *
  * @module DocumentRepository
  * @requires @wordpress/element
- * @requires ./App
  */
 
-import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 
@@ -26,9 +24,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
 			const root = createRoot( appContainer );
 			root.render( <App /> );
 		} else {
-			console.error(
-				'Document Repository app container not found. Expected element with ID: dswp-document-repository-app'
-			);
 			// Create a visible error message if container is not found
 			const errorDiv = document.createElement( 'div' );
 			errorDiv.style.color = 'red';
@@ -39,7 +34,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
 			document.body.prepend( errorDiv );
 		}
 	} catch ( error ) {
-		console.error( 'Failed to initialize Document Repository app:', error );
 		// Display error on the page
 		const errorDiv = document.createElement( 'div' );
 		errorDiv.style.color = 'red';

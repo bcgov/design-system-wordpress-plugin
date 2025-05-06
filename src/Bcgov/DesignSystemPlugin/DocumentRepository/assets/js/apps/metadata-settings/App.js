@@ -42,12 +42,8 @@ const MetadataList = ( { children } ) => (
  *
  * Individual metadata field item with move controls.
  *
- * @param {Object}      props            - Component props
- * @param {JSX.Element} props.children   - Child components to render
- * @param {Function}    props.onMoveUp   - Callback for moving item up
- * @param {Function}    props.onMoveDown - Callback for moving item down
- * @param {number}      props.index      - Current item index
- * @param {number}      props.total      - Total number of items
+ * @param {Object}      props          - Component props
+ * @param {JSX.Element} props.children - Child components to render
  * @return {JSX.Element} Metadata item with move controls
  */
 const MetadataItem = ( { children } ) => (
@@ -215,25 +211,6 @@ const updateModalField = ( state, modalType, updates ) => ( {
 } );
 
 /**
- * Closes a modal
- *
- * @function closeModal
- * @param {Object} state     - Current state
- * @param {string} modalType - Type of modal to close
- * @return {Object} Updated state
- */
-const closeModal = ( state, modalType ) => ( {
-	...state,
-	modals: {
-		...state.modals,
-		[ modalType ]: {
-			...state.modals[ modalType ],
-			isOpen: false,
-		},
-	},
-} );
-
-/**
  * Gets initial state for a new field
  *
  * @function getInitialFieldState
@@ -250,7 +227,6 @@ const getInitialFieldState = () => ( {
 /**
  * Main Metadata Settings Application Component
  *
- * @component MetadataApp
  * @return {JSX.Element} Metadata settings application
  */
 const MetadataApp = () => {
@@ -424,7 +400,7 @@ const MetadataApp = () => {
 				},
 			} ) );
 		}
-	}, [ state.modals.add.field, state.fields, saveFields ] );
+	}, [ state.modals.add, state.modals.add.field, state.fields, saveFields ] );
 
 	// Handle editing a field
 	const handleEditField = ( field, index ) => {
@@ -605,7 +581,7 @@ const MetadataApp = () => {
 				'options',
 				'_rawOptionsText',
 			];
-			const hasChanges = fieldsToCompare.some( ( field ) => {
+			const fieldHasChanges = fieldsToCompare.some( ( field ) => {
 				const original = String( originalValues[ field ] || '' ).trim();
 				const current = String( currentValues[ field ] || '' ).trim();
 				const isDifferent = original !== current;
@@ -613,7 +589,7 @@ const MetadataApp = () => {
 				return isDifferent;
 			} );
 
-			setHasChanges( hasChanges );
+			setHasChanges( fieldHasChanges );
 		},
 		[ originalValues ]
 	);
@@ -664,14 +640,6 @@ const MetadataApp = () => {
 		},
 		[ checkForChanges ]
 	);
-
-	const handleIdChange = useCallback( ( modalType, id ) => {
-		setState( ( prev ) =>
-			updateModalField( prev, modalType, {
-				id: id.toLowerCase().replace( /[^a-z0-9]+/g, '_' ),
-			} )
-		);
-	}, [] );
 
 	// Reset states when modal closes
 	const handleModalClose = useCallback( ( modalType ) => {
@@ -847,10 +815,13 @@ const MetadataApp = () => {
 						/>
 
 						<div className="field-type-display">
-							<label>
+							<label htmlFor="edit-field-type-value">
 								{ __( 'Field Type', 'bcgov-design-system' ) }
 							</label>
-							<div className="field-type-value">
+							<div
+								id="edit-field-type-value"
+								className="field-type-value"
+							>
 								{ FIELD_TYPES[ state.modals.edit.field?.type ] }
 							</div>
 						</div>

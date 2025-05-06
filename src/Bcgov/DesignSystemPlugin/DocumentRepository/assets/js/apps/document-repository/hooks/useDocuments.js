@@ -108,7 +108,6 @@ export const useDocuments = () => {
 			setCurrentPage( response.current_page || 1 );
 			setTotalPages( response.total_pages || 1 );
 		} catch ( err ) {
-			console.error( 'Error fetching documents:', err );
 			setError( err.message || 'Error loading documents' );
 			setDocuments( [] );
 			setTotalDocuments( 0 );

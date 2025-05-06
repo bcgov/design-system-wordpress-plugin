@@ -24,10 +24,10 @@ import { __ } from '@wordpress/i18n';
  * @param {Array}  [field.options]     - Options for select fields
  * @param {Array}  [existingFields=[]] - Array of existing fields to check for duplicates
  * @param {number} [currentIndex=null] - Index of the current field in the existing fields array
- * @return {Object} Object containing validation errors, empty if valid
- * @return {string} [errors.id] - Error message for ID validation
- * @return {string} [errors.label] - Error message for label validation
- * @return {string} [errors.options] - Error message for options validation
+ * @return {Object} Object containing validation errors, empty if valid. Properties may include:
+ *                   - id: Error message for ID validation
+ *                   - label: Error message for label validation
+ *                   - options: Error message for options validation
  *
  * @example
  * const field = {
@@ -89,12 +89,12 @@ export const validateField = (
  * Generates the initial state for a new metadata field
  *
  * @function getInitialFieldState
- * @return {Object} Initial field state object
- * @return {string} id - Empty string for field ID
- * @return {string} label - Empty string for field label
- * @return {string} type - Default type 'text'
- * @return {Array} options - Empty array for select options
- * @return {string} _rawOptionsText - Empty string for raw options text
+ * @return {Object} Initial field state object with the following properties:
+ *                   - id: Empty string for field ID
+ *                   - label: Empty string for field label
+ *                   - type: Default type 'text'
+ *                   - options: Empty array for select options
+ *                   - _rawOptionsText: Empty string for raw options text
  *
  * @example
  * const newField = getInitialFieldState();

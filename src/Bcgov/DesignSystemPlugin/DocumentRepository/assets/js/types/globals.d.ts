@@ -8,11 +8,10 @@
  * @module types/globals
  */
 
+/* eslint-disable no-undef */
+
 /**
  * Extended Window interface with WordPress-specific properties
- *
- * @interface Window
- * @augments Window
  */
 declare global {
 	interface Window {
@@ -21,12 +20,14 @@ declare global {
 		 *
 		 * Global settings object provided by WordPress for the Document Repository plugin.
 		 * Contains configuration values and API endpoints used throughout the application.
-		 *
-		 * @property {Object} documentRepositorySettings              - Settings for the Document Repository plugin
-		 * @property {string} documentRepositorySettings.apiNamespace - The API namespace for WordPress REST API endpoints
 		 */
 		documentRepositorySettings: {
+			/** The API namespace for WordPress REST API endpoints */
 			apiNamespace: string;
+			/** The API root URL for WordPress REST API endpoints */
+			apiRoot: string;
+			/** The WordPress nonce for authentication */
+			nonce: string;
 			// Add any other properties that WordPress adds to this object
 		};
 
@@ -51,6 +52,8 @@ declare global {
 		// wpApiSettings: any;
 	}
 }
+
+/* eslint-enable no-undef */
 
 // This export is required to make this a module
 export {};

@@ -5,17 +5,17 @@ import { useCallback } from '@wordpress/element';
 /**
  * Shared metadata modal component used across the application
  *
- * @param {Object}   props                     Component props
- * @param {string}   props.title               Modal title
- * @param {boolean}  props.isOpen              Whether the modal is open
- * @param {Function} props.onClose             Callback when modal is closed
- * @param {Function} props.onSave              Callback when save button is clicked
- * @param {boolean}  props.isSaving            Whether save operation is in progress
- * @param {boolean}  props.isDisabled          Whether save button should be disabled
- * @param {string}   props.saveButtonText      Custom text for the save button
- * @param {string}   props.saveButtonClassName Custom class name for the save button
- * @param            props.children
- * @return {JSX.Element} Modal component
+ * @param {Object}      props                     Component props
+ * @param {string}      props.title               Modal title
+ * @param {boolean}     props.isOpen              Whether the modal is open
+ * @param {Function}    props.onClose             Callback when modal is closed
+ * @param {Function}    props.onSave              Callback when save button is clicked
+ * @param {boolean}     props.isSaving            Whether save operation is in progress
+ * @param {boolean}     props.isDisabled          Whether save button should be disabled
+ * @param {string}      props.saveButtonText      Custom text for the save button
+ * @param {string}      props.saveButtonClassName Custom class name for the save button
+ * @param {JSX.Element} props.children            Content to render inside the modal
+ * @return {JSX.Element|null} Modal component or null if not open
  */
 const MetadataModal = ( {
 	title,
@@ -28,10 +28,6 @@ const MetadataModal = ( {
 	saveButtonClassName = 'doc-repo-button save-button',
 	children,
 } ) => {
-	if ( ! isOpen ) {
-		return null;
-	}
-
 	// Create a safe handler for closing the modal that prevents event bubbling
 	const handleClose = useCallback(
 		( e ) => {
@@ -56,6 +52,10 @@ const MetadataModal = ( {
 		},
 		[ onSave ]
 	);
+
+	if ( ! isOpen ) {
+		return null;
+	}
 
 	return (
 		<Modal

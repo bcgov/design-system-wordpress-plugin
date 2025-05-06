@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
 
@@ -14,7 +14,6 @@ import { Button } from '@wordpress/components';
  * - Shows detailed error information in development mode
  * - Provides a reset mechanism to recover from errors
  *
- * @component
  * @example
  * <ErrorBoundary>
  *   <ChildComponent />
@@ -60,10 +59,6 @@ class ErrorBoundary extends Component {
 			error,
 			errorInfo,
 		} );
-
-		// Log error details to console for debugging purposes
-		console.error( 'Error caught by boundary:', error );
-		console.error( 'Error info:', errorInfo );
 	}
 
 	/**
