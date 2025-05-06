@@ -8,7 +8,7 @@ import { useEffect } from '@wordpress/element';
  * Shows individual file status, progress, and error messages.
  * Provides a summary of upload results and allows closing when complete.
  *
- * @component
+ 
  * @param {Object}   props                    - Component props
  * @param {Array}    props.uploadingFiles     - Array of files being uploaded with their status
  * @param {boolean}  props.showUploadFeedback - Flag to control visibility of the feedback UI

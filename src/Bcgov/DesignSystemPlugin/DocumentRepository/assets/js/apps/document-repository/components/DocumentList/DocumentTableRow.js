@@ -12,7 +12,7 @@ import { __ } from '@wordpress/i18n';
  * A row component that displays a single document's information and actions.
  * Handles both display and editing of document metadata in spreadsheet mode.
  *
- * @component
+ 
  * @param {Object}   props                    - Component props
  * @param {Object}   props.document           - The document object containing all document data
  * @param {boolean}  props.isSelected         - Whether this document is currently selected

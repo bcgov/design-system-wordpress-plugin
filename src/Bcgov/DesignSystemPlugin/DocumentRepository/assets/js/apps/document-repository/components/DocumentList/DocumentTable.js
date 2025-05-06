@@ -9,7 +9,7 @@ import DocumentTableRow from './DocumentTableRow';
  * A table component that displays a list of documents with their metadata and actions.
  * Supports both regular and spreadsheet modes for metadata editing.
  *
- * @component
+ 
  * @param {Object}   props                    - Component props
  * @param {Array}    props.documents          - List of document objects to display
  * @param {Array}    props.selectedDocuments  - Array of selected document IDs

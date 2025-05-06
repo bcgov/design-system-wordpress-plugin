@@ -1,6 +1,5 @@
 import { Button } from '@wordpress/components';
-import { __ } from '@wordpress/i18n';
-import { sprintf } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * PaginationControls Component

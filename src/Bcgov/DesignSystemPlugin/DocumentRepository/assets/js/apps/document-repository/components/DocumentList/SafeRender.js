@@ -7,10 +7,10 @@ import { __ } from '@wordpress/i18n';
  * A utility component that wraps document table rows to provide error boundary functionality.
  * Catches and handles rendering errors in individual rows without breaking the entire table.
  *
- * @component
+ 
  * @augments {Component}
- * @param {Object}    props          - Component props
- * @param {ReactNode} props.children - Child components to be rendered safely
+ * @param {Object}      props          - Component props
+ * @param {JSX.Element} props.children - Child components to be rendered safely
  */
 class SafeRender extends Component {
 	/**
@@ -34,17 +34,6 @@ class SafeRender extends Component {
 	 */
 	static getDerivedStateFromError( error ) {
 		return { hasError: true, error };
-	}
-
-	/**
-	 * Lifecycle method called after an error has been caught
-	 * Logs the error and its details to the console for debugging
-	 *
-	 * @param {Error}  error     - The error that was caught
-	 * @param {Object} errorInfo - Additional error information including component stack
-	 */
-	componentDidCatch( error, errorInfo ) {
-		console.error( 'Row Render Error:', error, errorInfo );
 	}
 
 	/**
@@ -76,7 +65,7 @@ class SafeRender extends Component {
 	/**
 	 * Renders the child components when no error has been caught
 	 *
-	 * @return {ReactNode} Child components
+	 * @return {JSX.Element} Child components
 	 */
 	renderContent() {
 		return this.props.children;

@@ -5,7 +5,7 @@
  * with the functionality of the DocumentList component.
  */
 
-import React, { useCallback, useMemo } from 'react';
+import { useCallback } from '@wordpress/element';
 import PropTypes from 'prop-types';
 import VirtualList from './VirtualList';
 
@@ -83,7 +83,7 @@ const VirtualDocumentList = ( {
 
 	// Render a single document row
 	const renderDocument = useCallback(
-		( { item: document, index, style } ) => {
+		( { item: document, style } ) => {
 			if ( ! document ) {
 				return null;
 			}

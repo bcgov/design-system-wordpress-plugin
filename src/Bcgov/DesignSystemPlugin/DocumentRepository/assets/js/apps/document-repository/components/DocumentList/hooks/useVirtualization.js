@@ -50,11 +50,6 @@ const useVirtualization = ( {
 		setVisibleRange( { start: startIndex, end: endIndex } );
 	}, [ itemCount, itemHeight, overscan ] );
 
-	// Handle scroll event
-	const handleScroll = useCallback( () => {
-		requestAnimationFrame( calculateVisibleRange );
-	}, [ calculateVisibleRange ] );
-
 	// Initialize and handle resize
 	useEffect( () => {
 		if ( containerRef.current ) {

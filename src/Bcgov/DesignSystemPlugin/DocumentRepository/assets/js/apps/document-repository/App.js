@@ -108,10 +108,9 @@ const App = () => {
 
 				// Fetch initial documents
 				await fetchDocuments();
-			} catch ( error ) {
-				console.error( 'Error initializing data:', error );
+			} catch ( initError ) {
 				setError(
-					error.message ||
+					initError.message ||
 						__(
 							'Failed to initialize document repository',
 							'bcgov-design-system'
@@ -306,7 +305,7 @@ const App = () => {
 			} );
 
 			// Wait for upload to complete
-			const result = await uploadPromise;
+			await uploadPromise;
 
 			// Handle successful upload
 			handleUploadSuccess();
@@ -417,6 +416,12 @@ const App = () => {
 									{ uploadQueue.length }
 								</p>
 							) }
+							<div className="progress-bar">
+								<div
+									className="progress-bar-fill"
+									style={ { width: `${ uploadProgress }%` } }
+								/>
+							</div>
 						</div>
 						<DocumentUploader
 							metadataFields={ metadataFields }

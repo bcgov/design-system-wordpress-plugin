@@ -7,10 +7,10 @@ import { __ } from '@wordpress/i18n';
  * A React error boundary component that catches JavaScript errors anywhere in its child component tree,
  * logs those errors, and displays a fallback UI instead of the component tree that crashed.
  *
- * @component
+ 
  * @augments {Component}
- * @param {Object}    props          - Component props
- * @param {ReactNode} props.children - Child components to be wrapped by the error boundary
+ * @param {Object}      props          - Component props
+ * @param {JSX.Element} props.children - Child components to be wrapped by the error boundary
  */
 class ErrorBoundary extends Component {
 	/**
@@ -30,15 +30,6 @@ class ErrorBoundary extends Component {
 	 */
 	static getDerivedStateFromError( error ) {
 		return { hasError: true, error };
-	}
-
-	/**
-	 * Lifecycle method called after an error has been caught
-	 * @param {Error}  error     - The error that was caught
-	 * @param {Object} errorInfo - Additional error information
-	 */
-	componentDidCatch( error, errorInfo ) {
-		console.error( 'Document Repository Error:', error, errorInfo );
 	}
 
 	/**
@@ -67,7 +58,7 @@ class ErrorBoundary extends Component {
 
 	/**
 	 * Renders the child components when no error has been caught
-	 * @return {ReactNode} Child components
+	 * @return {JSX.Element} Child components
 	 */
 	renderContent() {
 		return this.props.children;

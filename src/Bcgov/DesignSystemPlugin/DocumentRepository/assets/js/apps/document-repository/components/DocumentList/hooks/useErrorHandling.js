@@ -1,6 +1,5 @@
 import { useState, useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
-import { sprintf } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Custom hook for error handling and operation retries
@@ -30,12 +29,6 @@ const useErrorHandling = ( { onShowNotification } ) => {
 				showNotice = true,
 				customMessage = null,
 			} = options;
-
-			// Log for debugging
-			console.error( `Operation ${ operationType } failed:`, {
-				documentId,
-				error,
-			} );
 
 			// Add to retry queue if needed
 			if ( addToRetryQueue ) {
@@ -102,7 +95,9 @@ const useErrorHandling = ( { onShowNotification } ) => {
 				if ( handler ) {
 					await handler( operation.documentId );
 				} else {
-					console.error( 'Unknown operation type:', operation.type );
+					return {
+						error: `'Unknown operation type:', ${ operation.type }`,
+					};
 				}
 
 				// Remove from failed operations if successful

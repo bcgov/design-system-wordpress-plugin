@@ -8,13 +8,11 @@ import { __ } from '@wordpress/i18n';
  * Provides a drag-and-drop area for file uploads
  *
  * @param {Object}   props
- * @param {Function} props.onFilesSelected   - Callback when files are selected
- * @param {string[]} props.acceptedFileTypes - Array of accepted file types (e.g. ['.pdf'])
- * @param {string}   props.acceptMimeTypes   - MIME types to accept (e.g. 'application/pdf')
+ * @param {Function} props.onFilesSelected - Callback when files are selected
+ * @param {string}   props.acceptMimeTypes - MIME types to accept (e.g. 'application/pdf')
  */
 const UploadArea = ( {
 	onFilesSelected,
-	acceptedFileTypes = [ '.pdf' ],
 	acceptMimeTypes = 'application/pdf',
 } ) => {
 	const [ isDragging, setIsDragging ] = useState( false );

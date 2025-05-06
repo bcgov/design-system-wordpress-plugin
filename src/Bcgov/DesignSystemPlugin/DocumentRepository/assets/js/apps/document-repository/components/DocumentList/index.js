@@ -1,14 +1,6 @@
-import { useState, useCallback, useMemo } from '@wordpress/element';
-import {
-	Button,
-	Modal,
-	Notice,
-	SelectControl,
-	TextControl,
-} from '@wordpress/components';
-import { __ } from '@wordpress/i18n';
-import { sprintf } from '@wordpress/i18n';
-import apiFetch from '@wordpress/api-fetch';
+import { useCallback, useMemo } from '@wordpress/element';
+import { Button, SelectControl, TextControl } from '@wordpress/components';
+import { __, sprintf } from '@wordpress/i18n';
 import ErrorBoundary from './ErrorBoundary';
 import DocumentTable from './DocumentTable';
 import VirtualizedDocumentTable from './VirtualizedDocumentTable';
@@ -34,7 +26,7 @@ const VIRTUALIZATION_THRESHOLD = 50; // Use virtualization when there are more t
  * Main component for managing and displaying a list of documents with metadata.
  * Handles document uploads, metadata editing, bulk operations, and pagination.
  *
- * @component
+ 
  * @param {Object}   props                   - Component props
  * @param {Array}    props.documents         - List of document objects to display
  * @param {number}   props.currentPage       - Current page number for pagination
@@ -84,11 +76,7 @@ const DocumentList = ( {
 	// Memoize API namespace to prevent recalculation
 	const apiNamespace = useMemo( () => {
 		const settings = window.documentRepositorySettings;
-		if ( ! settings ) {
-			console.error(
-				'Document Repository settings not found. Make sure the script is properly enqueued in WordPress.'
-			);
-		}
+
 		return settings?.apiNamespace || 'wp/v2';
 	}, [] );
 

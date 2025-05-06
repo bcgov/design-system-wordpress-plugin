@@ -5,7 +5,7 @@
  * Supports both drag-and-drop and file selection, with progress tracking
  * and validation. Can operate in both modal and full-page modes.
  *
- * @component
+ 
  * @param {Object}   props                   - Component props
  * @param {Array}    props.metadataFields    - Array of metadata field definitions
  * @param {Function} props.onUploadSuccess   - Callback when upload completes successfully
@@ -99,9 +99,9 @@ const DocumentUploader = ( {
 
 			// Also validate the file
 			if ( ! validateFile( selectedFile ) ) {
-				console.error(
-					'Initial file validation failed, but still setting file for UI'
-				);
+				return {
+					error: 'Initial file validation failed, but still setting file for UI',
+				};
 			}
 		}
 	}, [ selectedFile ] );
@@ -131,7 +131,6 @@ const DocumentUploader = ( {
 				maxFileSize /
 				( 1024 * 1024 )
 			).toFixed( 2 ) } MB.`;
-			console.error( 'Validation error:', errorMsg );
 			setError( errorMsg );
 			return false;
 		}
@@ -146,7 +145,6 @@ const DocumentUploader = ( {
 			}" has an invalid file type. Allowed types are: ${ allowedExtensions.join(
 				', '
 			) }`;
-			console.error( 'Validation error:', errorMsg );
 			setError( errorMsg );
 			return false;
 		}
@@ -311,7 +309,6 @@ const DocumentUploader = ( {
 				setMetadata( {} );
 			}
 		} catch ( err ) {
-			console.error( 'Upload error:', err );
 			setError(
 				err.message || 'Failed to upload file. Please try again.'
 			);

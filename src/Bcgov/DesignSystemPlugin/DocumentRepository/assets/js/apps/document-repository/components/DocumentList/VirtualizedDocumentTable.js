@@ -6,7 +6,7 @@
  * performance for large document lists.
  */
 
-import { useState, useEffect, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { CheckboxControl } from '@wordpress/components';
 import useVirtualization from './hooks/useVirtualization';
