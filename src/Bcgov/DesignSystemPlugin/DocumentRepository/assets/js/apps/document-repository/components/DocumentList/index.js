@@ -254,7 +254,7 @@ const DocumentList = ({
                 {documents.length > VIRTUALIZATION_THRESHOLD ? (
                     <VirtualizedDocumentTable {...documentTableProps} />
                 ) : (
-                    <DocumentTable {...documentTableProps} />
+                <DocumentTable {...documentTableProps} />
                 )}
                 
                 {/* Pagination Controls */}
