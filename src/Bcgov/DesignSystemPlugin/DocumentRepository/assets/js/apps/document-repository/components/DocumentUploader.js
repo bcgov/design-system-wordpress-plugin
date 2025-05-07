@@ -24,7 +24,7 @@
  * />
  */
 
-import { useState, useRef, useEffect } from '@wordpress/element';
+import { useState, useRef, useEffect, useCallback } from '@wordpress/element';
 import {
 	Button,
 	FormFileUpload,
@@ -91,6 +91,88 @@ const DocumentUploader = ( {
 	const { apiNamespace, maxFileSize, allowedMimeTypes } =
 		window.documentRepositorySettings;
 
+	/**
+	 * File Validation
+	 *
+	 * Validates files based on:
+	 * - File size limits
+	 * - Allowed file types
+	 * - Required metadata fields
+	 *
+	 * @param {File} fileToValidate - File to validate
+	 * @return {boolean} Whether the file is valid
+	 */
+	const validateFile = useCallback(
+		( fileToValidate ) => {
+			if ( ! fileToValidate ) {
+				return false;
+			}
+
+			// Check file size
+			if ( fileToValidate.size > maxFileSize ) {
+				const errorMsg = `File "${
+					fileToValidate.name
+				}" is too large (${ (
+					fileToValidate.size /
+					( 1024 * 1024 )
+				).toFixed( 2 ) } MB). Maximum allowed size is ${ (
+					maxFileSize /
+					( 1024 * 1024 )
+				).toFixed( 2 ) } MB.`;
+				setError( errorMsg );
+				return false;
+			}
+
+			// Check file type
+			const fileExtension = fileToValidate.name
+				.split( '.' )
+				.pop()
+				.toLowerCase();
+			const allowedExtensions = Object.keys( allowedMimeTypes );
+
+			if ( ! allowedExtensions.includes( fileExtension ) ) {
+				const errorMsg = `File "${
+					fileToValidate.name
+				}" has an invalid file type. Allowed types are: ${ allowedExtensions.join(
+					', '
+				) }`;
+				setError( errorMsg );
+				return false;
+			}
+
+			setError( null );
+			return true;
+		},
+		[ maxFileSize, allowedMimeTypes ]
+	);
+
+	// Handle file validation and selection
+	const validateAndSetFile = useCallback(
+		( fileToValidate ) => {
+			if ( ! fileToValidate ) {
+				return false;
+			}
+
+			if ( validateFile( fileToValidate ) ) {
+				setFile( fileToValidate );
+
+				// Set default title from filename
+				const fileNameWithoutExt = fileToValidate.name.includes( '.' )
+					? fileToValidate.name.substring(
+							0,
+							fileToValidate.name.lastIndexOf( '.' )
+					  )
+					: fileToValidate.name;
+
+				setTitle( fileNameWithoutExt );
+				return true;
+			}
+
+			return false;
+		},
+		[ validateFile ]
+	);
+
 	// Handle initial file setting from props
 	useEffect( () => {
 		if ( selectedFile ) {
@@ -106,76 +188,12 @@ const DocumentUploader = ( {
 		}
 	}, [ selectedFile, validateFile ] );
 
-	/**
-	 * File Validation
-	 *
-	 * Validates files based on:
-	 * - File size limits
-	 * - Allowed file types
-	 * - Required metadata fields
-	 *
-	 * @param {File} file - File to validate
-	 * @return {boolean} Whether the file is valid
-	 */
-	const validateFile = ( file ) => {
-		if ( ! file ) {
-			return false;
+	// Handle modal mode file setting
+	useEffect( () => {
+		if ( modalMode && ! file && selectedFile ) {
+			setFile( selectedFile );
 		}
-
-		// Check file size
-		if ( file.size > maxFileSize ) {
-			const errorMsg = `File "${ file.name }" is too large (${ (
-				file.size /
-				( 1024 * 1024 )
-			).toFixed( 2 ) } MB). Maximum allowed size is ${ (
-				maxFileSize /
-				( 1024 * 1024 )
-			).toFixed( 2 ) } MB.`;
-			setError( errorMsg );
-			return false;
-		}
-
-		// Check file type
-		const fileExtension = file.name.split( '.' ).pop().toLowerCase();
-		const allowedExtensions = Object.keys( allowedMimeTypes );
-
-		if ( ! allowedExtensions.includes( fileExtension ) ) {
-			const errorMsg = `File "${
-				file.name
-			}" has an invalid file type. Allowed types are: ${ allowedExtensions.join(
-				', '
-			) }`;
-			setError( errorMsg );
-			return false;
-		}
-
-		setError( null );
-		return true;
-	};
-
-	// Handle file validation and selection
-	const validateAndSetFile = ( fileToValidate ) => {
-		if ( ! fileToValidate ) {
-			return false;
-		}
-
-		if ( validateFile( fileToValidate ) ) {
-			setFile( fileToValidate );
-
-			// Set default title from filename
-			const fileNameWithoutExt = fileToValidate.name.includes( '.' )
-				? fileToValidate.name.substring(
-						0,
-						fileToValidate.name.lastIndexOf( '.' )
-				  )
-				: fileToValidate.name;
-
-			setTitle( fileNameWithoutExt );
-			return true;
-		}
-
-		return false;
-	};
+	}, [ modalMode, selectedFile, file ] );
 
 	// Handle file selection from input
 	const handleFileChange = ( event ) => {
@@ -592,6 +610,43 @@ const DocumentUploader = ( {
 		);
 	};
 
+	// Helper functions to simplify the JSX
+	const renderFileInfo = () => {
+		if ( file ) {
+			return (
+				<p>
+					<strong>File:</strong> { file.name } (
+					{ Math.round( file.size / 1024 ) } KB)
+				</p>
+			);
+		}
+		if ( selectedFile ) {
+			return (
+				<p>
+					<strong>File:</strong> { selectedFile.name } (
+					{ Math.round( selectedFile.size / 1024 ) } KB)
+				</p>
+			);
+		}
+		return (
+			<p>
+				<strong>Warning:</strong> No file selected
+			</p>
+		);
+	};
+
+	const renderUploadButtonContent = () => {
+		if ( isUploading ) {
+			return (
+				<>
+					<Spinner />
+					{ __( 'Uploading…', 'bcgov-design-system' ) }
+				</>
+			);
+		}
+		return __( 'Upload Document', 'bcgov-design-system' );
+	};
+
 	/**
 	 * Layout Modes
 	 *
@@ -608,13 +663,6 @@ const DocumentUploader = ( {
 	 */
 	// If in modal mode, return a simplified layout
 	if ( modalMode ) {
-		// In modal mode, always ensure we have a file set
-		useEffect( () => {
-			if ( ! file && selectedFile ) {
-				setFile( selectedFile );
-			}
-		}, [ selectedFile, file ] );
-
 		return (
 			<div className="document-uploader-modal">
 				{ error && (
@@ -641,23 +689,7 @@ const DocumentUploader = ( {
 				) }
 
 				{ /* File info - explicitly confirm we have the file */ }
-				<div className="selected-file-info">
-					{ file ? (
-						<p>
-							<strong>File:</strong> { file.name } (
-							{ Math.round( file.size / 1024 ) } KB)
-						</p>
-					) : selectedFile ? (
-						<p>
-							<strong>File:</strong> { selectedFile.name } (
-							{ Math.round( selectedFile.size / 1024 ) } KB)
-						</p>
-					) : (
-						<p>
-							<strong>Warning:</strong> No file selected
-						</p>
-					) }
-				</div>
+				<div className="selected-file-info">{ renderFileInfo() }</div>
 
 				{ /* Always show title field and metadata fields in modal mode */ }
 				<TextControl
@@ -694,14 +726,7 @@ const DocumentUploader = ( {
 							isUploading
 						}
 					>
-						{ isUploading ? (
-							<>
-								<Spinner />
-								{ __( 'Uploading…', 'bcgov-design-system' ) }
-							</>
-						) : (
-							__( 'Upload Document', 'bcgov-design-system' )
-						) }
+						{ renderUploadButtonContent() }
 					</Button>
 				</div>
 			</div>
@@ -724,14 +749,7 @@ const DocumentUploader = ( {
 						onClick={ handleUpload }
 						disabled={ ! file || ! title || isUploading }
 					>
-						{ isUploading ? (
-							<>
-								<Spinner />
-								{ __( 'Uploading…', 'bcgov-design-system' ) }
-							</>
-						) : (
-							__( 'Upload Document', 'bcgov-design-system' )
-						) }
+						{ renderUploadButtonContent() }
 					</Button>
 				</div>
 			</CardFooter>
