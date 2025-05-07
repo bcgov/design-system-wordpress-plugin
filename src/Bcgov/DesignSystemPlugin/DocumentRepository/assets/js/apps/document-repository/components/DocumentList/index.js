@@ -316,13 +316,13 @@ const DocumentList = ( {
 							isMultiDeleting
 								? __( 'Deleting…', 'bcgov-design-system' )
 								: /* translators: %d: number of selected documents */
-								sprintf(
-									__(
-										'Delete Selected (%d)',
-										'bcgov-design-system'
-									),
-									selectedDocuments.length
-								)
+								  sprintf(
+										__(
+											'Delete Selected (%d)',
+											'bcgov-design-system'
+										),
+										selectedDocuments.length
+								  )
 						}
 						saveButtonClassName="doc-repo-button delete-button"
 					>
@@ -481,7 +481,7 @@ const DocumentList = ( {
 														value
 													)
 												}
-												id={ `metadata-field-${field.id}` }
+												id={ `metadata-field-${ field.id }` }
 											/>
 										) : (
 											<TextControl
@@ -498,7 +498,7 @@ const DocumentList = ( {
 														? 'date'
 														: 'text'
 												}
-												id={ `metadata-field-${field.id}` }
+												id={ `metadata-field-${ field.id }` }
 											/>
 										) }
 										{ error && (
@@ -519,10 +519,13 @@ const DocumentList = ( {
 								) }
 							</h3>
 							<div className="metadata-field">
-								<label>
+								<label htmlFor="document-filename">
 									{ __( 'Filename', 'bcgov-design-system' ) }
 								</label>
-								<div className="field-value">
+								<div
+									id="document-filename"
+									className="field-value"
+								>
 									{ (
 										editingMetadata.metadata
 											?.document_file_name ||
@@ -537,19 +540,25 @@ const DocumentList = ( {
 								</div>
 							</div>
 							<div className="metadata-field">
-								<label>
+								<label htmlFor="document-file-type">
 									{ __( 'File Type', 'bcgov-design-system' ) }
 								</label>
-								<div className="field-value">
+								<div
+									id="document-file-type"
+									className="field-value"
+								>
 									{ editingMetadata.metadata
 										?.document_file_type || 'PDF' }
 								</div>
 							</div>
 							<div className="metadata-field">
-								<label>
+								<label htmlFor="document-file-size">
 									{ __( 'File Size', 'bcgov-design-system' ) }
 								</label>
-								<div className="field-value">
+								<div
+									id="document-file-size"
+									className="field-value"
+								>
 									{ editingMetadata.metadata
 										?.document_file_size
 										? formatFileSize(
