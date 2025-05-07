@@ -70,7 +70,7 @@ class DocumentRepository {
 
     /**
      * Initialize the plugin by registering WordPress hooks and integrations.
-     * 
+     *
      * @return void
      */
     public function init(): void {
@@ -85,8 +85,8 @@ class DocumentRepository {
             'bcgov_document_repository_document_uploaded',
             [ $this->get_metadata_manager(), 'clear_cache' ]
         );
-        
-        // Migrate existing files to the new direct path structure
+
+        // Migrate existing files to the new direct path structure.
         add_action( 'admin_init', [ $this, 'migrate_existing_files' ] );
     }
 
@@ -105,11 +105,11 @@ class DocumentRepository {
      * @return void
      */
     private function log( string $message, string $level = 'debug' ): void {
-        // In production, we disable all logging
-        if (defined('WP_ENVIRONMENT_TYPE') && WP_ENVIRONMENT_TYPE === 'production') {
+        // In production, we disable all logging.
+        if ( defined( 'WP_ENVIRONMENT_TYPE' ) && WP_ENVIRONMENT_TYPE === 'production' ) {
             return;
         }
-        
+
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
             if ( function_exists( 'wp_debug_log' ) ) {
                 wp_debug_log( $message, $level );
@@ -272,53 +272,55 @@ class DocumentRepository {
      * This runs on plugin activation or update to ensure all files use the new structure.
      */
     public function migrate_existing_files() {
-        // Get the target direct path
+        // Get the target direct path.
         $wp_content_dir = WP_CONTENT_DIR;
-        $direct_path = $wp_content_dir . '/uploads/dswp-documents';
-        
-        // Create directory if it doesn't exist
-        if (!file_exists($direct_path)) {
-            wp_mkdir_p($direct_path);
+        $direct_path    = $wp_content_dir . '/uploads/dswp-documents';
+
+        // Create directory if it doesn't exist.
+        if ( ! file_exists( $direct_path ) ) {
+            wp_mkdir_p( $direct_path );
         }
-        
-        // Get all document posts
+
+        // Get all document posts.
         $post_type = $this->config->get_post_type();
-        $documents = get_posts([
-            'post_type' => $post_type,
-            'posts_per_page' => -1,
-            'post_status' => 'any',
-        ]);
-        
-        if (empty($documents)) {
+        $documents = get_posts(
+            [
+				'post_type'      => $post_type,
+				'posts_per_page' => -1,
+				'post_status'    => 'any',
+			]
+        );
+
+        if ( empty( $documents ) ) {
             return;
         }
-        
-        foreach ($documents as $document) {
-            // Get attachment ID
-            $attachment_id = get_post_meta($document->ID, 'document_file_id', true);
-            
-            if (!$attachment_id) {
+
+        foreach ( $documents as $document ) {
+            // Get attachment ID.
+            $attachment_id = get_post_meta( $document->ID, 'document_file_id', true );
+
+            if ( ! $attachment_id ) {
                 continue;
             }
-            
-            // Get attachment URL
-            $url = wp_get_attachment_url($attachment_id);
-            
-            // Check if URL contains /sites/ pattern
-            if (strpos($url, '/sites/') !== false && strpos($url, 'dswp-documents') !== false) {
-                // Extract filename
-                $filename = basename($url);
-                
-                // Source path (multisite)
-                $url_path = parse_url($url, PHP_URL_PATH);
-                $source_path = ABSPATH . ltrim($url_path, '/');
-                
-                // Target path (direct)
+
+            // Get attachment URL.
+            $url = wp_get_attachment_url( $attachment_id );
+
+            // Check if URL contains /sites/ pattern.
+            if ( strpos( $url, '/sites/' ) !== false && strpos( $url, 'dswp-documents' ) !== false ) {
+                // Extract filename.
+                $filename = basename( $url );
+
+                // Source path (multisite).
+                $url_path    = wp_parse_url( $url, PHP_URL_PATH );
+                $source_path = ABSPATH . ltrim( $url_path, '/' );
+
+                // Target path (direct).
                 $target_path = $direct_path . '/' . $filename;
-                
-                // Copy file if it exists
-                if (file_exists($source_path) && !file_exists($target_path)) {
-                    copy($source_path, $target_path);
+
+                // Copy file if it exists.
+                if ( file_exists( $source_path ) && ! file_exists( $target_path ) ) {
+                    copy( $source_path, $target_path );
                 }
             }
         }
