@@ -107,15 +107,36 @@ export const useDocuments = () => {
 			setTotalDocuments( response.total || 0 );
 			setCurrentPage( response.current_page || 1 );
 			setTotalPages( response.total_pages || 1 );
+
+			// If we got no documents but the page number is greater than 1,
+			// we should reset to page 1
+			if ( validDocuments.length === 0 && searchParams.page > 1 ) {
+				setSearchParams( ( prev ) => ( {
+					...prev,
+					page: 1,
+				} ) );
+			}
 		} catch ( err ) {
 			setError( err.message || 'Error loading documents' );
-			setDocuments( [] );
-			setTotalDocuments( 0 );
-			setTotalPages( 1 );
+			// Don't clear the documents array on error to prevent UI flicker
+			// Only update if we're on page 1
+			if ( searchParams.page === 1 ) {
+				setDocuments( [] );
+				setTotalDocuments( 0 );
+				setTotalPages( 1 );
+			}
 		} finally {
 			setIsLoading( false );
 		}
 	}, [ searchParams ] );
+
+	// Update current page when search params change
+	useEffect( () => {
+		const newPage = parseInt( searchParams.page, 10 );
+		if ( ! isNaN( newPage ) && newPage !== currentPage ) {
+			setCurrentPage( newPage );
+		}
+	}, [ searchParams.page, currentPage ] );
 
 	// Fetch documents when search parameters change
 	useEffect( () => {

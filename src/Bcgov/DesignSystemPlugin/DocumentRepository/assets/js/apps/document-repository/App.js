@@ -171,7 +171,6 @@ const App = () => {
 	 */
 	const handlePageChange = async ( newPage ) => {
 		try {
-			setIsInitializing( true );
 			setError( null );
 
 			// Update search params to include the new page number
@@ -180,15 +179,18 @@ const App = () => {
 				page: newPage,
 			} ) );
 
-			// Fetch documents with the updated search params
-			await fetchDocuments();
+			// The fetchDocuments call will happen automatically due to the useEffect
+			// in useDocuments that watches for searchParams changes
 		} catch ( err ) {
 			setError(
 				err.message ||
 					__( 'Failed to change page', 'bcgov-design-system' )
 			);
-		} finally {
-			setIsInitializing( false );
+			// If there's an error, revert to the previous page
+			setSearchParams( ( prev ) => ( {
+				...prev,
+				page: currentPage,
+			} ) );
 		}
 	};
 
