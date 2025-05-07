@@ -219,6 +219,7 @@ const DocumentList = ( {
 							>
 								{ /* translators: %d: number of selected documents */ }
 								{ sprintf(
+									/* translators: %d: number of selected documents */
 									__(
 										'Delete Selected (%d)',
 										'bcgov-design-system'
@@ -317,6 +318,7 @@ const DocumentList = ( {
 								? __( 'Deleting…', 'bcgov-design-system' )
 								: /* translators: %d: number of selected documents */
 								  sprintf(
+										/* translators: %d: number of selected documents */
 										__(
 											'Delete Selected (%d)',
 											'bcgov-design-system'
@@ -330,6 +332,7 @@ const DocumentList = ( {
 							<p>
 								{ /* translators: %d: number of selected documents */ }
 								{ sprintf(
+									/* translators: %d: number of selected documents */
 									__(
 										'Are you sure you want to delete %d selected document(s)?',
 										'bcgov-design-system'

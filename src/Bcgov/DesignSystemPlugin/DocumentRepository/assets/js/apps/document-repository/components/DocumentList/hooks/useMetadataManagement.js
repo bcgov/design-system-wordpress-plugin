@@ -9,8 +9,17 @@ import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Metadata reducer for handling metadata state
- * @param state
- * @param action
+ * @param {Object} state - The current state
+ * @param {Object} action - The action to perform
+ * @param {string} action.type - The type of action
+ * @param {*} action.payload - The payload for the action
+ * @param {Object} [action.initialValues] - Initial values for editing
+ * @param {Object} [action.initialBulkValues] - Initial values for bulk editing
+ * @param {string} [action.documentId] - Document ID for bulk updates
+ * @param {string} [action.fieldId] - Field ID for bulk updates
+ * @param {*} [action.value] - New value for bulk updates
+ * @param {boolean} [action.hasChanges] - Whether there are changes
+ * @return {Object} The new state
  */
 const metadataReducer = ( state, action ) => {
 	switch ( action.type ) {
@@ -146,11 +155,7 @@ const useMetadataManagement = ( {
 			const editedValue = editedValues[ field.id ] || '';
 			return currentValue !== editedValue;
 		} );
-	}, [
-		metadataState.editingMetadata,
-		metadataState.editedValues,
-		metadataFields,
-	] );
+	}, [ metadataState, metadataFields ] );
 
 	/**
 	 * Start editing a document's metadata
@@ -197,12 +202,11 @@ const useMetadataManagement = ( {
 	const handleMetadataChange = useCallback(
 		( documentId, fieldId, value ) => {
 			// Get the original document to compare values
-			const originalDoc = localDocuments.find(
+			const originalDocument = localDocuments.find(
 				( doc ) => doc.id === documentId
 			);
 
 			// Update bulk edited metadata
-			// Critical for spreadsheet mode - checks if there are changes to enable Save button
 			const newBulkMetadata = {
 				...metadataState.bulkEditedMetadata,
 				[ documentId ]: {
@@ -214,17 +218,17 @@ const useMetadataManagement = ( {
 			// Check if any metadata has changed
 			const hasChanges = Object.entries( newBulkMetadata ).some(
 				( [ docId, editedMetadata ] ) => {
-					const originalDoc = localDocuments.find(
+					const currentDoc = localDocuments.find(
 						( doc ) => doc.id === parseInt( docId )
 					);
-					if ( ! originalDoc ) {
+					if ( ! currentDoc ) {
 						return false;
 					}
 
 					return Object.entries( editedMetadata ).some(
-						( [ fieldId, editedValue ] ) => {
+						( [ currentFieldId, editedValue ] ) => {
 							const originalValue =
-								originalDoc.metadata?.[ fieldId ] || '';
+								currentDoc.metadata?.[ currentFieldId ] || '';
 							const isChanged =
 								String( originalValue ) !==
 								String( editedValue );
@@ -257,15 +261,10 @@ const useMetadataManagement = ( {
 					}
 					return doc;
 				} );
-
-				if ( typeof onUpdateDocuments === 'function' ) {
-					onUpdateDocuments( newDocs );
-				}
-
 				return newDocs;
 			} );
 		},
-		[ localDocuments, metadataState.bulkEditedMetadata, onUpdateDocuments ]
+		[ localDocuments, metadataState.bulkEditedMetadata ]
 	);
 
 	/**
@@ -438,8 +437,9 @@ const useMetadataManagement = ( {
 					onShowNotification(
 						'warning',
 						sprintf(
+							/* translators: %1$d: number of failed updates, %2$d: total number of updates */
 							__(
-								'%d of %d metadata updates failed. You can retry the failed operations.',
+								'%1$d of %2$d metadata updates failed. You can retry the failed operations.',
 								'bcgov-design-system'
 							),
 							failed.length,
