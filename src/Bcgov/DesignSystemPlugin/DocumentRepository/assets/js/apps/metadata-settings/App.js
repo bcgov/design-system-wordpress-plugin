@@ -74,9 +74,9 @@ const FIELD_TYPES = {
  * Provides methods for fetching and saving metadata fields.
  *
  * @function useMetadataAPI
- * @return {Object} API methods
- * @return {Function} fetchFields - Fetches metadata fields
- * @return {Function} saveFields - Saves metadata fields
+ * @return {Object} API methods containing:
+ * @property {Function} fetchFields - Fetches metadata fields
+ * @property {Function} saveFields  - Saves metadata fields
  */
 const useMetadataAPI = () => {
 	const { apiNamespace } = window.documentRepositorySettings;
@@ -589,7 +589,7 @@ const MetadataApp = () => {
 				return isDifferent;
 			} );
 
-			setHasChanges( fieldHasChanges );
+			return fieldHasChanges;
 		},
 		[ originalValues ]
 	);
