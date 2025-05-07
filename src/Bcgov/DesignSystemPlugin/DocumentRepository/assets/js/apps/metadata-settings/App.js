@@ -400,7 +400,7 @@ const MetadataApp = () => {
 				},
 			} ) );
 		}
-	}, [ state.modals.add, state.modals.add.field, state.fields, saveFields ] );
+	}, [ state.fields, saveFields ] );
 
 	// Handle editing a field
 	const handleEditField = ( field, index ) => {
