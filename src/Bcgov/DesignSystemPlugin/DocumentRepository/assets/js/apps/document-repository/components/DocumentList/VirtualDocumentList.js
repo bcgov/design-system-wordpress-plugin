@@ -5,8 +5,7 @@
  * with the functionality of the DocumentList component.
  */
 
-import { useCallback } from '@wordpress/element';
-import PropTypes from 'prop-types';
+import { useCallback, PropTypes } from '@wordpress/element';
 import VirtualList from './VirtualList';
 
 /**
@@ -20,8 +19,8 @@ const LoadingSpinner = () => (
 
 /**
  * Empty state component for the virtual list
- * @param root0
- * @param root0.message
+ * @param {Object} root0         - The props object
+ * @param {string} root0.message - The message to display
  */
 const EmptyState = ( { message } ) => (
 	<div className="virtual-list__empty">
@@ -31,20 +30,20 @@ const EmptyState = ( { message } ) => (
 
 /**
  * VirtualDocumentList component for efficient rendering of large document lists
- * @param root0
- * @param root0.documents
- * @param root0.isLoading
- * @param root0.onSelectDocument
- * @param root0.onDeleteDocument
- * @param root0.onEditDocument
- * @param root0.selectedDocuments
- * @param root0.itemHeight
- * @param root0.listHeight
- * @param root0.emptyMessage
- * @param root0.showCheckboxes
- * @param root0.renderActions
- * @param root0.className
- * @param root0.overscan
+ * @param {Object}        root0                   - The props object
+ * @param {Array<Object>} root0.documents         - Array of document objects to render
+ * @param {boolean}       root0.isLoading         - Whether the document list is loading
+ * @param {Function}      root0.onSelectDocument  - Function called when a document is selected
+ * @param {Function}      root0.onDeleteDocument  - Function called when a document is deleted
+ * @param {Function}      root0.onEditDocument    - Function called when a document is edited
+ * @param {Array<Object>} root0.selectedDocuments - Array of currently selected documents
+ * @param {number}        root0.itemHeight        - Height of each document row in pixels
+ * @param {number}        root0.listHeight        - Fixed height for the list container
+ * @param {string}        root0.emptyMessage      - Message to display when no documents are found
+ * @param {boolean}       root0.showCheckboxes    - Whether to show checkboxes for selection
+ * @param {Function}      root0.renderActions     - Custom function to render action buttons for each document
+ * @param {string}        root0.className         - Additional class name for the component
+ * @param {number}        root0.overscan          - Number of items to render outside the visible area
  */
 const VirtualDocumentList = ( {
 	documents,
@@ -125,6 +124,13 @@ const VirtualDocumentList = ( {
 						<div
 							className="document-row__title"
 							onClick={ () => onSelectDocument( document ) }
+							onKeyDown={ ( e ) => {
+								if ( e.key === 'Enter' || e.key === ' ' ) {
+									onSelectDocument( document );
+								}
+							} }
+							role="button"
+							tabIndex={ 0 }
 						>
 							{ document.title || document.post_title }
 						</div>
