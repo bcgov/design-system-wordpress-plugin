@@ -50,23 +50,31 @@ const useVirtualization = ( {
 		setVisibleRange( { start: startIndex, end: endIndex } );
 	}, [ itemCount, itemHeight, overscan ] );
 
+	// Define handleScroll using useCallback to maintain referential equality
+	const handleScroll = useCallback( () => {
+		calculateVisibleRange();
+	}, [ calculateVisibleRange ] );
+
 	// Initialize and handle resize
 	useEffect( () => {
-		if ( containerRef.current ) {
-			// Set initial container height
-			setContainerHeight( containerRef.current.clientHeight );
-
-			// Calculate initial visible range
-			calculateVisibleRange();
-
-			// Add scroll event listener
-			containerRef.current.addEventListener( 'scroll', handleScroll );
+		const container = containerRef.current;
+		if ( ! container ) {
+			return;
 		}
+
+		// Set initial container height
+		setContainerHeight( container.clientHeight );
+
+		// Calculate initial visible range
+		calculateVisibleRange();
+
+		// Add scroll event listener
+		container.addEventListener( 'scroll', handleScroll );
 
 		// Handle window resize
 		const handleResize = () => {
-			if ( containerRef.current ) {
-				setContainerHeight( containerRef.current.clientHeight );
+			if ( container ) {
+				setContainerHeight( container.clientHeight );
 				calculateVisibleRange();
 			}
 		};
@@ -75,12 +83,7 @@ const useVirtualization = ( {
 
 		// Cleanup
 		return () => {
-			if ( containerRef.current ) {
-				containerRef.current.removeEventListener(
-					'scroll',
-					handleScroll
-				);
-			}
+			container.removeEventListener( 'scroll', handleScroll );
 			window.removeEventListener( 'resize', handleResize );
 		};
 	}, [ calculateVisibleRange, handleScroll ] );
