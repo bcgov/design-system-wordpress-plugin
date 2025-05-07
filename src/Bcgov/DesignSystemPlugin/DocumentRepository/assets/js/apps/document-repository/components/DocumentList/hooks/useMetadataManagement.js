@@ -471,12 +471,7 @@ const useMetadataManagement = ( {
 		} finally {
 			dispatch( { type: 'SET_IS_SAVING_BULK', payload: false } );
 		}
-	}, [
-		metadataState.bulkEditedMetadata,
-		apiNamespace,
-		onError,
-		onShowNotification,
-	] );
+	}, [ metadataState, apiNamespace, onError, onShowNotification ] );
 
 	return {
 		// Single document editing

@@ -5,7 +5,8 @@
  * with the functionality of the DocumentList component.
  */
 
-import { useCallback, PropTypes } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
+import PropTypes from 'prop-types';
 import VirtualList from './VirtualList';
 
 /**

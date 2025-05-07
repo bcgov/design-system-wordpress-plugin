@@ -7,7 +7,6 @@ import { __ } from '@wordpress/i18n';
  * A React error boundary component that catches JavaScript errors anywhere in its child component tree,
  * logs those errors, and displays a fallback UI instead of the component tree that crashed.
  *
- 
  * @augments {Component}
  * @param {Object}      props          - Component props
  * @param {JSX.Element} props.children - Child components to be wrapped by the error boundary

@@ -39,13 +39,6 @@ const DocumentTableRow = ( {
 	onMetadataChange,
 	formatFileSize,
 } ) => {
-	const handleKeyDown = ( e ) => {
-		if ( e.key === 'Enter' || e.key === ' ' ) {
-			e.preventDefault();
-			e.stopPropagation();
-		}
-	};
-
 	const renderMetadataField = ( field ) => {
 		if ( ! isSpreadsheetMode ) {
 			return document.metadata && document.metadata[ field.id ]
