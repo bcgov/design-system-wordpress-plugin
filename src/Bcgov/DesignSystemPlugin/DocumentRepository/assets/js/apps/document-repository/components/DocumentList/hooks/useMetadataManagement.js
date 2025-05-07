@@ -9,16 +9,16 @@ import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Metadata reducer for handling metadata state
- * @param {Object} state - The current state
- * @param {Object} action - The action to perform
- * @param {string} action.type - The type of action
- * @param {*} action.payload - The payload for the action
- * @param {Object} [action.initialValues] - Initial values for editing
- * @param {Object} [action.initialBulkValues] - Initial values for bulk editing
- * @param {string} [action.documentId] - Document ID for bulk updates
- * @param {string} [action.fieldId] - Field ID for bulk updates
- * @param {*} [action.value] - New value for bulk updates
- * @param {boolean} [action.hasChanges] - Whether there are changes
+ * @param {Object}  state                      - The current state
+ * @param {Object}  action                     - The action to perform
+ * @param {string}  action.type                - The type of action
+ * @param {*}       action.payload             - The payload for the action
+ * @param {Object}  [action.initialValues]     - Initial values for editing
+ * @param {Object}  [action.initialBulkValues] - Initial values for bulk editing
+ * @param {string}  [action.documentId]        - Document ID for bulk updates
+ * @param {string}  [action.fieldId]           - Field ID for bulk updates
+ * @param {*}       [action.value]             - New value for bulk updates
+ * @param {boolean} [action.hasChanges]        - Whether there are changes
  * @return {Object} The new state
  */
 const metadataReducer = ( state, action ) => {

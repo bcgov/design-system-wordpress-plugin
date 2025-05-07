@@ -42,6 +42,7 @@ const useFileHandling = ( { onFileDrop, onShowNotification, onError } ) => {
 				{
 					id: 'placeholder',
 					name: sprintf(
+						/* translators: %d: number of files being prepared */
 						__( 'Preparing %d files…', 'bcgov-design-system' ),
 						files.length
 					),
@@ -109,8 +110,9 @@ const useFileHandling = ( { onFileDrop, onShowNotification, onError } ) => {
 				onShowNotification(
 					'warning',
 					sprintf(
+						/* translators: %1$d: number of skipped files, %2$d: total number of files */
 						__(
-							'%d of %d files were skipped because they are not PDFs.',
+							'%1$d of %2$d files were skipped because they are not PDFs.',
 							'bcgov-design-system'
 						),
 						nonPdfFiles.length,
@@ -161,8 +163,9 @@ const useFileHandling = ( { onFileDrop, onShowNotification, onError } ) => {
 							onError( 'upload', file.name, error, {
 								addToRetryQueue: false,
 								customMessage: sprintf(
+									/* translators: %1$s: file name, %2$s: error message */
 									__(
-										'Error uploading "%s": %s',
+										'Error uploading "%1$s": %2$s',
 										'bcgov-design-system'
 									),
 									file.name,
