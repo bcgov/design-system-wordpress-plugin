@@ -23,6 +23,7 @@ const RetryNotice = ( { failedOperations, onRetryAll } ) => {
 		>
 			<p>
 				{ sprintf(
+					/* translators: %d: number of failed operations */
 					__(
 						'There are %d failed operations that can be retried.',
 						'bcgov-design-system'

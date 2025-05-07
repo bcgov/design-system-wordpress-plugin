@@ -83,16 +83,19 @@ const UploadArea = ( {
 		[ onFilesSelected ]
 	);
 
-	const handleUploadClick = ( e ) => {
-		// If event exists, prevent it from bubbling up to parent elements
-		if ( e ) {
-			e.stopPropagation();
-		}
+	const handleUploadClick = useCallback(
+		( e ) => {
+			// If event exists, prevent it from bubbling up to parent elements
+			if ( e ) {
+				e.stopPropagation();
+			}
 
-		if ( fileInputRef.current ) {
-			fileInputRef.current.click();
-		}
-	};
+			if ( fileInputRef.current ) {
+				fileInputRef.current.click();
+			}
+		},
+		[ fileInputRef ]
+	);
 
 	const handleKeyDown = useCallback(
 		( e ) => {

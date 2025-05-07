@@ -9,7 +9,7 @@
  */
 
 import { useState, useEffect } from '@wordpress/element';
-import { Modal, Notice, Spinner } from '@wordpress/components';
+import { Modal, Notice, Spinner, Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
 import DocumentList from './components/DocumentList';
@@ -35,6 +35,8 @@ const App = () => {
 
 	// Modal state for document upload
 	const [ showUploadModal, setShowUploadModal ] = useState( false );
+	const [ showCancelConfirmModal, setShowCancelConfirmModal ] =
+		useState( false );
 	const [ selectedFileForUpload, setSelectedFileForUpload ] =
 		useState( null );
 
@@ -317,6 +319,14 @@ const App = () => {
 		}
 	};
 
+	const handleCancelUpload = () => {
+		setShowUploadModal( false );
+		setSelectedFileForUpload( null );
+		setUploadQueue( [] );
+		setCurrentUploadIndex( 0 );
+		setShowCancelConfirmModal( false );
+	};
+
 	// Show error if either initialization or documents error occurs
 	const displayError = error || documentsError;
 
@@ -389,21 +399,9 @@ const App = () => {
 								  )
 								: __( 'Upload Document', 'bcgov-design-system' )
 						}
-						onRequestClose={ () => {
-							if (
-								window.confirm(
-									__(
-										'Are you sure you want to cancel the remaining uploads?',
-										'bcgov-design-system'
-									)
-								)
-							) {
-								setShowUploadModal( false );
-								setSelectedFileForUpload( null );
-								setUploadQueue( [] );
-								setCurrentUploadIndex( 0 );
-							}
-						} }
+						onRequestClose={ () =>
+							setShowCancelConfirmModal( true )
+						}
 						className="document-upload-modal"
 					>
 						<div className="upload-progress-info">
@@ -432,6 +430,44 @@ const App = () => {
 							modalMode={ true }
 							onFileDrop={ handleFileDrop }
 						/>
+					</Modal>
+				) }
+
+				{ /* Cancel Upload Confirmation Modal */ }
+				{ showCancelConfirmModal && (
+					<Modal
+						title={ __( 'Cancel Upload', 'bcgov-design-system' ) }
+						onRequestClose={ () =>
+							setShowCancelConfirmModal( false )
+						}
+						className="cancel-upload-modal"
+					>
+						<p>
+							{ __(
+								'Are you sure you want to cancel the remaining uploads?',
+								'bcgov-design-system'
+							) }
+						</p>
+						<div className="modal-actions">
+							<Button
+								className="doc-repo-button"
+								onClick={ () =>
+									setShowCancelConfirmModal( false )
+								}
+							>
+								{ __(
+									'Continue Upload',
+									'bcgov-design-system'
+								) }
+							</Button>
+							<Button
+								className="doc-repo-button"
+								isDestructive
+								onClick={ handleCancelUpload }
+							>
+								{ __( 'Cancel Upload', 'bcgov-design-system' ) }
+							</Button>
+						</div>
 					</Modal>
 				) }
 			</div>
