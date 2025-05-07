@@ -5,7 +5,6 @@
  * Supports both drag-and-drop and file selection, with progress tracking
  * and validation. Can operate in both modal and full-page modes.
  *
- 
  * @param {Object}   props                   - Component props
  * @param {Array}    props.metadataFields    - Array of metadata field definitions
  * @param {Function} props.onUploadSuccess   - Callback when upload completes successfully
@@ -57,12 +56,12 @@ import { __ } from '@wordpress/i18n';
 /**
  * Document Uploader component
  *
- * @param {Object} props                 Component props
- * @param          props.metadataFields
- * @param          props.onUploadSuccess
- * @param          props.selectedFile
- * @param          props.modalMode
- * @return {JSX.Element} Component
+ * @param {Object}   props                 - Component props
+ * @param {Array}    props.metadataFields  - Array of metadata field definitions
+ * @param {Function} props.onUploadSuccess - Callback when upload completes successfully
+ * @param {File}     props.selectedFile    - Optional pre-selected file
+ * @param {boolean}  props.modalMode       - Whether to render in modal mode
+ * @return {JSX.Element}                     - Component
  */
 const DocumentUploader = ( {
 	metadataFields,
@@ -80,6 +79,7 @@ const DocumentUploader = ( {
 
 	// Ref for the file input
 	const fileInputRef = useRef( null );
+	const dropzoneRef = useRef( null );
 
 	// Document metadata state
 	const [ title, setTitle ] = useState(
@@ -104,7 +104,7 @@ const DocumentUploader = ( {
 				};
 			}
 		}
-	}, [ selectedFile ] );
+	}, [ selectedFile, validateFile ] );
 
 	/**
 	 * File Validation
@@ -154,21 +154,21 @@ const DocumentUploader = ( {
 	};
 
 	// Handle file validation and selection
-	const validateAndSetFile = ( selectedFile ) => {
-		if ( ! selectedFile ) {
+	const validateAndSetFile = ( fileToValidate ) => {
+		if ( ! fileToValidate ) {
 			return false;
 		}
 
-		if ( validateFile( selectedFile ) ) {
-			setFile( selectedFile );
+		if ( validateFile( fileToValidate ) ) {
+			setFile( fileToValidate );
 
 			// Set default title from filename
-			const fileNameWithoutExt = selectedFile.name.includes( '.' )
-				? selectedFile.name.substring(
+			const fileNameWithoutExt = fileToValidate.name.includes( '.' )
+				? fileToValidate.name.substring(
 						0,
-						selectedFile.name.lastIndexOf( '.' )
+						fileToValidate.name.lastIndexOf( '.' )
 				  )
-				: selectedFile.name;
+				: fileToValidate.name;
 
 			setTitle( fileNameWithoutExt );
 			return true;
@@ -179,8 +179,13 @@ const DocumentUploader = ( {
 
 	// Handle file selection from input
 	const handleFileChange = ( event ) => {
-		const selectedFile = event.target.files[ 0 ];
-		validateAndSetFile( selectedFile );
+		const newFile = event.target.files[ 0 ];
+		validateAndSetFile( newFile );
+	};
+
+	// Handle file selection directly (for drag & drop)
+	const handleFileSelect = ( newFile ) => {
+		validateAndSetFile( newFile );
 	};
 
 	// Handle drag events
@@ -328,14 +333,14 @@ const DocumentUploader = ( {
 	 * @return {JSX.Element} Rendered form field
 	 */
 	const renderField = ( field ) => {
-		const { id, label, type, options, required } = field;
+		const { id, label: fieldLabel, type, options, required } = field;
 
 		switch ( type ) {
 			case 'text':
 				return (
 					<TextControl
 						key={ id }
-						label={ label }
+						label={ fieldLabel }
 						value={ metadata[ id ] || '' }
 						onChange={ ( value ) =>
 							handleMetadataChange( id, value )
@@ -348,7 +353,7 @@ const DocumentUploader = ( {
 				return (
 					<SelectControl
 						key={ id }
-						label={ label }
+						label={ fieldLabel }
 						value={ metadata[ id ] || '' }
 						options={ [
 							{
@@ -373,7 +378,7 @@ const DocumentUploader = ( {
 				return (
 					<TextControl
 						key={ id }
-						label={ label }
+						label={ fieldLabel }
 						type="date"
 						value={ metadata[ id ] || '' }
 						onChange={ ( value ) =>
@@ -440,6 +445,14 @@ const DocumentUploader = ( {
 						onDragLeave={ handleDragLeave }
 						onDrop={ handleDrop }
 						onClick={ handleDropzoneClick }
+						onKeyDown={ ( e ) => {
+							if ( e.key === 'Enter' || e.key === ' ' ) {
+								handleDropzoneClick();
+							}
+						} }
+						role="button"
+						tabIndex="0"
+						ref={ dropzoneRef }
 					>
 						<input
 							type="file"
