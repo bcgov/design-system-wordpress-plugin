@@ -39,6 +39,3 @@ documentation/docs/.vuepress/.temp
 documentation/docs/.vuepress/.cache
 documentation/node_modules
 documentation/docs/.vuepress/dist/**
-
-# Ignore build directories
-src/Bcgov/DesignSystemPlugin/DocumentRepository/build/

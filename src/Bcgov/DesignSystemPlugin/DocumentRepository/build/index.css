@@ -1,0 +1,2944 @@
+/*!*****************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./assets/scss/index.scss ***!
+  \*****************************************************************************************************************/
+@charset "UTF-8";
+/**
+ * Document Repository Main Stylesheet
+ *
+ * This file is the main entry point for all stylesheets in the Document
+ * Repository. It imports all the stylesheets in the correct order using
+ * the new modular structure.
+ */
+/**
+ * Abstracts Index
+ *
+ * This file forwards all abstracts (variables, mixins, etc.)
+ * for easy importing in the main stylesheet.
+ */
+/**
+ * Utils Index
+ *
+ * This file forwards all utility styles
+ * for easy importing in the main stylesheet.
+ */
+/**
+ * Reset styles for Document Repository
+ *
+ * This ensures consistent styling within the WordPress admin.
+ */
+.document-repository-container *,
+.document-repository-container *::before,
+.document-repository-container *::after {
+  box-sizing: border-box;
+}
+.document-repository-container h1,
+.document-repository-container h2,
+.document-repository-container h3,
+.document-repository-container h4,
+.document-repository-container h5,
+.document-repository-container h6,
+.document-repository-container p,
+.document-repository-container ul,
+.document-repository-container ol,
+.document-repository-container dl,
+.document-repository-container figure,
+.document-repository-container blockquote {
+  margin: 0;
+  padding: 0;
+}
+.document-repository-container ul,
+.document-repository-container ol {
+  list-style: none;
+}
+.document-repository-container a {
+  text-decoration: none;
+  color: inherit;
+}
+.document-repository-container a:focus {
+  outline: none;
+}
+.document-repository-container img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+.document-repository-container button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+.document-repository-container input,
+.document-repository-container select,
+.document-repository-container textarea,
+.document-repository-container button {
+  font-family: inherit;
+}
+.document-repository-container button:focus {
+  outline: none;
+}
+
+/**
+ * Layout Index
+ *
+ * This file forwards all layout-specific styles
+ * for easy importing in the main stylesheet.
+ */
+/**
+ * Document Repository Main Stylesheet
+ *
+ * This file is the main entry point for all stylesheets in the Document
+ * Repository. It imports all the stylesheets in the correct order using
+ * the new modular structure.
+ */
+.document-list {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+}
+.document-list-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.document-list-actions .document-list-left-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+@media screen and (max-width: 768px) {
+  .document-list-actions .document-list-left-actions {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+}
+.document-list-actions .document-list-right-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+@media screen and (max-width: 768px) {
+  .document-list-actions .document-list-right-actions {
+    width: 100%;
+  }
+}
+.document-list .delete-button,
+.document-list .bulk-delete-button {
+  background-color: #d8292f;
+  color: #fff;
+}
+.document-list .delete-button svg,
+.document-list .bulk-delete-button svg {
+  fill: #fff;
+  color: #fff;
+}
+.document-list .mode-toggle {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: nowrap;
+  margin-right: 16px;
+}
+.document-list .mode-toggle .doc-repo-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 4px;
+}
+.document-list .mode-toggle .doc-repo-button svg {
+  margin-right: 4px;
+}
+.document-list .delete-confirmation-content {
+  padding: 16px 0;
+}
+.document-list .delete-confirmation-content .documents-to-delete {
+  margin: 16px 0;
+  padding: 16px;
+  background-color: #f2f2f2;
+  border-radius: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.document-list .delete-confirmation-content .documents-to-delete h4 {
+  margin-bottom: 8px;
+}
+.document-list .delete-confirmation-content .documents-to-delete ul {
+  list-style: disc;
+  padding-left: 24px;
+}
+.document-list .delete-confirmation-content .documents-to-delete ul li {
+  padding: 4px 0;
+}
+.document-list .delete-confirmation-content .delete-warning {
+  color: #d8292f;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+.document-list .delete-confirmation-content .modal-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 16px;
+}
+.document-list .editable-metadata {
+  margin-bottom: 24px;
+}
+.document-list .editable-metadata .metadata-field {
+  margin-bottom: 16px;
+}
+.document-list .editable-metadata .metadata-field label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.document-list .editable-metadata .metadata-field .metadata-error {
+  color: #d8292f;
+  font-size: 14px;
+  margin-top: 4px;
+}
+.document-list .non-editable-metadata {
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+}
+.document-list .non-editable-metadata h3 {
+  margin-bottom: 16px;
+}
+.document-list .non-editable-metadata .metadata-field {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  margin-bottom: 16px;
+}
+.document-list .non-editable-metadata .metadata-field label {
+  width: 120px;
+  font-weight: 700;
+  color: #666;
+}
+.document-list .non-editable-metadata .metadata-field .field-value {
+  flex: 1;
+}
+
+/**
+ * Components Index
+ *
+ * This file forwards all component-specific styles
+ * for easy importing in the main stylesheet.
+ */
+/**
+ * Document Repository Main Stylesheet
+ *
+ * This file is the main entry point for all stylesheets in the Document
+ * Repository. It imports all the stylesheets in the correct order using
+ * the new modular structure.
+ */
+.document-table {
+  width: 100%;
+  margin-bottom: 24px;
+  border-collapse: collapse;
+  background-color: #fff;
+}
+.document-table__header {
+  background-color: #036;
+  color: #fff;
+}
+.document-table__header th {
+  padding: 8px 16px;
+  text-align: left;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.document-table__header th.checkbox-column {
+  width: 40px;
+  text-align: center;
+}
+.document-table__header th.actions-column {
+  width: 120px;
+  text-align: center;
+}
+.document-table__row {
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.15s ease-in-out;
+}
+.document-table__row:hover {
+  background-color: #f2f2f2;
+}
+.document-table__row td {
+  padding: 8px 16px;
+  vertical-align: middle;
+}
+.document-table__row td.checkbox-column {
+  width: 40px;
+  text-align: center;
+}
+.document-table__row td.actions-column {
+  width: 120px;
+  text-align: center;
+  white-space: nowrap;
+}
+.document-table__row--selected {
+  background-color: rgba(0, 51, 102, 0.05);
+}
+.document-table__row--selected:hover {
+  background-color: rgba(0, 51, 102, 0.1);
+}
+.document-table .document-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 300px;
+  font-weight: 700;
+  color: #1a5a96;
+}
+.document-table .document-title:hover {
+  color: #00e;
+  text-decoration: underline;
+}
+.document-table .file-size {
+  white-space: nowrap;
+}
+.document-table .status-indicator {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+.document-table .status-indicator--published {
+  background-color: #2e8540;
+}
+.document-table .status-indicator--draft {
+  background-color: #fcba19;
+}
+.document-table .status-indicator--error {
+  background-color: #d8292f;
+}
+.document-table .action-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+.document-table .action-buttons .edit-button,
+.document-table .action-buttons .view-button,
+.document-table .action-buttons .delete-button {
+  padding: 4px;
+  border-radius: 2px;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+}
+.document-table .action-buttons .edit-button svg,
+.document-table .action-buttons .view-button svg,
+.document-table .action-buttons .delete-button svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+.document-table .action-buttons .view-button {
+  color: #38598a;
+}
+.document-table .action-buttons .view-button:hover {
+  background-color: rgba(56, 89, 138, 0.1);
+}
+.document-table .action-buttons .edit-button {
+  color: #036;
+}
+.document-table .action-buttons .edit-button:hover {
+  background-color: rgba(0, 51, 102, 0.1);
+}
+.document-table .action-buttons .delete-button {
+  color: #d8292f;
+}
+.document-table .action-buttons .delete-button:hover {
+  background-color: rgba(216, 41, 47, 0.1);
+}
+.document-table button.doc-repo-button.delete-button {
+  background-color: #d8292f;
+  color: #fff;
+}
+.document-table button.doc-repo-button.delete-button svg {
+  fill: #fff;
+  color: #fff;
+}
+.document-table .empty-state {
+  padding: 24px;
+  text-align: center;
+  color: #666;
+}
+.document-table__footer {
+  background-color: #f2f2f2;
+  border-top: 1px solid #ccc;
+}
+.document-table__footer td {
+  padding: 8px 16px;
+}
+.document-table .document-cell__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 300px;
+  display: block;
+}
+.document-table .document-cell__metadata {
+  font-size: 14px;
+  color: #666;
+  margin-top: 4px;
+}
+.document-table .editable-cell {
+  position: relative;
+}
+.document-table .editable-cell .editable-field {
+  display: block;
+  width: 100%;
+  padding: 4px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  transition: all 0.15s ease-in-out;
+}
+.document-table .editable-cell .editable-field:hover {
+  border-color: #ccc;
+}
+.document-table .editable-cell .editable-field:focus {
+  outline: none;
+  border-color: #66afe9;
+  background-color: #fff;
+}
+.document-table .editable-cell .field-error {
+  position: absolute;
+  bottom: -16px;
+  left: 0;
+  padding: 4px;
+  background-color: #fbecec;
+  border: 1px solid #d8292f;
+  color: #d8292f;
+  font-size: 12px;
+  border-radius: 2px;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 200px;
+}
+@media screen and (max-width: 768px) {
+  .document-table {
+    display: block;
+    overflow-x: auto;
+  }
+  .document-table th,
+  .document-table td {
+    min-width: 100px;
+  }
+  .document-table .delete-button,
+  .document-table button.doc-repo-button.delete-button {
+    background-color: #d8292f;
+    color: #fff;
+  }
+  .document-table .delete-button svg,
+  .document-table button.doc-repo-button.delete-button svg {
+    fill: #fff;
+    color: #fff;
+  }
+}
+
+/**
+ * Document Repository Main Stylesheet
+ *
+ * This file is the main entry point for all stylesheets in the Document
+ * Repository. It imports all the stylesheets in the correct order using
+ * the new modular structure.
+ */
+.upload-area {
+  margin-bottom: 24px;
+}
+.upload-area__container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  border: 2px dashed #ccc;
+  border-radius: 4px;
+  padding: 32px;
+  background-color: #f2f2f2;
+  transition: all 0.3s ease-in-out;
+  text-align: center;
+}
+.upload-area__container:hover {
+  border-color: #0050a7;
+  background-color: rgba(0, 51, 102, 0.05);
+}
+.upload-area__container--drag-active {
+  border-color: #036;
+  background-color: rgba(0, 51, 102, 0.1);
+}
+.upload-area__container--error {
+  border-color: #d8292f;
+  background-color: rgba(216, 41, 47, 0.05);
+}
+.upload-area__icon {
+  margin-bottom: 16px;
+}
+.upload-area__icon svg {
+  width: 48px;
+  height: 48px;
+  color: #036;
+}
+.upload-area__text {
+  margin-bottom: 16px;
+  color: #313132;
+}
+.upload-area__browse {
+  color: #1a5a96;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.upload-area__browse:hover {
+  color: #00e;
+}
+.upload-area__help-text {
+  font-size: 14px;
+  color: #666;
+  margin-top: 8px;
+}
+.upload-area__file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+.upload-area__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  text-decoration: none;
+  border: 2px solid transparent;
+  background-color: #036;
+  color: #fff;
+  margin-top: 16px;
+}
+.upload-area__button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.upload-area__button:hover:not(:disabled), .upload-area__button:focus:not(:disabled) {
+  background-color: #002952;
+}
+.upload-area__error-message {
+  margin-top: 16px;
+  color: #d8292f;
+  font-size: 14px;
+}
+
+/**
+ * Document Repository Main Stylesheet
+ *
+ * This file is the main entry point for all stylesheets in the Document
+ * Repository. It imports all the stylesheets in the correct order using
+ * the new modular structure.
+ */
+.pagination-controls {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  margin: 24px 0;
+}
+.pagination-controls__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  text-decoration: none;
+  border: 2px solid transparent;
+  background-color: transparent;
+  border: 2px solid #036;
+  color: #036;
+  margin: 0 4px;
+  padding: 4px 8px;
+  min-width: 36px;
+}
+.pagination-controls__button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.pagination-controls__button:hover:not(:disabled), .pagination-controls__button:focus:not(:disabled) {
+  background-color: rgba(0, 51, 102, 0.1);
+}
+.pagination-controls__button:disabled {
+  opacity: 0.5;
+  border-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+.pagination-controls__button--active {
+  background-color: #036;
+  border-color: #036;
+  color: #fff;
+}
+.pagination-controls__button svg {
+  width: 16px;
+  height: 16px;
+}
+.pagination-controls__info {
+  margin: 0 16px;
+  color: #666;
+  font-size: 14px;
+}
+@media screen and (max-width: 576px) {
+  .pagination-controls {
+    flex-wrap: wrap;
+  }
+  .pagination-controls__info {
+    margin: 8px 0;
+    width: 100%;
+    text-align: center;
+    order: -1;
+  }
+}
+
+/**
+ * Document Repository Main Stylesheet
+ *
+ * This file is the main entry point for all stylesheets in the Document
+ * Repository. It imports all the stylesheets in the correct order using
+ * the new modular structure.
+ */
+.retry-notice {
+  margin-bottom: 24px;
+}
+.retry-notice__container {
+  background-color: #fef8e7;
+  border-color: #fcba19;
+  border: 1px solid;
+  border-radius: 4px;
+  padding: 16px;
+}
+.retry-notice__header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+  margin-bottom: 8px;
+}
+.retry-notice__header h3 {
+  margin: 0;
+  color: #cc9200;
+}
+.retry-notice__content {
+  margin-bottom: 8px;
+}
+.retry-notice__list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px 0;
+}
+.retry-notice__list li {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: nowrap;
+  padding: 4px 0;
+}
+.retry-notice__list li .error-icon {
+  color: #d8292f;
+  margin-right: 8px;
+}
+.retry-notice__list li .error-icon svg {
+  width: 16px;
+  height: 16px;
+}
+.retry-notice__list li .error-text {
+  flex: 1;
+}
+.retry-notice__list li .retry-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  text-decoration: none;
+  border: 2px solid transparent;
+  background-color: transparent;
+  border: 1px solid #e3a714;
+  color: #cc9200;
+  padding: 4px 8px;
+  font-size: 14px;
+}
+.retry-notice__list li .retry-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.retry-notice__list li .retry-button:hover {
+  background-color: rgba(252, 186, 25, 0.1);
+}
+.retry-notice__actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+.retry-notice__actions .retry-all-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  text-decoration: none;
+  border: 2px solid transparent;
+  background-color: #e3a714;
+  color: #fff;
+  border: none;
+}
+.retry-notice__actions .retry-all-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.retry-notice__actions .retry-all-button:hover {
+  background-color: #cc9200;
+}
+.retry-notice__actions .dismiss-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  text-decoration: none;
+  border: 2px solid transparent;
+  background-color: transparent;
+  border: 2px solid #036;
+  color: #036;
+  border-color: #e3a714;
+  color: #cc9200;
+}
+.retry-notice__actions .dismiss-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.retry-notice__actions .dismiss-button:hover:not(:disabled), .retry-notice__actions .dismiss-button:focus:not(:disabled) {
+  background-color: rgba(0, 51, 102, 0.1);
+}
+.retry-notice__actions .dismiss-button:hover {
+  background-color: rgba(252, 186, 25, 0.1);
+}
+
+/**
+ * Document Repository Main Stylesheet
+ *
+ * This file is the main entry point for all stylesheets in the Document
+ * Repository. It imports all the stylesheets in the correct order using
+ * the new modular structure.
+ */
+.notification {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: nowrap;
+  padding: 16px;
+  margin-bottom: 16px;
+  border-radius: 4px;
+  position: relative;
+  animation: notification-slide-in 0.3s ease-out;
+}
+.notification__icon {
+  margin-right: 16px;
+}
+.notification__icon svg {
+  width: 20px;
+  height: 20px;
+}
+.notification__content {
+  flex: 1;
+}
+.notification__title {
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.notification__message {
+  margin: 0;
+}
+.notification__close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.7;
+  transition: opacity 0.15s ease-in-out;
+  padding: 4px;
+}
+.notification__close:hover {
+  opacity: 1;
+}
+.notification__close svg {
+  width: 16px;
+  height: 16px;
+}
+.notification--success {
+  background-color: #eef9f1;
+  border-color: #2e8540;
+  color: #1e5928;
+}
+.notification--success .notification__icon {
+  color: #2e8540;
+}
+.notification--error {
+  background-color: #fbecec;
+  border-color: #d8292f;
+  color: #a51e23;
+}
+.notification--error .notification__icon {
+  color: #d8292f;
+}
+.notification--warning {
+  background-color: #fef8e7;
+  border-color: #fcba19;
+  color: #cc9200;
+}
+.notification--warning .notification__icon {
+  color: #e3a714;
+}
+.notification--info {
+  background-color: #eef2f7;
+  border-color: #38598a;
+  color: #284366;
+}
+.notification--info .notification__icon {
+  color: #38598a;
+}
+
+@keyframes notification-slide-in {
+  0% {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+/**
+ * Document Repository Main Stylesheet
+ *
+ * This file is the main entry point for all stylesheets in the Document
+ * Repository. It imports all the stylesheets in the correct order using
+ * the new modular structure.
+ */
+.virtualized-table-container {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  overflow: hidden;
+  position: relative;
+  max-height: 500px;
+}
+.virtualized-table-container:focus {
+  outline: none;
+  border-color: #66afe9;
+}
+.virtualized-table-container::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 10px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.05), transparent);
+  pointer-events: none;
+}
+.virtualized-table-container .document-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.virtualized-table-container .document-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.virtualized-table-container .document-table tbody {
+  position: relative;
+}
+.virtualized-table-container .document-table tbody > div {
+  display: table;
+  width: 100%;
+}
+.virtualized-table-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.virtualized-table-container::-webkit-scrollbar-track {
+  background: #f2f2f2;
+}
+.virtualized-table-container::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 51, 102, 0.3);
+  border-radius: 4px;
+}
+.virtualized-table-container::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 51, 102, 0.5);
+}
+@media screen and (max-width: 768px) {
+  .virtualized-table-container {
+    max-height: 400px;
+  }
+}
+@media screen and (max-width: 576px) {
+  .virtualized-table-container {
+    max-height: 300px;
+  }
+}
+
+/**
+ * Standardized Button Styles - Simple Version
+ *
+ * This file contains all button styles used in the Document Repository.
+ * There are only 5 classes total:
+ * - doc-repo-button: shared base styles for all buttons
+ * - save-button: blue primary/save buttons
+ * - cancel-button: gray secondary/cancel buttons
+ * - delete-button: red destructive/delete buttons
+ * - edit-button: blue secondary/edit buttons
+ */
+.doc-repo-button {
+  height: 30px;
+  min-height: 30px;
+  padding: 0 12px;
+  font-size: 13px;
+  line-height: normal;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
+  cursor: pointer;
+  text-shadow: none;
+  font-weight: 400;
+  opacity: 1;
+  margin: 0;
+  transition: all 0.2s ease;
+}
+.doc-repo-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+.doc-repo-button span {
+  color: inherit;
+}
+.doc-repo-button.icon-button {
+  min-width: 30px;
+  width: 30px;
+  padding: 0;
+}
+.doc-repo-button.icon-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.save-button {
+  background-color: #036;
+  border: 1px solid #036;
+  color: #fff;
+}
+.save-button:disabled {
+  background-color: rgb(0, 76.5, 153);
+  border-color: rgb(0, 76.5, 153);
+  color: #fff;
+}
+.save-button:hover:not(:disabled), .save-button:focus:not(:disabled) {
+  background-color: rgb(0, 38.25, 76.5);
+  border-color: rgb(0, 38.25, 76.5);
+  color: #fff;
+}
+
+.cancel-button {
+  background-color: #f6f7f7;
+  border: 1px solid #ddd;
+  color: #555;
+}
+.cancel-button:disabled {
+  background-color: #f6f7f7;
+  border-color: #ddd;
+  color: #888;
+}
+.cancel-button:hover:not(:disabled), .cancel-button:focus:not(:disabled) {
+  background-color: #e8e8e8;
+  border-color: #ccc;
+  color: #444;
+}
+
+.delete-button {
+  background-color: #d8292f;
+  border: 1px solid #d8292f;
+  color: #fff;
+}
+.delete-button:disabled {
+  background-color: rgb(223.8616600791, 84.1383399209, 88.9288537549);
+  border-color: rgb(223.8616600791, 84.1383399209, 88.9288537549);
+  color: #fff;
+}
+.delete-button:hover:not(:disabled), .delete-button:focus:not(:disabled) {
+  background-color: rgb(195.814229249, 35.685770751, 41.1758893281);
+  border-color: rgb(195.814229249, 35.685770751, 41.1758893281);
+  color: #fff;
+}
+
+.edit-button {
+  background-color: #38598a;
+  border: 1px solid #38598a;
+  color: #fff;
+}
+.edit-button:disabled {
+  background-color: rgb(70.7216494845, 112.3969072165, 174.2783505155);
+  border-color: rgb(70.7216494845, 112.3969072165, 174.2783505155);
+  color: #fff;
+}
+.edit-button:hover:not(:disabled), .edit-button:focus:not(:disabled) {
+  background-color: rgb(48.6391752577, 77.3015463918, 119.8608247423);
+  border-color: rgb(48.6391752577, 77.3015463918, 119.8608247423);
+  color: #fff;
+}
+
+.modal-actions,
+.components-modal__footer,
+.delete-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+/**
+ * Standardized Button Styles - Simple Version
+ *
+ * This file contains all button styles used in the Document Repository.
+ * There are only 5 classes total:
+ * - doc-repo-button: shared base styles for all buttons
+ * - save-button: blue primary/save buttons
+ * - cancel-button: gray secondary/cancel buttons
+ * - delete-button: red destructive/delete buttons
+ * - edit-button: blue secondary/edit buttons
+ */
+/**
+ * Drag and Drop Area Styles
+ *
+ * This file contains styles for the drag and drop functionality in the Document
+ * Repository.
+ */
+.document-uploader-dropzone, .drag-drop-area {
+  border: 2px dashed #ddd;
+  border-radius: 4px;
+  padding: 2rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: #f8f9fa;
+}
+.document-uploader-dropzone:hover, .drag-drop-area:hover {
+  border-color: #bbb;
+  background-color: #f1f3f5;
+}
+
+.document-uploader-dropzone.dragging, .drag-drop-area.is-drag-active {
+  border-color: #036;
+  background-color: rgba(0, 51, 102, 0.05);
+}
+
+.document-uploader-dropzone .dropzone-icon, .drag-drop-area .drag-drop-icon {
+  margin-bottom: 1rem;
+}
+.document-uploader-dropzone .dropzone-icon svg, .drag-drop-area .drag-drop-icon svg {
+  width: 64px;
+  height: 64px;
+  color: #888;
+}
+
+.drag-drop-area .drag-drop-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.drag-drop-area h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  color: #333;
+}
+.drag-drop-area p {
+  color: #666;
+  margin: 0 0 1.5rem;
+}
+.drag-drop-area .upload-button {
+  margin-top: 0.5rem;
+}
+
+/**
+ * Standardized Button Styles - Simple Version
+ *
+ * This file contains all button styles used in the Document Repository.
+ * There are only 5 classes total:
+ * - doc-repo-button: shared base styles for all buttons
+ * - save-button: blue primary/save buttons
+ * - cancel-button: gray secondary/cancel buttons
+ * - delete-button: red destructive/delete buttons
+ * - edit-button: blue secondary/edit buttons
+ */
+/**
+ * Upload Status Styles
+ *
+ * This file contains styles for document upload status indicators in the
+ * Document Repository.
+ */
+/* =========================================
+   Common Styles (to avoid specificity issues)
+   ========================================= */
+.success-message {
+  color: #4caf50;
+  margin-left: 1rem;
+}
+
+/* =========================================
+   Upload Status Box
+   ========================================= */
+.upload-status {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+  font-family: bcsans, blinkmacsystemfont, "Segoe UI", roboto, oxygen-sans, ubuntu, cantarell, "Helvetica Neue", sans-serif;
+}
+.upload-status .upload-status-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+  background: #fff;
+  border: 1px solid #e9ecef;
+}
+.upload-status .upload-status-item:last-child {
+  margin-bottom: 0;
+}
+.upload-status .upload-status-item .filename {
+  flex: 1;
+  margin-right: 1rem;
+  font-weight: 500;
+}
+.upload-status .upload-status-item .progress-bar {
+  flex: 2;
+  height: 4px;
+  background: #e9ecef;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.upload-status .upload-status-item .progress-bar .progress {
+  height: 100%;
+  background: #036;
+  transition: width 0.3s ease;
+}
+.upload-status .upload-status-item .error-message {
+  color: #d8292f;
+  margin-left: 1rem;
+}
+.upload-status .upload-status-item.error {
+  border-color: #fad7dc;
+  background: #fff8f8;
+}
+.upload-status .upload-status-item.success {
+  border-color: #d4edda;
+  background: #f8fff9;
+}
+
+/* =========================================
+   Floating Upload Status
+   ========================================= */
+.document-upload-status {
+  position: fixed;
+  top: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  width: 400px;
+  max-width: 90vw;
+  font-family: bcsans, blinkmacsystemfont, "Segoe UI", roboto, oxygen-sans, ubuntu, cantarell, "Helvetica Neue", sans-serif;
+}
+.document-upload-status svg {
+  width: 1rem;
+  height: 1rem;
+}
+.document-upload-status .success-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  border-top: 1px solid #eee;
+  background-color: #f8fff9;
+  color: #4caf50;
+}
+.document-upload-status .success-message svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: 0.5rem;
+}
+.document-upload-status .document-upload-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #eee;
+  background-color: #f8f9fa;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+.document-upload-status .document-upload-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.document-upload-status .document-upload-header h3 svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #036;
+}
+.document-upload-status .document-upload-header .close-button {
+  background: transparent;
+  border: none;
+  padding: 0.25rem;
+  cursor: pointer;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.document-upload-status .document-upload-header .close-button:hover {
+  color: #333;
+}
+.document-upload-status .document-upload-content {
+  padding: 1rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+.document-upload-status .document-upload-content .upload-file-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  background-color: #f8f9fa;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+.document-upload-status .document-upload-content .upload-file-item:last-child {
+  margin-bottom: 0;
+}
+.document-upload-status .document-upload-content .upload-file-item .file-icon {
+  margin-right: 0.75rem;
+  color: #666;
+}
+.document-upload-status .document-upload-content .upload-file-item .status-icon {
+  margin-left: 0.5rem;
+}
+.document-upload-status .document-upload-content .upload-file-item.success {
+  border-color: #d4edda;
+  background-color: #f8fff9;
+}
+.document-upload-status .document-upload-content .upload-file-item.success svg {
+  color: #4caf50;
+}
+.document-upload-status .document-upload-content .upload-file-item.error {
+  border-color: #f5c2c7;
+  background-color: #fff8f8;
+}
+.document-upload-status .document-upload-content .upload-file-item.error svg {
+  color: #d8292f;
+}
+.document-upload-status .document-upload-content .upload-file-item .file-info {
+  flex: 1;
+  overflow: hidden;
+}
+.document-upload-status .document-upload-content .upload-file-item .file-info .file-name {
+  font-weight: 500;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.25rem;
+}
+.document-upload-status .document-upload-content .upload-file-item .file-info .file-status {
+  font-size: 0.75rem;
+  color: #666;
+}
+.document-upload-status .document-upload-content .upload-file-item .file-info .file-status.error {
+  color: #d8292f;
+}
+.document-upload-status .document-upload-content .upload-file-item .file-info .file-status.success {
+  color: #4caf50;
+}
+.document-upload-status .document-upload-content .upload-file-item .file-progress {
+  width: 80px;
+  height: 4px;
+  background-color: #eee;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-left: 0.5rem;
+}
+.document-upload-status .document-upload-content .upload-file-item .file-progress .progress-bar {
+  height: 100%;
+  background-color: #036;
+  transition: width 0.2s ease;
+}
+
+/**
+ * Standardized Button Styles - Simple Version
+ *
+ * This file contains all button styles used in the Document Repository.
+ * There are only 5 classes total:
+ * - doc-repo-button: shared base styles for all buttons
+ * - save-button: blue primary/save buttons
+ * - cancel-button: gray secondary/cancel buttons
+ * - delete-button: red destructive/delete buttons
+ * - edit-button: blue secondary/edit buttons
+ */
+/**
+ * Upload Feedback Styles
+ *
+ * This file contains styles for the upload feedback popup in the Document
+ * Repository.
+ */
+/* =========================================
+   SVG Common Styles
+   ========================================= */
+.upload-feedback-summary div svg, .upload-feedback-title svg, .upload-feedback-close svg, .upload-feedback-item svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* =========================================
+   Upload Feedback Container
+   ========================================= */
+.upload-feedback {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 350px;
+  max-width: calc(100vw - 40px);
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  font-family: bcsans, blinkmacsystemfont, "Segoe UI", roboto, oxygen-sans, ubuntu, cantarell, "Helvetica Neue", sans-serif;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+/* =========================================
+   SVG Styles by Element - Listed in specificity order
+   ========================================= */
+.upload-feedback-item svg {
+  flex-shrink: 0;
+}
+
+.upload-feedback-title svg {
+  color: #036;
+}
+
+.upload-feedback-item.success svg {
+  color: #4caf50;
+}
+
+.upload-feedback-item.error svg {
+  color: #d8292f;
+}
+
+/* =========================================
+   Header Styles
+   ========================================= */
+.upload-feedback-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #eee;
+}
+
+.upload-feedback-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.upload-feedback-close {
+  background: transparent;
+  border: none;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #666;
+}
+
+.upload-feedback-close:hover {
+  color: #333;
+}
+
+/* =========================================
+   Items List Styles
+   ========================================= */
+.upload-feedback-items {
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 10px 15px;
+}
+
+.upload-feedback-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  background-color: #f8f9fa;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.upload-feedback-item:last-child {
+  margin-bottom: 0;
+}
+
+.upload-feedback-item.success {
+  border-color: #d4edda;
+  background-color: #f8fff9;
+}
+
+.upload-feedback-item.error {
+  border-color: #f5c2c7;
+  background-color: #fff8f8;
+}
+
+.upload-feedback-item.uploading,
+.upload-feedback-item.processing {
+  border-color: #e6f2ff;
+  background-color: #f5f9ff;
+}
+
+.upload-feedback-item-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 10px;
+}
+
+.upload-feedback-item-error {
+  color: #d8292f;
+  font-size: 0.8rem;
+  margin-left: 5px;
+}
+
+/* =========================================
+   Summary Footer Styles
+   ========================================= */
+.upload-feedback-summary {
+  padding: 10px 15px;
+  border-top: 1px solid #eee;
+  background-color: #f8f9fa;
+}
+
+.upload-feedback-summary div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.upload-feedback-summary div:not(:last-child) {
+  margin-bottom: 5px;
+}
+
+.upload-feedback-summary div.success {
+  color: #4caf50;
+}
+
+.upload-feedback-summary div.error {
+  color: #d8292f;
+}
+
+.upload-feedback-summary div.processing,
+.upload-feedback-summary div.uploading {
+  color: #036;
+}
+
+/**
+ * Standardized Button Styles - Simple Version
+ *
+ * This file contains all button styles used in the Document Repository.
+ * There are only 5 classes total:
+ * - doc-repo-button: shared base styles for all buttons
+ * - save-button: blue primary/save buttons
+ * - cancel-button: gray secondary/cancel buttons
+ * - delete-button: red destructive/delete buttons
+ * - edit-button: blue secondary/edit buttons
+ */
+/* stylelint-disable no-descending-specificity, no-duplicate-selectors */
+/* stylelint-disable comment-empty-line-before */
+/**
+ * Metadata Modal Styles
+ *
+ * This file contains styles for metadata-related modals including:
+ * - Metadata edit modal
+ * - Delete confirmation modal
+ */
+/* =========================================
+   Basic Modal Elements - Least Specific
+   ========================================= */
+.components-modal__screen-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.components-button.modal-close-button {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  padding: 0.5rem;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  background: none;
+  z-index: 10;
+}
+.components-button.modal-close-button svg {
+  width: 1rem;
+  height: 1rem;
+  color: #666;
+}
+.components-button.modal-close-button:hover {
+  background: #f6f7f7;
+}
+
+/* =========================================
+   Modal Component Styles - Medium Specificity
+   ========================================= */
+.components-modal__content {
+  background-color: #fff;
+  max-width: 40rem;
+  width: 100%;
+  position: relative;
+  padding: 0;
+  border-radius: 0.25rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  max-height: calc(100vh - 3rem);
+  display: flex;
+  flex-direction: column;
+}
+
+.components-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #fff;
+  padding: 1rem 1.5rem;
+  border-bottom: 0.0625rem solid #ddd;
+  position: relative;
+}
+
+.modal-form {
+  padding: 1.5rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 0.0625rem solid #ddd;
+  background-color: #f6f7f7;
+}
+.modal-actions .components-button {
+  min-width: 5rem;
+}
+.modal-actions .components-button.is-secondary {
+  background-color: transparent;
+  border: 0.0625rem solid #e0e0e0;
+  color: #1e1e1e;
+}
+.modal-actions .components-button.is-secondary:disabled {
+  background-color: #f8f8f8;
+  color: #505050;
+}
+.modal-actions .components-button.is-secondary:focus:not(:disabled) {
+  border-color: #036;
+}
+.modal-actions .components-button.is-secondary:hover:not(:disabled) {
+  background-color: #f8f8f8;
+  border-color: rgb(198.5, 198.5, 198.5);
+}
+.modal-actions .components-button.is-primary {
+  background-color: #036;
+  border: 0.0625rem solid #036;
+  color: #fff;
+}
+.modal-actions .components-button.is-primary:disabled {
+  background-color: rgba(0, 51, 102, 0.5);
+  border-color: rgba(0, 51, 102, 0.5);
+  color: #fff;
+}
+.modal-actions .components-button.is-primary:focus:not(:disabled) {
+  background-color: rgb(0, 45.9, 91.8);
+  border-color: rgb(0, 45.9, 91.8);
+}
+.modal-actions .components-button.is-primary:hover:not(:disabled) {
+  background-color: rgb(0, 38.25, 76.5);
+  border-color: rgb(0, 38.25, 76.5);
+}
+.modal-actions .components-button.is-primary:disabled {
+  background-color: #e0e0e0;
+  border-color: #e0e0e0;
+  color: #666;
+  opacity: 1;
+}
+.modal-actions .components-button.is-destructive {
+  background-color: #d8292f;
+  border: 0.0625rem solid #d8292f;
+  color: #fff;
+}
+.modal-actions .components-button.is-destructive:disabled {
+  background-color: rgba(216, 41, 47, 0.5);
+  border-color: rgba(216, 41, 47, 0.5);
+  color: #fff;
+}
+.modal-actions .components-button.is-destructive:focus:not(:disabled) {
+  background-color: rgb(208.7557312253, 38.0442687747, 43.8972332016);
+  border-color: rgb(208.7557312253, 38.0442687747, 43.8972332016);
+}
+.modal-actions .components-button.is-destructive:hover:not(:disabled) {
+  background-color: rgb(195.814229249, 35.685770751, 41.1758893281);
+  border-color: rgb(195.814229249, 35.685770751, 41.1758893281);
+}
+.modal-actions .components-button.is-destructive:disabled {
+  background-color: rgba(216, 41, 47, 0.3);
+  border-color: rgba(216, 41, 47, 0.3);
+  color: #fff;
+  opacity: 1;
+}
+
+/* =========================================
+   Metadata-Specific Modal Components - Higher Specificity
+   ========================================= */
+.metadata-edit-modal {
+  font-family: bcsans, blinkmacsystemfont, "Segoe UI", roboto, oxygen-sans, ubuntu, cantarell, "Helvetica Neue", sans-serif;
+}
+.metadata-edit-modal > div {
+  padding: 0;
+  margin: 0;
+}
+.metadata-edit-modal .metadata-edit-form {
+  padding: 0 1.5rem 1.5rem;
+}
+.metadata-edit-modal .metadata-edit-form .metadata-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 1.5rem;
+}
+.metadata-edit-modal .metadata-edit-form .metadata-field-form {
+  padding-top: 0.75rem;
+}
+.metadata-edit-modal .metadata-edit-form .metadata-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.metadata-edit-modal .metadata-edit-form .metadata-field:first-child {
+  margin-top: 0;
+}
+.metadata-edit-modal .metadata-edit-form .metadata-field label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.25rem;
+}
+.metadata-edit-modal .metadata-edit-form .metadata-field .field-input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.metadata-edit-modal .metadata-edit-form .metadata-field .field-input .components-text-control__input,
+.metadata-edit-modal .metadata-edit-form .metadata-field .field-input .components-select-control__input {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  border: 0.0625rem solid #ddd;
+  border-radius: 0.25rem;
+}
+.metadata-edit-modal .metadata-edit-form .metadata-field .field-input .components-text-control__input:focus,
+.metadata-edit-modal .metadata-edit-form .metadata-field .field-input .components-select-control__input:focus {
+  border-color: #036;
+  box-shadow: 0 0 0 0.125rem rgba(0, 51, 102, 0.2);
+  outline: none;
+}
+.metadata-edit-modal .metadata-edit-form .metadata-field .field-input .error-message {
+  font-size: 0.75rem;
+  color: #d8292f;
+}
+
+.delete-field-modal > div,
+.metadata-field-modal > div {
+  padding: 0;
+  margin: 0;
+}
+.delete-field-modal .document-delete-form,
+.metadata-field-modal .document-delete-form {
+  padding: 0;
+}
+.delete-field-modal .warning-message,
+.delete-field-modal .delete-warning,
+.metadata-field-modal .warning-message,
+.metadata-field-modal .delete-warning {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: #fff7f7;
+  border-radius: 0.25rem;
+  margin: 1rem 1.5rem 1.5rem;
+}
+.delete-field-modal .warning-message .warning-icon,
+.delete-field-modal .delete-warning .warning-icon,
+.metadata-field-modal .warning-message .warning-icon,
+.metadata-field-modal .delete-warning .warning-icon {
+  color: #d8292f;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+.delete-field-modal .warning-message .warning-content,
+.delete-field-modal .delete-warning .warning-content,
+.metadata-field-modal .warning-message .warning-content,
+.metadata-field-modal .delete-warning .warning-content {
+  flex: 1;
+}
+.delete-field-modal .warning-message .warning-content h3,
+.delete-field-modal .warning-message .warning-content strong,
+.delete-field-modal .delete-warning .warning-content h3,
+.delete-field-modal .delete-warning .warning-content strong,
+.metadata-field-modal .warning-message .warning-content h3,
+.metadata-field-modal .warning-message .warning-content strong,
+.metadata-field-modal .delete-warning .warning-content h3,
+.metadata-field-modal .delete-warning .warning-content strong {
+  font-size: 1rem;
+  color: #333;
+  margin: 0 0 0.5rem;
+  display: block;
+}
+.delete-field-modal .warning-message .warning-content p,
+.delete-field-modal .delete-warning .warning-content p,
+.metadata-field-modal .warning-message .warning-content p,
+.metadata-field-modal .delete-warning .warning-content p {
+  font-size: 0.875rem;
+  color: #666;
+  margin: 0;
+}
+.delete-field-modal .field-details,
+.delete-field-modal .document-info,
+.metadata-field-modal .field-details,
+.metadata-field-modal .document-info {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem 1rem;
+  margin: 0 1.5rem 1.5rem;
+  padding: 1rem;
+  background: #f0f0f0;
+  border-radius: 0.25rem;
+}
+.delete-field-modal .field-details h3,
+.delete-field-modal .document-info h3,
+.metadata-field-modal .field-details h3,
+.metadata-field-modal .document-info h3 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+  color: #333;
+  grid-column: 1/-1;
+}
+.delete-field-modal .field-details .field-label,
+.delete-field-modal .field-details .label,
+.delete-field-modal .document-info .field-label,
+.delete-field-modal .document-info .label,
+.metadata-field-modal .field-details .field-label,
+.metadata-field-modal .field-details .label,
+.metadata-field-modal .document-info .field-label,
+.metadata-field-modal .document-info .label {
+  font-size: 0.875rem;
+  color: #666;
+  font-weight: 400;
+}
+.delete-field-modal .field-details .field-value,
+.delete-field-modal .field-details .value,
+.delete-field-modal .document-info .field-value,
+.delete-field-modal .document-info .value,
+.metadata-field-modal .field-details .field-value,
+.metadata-field-modal .field-details .value,
+.metadata-field-modal .document-info .field-value,
+.metadata-field-modal .document-info .value {
+  font-size: 0.875rem;
+  color: #333;
+  font-weight: 500;
+}
+.delete-field-modal .delete-actions,
+.metadata-field-modal .delete-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 0.0625rem solid #ddd;
+  background-color: #f6f7f7;
+  margin: 0;
+}
+
+.view-metadata-modal .metadata-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 1.5rem;
+}
+.view-metadata-modal .metadata-fields .metadata-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.view-metadata-modal .metadata-fields .metadata-field .field-label {
+  font-size: 0.75rem;
+  color: #666;
+}
+.view-metadata-modal .metadata-fields .metadata-field .field-value {
+  font-size: 0.875rem;
+  color: #333;
+  font-weight: 500;
+}
+.view-metadata-modal .system-metadata {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 0.0625rem solid #ddd;
+}
+.view-metadata-modal .system-metadata h3 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 1rem;
+}
+.view-metadata-modal .system-metadata .metadata-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 1rem;
+}
+
+.add-field-modal .field-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.add-field-modal .field-form .form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 1.5rem;
+}
+.add-field-modal .field-form .form-row .form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.add-field-modal .field-form .form-row .form-field label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #333;
+}
+.add-field-modal .field-form .form-row .form-field .components-text-control__input,
+.add-field-modal .field-form .form-row .form-field .components-select-control__input {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  border: 0.0625rem solid #ddd;
+  border-radius: 0.25rem;
+}
+.add-field-modal .field-form .form-row .form-field .components-text-control__input:focus,
+.add-field-modal .field-form .form-row .form-field .components-select-control__input:focus {
+  border-color: #036;
+  box-shadow: 0 0 0 0.125rem rgba(0, 51, 102, 0.2);
+  outline: none;
+}
+.add-field-modal .field-form .form-row .form-field .error-message {
+  font-size: 0.75rem;
+  color: #d8292f;
+}
+.add-field-modal .field-form .options-section h3 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 1rem;
+}
+.add-field-modal .field-form .options-section .options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.add-field-modal .field-form .options-section .options-list .option-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.add-field-modal .field-form .options-section .options-list .option-item .components-text-control__input {
+  flex: 1;
+}
+.add-field-modal .field-form .options-section .options-list .option-item .components-button {
+  height: 2rem;
+  width: 2rem;
+  min-width: 2rem;
+  padding: 0;
+  color: #d8292f;
+}
+.add-field-modal .field-form .options-section .options-list .option-item .components-button svg {
+  width: 1rem;
+  height: 1rem;
+}
+.add-field-modal .field-form .options-section .add-option-button {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.add-field-modal .field-form .options-section .add-option-button svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.components-modal__screen-overlay {
+  font-family: bcsans, blinkmacsystemfont, "Segoe UI", roboto, oxygen-sans, ubuntu, cantarell, "Helvetica Neue", sans-serif;
+}
+.components-modal__screen-overlay .components-button {
+  height: auto;
+  min-height: 2.25rem;
+  min-width: 3.75rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.125rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+.components-modal__screen-overlay .components-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+.components-modal__screen-overlay .components-button:focus:not(:disabled) {
+  outline: none;
+  box-shadow: 0 0 0 0.125rem rgba(35, 107, 168, 0.25);
+}
+.components-modal__screen-overlay .components-button:hover:not(:disabled) {
+  text-decoration: none;
+}
+.components-modal__screen-overlay .delete-confirmation-content {
+  padding: 1.5rem;
+}
+.components-modal__screen-overlay .delete-confirmation-content p {
+  font-size: 1rem;
+  color: #1e1e1e;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.5;
+}
+.components-modal__screen-overlay .delete-confirmation-content .documents-to-delete {
+  background: #f0f0f1;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+.components-modal__screen-overlay .delete-confirmation-content .documents-to-delete h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1e1e1e;
+}
+.components-modal__screen-overlay .delete-confirmation-content .documents-to-delete ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  list-style: disc;
+  max-height: 150px;
+  overflow-y: auto;
+  overflow: auto;
+  /* Ensure scrollbar appearance */
+}
+.components-modal__screen-overlay .delete-confirmation-content .documents-to-delete ul::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.components-modal__screen-overlay .delete-confirmation-content .documents-to-delete ul::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+.components-modal__screen-overlay .delete-confirmation-content .documents-to-delete ul::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+.components-modal__screen-overlay .delete-confirmation-content .documents-to-delete ul li {
+  font-size: 0.875rem;
+  color: #1e1e1e;
+  line-height: 1.5;
+  padding: 0.25rem 0;
+  display: list-item;
+}
+.components-modal__screen-overlay .delete-confirmation-content .delete-warning {
+  color: #d8292f;
+  font-size: 0.875rem;
+  margin: 0 0 1.5rem 0;
+  padding: 0.5rem 1rem;
+  background: #fff1f2;
+  border: 0.0625rem solid rgba(216, 41, 47, 0.2);
+  border-radius: 0.125rem;
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.components-modal__screen-overlay .delete-confirmation-content .delete-warning::before {
+  content: "⚠";
+  font-size: 1rem;
+}
+.components-modal__screen-overlay .delete-confirmation-content .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 0.0625rem solid #ddd;
+}
+
+/**
+ * Standardized Button Styles - Simple Version
+ *
+ * This file contains all button styles used in the Document Repository.
+ * There are only 5 classes total:
+ * - doc-repo-button: shared base styles for all buttons
+ * - save-button: blue primary/save buttons
+ * - cancel-button: gray secondary/cancel buttons
+ * - delete-button: red destructive/delete buttons
+ * - edit-button: blue secondary/edit buttons
+ */
+/* stylelint-disable no-descending-specificity */
+/* =========================================
+   Base Element Styles - Least specific first
+   ========================================= */
+.components-button svg {
+  width: 1rem;
+  height: 1rem;
+}
+.components-button.is-primary {
+  background-color: #036;
+  color: #fff;
+  border: none;
+}
+.components-button.is-primary:disabled {
+  background-color: rgba(0, 51, 102, 0.5);
+  color: #fff;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+.components-button.is-primary:hover:not(:disabled) {
+  background-color: rgb(0, 38.25, 76.5);
+}
+.components-button.is-secondary, .components-button.cancel-button, .components-button.cancel {
+  background-color: #f6f7f7;
+  border: 1px solid #dcdcde;
+  color: #333;
+}
+.components-button.is-secondary:hover:not(:disabled), .components-button.cancel-button:hover:not(:disabled), .components-button.cancel:hover:not(:disabled) {
+  background-color: #f0f0f1;
+  border-color: #8c8f94;
+}
+.components-button.is-destructive, .components-button.delete-button {
+  background-color: #d8292f;
+  color: #fff;
+  border: none;
+}
+.components-button.is-destructive:disabled, .components-button.delete-button:disabled {
+  background-color: rgba(216, 41, 47, 0.5);
+  color: #fff;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+.components-button.is-destructive:hover:not(:disabled), .components-button.delete-button:hover:not(:disabled) {
+  background-color: rgb(195.814229249, 35.685770751, 41.1758893281);
+}
+
+/* =========================================
+   Modal Base Styles - Medium specificity
+   ========================================= */
+.components-modal__content {
+  max-width: 30rem;
+  padding: 0;
+}
+.components-modal__content .components-modal__header {
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 0;
+}
+.components-modal__content > div > p {
+  padding: 1.5rem 1.5rem 0;
+  margin: 0;
+  font-size: 1rem;
+  color: #333;
+}
+.components-modal__content .components-button {
+  height: 2.25rem;
+  min-width: 5rem;
+  justify-content: center;
+  padding: 0 1rem;
+}
+.components-modal__content .document-info {
+  background: #f0f0f0;
+  margin: 1rem 1.5rem;
+  padding: 1rem;
+  border-radius: 4px;
+}
+.components-modal__content .document-info h3 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+  color: #333;
+}
+.components-modal__content .document-info .info-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 1rem;
+  row-gap: 0.5rem;
+  font-size: 0.875rem;
+}
+.components-modal__content .document-info .info-grid .label {
+  color: #666;
+}
+.components-modal__content .document-info .info-grid .value {
+  color: #333;
+}
+.components-modal__content .delete-warning,
+.components-modal__content div[role=alert] {
+  background-color: #fcf0f0;
+  border: 1px solid #f5c2c7;
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  margin: 1rem 1.5rem;
+  color: #842029;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.components-modal__content .delete-warning svg,
+.components-modal__content .delete-warning .dashicon,
+.components-modal__content div[role=alert] svg,
+.components-modal__content div[role=alert] .dashicon {
+  color: #d63638;
+  width: 1rem;
+  height: 1rem;
+}
+.components-modal__content .delete-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem 1.5rem;
+  margin-top: 0.5rem;
+}
+
+/* =========================================
+   Document Modal Specific Styles
+   ========================================= */
+.components-modal__content[role=dialog] .delete-actions button.cancel,
+.components-modal__content[role=dialog] .delete-actions button.is-secondary {
+  order: 1;
+}
+.components-modal__content[role=dialog] .delete-actions button.delete-button,
+.components-modal__content[role=dialog] .delete-actions button[type=button]:not(.cancel):not(.is-secondary) {
+  order: 2;
+}
+
+/* =========================================
+   Delete Metadata Field Modal
+   ========================================= */
+.delete-metadata-field .components-modal__content div:not(.components-modal__header) {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+.delete-metadata-field .components-modal__content .field-information {
+  background: #f0f0f0;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+}
+.delete-metadata-field .components-modal__content .field-information h3 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+  color: #333;
+}
+
+/* =========================================
+   Main Metadata Settings - Most Specific
+   ========================================= */
+.metadata-settings {
+  max-width: 50rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background: #fff;
+  border-radius: 0.125rem;
+  box-shadow: 0 0.063rem 0.125rem rgba(0, 0, 0, 0.05);
+}
+.metadata-settings-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 12.5rem;
+}
+.metadata-settings h2 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin: 0 0 1.5rem 0;
+  color: #1e1e1e;
+}
+.metadata-settings .metadata-field {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 0.0625rem solid #e0e0e0;
+}
+.metadata-settings .metadata-field:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+.metadata-settings .metadata-field h3 {
+  font-size: 1.125rem;
+  margin: 0 0 1rem;
+  color: #1e1e1e;
+}
+.metadata-settings .metadata-field .components-base-control {
+  margin-bottom: 1rem;
+}
+.metadata-settings .metadata-field .components-base-control:last-child {
+  margin-bottom: 0;
+}
+.metadata-settings .metadata-field .components-base-control .components-base-control__label {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #505050;
+  margin-bottom: 0.25rem;
+  display: block;
+}
+.metadata-settings .metadata-field .components-base-control .components-text-control__input {
+  width: 100%;
+  height: 2.25rem;
+  padding: 0.25rem 0.5rem;
+  border: 0.0625rem solid #e0e0e0;
+  border-radius: 0.125rem;
+  font-size: 1rem;
+  color: #1e1e1e;
+  background-color: #fff;
+}
+.metadata-settings .metadata-field .components-base-control .components-text-control__input:focus {
+  border-color: #036;
+  box-shadow: 0 0.063rem 0.125rem rgba(0, 0, 0, 0.05);
+  outline: none;
+}
+.metadata-settings .metadata-field .components-base-control .components-text-control__input:disabled {
+  background-color: #f8f8f8;
+  color: #505050;
+  cursor: not-allowed;
+}
+.metadata-settings .metadata-field .components-base-control .components-textarea-control__input {
+  width: 100%;
+  min-height: 5rem;
+  padding: 0.25rem 0.5rem;
+  border: 0.0625rem solid #e0e0e0;
+  border-radius: 0.125rem;
+  font-size: 1rem;
+  color: #1e1e1e;
+  background-color: #fff;
+  line-height: 1.5;
+}
+.metadata-settings .metadata-field .components-base-control .components-textarea-control__input:focus {
+  border-color: #036;
+  box-shadow: 0 0.063rem 0.125rem rgba(0, 0, 0, 0.05);
+  outline: none;
+}
+.metadata-settings .metadata-field .components-base-control .components-textarea-control__input:disabled {
+  background-color: #f8f8f8;
+  color: #505050;
+  cursor: not-allowed;
+}
+.metadata-settings .metadata-field .field-description {
+  font-size: 0.875rem;
+  color: #505050;
+  margin: 0.25rem 0 0 0;
+  line-height: 1.5;
+}
+.metadata-settings .metadata-field .field-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.metadata-settings .metadata-field .metadata-field-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+.metadata-settings .metadata-field .metadata-field-actions .components-button.is-destructive {
+  background-color: #d8292f;
+  color: #fff;
+  border-color: #d8292f;
+}
+.metadata-settings .metadata-field .metadata-field-actions .components-button.is-destructive:hover:not(:disabled) {
+  background-color: rgb(195.814229249, 35.685770751, 41.1758893281);
+  color: #fff;
+}
+.metadata-settings .metadata-list {
+  margin-top: 1.5rem;
+  border: 0.0625rem solid #e0e0e0;
+  border-radius: 0.125rem;
+  overflow: hidden;
+}
+.metadata-settings .metadata-list .metadata-item {
+  padding: 1rem;
+  border-bottom: 0.0625rem solid #e0e0e0;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.metadata-settings .metadata-list .metadata-item:last-child {
+  border-bottom: none;
+}
+.metadata-settings .metadata-list .metadata-item:hover {
+  background-color: #f8f8f8;
+}
+.metadata-settings .metadata-list .metadata-item .item-content {
+  flex: 1;
+}
+.metadata-settings .metadata-list .metadata-item .item-content h4 {
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0 0 0.25rem 0;
+  color: #1e1e1e;
+}
+.metadata-settings .metadata-list .metadata-item .item-content p {
+  font-size: 0.875rem;
+  color: #505050;
+  margin: 0;
+  line-height: 1.5;
+}
+.metadata-settings .metadata-list .metadata-item .item-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+.metadata-settings .metadata-list .metadata-item .item-actions .components-button {
+  height: 2rem;
+  width: 2rem;
+  min-width: 2rem;
+  padding: 0;
+  border-radius: 0.125rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #505050;
+  border: 0.0625rem solid #e0e0e0;
+  background-color: #fff;
+}
+.metadata-settings .metadata-list .metadata-item .item-actions .components-button svg {
+  width: 1rem;
+  height: 1rem;
+}
+.metadata-settings .metadata-list .metadata-item .item-actions .components-button:hover:not(:disabled) {
+  background-color: #f8f8f8;
+}
+.metadata-settings .metadata-list .metadata-item .item-actions .components-button.is-destructive:hover:not(:disabled) {
+  background-color: rgb(219.9308300395, 62.5691699605, 67.9644268775);
+  color: #fff;
+  border-color: rgb(195.814229249, 35.685770751, 41.1758893281);
+}
+.metadata-settings .add-metadata-button {
+  margin-top: 1.5rem;
+  width: 100%;
+  height: 2.25rem;
+  border: 0.0625rem dashed #e0e0e0;
+  border-radius: 0.125rem;
+  background-color: #f8f8f8;
+  color: #505050;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  transition: all 0.2s ease;
+}
+.metadata-settings .add-metadata-button svg {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.5rem;
+}
+.metadata-settings .add-metadata-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+.metadata-settings .add-metadata-button:hover:not(:disabled) {
+  background-color: #fff;
+  border-color: #036;
+  color: #036;
+}
+
+/* =========================================
+   Animations
+   ========================================= */
+@keyframes components-button__busy-animation {
+  0% {
+    background-position: 12.5rem 0;
+  }
+}
+/* =========================================
+   Standalone Delete/Edit Buttons in Metadata List
+   ========================================= */
+button.components-button.is-destructive,
+.components-button.is-destructive,
+button[type=button].is-destructive {
+  background-color: #d8292f !important;
+  color: #fff !important;
+  border: 1px solid #d8292f !important;
+}
+button.components-button.is-destructive:hover:not(:disabled),
+.components-button.is-destructive:hover:not(:disabled),
+button[type=button].is-destructive:hover:not(:disabled) {
+  background-color: rgb(187.1865612648, 34.1134387352, 39.3616600791) !important;
+  color: #fff !important;
+  border-color: rgb(174.2450592885, 31.7549407115, 36.6403162055) !important;
+}
+
+.metadata-field-info + .metadata-field-actions button.components-button.is-destructive:hover:not(:disabled) {
+  background-color: rgb(195.814229249, 35.685770751, 41.1758893281);
+  color: #fff;
+  border-color: rgb(174.2450592885, 31.7549407115, 36.6403162055);
+}
+
+/* Completely redesigned metadata fields list for a clean, modern UI */
+.metadata-fields-list {
+  margin-top: 1rem;
+}
+
+/* Card styling with reduced whitespace */
+.metadata-field-item {
+  position: relative;
+  margin-bottom: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  background-color: #fff;
+  padding: 0.75rem;
+  transition: all 0.15s ease;
+}
+.metadata-field-item:hover {
+  border-color: #bbb;
+  background-color: #fafafa;
+}
+
+/* Field content container */
+.metadata-field-info {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+/* Title styling - use the actual markup in the HTML */
+.metadata-field-info h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  padding: 0;
+  color: #333;
+  line-height: 1.2;
+}
+
+/* Field ID styling */
+.metadata-field-info .field-id {
+  font-size: 0.8125rem;
+  color: #666;
+  margin: 0 0 0.25rem 0;
+  font-family: monospace;
+  line-height: 1.4;
+}
+
+/* Field type styling */
+.metadata-field-info .field-type {
+  font-size: 0.8125rem;
+  color: #666;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.4;
+}
+
+/* Button container */
+.metadata-field-actions {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
+}
+
+/* Button styling */
+.metadata-field-actions .components-button {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  font-size: 0.8125rem;
+  min-width: 4rem;
+  height: 1.875rem;
+  padding: 0 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Edit button */
+  /* Delete button */
+}
+.metadata-field-actions .components-button.is-secondary {
+  background: #f6f7f7;
+  color: #0866c6;
+  border: 1px solid #0866c6;
+}
+.metadata-field-actions .components-button.is-secondary:hover:not(:disabled) {
+  background: #f0f0f1;
+  border-color: #0866c6;
+  color: #0866c6;
+}
+.metadata-field-actions .components-button.is-destructive {
+  background-color: #d63638;
+  color: #fff;
+  border: 1px solid #d63638;
+}
+.metadata-field-actions .components-button.is-destructive:hover:not(:disabled) {
+  background-color: #b32d2e;
+  color: #fff;
+  border-color: #b32d2e;
+}
+
+/**
+ * Standardized Button Styles - Simple Version
+ *
+ * This file contains all button styles used in the Document Repository.
+ * There are only 5 classes total:
+ * - doc-repo-button: shared base styles for all buttons
+ * - save-button: blue primary/save buttons
+ * - cancel-button: gray secondary/cancel buttons
+ * - delete-button: red destructive/delete buttons
+ * - edit-button: blue secondary/edit buttons
+ */
+/* stylelint-disable no-descending-specificity */
+/* stylelint-disable rule-empty-line-before, comment-empty-line-before */
+/* stylelint-disable no-eol-whitespace, block-closing-brace-newline-before */
+/**
+ * Document Repository Styles
+ *
+ * This file contains styles for the Document Repository interface.
+ * It includes styles for the document list, table, and various UI components
+ * used throughout the application.
+ */
+/* =========================================
+   Variables - For document table
+   ========================================= */
+/* =========================================
+   Base Element Styles - Least Specific
+   ========================================= */
+svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  transition: all 0.2s ease;
+}
+
+p {
+  line-height: 1.5;
+  margin: 0 0 1rem;
+}
+
+/* =========================================
+   General Components - Medium Specificity
+   ========================================= */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  border-bottom: 0.0625rem solid #ddd;
+}
+table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 0.0625rem solid #eee;
+  vertical-align: middle;
+}
+
+.components-notice {
+  display: flex;
+  align-items: flex-start;
+  padding: 1rem;
+  border-radius: 0.25rem;
+  margin-bottom: 1rem;
+}
+.components-notice.is-error {
+  background-color: #fcf0f1;
+  border-left: 0.25rem solid #d8292f;
+}
+.components-notice.is-success {
+  background-color: #edf7ed;
+  border-left: 0.25rem solid #4caf50;
+}
+.components-notice .components-notice__content {
+  flex: 1;
+  font-size: 0.875rem;
+}
+.components-notice .components-notice__dismiss {
+  padding: 0.25rem;
+  background: none;
+  border: none;
+}
+.components-notice .components-notice__dismiss svg {
+  width: 1rem;
+  height: 1rem;
+  color: #666;
+}
+
+/* =========================================
+   Document Repository Components - Higher Specificity
+   ========================================= */
+.document-repository {
+  font-family: bcsans, blinkmacsystemfont, "Segoe UI", roboto, oxygen-sans, ubuntu, cantarell, "Helvetica Neue", sans-serif;
+  color: #1e1e1e;
+  max-width: 100%;
+}
+.document-repository .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+.document-repository .header h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+.document-repository .header .actions {
+  display: flex;
+  gap: 0.75rem;
+}
+.document-repository .document-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.document-repository .document-controls .view-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+.document-repository .document-controls .search-filter {
+  display: flex;
+  gap: 0.75rem;
+  flex: 1;
+  max-width: 40rem;
+}
+.document-repository .document-controls .search-filter .components-search-control {
+  flex: 1;
+}
+.document-repository .document-controls .search-filter .components-search-control input {
+  height: 2.5rem;
+  padding: 0 1rem;
+  border-radius: 0.25rem;
+  border: 0.0625rem solid #ddd;
+  font-size: 0.875rem;
+}
+.document-repository .document-controls .search-filter .components-dropdown .components-button {
+  height: 2.5rem;
+  border: 0.0625rem solid #ddd;
+  background-color: #fff;
+}
+.document-repository .document-controls .search-filter .components-dropdown .components-button svg {
+  margin-left: 0.5rem;
+}
+.document-repository .document-table-container {
+  border: 0.0625rem solid #ddd;
+  border-radius: 0.25rem;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+.document-repository .document-table-container table {
+  margin: 0;
+}
+.document-repository .document-table-container table th {
+  background-color: #f6f7f7;
+  white-space: nowrap;
+}
+
+/* Document List and Document Table */
+.document-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding: 0.5rem;
+  align-items: stretch;
+}
+.document-list .document-list-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.document-list .document-list-actions .document-list-left-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.document-list .document-list-actions .document-list-left-actions .mode-toggle {
+  display: flex;
+  align-items: center;
+}
+.document-list .document-list-actions .document-list-left-actions .mode-toggle .components-button svg {
+  margin-right: 0.5rem;
+}
+.document-list .document-list-actions .document-list-left-actions .bulk-delete-button {
+  display: flex;
+  align-items: center;
+}
+.document-list .components-button-group {
+  display: flex;
+  gap: 0.5rem;
+}
+.document-list .pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.document-list .pagination .page-info {
+  font-size: 0.875rem;
+  color: #666;
+}
+.document-list .pagination .components-button {
+  min-width: 5rem;
+}
+
+/* Document Table - Applied directly to top-level element */
+.document-table {
+  border: 0.0625rem solid #e0e0e0;
+  border-radius: 0.25rem;
+  overflow: hidden;
+  font-size: 0.875rem;
+  display: table;
+  width: auto;
+  min-width: unset;
+  max-width: 100%;
+  margin: 0 0 1.5rem 0;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  align-self: flex-start;
+  table-layout: auto;
+}
+.document-table .document-table-header {
+  display: table-header-group;
+  background-color: #f9f9f9;
+}
+.document-table .document-table-header .document-table-row {
+  border-bottom: 0.125rem solid #e0e0e0;
+}
+.document-table .document-table-header .header {
+  font-weight: 600;
+  color: #333;
+  position: sticky;
+  top: 0;
+  background-color: #f9f9f9;
+  z-index: 2;
+}
+.document-table .document-table-body {
+  display: table-row-group;
+}
+.document-table .document-table-row {
+  display: table-row;
+  transition: background-color 0.2s ease;
+}
+.document-table .document-table-row:hover {
+  background-color: rgb(251.55, 251.55, 251.55);
+}
+.document-table .document-table-row:nth-child(even) {
+  background-color: rgb(252.825, 252.825, 252.825);
+}
+.document-table .document-table-row:nth-child(even):hover {
+  background-color: rgb(250.275, 250.275, 250.275);
+}
+.document-table .document-table-cell {
+  display: table-cell;
+  padding: 0.75rem 1rem;
+  border-bottom: 0.0625rem solid #e0e0e0;
+  vertical-align: middle;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
+.document-table .document-table-cell.header {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+.document-table .document-table-cell .components-text-control__input,
+.document-table .document-table-cell .components-select-control__input {
+  width: 100%;
+  min-height: 36px;
+  font-size: 0.875rem;
+}
+.document-table .document-table-cell .action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.25rem;
+}
+.document-table .document-table-cell .action-buttons .table-action-button svg {
+  margin: 0;
+}
+.document-table .document-table-cell:first-child {
+  width: 3rem;
+  min-width: 3rem;
+  max-width: 3rem;
+  text-align: center;
+}
+.document-table .document-table-cell:first-child .components-checkbox-control__input-container {
+  margin: 0 auto;
+}
+.document-table .document-table-cell:nth-child(2) {
+  min-width: 12rem;
+  max-width: none;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+.document-table .document-table-cell:last-child {
+  width: 6rem;
+  min-width: 6rem;
+  max-width: 8rem;
+}
+.document-table .document-table-cell:last-child.actions {
+  white-space: nowrap;
+}
+.document-table .metadata-column {
+  min-width: 10rem;
+  max-width: 15rem;
+}
+
+/* Document Table - Upload and drag/drop area */
+.drag-drop-area {
+  border: 0.125rem dashed #ccc;
+  border-radius: 0.25rem;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 1.5rem;
+  background-color: #fafafa;
+}
+.drag-drop-area:hover, .drag-drop-area.is-drag-active {
+  background-color: #f0f0f0;
+  border-color: #999;
+}
+.drag-drop-area .drag-drop-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+.drag-drop-area .drag-drop-content .drag-drop-icon {
+  margin-bottom: 0.5rem;
+  color: #666;
+}
+.drag-drop-area .drag-drop-content h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #333;
+}
+.drag-drop-area .drag-drop-content p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #666;
+}
+.drag-drop-area .drag-drop-content .upload-button {
+  margin-top: 0.5rem;
+}
+
+/*# sourceMappingURL=index.css.map*/
