@@ -26,7 +26,6 @@ const VIRTUALIZATION_THRESHOLD = 50; // Use virtualization when there are more t
  * Main component for managing and displaying a list of documents with metadata.
  * Handles document uploads, metadata editing, bulk operations, and pagination.
  *
- 
  * @param {Object}   props                   - Component props
  * @param {Array}    props.documents         - List of document objects to display
  * @param {number}   props.currentPage       - Current page number for pagination
@@ -218,6 +217,7 @@ const DocumentList = ( {
 								onClick={ openBulkDeleteConfirm }
 								disabled={ isMultiDeleting }
 							>
+								{ /* translators: %d: number of selected documents */ }
 								{ sprintf(
 									__(
 										'Delete Selected (%d)',
@@ -239,6 +239,7 @@ const DocumentList = ( {
 									width="16"
 									height="16"
 									fill="currentColor"
+									aria-hidden="true"
 								>
 									<path
 										d="M4 4h16v16H4V4zm5.333 0v16m5.334-16v16M4 9.333h16m-16 5.334h16"
@@ -314,18 +315,20 @@ const DocumentList = ( {
 						saveButtonText={
 							isMultiDeleting
 								? __( 'Deleting…', 'bcgov-design-system' )
-								: sprintf(
-										__(
-											'Delete Selected (%d)',
-											'bcgov-design-system'
-										),
-										selectedDocuments.length
-								  )
+								: /* translators: %d: number of selected documents */
+								sprintf(
+									__(
+										'Delete Selected (%d)',
+										'bcgov-design-system'
+									),
+									selectedDocuments.length
+								)
 						}
 						saveButtonClassName="doc-repo-button delete-button"
 					>
 						<div className="delete-confirmation-content">
 							<p>
+								{ /* translators: %d: number of selected documents */ }
 								{ sprintf(
 									__(
 										'Are you sure you want to delete %d selected document(s)?',
@@ -478,6 +481,7 @@ const DocumentList = ( {
 														value
 													)
 												}
+												id={ `metadata-field-${field.id}` }
 											/>
 										) : (
 											<TextControl
@@ -494,6 +498,7 @@ const DocumentList = ( {
 														? 'date'
 														: 'text'
 												}
+												id={ `metadata-field-${field.id}` }
 											/>
 										) }
 										{ error && (
