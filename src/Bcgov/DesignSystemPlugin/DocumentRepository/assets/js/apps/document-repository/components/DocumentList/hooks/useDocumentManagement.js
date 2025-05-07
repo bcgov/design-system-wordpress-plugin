@@ -90,8 +90,9 @@ const useDocumentManagement = ( {
 				if ( onError ) {
 					onError( 'delete', documentId, error, {
 						customMessage: sprintf(
+							/* translators: %1$d: document ID, %2$s: error message */
 							__(
-								'Error deleting document %d: %s',
+								'Error deleting document %1$d: %2$s',
 								'bcgov-design-system'
 							),
 							documentId,

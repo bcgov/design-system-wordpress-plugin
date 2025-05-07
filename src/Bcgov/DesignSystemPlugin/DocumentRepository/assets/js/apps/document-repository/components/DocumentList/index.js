@@ -80,17 +80,13 @@ const DocumentList = ( {
 	}, [] );
 
 	// Use notifications hook
-	const { notice, showNotification, clearNotification } = useNotifications();
+	const { showNotification } = useNotifications();
 
 	// Use error handling hook
-	const {
-		failedOperations,
-		handleOperationError,
-		retryOperation,
-		retryAllOperations,
-	} = useErrorHandling( {
-		onShowNotification: showNotification,
-	} );
+	const { failedOperations, handleOperationError, retryAllOperations } =
+		useErrorHandling( {
+			onShowNotification: showNotification,
+		} );
 
 	// Use document management hook
 	const {

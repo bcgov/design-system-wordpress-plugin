@@ -5,8 +5,7 @@
  * items that are visible in the viewport.
  */
 
-import { forwardRef } from '@wordpress/element';
-import PropTypes from 'prop-types';
+import { forwardRef, PropTypes } from '@wordpress/element';
 import useVirtualization from './hooks/useVirtualization';
 
 /**

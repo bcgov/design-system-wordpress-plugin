@@ -26,7 +26,8 @@ const PaginationControls = ( { currentPage, totalPages, onPageChange } ) => {
 			</Button>
 			<span className="page-info">
 				{ sprintf(
-					__( 'Page %d of %d', 'bcgov-design-system' ),
+					/* translators: %1$d: current page number, %2$d: total number of pages */
+					__( 'Page %1$d of %2$d', 'bcgov-design-system' ),
 					currentPage,
 					totalPages
 				) }

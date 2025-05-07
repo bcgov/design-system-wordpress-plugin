@@ -8,7 +8,6 @@ import { useEffect } from '@wordpress/element';
  * Shows individual file status, progress, and error messages.
  * Provides a summary of upload results and allows closing when complete.
  *
- 
  * @param {Object}   props                    - Component props
  * @param {Array}    props.uploadingFiles     - Array of files being uploaded with their status
  * @param {boolean}  props.showUploadFeedback - Flag to control visibility of the feedback UI
@@ -26,26 +25,6 @@ import { useEffect } from '@wordpress/element';
  * />
  */
 const UploadFeedback = ( { uploadingFiles, showUploadFeedback, onClose } ) => {
-	// Return null if feedback should not be shown or no files are being uploaded
-	if ( ! showUploadFeedback || uploadingFiles.length === 0 ) {
-		return null;
-	}
-
-	// Count files by their status for summary display
-	const successCount = uploadingFiles.filter(
-		( f ) => f.status === 'success'
-	).length;
-	const errorCount = uploadingFiles.filter(
-		( f ) => f.status === 'error'
-	).length;
-	const uploadingCount = uploadingFiles.filter(
-		( f ) => f.status === 'uploading'
-	).length;
-	const processingCount = uploadingFiles.filter(
-		( f ) => f.status === 'processing'
-	).length;
-	const hasPlaceholder = uploadingFiles.some( ( f ) => f.isPlaceholder );
-
 	// Auto-close after 3 seconds only when all uploads are complete or have errors
 	useEffect( () => {
 		if (
@@ -67,6 +46,26 @@ const UploadFeedback = ( { uploadingFiles, showUploadFeedback, onClose } ) => {
 		hasPlaceholder,
 		onClose,
 	] );
+
+	// Return null if feedback should not be shown or no files are being uploaded
+	if ( ! showUploadFeedback || uploadingFiles.length === 0 ) {
+		return null;
+	}
+
+	// Count files by their status for summary display
+	const successCount = uploadingFiles.filter(
+		( f ) => f.status === 'success'
+	).length;
+	const errorCount = uploadingFiles.filter(
+		( f ) => f.status === 'error'
+	).length;
+	const uploadingCount = uploadingFiles.filter(
+		( f ) => f.status === 'uploading'
+	).length;
+	const processingCount = uploadingFiles.filter(
+		( f ) => f.status === 'processing'
+	).length;
+	const hasPlaceholder = uploadingFiles.some( ( f ) => f.isPlaceholder );
 
 	return (
 		<div className="upload-feedback">
@@ -167,6 +166,7 @@ const UploadFeedback = ( { uploadingFiles, showUploadFeedback, onClose } ) => {
 									/>
 								</svg>
 								{ sprintf(
+									/* translators: %d: number of files being processed */
 									__(
 										'Processing %d files…',
 										'bcgov-design-system'
@@ -184,6 +184,7 @@ const UploadFeedback = ( { uploadingFiles, showUploadFeedback, onClose } ) => {
 									/>
 								</svg>
 								{ sprintf(
+									/* translators: %d: number of files being uploaded */
 									__(
 										'Uploading %d files…',
 										'bcgov-design-system'
@@ -201,6 +202,7 @@ const UploadFeedback = ( { uploadingFiles, showUploadFeedback, onClose } ) => {
 									/>
 								</svg>
 								{ sprintf(
+									/* translators: %d: number of files that were successfully uploaded */
 									__(
 										'%d files uploaded successfully',
 										'bcgov-design-system'
@@ -218,6 +220,7 @@ const UploadFeedback = ( { uploadingFiles, showUploadFeedback, onClose } ) => {
 									/>
 								</svg>
 								{ sprintf(
+									/* translators: %d: number of files that failed to upload */
 									__(
 										'%d files failed to upload',
 										'bcgov-design-system'

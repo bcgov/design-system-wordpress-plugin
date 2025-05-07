@@ -94,6 +94,17 @@ const UploadArea = ( {
 		}
 	};
 
+	const handleKeyDown = useCallback(
+		( e ) => {
+			// Handle Enter and Space keys
+			if ( e.key === 'Enter' || e.key === ' ' ) {
+				e.preventDefault();
+				handleUploadClick();
+			}
+		},
+		[ handleUploadClick ]
+	);
+
 	return (
 		<div
 			className={ `drag-drop-area ${
@@ -104,6 +115,7 @@ const UploadArea = ( {
 			onDragLeave={ handleDragLeave }
 			onDrop={ handleDrop }
 			onClick={ handleUploadClick }
+			onKeyDown={ handleKeyDown }
 			tabIndex="0"
 			role="button"
 			aria-label={ __(

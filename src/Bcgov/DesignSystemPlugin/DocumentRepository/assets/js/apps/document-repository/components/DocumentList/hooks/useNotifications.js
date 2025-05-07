@@ -4,9 +4,9 @@ import { useState, useCallback } from '@wordpress/element';
  * Custom hook for managing notifications.
  *
  * @return {Object} Notification state and functions
- * @return {Object|null} Object.notice - Current notification object or null
- * @return {Function} Object.showNotification - Function to show a notification
- * @return {Function} Object.clearNotification - Function to clear the notification
+ * @property {Object|null} notice            - Current notification object or null
+ * @property {Function}    showNotification  - Function to show a notification
+ * @property {Function}    clearNotification - Function to clear the notification
  */
 const useNotifications = () => {
 	const [ notice, setNotice ] = useState( null );

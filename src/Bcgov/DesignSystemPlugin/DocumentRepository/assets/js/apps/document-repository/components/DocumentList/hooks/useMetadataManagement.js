@@ -201,11 +201,6 @@ const useMetadataManagement = ( {
 	 */
 	const handleMetadataChange = useCallback(
 		( documentId, fieldId, value ) => {
-			// Get the original document to compare values
-			const originalDocument = localDocuments.find(
-				( doc ) => doc.id === documentId
-			);
-
 			// Update bulk edited metadata
 			const newBulkMetadata = {
 				...metadataState.bulkEditedMetadata,
@@ -264,7 +259,7 @@ const useMetadataManagement = ( {
 				return newDocs;
 			} );
 		},
-		[ localDocuments, metadataState.bulkEditedMetadata ]
+		[ localDocuments, metadataState.bulkEditedMetadata, dispatch ]
 	);
 
 	/**
@@ -272,12 +267,15 @@ const useMetadataManagement = ( {
 	 * @param {string} fieldId Field ID
 	 * @param {string} value   New value
 	 */
-	const updateEditedField = useCallback( ( fieldId, value ) => {
-		dispatch( {
-			type: 'UPDATE_EDITED_VALUES',
-			payload: { [ fieldId ]: value },
-		} );
-	}, [] );
+	const updateEditedField = useCallback(
+		( fieldId, value ) => {
+			dispatch( {
+				type: 'UPDATE_EDITED_VALUES',
+				payload: { [ fieldId ]: value },
+			} );
+		},
+		[ dispatch ]
+	);
 
 	/**
 	 * Save metadata changes for a single document
@@ -359,13 +357,13 @@ const useMetadataManagement = ( {
 			dispatch( { type: 'SET_IS_SAVING', payload: false } );
 		}
 	}, [
-		metadataState.editingMetadata,
-		metadataState.editedValues,
+		metadataState,
 		apiNamespace,
 		localDocuments,
 		onUpdateDocuments,
 		onShowNotification,
 		onError,
+		dispatch,
 	] );
 
 	/**

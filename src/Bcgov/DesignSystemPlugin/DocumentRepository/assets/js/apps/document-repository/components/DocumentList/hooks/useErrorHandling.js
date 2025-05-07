@@ -54,8 +54,9 @@ const useErrorHandling = ( { onShowNotification } ) => {
 					'error',
 					documentId
 						? sprintf(
+								/* translators: %1$d: document ID, %2$s: error message */
 								__(
-									'Operation failed for document %d: %s',
+									'Operation failed for document %1$d: %2$s',
 									'bcgov-design-system'
 								),
 								documentId,
@@ -80,8 +81,9 @@ const useErrorHandling = ( { onShowNotification } ) => {
 				onShowNotification(
 					'error',
 					sprintf(
+						/* translators: %1$d: document ID */
 						__(
-							'Maximum retry attempts reached for document %d',
+							'Maximum retry attempts reached for document %1$d',
 							'bcgov-design-system'
 						),
 						operation.documentId
@@ -96,7 +98,7 @@ const useErrorHandling = ( { onShowNotification } ) => {
 					await handler( operation.documentId );
 				} else {
 					return {
-						error: `'Unknown operation type:', ${ operation.type }`,
+						error: `Unknown operation type: ${ operation.type }`,
 					};
 				}
 

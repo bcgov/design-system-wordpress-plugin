@@ -7,7 +7,6 @@ import { __ } from '@wordpress/i18n';
  * A utility component that wraps document table rows to provide error boundary functionality.
  * Catches and handles rendering errors in individual rows without breaking the entire table.
  *
- 
  * @augments {Component}
  * @param {Object}      props          - Component props
  * @param {JSX.Element} props.children - Child components to be rendered safely
