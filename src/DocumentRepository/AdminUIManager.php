@@ -1,8 +1,8 @@
 <?php
 
-namespace Bcgov\DesignSystemPlugin\DocumentRepository\src\Service;
+namespace Bcgov\DesignSystemPlugin\DocumentRepository;
 
-use Bcgov\DesignSystemPlugin\DocumentRepository\src\Config\RepositoryConfig;
+use Bcgov\DesignSystemPlugin\DocumentRepository\RepositoryConfig;
 
 /**
  * AdminUIManager - Admin UI Integration
@@ -118,7 +118,7 @@ class AdminUIManager {
         // Get the plugin root directory URL using WordPress constants.
         $plugin_dir = WP_PLUGIN_DIR . '/design-system-wordpress-plugin';
         $plugin_url = WP_PLUGIN_URL . '/design-system-wordpress-plugin';
-        $build_path = $plugin_dir . '/src/Bcgov/DesignSystemPlugin/DocumentRepository/build';
+        $build_path = $plugin_dir . '/src/DocumentRepository/build';
 
         // Get version from file modification time, or use fallback if file doesn't exist.
         $js_file = $build_path . '/document-repository.js';
@@ -134,7 +134,7 @@ class AdminUIManager {
         // Main app bundle.
         wp_register_script(
             'dswp-document-repository-app',
-            $plugin_url . '/src/Bcgov/DesignSystemPlugin/DocumentRepository/build/document-repository.js',
+            $plugin_url . '/src/DocumentRepository/build/document-repository.js',
             [ 'wp-element', 'wp-api-fetch', 'wp-components', 'wp-i18n' ],
             $version,
             true
@@ -148,7 +148,7 @@ class AdminUIManager {
         // Metadata settings app bundle.
         wp_register_script(
             'dswp-document-repository-metadata-app',
-            $plugin_url . '/src/Bcgov/DesignSystemPlugin/DocumentRepository/build/metadata-settings.js',
+            $plugin_url . '/src/DocumentRepository/build/metadata-settings.js',
             [ 'wp-element', 'wp-api-fetch', 'wp-components', 'wp-i18n' ],
             $version,
             true
@@ -157,7 +157,7 @@ class AdminUIManager {
         // Styles.
         wp_register_style(
             $this->config->get( 'css_handle' ),
-            $plugin_url . '/src/Bcgov/DesignSystemPlugin/DocumentRepository/build/index.css',
+            $plugin_url . '/src/DocumentRepository/build/index.css',
             [ 'wp-components' ],
             $version
         );

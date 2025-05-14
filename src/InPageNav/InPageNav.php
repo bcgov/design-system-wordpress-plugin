@@ -96,26 +96,26 @@ class InPageNav {
         $plugin_dir = WP_PLUGIN_DIR . '/design-system-wordpress-plugin';
         $plugin_url = plugins_url( '', $plugin_dir . '/design-system-wordpress-plugin.php' );
 
-        // Enqueue the stylesheet.
-        wp_enqueue_style(
-            'dswp-in-page-nav',
-            $plugin_url . '/dist/style-in-page-nav.css',
-            [],
+        // Register and enqueue the stylesheet.
+        wp_register_style(
+            'in-page-nav-styles',
+            $plugin_url . '/src/InPageNav/build/style-in-page-nav.css',
+            array(),
             $this->version
         );
 
-        // Enqueue the main script.
-        wp_enqueue_script(
-            'dswp-in-page-nav',
-            $plugin_url . '/dist/in-page-nav.js',
-            [ 'wp-element' ],
+        // Register and enqueue the script.
+        wp_register_script(
+            'in-page-nav-script',
+            $plugin_url . '/src/InPageNav/build/in-page-nav.js',
+            array(),
             $this->version,
             true
         );
 
         // Pass configuration options to JavaScript.
         wp_localize_script(
-            'dswp-in-page-nav',
+            'in-page-nav-script',
             'dswpInPageNav',
             [
 				'options' => [
