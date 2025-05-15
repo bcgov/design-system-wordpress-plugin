@@ -268,59 +268,71 @@ class DocumentRepository {
     }
 
     /**
-     * Migrate existing document files to the new direct path.
-     * This runs on plugin activation or update to ensure all files use the new structure.
+     * Migrate existing document files to the proper multisite paths.
+     * This runs on plugin activation or update to ensure all files use the correct structure.
      */
     public function migrate_existing_files() {
-        // Get the target direct path.
-        $wp_content_dir = WP_CONTENT_DIR;
-        $direct_path    = $wp_content_dir . '/uploads/dswp-documents';
-
-        // Create directory if it doesn't exist.
-        if ( ! file_exists( $direct_path ) ) {
-            wp_mkdir_p( $direct_path );
-        }
-
-        // Get all document posts.
-        $post_type = $this->config->get_post_type();
-        $documents = get_posts(
-            [
-				'post_type'      => $post_type,
-				'posts_per_page' => -1,
-				'post_status'    => 'any',
-			]
-        );
-
-        if ( empty( $documents ) ) {
+        // Skip if not in multisite
+        if (!is_multisite()) {
             return;
         }
 
-        foreach ( $documents as $document ) {
-            // Get attachment ID.
-            $attachment_id = get_post_meta( $document->ID, 'document_file_id', true );
+        // Get all document posts
+        $post_type = $this->config->get_post_type();
+        $documents = get_posts(
+            [
+                'post_type'      => $post_type,
+                'posts_per_page' => -1,
+                'post_status'    => 'any',
+            ]
+        );
 
-            if ( ! $attachment_id ) {
+        if (empty($documents)) {
+            return;
+        }
+
+        // Get standard uploads directory info
+        $upload_dir = wp_upload_dir();
+        $blog_id = get_current_blog_id();
+
+        foreach ($documents as $document) {
+            // Get attachment ID
+            $attachment_id = get_post_meta($document->ID, 'document_file_id', true);
+
+            if (!$attachment_id) {
                 continue;
             }
 
-            // Get attachment URL.
-            $url = wp_get_attachment_url( $attachment_id );
+            // Get attachment URL
+            $url = wp_get_attachment_url($attachment_id);
 
-            // Check if URL contains /sites/ pattern.
-            if ( strpos( $url, '/sites/' ) !== false && strpos( $url, 'dswp-documents' ) !== false ) {
-                // Extract filename.
-                $filename = basename( $url );
+            // Check if URL contains old hardcoded path
+            if (strpos($url, 'dswp-documents') !== false) {
+                // Get attachment file path
+                $file = get_attached_file($attachment_id);
+                if (!$file || !file_exists($file)) {
+                    continue;
+                }
 
-                // Source path (multisite).
-                $url_path    = wp_parse_url( $url, PHP_URL_PATH );
-                $source_path = ABSPATH . ltrim( $url_path, '/' );
+                // Calculate proper multisite path
+                $filename = basename($file);
+                $proper_directory = $upload_dir['basedir'] . '/documents';
+                $proper_path = $proper_directory . '/' . $filename;
 
-                // Target path (direct).
-                $target_path = $direct_path . '/' . $filename;
+                // Create directory if it doesn't exist
+                if (!file_exists($proper_directory)) {
+                    wp_mkdir_p($proper_directory);
+                }
 
-                // Copy file if it exists.
-                if ( file_exists( $source_path ) && ! file_exists( $target_path ) ) {
-                    copy( $source_path, $target_path );
+                // Copy file to proper location if it doesn't exist
+                if (!file_exists($proper_path)) {
+                    copy($file, $proper_path);
+
+                    // Update attachment file path in WordPress
+                    update_attached_file($attachment_id, $proper_path);
+
+                    // Add reference to document post
+                    update_post_meta($attachment_id, '_document_repository_post_id', $document->ID);
                 }
             }
         }

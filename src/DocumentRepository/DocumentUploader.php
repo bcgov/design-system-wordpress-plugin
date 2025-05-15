@@ -40,20 +40,19 @@ class DocumentUploader {
      * @return array Modified upload directory settings.
      */
     public function custom_upload_dir( $uploads ) {
-        // Get the WP content directory without the site ID.
-        $wp_content_dir = WP_CONTENT_DIR;
-        $wp_content_url = content_url();
+        // Only modify upload directory for document repository uploads
+        if ( empty( $_POST['metadata'] ) || strpos( $_POST['metadata'], 'document_repository' ) === false ) {
+            return $uploads;
+        }
 
-        // Create a direct path without the site ID.
-        $direct_path = $wp_content_dir . '/uploads/dswp-documents';
-        $direct_url  = $wp_content_url . '/uploads/dswp-documents';
+        // For multisite, use the standard WordPress upload path with the current blog ID
+        if ( is_multisite() ) {
+            $uploads['subdir'] = '/documents';
+            $uploads['path'] = $uploads['basedir'] . $uploads['subdir'];
+            $uploads['url'] = $uploads['baseurl'] . $uploads['subdir'];
+        }
 
-        // Use direct paths instead of the multisite paths.
-        $uploads['path']   = $direct_path;
-        $uploads['url']    = $direct_url;
-        $uploads['subdir'] = '/dswp-documents';
-
-        // Create directory if it doesn't exist.
+        // Create directory if it doesn't exist
         if ( ! file_exists( $uploads['path'] ) ) {
             wp_mkdir_p( $uploads['path'] );
         }
@@ -62,47 +61,22 @@ class DocumentUploader {
     }
 
     /**
-     * Fix attachment URLs to use direct path instead of multisite path.
+     * Fix attachment URLs for consistency.
+     *
+     * Instead of modifying URLs, ensure files are properly stored in the site-specific upload directory.
      *
      * @param string $url The attachment URL.
-     * @param int    $_attachment_id The attachment ID (required by filter signature, unused).
-     * @return string The modified URL.
+     * @param int    $attachment_id The attachment ID.
+     * @return string The URL.
      */
-    public function fix_attachment_url( $url, $_attachment_id ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
-        // Only process URLs that contain '/sites/' (multisite structure) and dswp-documents.
-        if ( strpos( $url, '/sites/' ) !== false && strpos( $url, 'dswp-documents' ) !== false ) {
-            // Get the base content URL.
-            $content_url = content_url();
-
-            // Extract filename from the URL.
-            $filename = basename( $url );
-
-            // Create direct URL.
-            $direct_url = $content_url . '/uploads/dswp-documents/' . $filename;
-
-            // If the file exists at the direct path, use that URL instead.
-            $direct_path = WP_CONTENT_DIR . '/uploads/dswp-documents/' . $filename;
-            if ( file_exists( $direct_path ) ) {
-                return $direct_url;
-            }
-
-            // If file doesn't exist at the direct path yet, copy it there.
-            $url_path  = wp_parse_url( $url, PHP_URL_PATH );
-            $site_path = ABSPATH . ltrim( $url_path, '/' );
-
-            if ( file_exists( $site_path ) ) {
-                // Create directory if it doesn't exist.
-                if ( ! file_exists( dirname( $direct_path ) ) ) {
-                    wp_mkdir_p( dirname( $direct_path ) );
-                }
-
-                // Copy the file.
-                copy( $site_path, $direct_path );
-
-                return $direct_url;
-            }
+    public function fix_attachment_url( $url, $attachment_id ) {
+        // Check if this is a document repository attachment
+        $post_id = get_post_meta( $attachment_id, '_document_repository_post_id', true );
+        if ( ! $post_id ) {
+            return $url;
         }
 
+        // In multisite, WordPress already handles the correct URL structure with the site ID
         return $url;
     }
 
@@ -119,7 +93,7 @@ class DocumentUploader {
 
         // Ensure our custom upload directory exists.
         $upload_dir = wp_upload_dir();
-        $custom_dir = $upload_dir['basedir'] . '/dswp-documents';
+        $custom_dir = $upload_dir['basedir'] . '/documents';
 
         if ( ! file_exists( $custom_dir ) ) {
             wp_mkdir_p( $custom_dir );
@@ -237,6 +211,9 @@ class DocumentUploader {
                 [ 'original_error' => $document_id->get_error_data() ]
             );
         }
+
+        // Store reference to document post in attachment meta
+        update_post_meta( $attachment_id, '_document_repository_post_id', $document_id );
 
         // Trigger document uploaded action.
         do_action( 'bcgov_document_repository_document_uploaded', $document_id );
