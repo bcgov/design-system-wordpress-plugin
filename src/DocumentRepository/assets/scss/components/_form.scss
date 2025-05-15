@@ -1,0 +1,78 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/mixins" as mix;
+
+.form,
+form {
+	display: block;
+	width: 100%;
+	margin-bottom: $spacing-lg;
+}
+
+.form-group {
+	margin-bottom: $spacing-md;
+}
+
+label {
+	display: block;
+	font-size: $font-size-sm;
+	font-weight: $font-weight-bold;
+	color: $color-text;
+	margin-bottom: $spacing-xs;
+}
+
+input,
+select,
+textarea {
+
+	@include mix.form-control;
+	margin-bottom: $spacing-sm;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+	width: auto;
+	margin-right: $spacing-xs;
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled {
+	background-color: $color-bg-light;
+	color: $color-text-light;
+	cursor: not-allowed;
+}
+
+.form-error {
+	color: $color-error;
+	font-size: $font-size-xs;
+	margin-top: $spacing-xs;
+}
+
+.components-button.edit-button {
+	background-color: $color-bg-light;
+	color: $color-text;
+	border: 1px solid $color-border;
+
+	&:hover {
+		background-color: rgba($color-primary, 0.1);
+		color: $color-primary-dark;
+		border-color: $color-primary;
+	}
+}
+
+.components-button.delete-button {
+
+	@include mix.button-destructive;
+}
+
+.components-button.save-button {
+
+	@include mix.button-primary;
+}
+
+// Add styling for metadata field actions
+.metadata-field-actions {
+	display: flex;
+	gap: $spacing-md; // Add spacing between buttons
+	align-items: center;
+}

@@ -110,8 +110,8 @@ const UploadArea = ( {
 
 	return (
 		<div
-			className={ `drag-drop-area ${
-				isDragging ? 'is-drag-active' : ''
+			className={ `upload-area__container ${
+				isDragging ? 'upload-area__container--drag-active' : ''
 			}` }
 			onDragEnter={ handleDragEnter }
 			onDragOver={ handleDragOver }
@@ -129,14 +129,14 @@ const UploadArea = ( {
 			<input
 				type="file"
 				ref={ fileInputRef }
-				style={ { display: 'none' } }
+				className="upload-area__file-input"
 				onChange={ handleFileInputChange }
 				multiple
 				accept={ acceptMimeTypes }
 				aria-hidden="true"
 			/>
-			<div className="drag-drop-content">
-				<div className="drag-drop-icon">
+			<div className="upload-area__content">
+				<div className="upload-area__icon">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 24 24"
@@ -149,20 +149,20 @@ const UploadArea = ( {
 						/>
 					</svg>
 				</div>
-				<h3>
+				<h3 className="upload-area__text">
 					{ __(
 						'Drag & Drop or Click to Upload',
 						'bcgov-design-system'
 					) }
 				</h3>
-				<p>
+				<p className="upload-area__help-text">
 					{ __(
 						'Upload PDF documents to the repository',
 						'bcgov-design-system'
 					) }
 				</p>
 				<Button
-					className="doc-repo-button edit-button upload-button"
+					className="upload-area__button"
 					onClick={ ( e ) => {
 						e.stopPropagation();
 						handleUploadClick();

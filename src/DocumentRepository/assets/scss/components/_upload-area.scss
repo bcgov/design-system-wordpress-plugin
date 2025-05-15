@@ -1,11 +1,12 @@
-@use "../abstracts" as *;
+@use "../abstracts/variables" as *;
+@use "../abstracts/mixins" as mix;
 
 .upload-area {
 	margin-bottom: $spacing-lg;
 
 	&__container {
 
-		@include flex(column, center, center);
+		@include mix.flex(column, center, center);
 		border: 2px dashed $color-border;
 		border-radius: $border-radius;
 		padding: $spacing-xl;
@@ -56,7 +57,7 @@
 
 	&__help-text {
 
-		@include font-size(sm);
+		@include mix.font-size(sm);
 		color: $color-text-light;
 		margin-top: $spacing-sm;
 	}
@@ -74,14 +75,18 @@
 
 	&__button {
 
-		@include button-primary;
+		@include mix.button-primary;
 		margin-top: $spacing-md;
+		&:hover, &:focus {
+			background-color: $color-primary;
+			color: $color-white !important;
+		}
 	}
 
 	&__error-message {
 		margin-top: $spacing-md;
 		color: $color-error;
 
-		@include font-size(sm);
+		@include mix.font-size(sm);
 	}
 }

@@ -8,221 +8,21 @@
  * @module MetadataApp
  */
 
-import { useState, useEffect, useCallback } from '@wordpress/element';
+import { useEffect, useCallback, useState } from '@wordpress/element';
 import {
 	Button,
 	Card,
 	CardHeader,
 	CardBody,
-	TextControl,
-	SelectControl,
 	Notice,
-	TextareaControl,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import apiFetch from '@wordpress/api-fetch';
 import MetadataModal from '../shared/components/MetadataModal';
 import DeleteFieldModal from './components/Modals/DeleteFieldModal';
-
-/**
- * Metadata List Component
- *
- * Container component for displaying a list of metadata fields.
- *
- * @param {Object}      props          - Component props
- * @param {JSX.Element} props.children - Child components to render
- * @return {JSX.Element} Metadata list container
- */
-const MetadataList = ( { children } ) => (
-	<div className="metadata-fields-list">{ children }</div>
-);
-
-/**
- * Metadata Item Component
- *
- * Individual metadata field item with move controls.
- *
- * @param {Object}      props          - Component props
- * @param {JSX.Element} props.children - Child components to render
- * @return {JSX.Element} Metadata item with move controls
- */
-const MetadataItem = ( { children } ) => (
-	<div className="metadata-field-item">
-		<div className="metadata-field-info">{ children }</div>
-	</div>
-);
-
-/**
- * Field Type Options
- *
- * Available metadata field types and their display labels.
- *
- * @constant {Object} FIELD_TYPES
- * @property {string} text   - Text field type
- * @property {string} select - Select/dropdown field type
- * @property {string} date   - Date field type
- */
-const FIELD_TYPES = {
-	text: __( 'Text', 'bcgov-design-system' ),
-	select: __( 'Select', 'bcgov-design-system' ),
-	date: __( 'Date', 'bcgov-design-system' ),
-};
-
-/**
- * Custom hook for metadata API operations
- *
- * Provides methods for fetching and saving metadata fields.
- *
- * @function useMetadataAPI
- * @return {Object} API methods containing:
- * @property {Function} fetchFields - Fetches metadata fields
- * @property {Function} saveFields  - Saves metadata fields
- */
-const useMetadataAPI = () => {
-	const { apiNamespace } = window.documentRepositorySettings;
-
-	const fetchFields = useCallback( async () => {
-		try {
-			const fields = await apiFetch( {
-				path: `/${ apiNamespace }/metadata-fields`,
-			} );
-			return { success: true, data: fields };
-		} catch ( err ) {
-			return {
-				success: false,
-				error:
-					err.message ||
-					__(
-						'Error loading metadata fields',
-						'bcgov-design-system'
-					),
-			};
-		}
-	}, [ apiNamespace ] );
-
-	const saveFields = useCallback(
-		async ( fields ) => {
-			try {
-				await apiFetch( {
-					path: `/${ apiNamespace }/metadata-fields`,
-					method: 'PUT',
-					data: { fields },
-				} );
-				return { success: true };
-			} catch ( err ) {
-				return {
-					success: false,
-					error:
-						err.message ||
-						__(
-							'Error saving metadata fields',
-							'bcgov-design-system'
-						),
-				};
-			}
-		},
-		[ apiNamespace ]
-	);
-
-	return { fetchFields, saveFields };
-};
-
-/**
- * Validates a metadata field configuration
- *
- * @function validateField
- * @param {Object} field               - Field configuration to validate
- * @param {Array}  [existingFields=[]] - Existing fields for duplicate checking
- * @param {number} [currentIndex=null] - Current field index
- * @return {Object} Validation errors
- */
-const validateField = ( field, existingFields = [], currentIndex = null ) => {
-	const errors = {};
-
-	if ( ! field.id ) {
-		errors.id = __( 'Field ID is required', 'bcgov-design-system' );
-	}
-
-	if ( ! field.label ) {
-		errors.label = __( 'Field label is required', 'bcgov-design-system' );
-	}
-
-	// Check for duplicate labels (case-insensitive)
-	const hasDuplicateLabel = existingFields.some(
-		( existing, index ) =>
-			index !== currentIndex &&
-			existing.label.toLowerCase() === field.label.toLowerCase()
-	);
-
-	if ( hasDuplicateLabel ) {
-		errors.label = __(
-			'A field with this label already exists',
-			'bcgov-design-system'
-		);
-	}
-
-	// Check for duplicate IDs
-	const hasDuplicateId = existingFields.some(
-		( existing, index ) =>
-			index !== currentIndex && existing.id === field.id
-	);
-
-	if ( hasDuplicateId ) {
-		errors.id = __(
-			'A field with this ID already exists',
-			'bcgov-design-system'
-		);
-	}
-
-	if (
-		field.type === 'select' &&
-		( ! field.options || field.options.length === 0 )
-	) {
-		errors.options = __(
-			'Select fields require at least one option',
-			'bcgov-design-system'
-		);
-	}
-
-	return errors;
-};
-
-/**
- * Updates modal field state
- *
- * @function updateModalField
- * @param {Object} state     - Current state
- * @param {string} modalType - Type of modal (add/edit)
- * @param {Object} updates   - Field updates to apply
- * @return {Object} Updated state
- */
-const updateModalField = ( state, modalType, updates ) => ( {
-	...state,
-	modals: {
-		...state.modals,
-		[ modalType ]: {
-			...state.modals[ modalType ],
-			field: {
-				...state.modals[ modalType ].field,
-				...updates,
-			},
-		},
-	},
-} );
-
-/**
- * Gets initial state for a new field
- *
- * @function getInitialFieldState
- * @return {Object} Initial field state
- */
-const getInitialFieldState = () => ( {
-	id: '',
-	label: '',
-	type: 'text',
-	options: [],
-	_rawOptionsText: '',
-} );
+import MetadataFieldList from './components/MetadataFieldList';
+import MetadataFieldForm from './components/MetadataFieldForm';
+import useMetadataFields from './hooks/useMetadataFields';
+import apiFetch from '@wordpress/api-fetch';
 
 /**
  * Main Metadata Settings Application Component
@@ -230,84 +30,161 @@ const getInitialFieldState = () => ( {
  * @return {JSX.Element} Metadata settings application
  */
 const MetadataApp = () => {
-	// Consolidated state
-	const [ state, setState ] = useState( {
-		fields: [],
-		isLoading: true,
-		error: null,
-		isSaving: false,
-		modals: {
-			add: {
-				isOpen: false,
-				field: {
-					id: '',
-					label: '',
-					type: 'text',
-					options: [],
-					_rawOptionsText: '',
-				},
-				errors: {
-					label: '',
-					submit: '',
-				},
-			},
-			edit: {
-				isOpen: false,
-				field: null,
-				index: null,
-				errors: {
-					label: '',
-					submit: '',
-				},
-			},
-			delete: {
-				isOpen: false,
-				field: null,
-			},
-		},
-	} );
-
-	// API hooks
-	const { fetchFields, saveFields } = useMetadataAPI();
+	const {
+		state,
+		setState,
+		fetchFields,
+		saveFields,
+		validateField,
+		getInitialFieldState,
+	} = useMetadataFields();
 
 	// Load fields on mount
 	useEffect( () => {
-		const loadFields = async () => {
-			const result = await fetchFields();
-			setState( ( prev ) => ( {
-				...prev,
-				fields: result.success ? result.data : [],
-				error: result.success ? null : result.error,
-				isLoading: false,
-			} ) );
-		};
-
-		loadFields();
+		fetchFields();
 	}, [ fetchFields ] );
 
-	// Memoized handlers
-	const handleOptionsChange = useCallback( ( value, modalType ) => {
-		const options = value
-			.split( '\n' )
-			.map( ( line ) => line.trim() )
-			.filter( ( line ) => line.length > 0 );
+	// Handle field changes
+	const handleFieldChange = useCallback(
+		( modalType, field, value ) => {
+			setState(
+				( prev ) => {
+					const currentField = prev.modals[ modalType ].field;
+					let updates = { [ field ]: value };
 
-		setState( ( prev ) => ( {
-			...prev,
-			modals: {
-				...prev.modals,
-				[ modalType ]: {
-					...prev.modals[ modalType ],
-					field: {
+					// If the field being changed is the label, generate ID but preserve label case
+					if ( field === 'label' ) {
+						const baseId = value
+							.toLowerCase()
+							.replace( /[^a-z0-9]+/g, '_' );
+						const fieldType = currentField.type.toLowerCase();
+						const generatedId = `${ baseId }_${ fieldType }`;
+						updates = {
+							...updates,
+							id: generatedId,
+						};
+					}
+					// If the type is being changed, update the ID
+					if ( field === 'type' ) {
+						const baseId =
+							currentField.label
+								?.toLowerCase()
+								.replace( /[^a-z0-9]+/g, '_' ) || '';
+						const generatedId = `${ baseId }_${ value.toLowerCase() }`;
+						updates = {
+							...updates,
+							id: generatedId,
+						};
+					}
+
+					const updatedField = {
+						...currentField,
+						...updates,
+					};
+
+					// Get original values
+					const originalValues =
+						prev.modals[ modalType ]?.originalValues;
+
+					// Check for changes
+					let hasChanges = false;
+					if ( originalValues ) {
+						// Compare label
+						if ( originalValues.label !== updatedField.label ) {
+							hasChanges = true;
+						}
+						// Compare type
+						else if ( originalValues.type !== updatedField.type ) {
+							hasChanges = true;
+						}
+						// Compare options
+						else if (
+							originalValues._rawOptionsText !==
+							updatedField._rawOptionsText
+						) {
+							hasChanges = true;
+						}
+					}
+
+					setHasChanges( hasChanges );
+
+					return {
+						...prev,
+						modals: {
+							...prev.modals,
+							[ modalType ]: {
+								...prev.modals[ modalType ],
+								field: updatedField,
+							},
+						},
+					};
+				},
+				[ setState ]
+			);
+		},
+		[ setState ]
+	);
+
+	// Handle options changes
+	const handleOptionsChange = useCallback(
+		( value, modalType ) => {
+			const options = value
+				.split( '\n' )
+				.map( ( line ) => line.trim() )
+				.filter( ( line ) => line.length > 0 );
+
+			setState(
+				( prev ) => {
+					const updatedField = {
 						...prev.modals[ modalType ].field,
 						_rawOptionsText: value,
 						options,
-					},
-				},
-			},
-		} ) );
-	}, [] );
+					};
 
+					// Get original values
+					const originalValues =
+						prev.modals[ modalType ]?.originalValues;
+
+					// Check for changes
+					let hasChanges = false;
+					if ( originalValues ) {
+						// Compare label
+						if ( originalValues.label !== updatedField.label ) {
+							hasChanges = true;
+						}
+						// Compare type
+						else if ( originalValues.type !== updatedField.type ) {
+							hasChanges = true;
+						}
+						// Compare options
+						else if (
+							originalValues._rawOptionsText !==
+							updatedField._rawOptionsText
+						) {
+							hasChanges = true;
+						}
+					}
+
+					setHasChanges( hasChanges );
+
+					return {
+						...prev,
+						modals: {
+							...prev.modals,
+							[ modalType ]: {
+								...prev.modals[ modalType ],
+								field: updatedField,
+							},
+						},
+					};
+				},
+				[ setState ]
+			);
+		},
+		[ setState ]
+	);
+
+	// Handle adding a field
 	const handleAddField = useCallback( async () => {
 		const { field } = state.modals.add;
 		const errors = validateField( field, state.fields );
@@ -346,13 +223,7 @@ const MetadataApp = () => {
 						...prev.modals,
 						add: {
 							isOpen: false,
-							field: {
-								id: '',
-								label: '',
-								type: 'text',
-								options: [],
-								_rawOptionsText: '',
-							},
+							field: getInitialFieldState(),
 							errors: {
 								label: '',
 								submit: '',
@@ -400,36 +271,59 @@ const MetadataApp = () => {
 				},
 			} ) );
 		}
-	}, [ state.fields, state.modals.add, saveFields ] );
+	}, [
+		state.fields,
+		state.modals.add,
+		saveFields,
+		validateField,
+		getInitialFieldState,
+		setState,
+	] );
 
 	// Handle editing a field
-	const handleEditField = ( field, index ) => {
-		// Store original values for comparison
-		const originalFieldValues = {
-			label: field.label || '',
-			type: field.type || '',
-			options: field.options || [],
-			_rawOptionsText: field._rawOptionsText || '',
-			id: field.id || '',
-		};
+	const handleEditField = useCallback(
+		( field, index ) => {
+			// Store original values for comparison
+			const originalFieldValues = {
+				label: field.label || '',
+				type: field.type || '',
+				options: normalizeOptions( field.options ),
+				_rawOptionsText:
+					field._rawOptionsText || formatOptionsToString( field ),
+				id: field.id || '',
+			};
 
-		setOriginalValues( originalFieldValues );
-
-		setState( ( prev ) => ( {
-			...prev,
-			modals: {
-				...prev.modals,
-				edit: {
-					isOpen: true,
-					field: { ...field },
-					index,
+			setState( ( prev ) => ( {
+				...prev,
+				modals: {
+					...prev.modals,
+					edit: {
+						isOpen: true,
+						field: { ...field },
+						index,
+						originalValues: originalFieldValues,
+						errors: {
+							label: '',
+							submit: '',
+						},
+					},
 				},
-			},
-		} ) );
-	};
+			} ) );
+			setHasChanges( false );
+		},
+		[ normalizeOptions, formatOptionsToString, setState ]
+	);
+
+	// Format options array to string for textarea
+	const formatOptionsToString = useCallback( ( field ) => {
+		if ( field._rawOptionsText !== undefined ) {
+			return field._rawOptionsText;
+		}
+		return Array.isArray( field.options ) ? field.options.join( '\n' ) : '';
+	}, [] );
 
 	// Handle saving edited field
-	const handleSaveEditedField = async () => {
+	const handleSaveEditedField = useCallback( async () => {
 		const { field, index } = state.modals.edit;
 		const errors = validateField( field, state.fields, index );
 
@@ -462,6 +356,7 @@ const MetadataApp = () => {
 						isOpen: false,
 						field: null,
 						index: null,
+						originalValues: null,
 					},
 				},
 			} ) );
@@ -472,24 +367,33 @@ const MetadataApp = () => {
 				isSaving: false,
 			} ) );
 		}
-	};
+	}, [
+		state.fields,
+		state.modals.edit,
+		saveFields,
+		validateField,
+		setState,
+	] );
 
 	// Handle deleting a field
-	const handleDeleteField = async ( field ) => {
-		setState( ( prev ) => ( {
-			...prev,
-			modals: {
-				...prev.modals,
-				delete: {
-					isOpen: true,
-					field,
+	const handleDeleteField = useCallback(
+		( field ) => {
+			setState( ( prev ) => ( {
+				...prev,
+				modals: {
+					...prev.modals,
+					delete: {
+						isOpen: true,
+						field,
+					},
 				},
-			},
-		} ) );
-	};
+			} ) );
+		},
+		[ setState ]
+	);
 
 	// Handle confirming field deletion
-	const handleConfirmDelete = async () => {
+	const handleConfirmDelete = useCallback( async () => {
 		const fieldId = state.modals.delete.field.id;
 		setState( ( prev ) => ( { ...prev, isSaving: true } ) );
 
@@ -539,10 +443,10 @@ const MetadataApp = () => {
 				isSaving: false,
 			} ) );
 		}
-	};
+	}, [ state.fields, state.modals.delete.field, saveFields, setState ] );
 
 	// Handle closing delete modal
-	const handleCloseDeleteModal = () => {
+	const handleCloseDeleteModal = useCallback( () => {
 		setState( ( prev ) => ( {
 			...prev,
 			modals: {
@@ -553,114 +457,45 @@ const MetadataApp = () => {
 				},
 			},
 		} ) );
-	};
+	}, [ setState ] );
 
-	// Format options array to string for textarea
-	const formatOptionsToString = ( field ) => {
-		if ( field._rawOptionsText !== undefined ) {
-			return field._rawOptionsText;
-		}
-		return Array.isArray( field.options ) ? field.options.join( '\n' ) : '';
-	};
-
-	// Simplified state updates using helper functions
-	const [ hasChanges, setHasChanges ] = useState( false );
-	const [ originalValues, setOriginalValues ] = useState( null );
-
-	// Add function to check if any field values have changed from original
-	const checkForChanges = useCallback(
-		( modalType, currentValues ) => {
-			if ( ! originalValues ) {
-				return false;
-			}
-
-			// Compare each field with its original value
-			const fieldsToCompare = [
-				'label',
-				'type',
-				'options',
-				'_rawOptionsText',
-			];
-			const fieldHasChanges = fieldsToCompare.some( ( field ) => {
-				const original = String( originalValues[ field ] || '' ).trim();
-				const current = String( currentValues[ field ] || '' ).trim();
-				const isDifferent = original !== current;
-
-				return isDifferent;
-			} );
-
-			return fieldHasChanges;
-		},
-		[ originalValues ]
-	);
-
-	// Update handleFieldChange to preserve exact case
-	const handleFieldChange = useCallback(
-		( modalType, field, value ) => {
-			setState( ( prev ) => {
-				const currentField = prev.modals[ modalType ].field;
-				let updates = { [ field ]: value };
-
-				// If the field being changed is the label, generate ID but preserve label case
-				if ( field === 'label' ) {
-					// Only transform the ID, not the label
-					const baseId = value
-						.toLowerCase()
-						.replace( /[^a-z0-9]+/g, '_' );
-					const fieldType = currentField.type.toLowerCase();
-					const generatedId = `${ baseId }_${ fieldType }`;
-					updates = {
-						...updates,
-						id: generatedId,
-					};
-				}
-				// If the type is being changed, update the ID
-				if ( field === 'type' ) {
-					const baseId =
-						currentField.label
-							?.toLowerCase()
-							.replace( /[^a-z0-9]+/g, '_' ) || '';
-					const generatedId = `${ baseId }_${ value.toLowerCase() }`;
-					updates = {
-						...updates,
-						id: generatedId,
-					};
-				}
-
-				const updatedField = {
-					...currentField,
-					...updates,
-				};
-
-				// Check for changes against original values
-				checkForChanges( modalType, updatedField );
-
-				return updateModalField( prev, modalType, updates );
-			} );
-		},
-		[ checkForChanges ]
-	);
-
-	// Reset states when modal closes
-	const handleModalClose = useCallback( ( modalType ) => {
-		setState( ( prev ) => ( {
-			...prev,
-			modals: {
-				...prev.modals,
-				[ modalType ]: {
-					...prev.modals[ modalType ],
-					isOpen: false,
-					field: getInitialFieldState(),
-					errors: {
-						label: '',
-						submit: '',
+	// Handle modal close
+	const handleModalClose = useCallback(
+		( modalType ) => {
+			setState( ( prev ) => ( {
+				...prev,
+				modals: {
+					...prev.modals,
+					[ modalType ]: {
+						...prev.modals[ modalType ],
+						isOpen: false,
+						field: getInitialFieldState(),
+						errors: {
+							label: '',
+							submit: '',
+						},
+						originalValues: null,
 					},
 				},
-			},
-		} ) );
-		setHasChanges( false );
-		setOriginalValues( null );
-	}, [] );
+			} ) );
+			setHasChanges( false );
+		},
+		[ getInitialFieldState, setState ]
+	);
+
+	// Check for changes
+	const [ hasChanges, setHasChanges ] = useState( false );
+
+	// Normalize options
+	const normalizeOptions = useCallback(
+		( options ) =>
+			Array.isArray( options )
+				? options
+						.map( ( s ) => String( s ).trim() )
+						.filter( ( s ) => s.length > 0 )
+				: [],
+		[]
+	);
 
 	if ( state.isLoading ) {
 		return (
@@ -731,61 +566,12 @@ const MetadataApp = () => {
 							</p>
 						</div>
 
-						{ state.fields.length === 0 ? (
-							<div className="no-fields-message">
-								<p>
-									{ __(
-										'No custom metadata fields defined yet. Click "Add New Field" to create one.',
-										'bcgov-design-system'
-									) }
-								</p>
-							</div>
-						) : (
-							<MetadataList>
-								{ state.fields.map( ( field, index ) => (
-									<MetadataItem key={ field.id }>
-										<div className="metadata-field-info">
-											<h3>{ field.label }</h3>
-											<p className="field-id">
-												ID: { field.id }
-											</p>
-											<p className="field-type">
-												Type:{ ' ' }
-												{ FIELD_TYPES[ field.type ] }
-											</p>
-										</div>
-										<div className="metadata-field-actions">
-											<Button
-												className="doc-repo-button edit-button"
-												onClick={ () =>
-													handleEditField(
-														field,
-														index
-													)
-												}
-											>
-												{ __(
-													'Edit',
-													'bcgov-design-system'
-												) }
-											</Button>
-											<Button
-												className="doc-repo-button delete-button"
-												onClick={ () =>
-													handleDeleteField( field )
-												}
-												disabled={ state.isSaving }
-											>
-												{ __(
-													'Delete',
-													'bcgov-design-system'
-												) }
-											</Button>
-										</div>
-									</MetadataItem>
-								) ) }
-							</MetadataList>
-						) }
+						<MetadataFieldList
+							fields={ state.fields }
+							onEdit={ handleEditField }
+							onDelete={ handleDeleteField }
+							isSaving={ state.isSaving }
+						/>
 					</CardBody>
 				</Card>
 
@@ -800,48 +586,17 @@ const MetadataApp = () => {
 						! hasChanges || ! state.modals.edit.field?.label
 					}
 				>
-					<div className="metadata-field-form">
-						<TextControl
-							label={ __( 'Field Label', 'bcgov-design-system' ) }
-							help={ __(
-								'Display name for the field',
-								'bcgov-design-system'
-							) }
-							value={ state.modals.edit.field?.label || '' }
-							onChange={ ( label ) =>
-								handleFieldChange( 'edit', 'label', label )
-							}
-							required
-						/>
-
-						<div className="field-type-display">
-							<label htmlFor="edit-field-type-value">
-								{ __( 'Field Type', 'bcgov-design-system' ) }
-							</label>
-							<div
-								id="edit-field-type-value"
-								className="field-type-value"
-							>
-								{ FIELD_TYPES[ state.modals.edit.field?.type ] }
-							</div>
-						</div>
-
-						{ state.modals.edit.field?.type === 'select' && (
-							<TextareaControl
-								label={ __( 'Options', 'bcgov-design-system' ) }
-								value={ formatOptionsToString(
-									state.modals.edit.field
-								) }
-								onChange={ ( value ) =>
-									handleOptionsChange( value, 'edit' )
-								}
-								help={ __(
-									'Enter one option per line',
-									'bcgov-design-system'
-								) }
-							/>
-						) }
-					</div>
+					<MetadataFieldForm
+						field={ state.modals.edit.field }
+						errors={ state.modals.edit.errors }
+						onChange={ ( field, value ) =>
+							handleFieldChange( 'edit', field, value )
+						}
+						onOptionsChange={ ( value ) =>
+							handleOptionsChange( value, 'edit' )
+						}
+						isEdit={ true }
+					/>
 				</MetadataModal>
 
 				{ /* Add Field Modal */ }
@@ -856,64 +611,17 @@ const MetadataApp = () => {
 					isSaving={ state.isSaving }
 					isDisabled={ ! state.modals.add.field.label }
 				>
-					<div className="metadata-field-form">
-						{ state.modals.add.errors.submit && (
-							<Notice status="error" isDismissible={ false }>
-								<p>{ state.modals.add.errors.submit }</p>
-							</Notice>
-						) }
-
-						<TextControl
-							label={ __( 'Field Label', 'bcgov-design-system' ) }
-							help={ __(
-								'Display name for the field',
-								'bcgov-design-system'
-							) }
-							value={ state.modals.add.field.label }
-							onChange={ ( label ) =>
-								handleFieldChange( 'add', 'label', label )
-							}
-							required
-							className={
-								state.modals.add.errors.label ? 'has-error' : ''
-							}
-						/>
-						{ state.modals.add.errors.label && (
-							<div className="field-error">
-								{ state.modals.add.errors.label }
-							</div>
-						) }
-
-						<SelectControl
-							label={ __( 'Field Type', 'bcgov-design-system' ) }
-							value={ state.modals.add.field.type }
-							options={ Object.entries( FIELD_TYPES ).map(
-								( [ value, label ] ) => ( {
-									value,
-									label,
-								} )
-							) }
-							onChange={ ( type ) =>
-								handleFieldChange( 'add', 'type', type )
-							}
-						/>
-
-						{ state.modals.add.field.type === 'select' && (
-							<TextareaControl
-								label={ __( 'Options', 'bcgov-design-system' ) }
-								value={ formatOptionsToString(
-									state.modals.add.field
-								) }
-								onChange={ ( value ) =>
-									handleOptionsChange( value, 'add' )
-								}
-								help={ __(
-									'Enter one option per line',
-									'bcgov-design-system'
-								) }
-							/>
-						) }
-					</div>
+					<MetadataFieldForm
+						field={ state.modals.add.field }
+						errors={ state.modals.add.errors }
+						onChange={ ( field, value ) =>
+							handleFieldChange( 'add', field, value )
+						}
+						onOptionsChange={ ( value ) =>
+							handleOptionsChange( value, 'add' )
+						}
+						isEdit={ false }
+					/>
 				</MetadataModal>
 
 				<DeleteFieldModal

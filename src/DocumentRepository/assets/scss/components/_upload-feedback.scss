@@ -5,7 +5,8 @@
  * Repository.
  */
 
-@use "variables" as vars;
+@use "../abstracts/variables" as *;
+@use "../abstracts/mixins" as mix;
 
 /* =========================================
    SVG Common Styles
@@ -27,13 +28,14 @@
 	right: 20px;
 	width: 350px;
 	max-width: calc(100vw - 40px);
-	background-color: #fff;
-	border-radius: 4px;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-	z-index: 1000;
-	font-family: vars.$font-family-base;
+	background-color: $color-bg-lightest;
+	border-radius: $border-radius;
+
+	@include mix.box-shadow(2);
+	z-index: $z-index-modal;
+	font-family: $font-family-base;
 	overflow: hidden;
-	border: 1px solid #ddd;
+	border: 1px solid $color-border;
 }
 
 /* =========================================
@@ -55,7 +57,7 @@
 .upload-feedback-title svg {
 
 	@extend %upload-feedback-svg;
-	color: vars.$primary-color;
+	color: $color-primary;
 }
 
 .upload-feedback-summary div svg {
@@ -64,11 +66,13 @@
 }
 
 .upload-feedback-item.success svg {
-	color: vars.$success-color;
+
+	@include mix.status-color(success);
 }
 
 .upload-feedback-item.error svg {
-	color: vars.$error-color;
+
+	@include mix.status-color(error);
 }
 
 /* =========================================
@@ -76,35 +80,34 @@
    ========================================= */
 
 .upload-feedback-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 10px 15px;
-	background-color: #f8f9fa;
-	border-bottom: 1px solid #eee;
+
+	@include mix.flex(row, space-between, center);
+	padding: $spacing-sm $spacing-md;
+	background-color: $color-bg-light;
+	border-bottom: 1px solid $color-border-light;
 }
 
 .upload-feedback-title {
-	font-weight: 600;
-	font-size: 0.9rem;
-	display: flex;
-	align-items: center;
-	gap: 8px;
+	font-weight: $font-weight-bold;
+
+	@include mix.font-size(sm);
+	@include mix.flex(row, flex-start, center);
+	gap: $spacing-sm;
 }
 
 .upload-feedback-close {
-	background: transparent;
-	border: none;
-	padding: 4px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	cursor: pointer;
-	color: #666;
-}
 
-.upload-feedback-close:hover {
-	color: #333;
+	@include mix.button-reset;
+	padding: $spacing-xs;
+
+	@include mix.flex-center;
+	color: $color-text-light;
+
+	@include mix.transition(color);
+
+	&:hover {
+		color: $color-text;
+	}
 }
 
 /* =========================================
@@ -114,19 +117,19 @@
 .upload-feedback-items {
 	max-height: 200px;
 	overflow-y: auto;
-	padding: 10px 15px;
+	padding: $spacing-sm $spacing-md;
 }
 
 .upload-feedback-item {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 8px 10px;
-	margin-bottom: 8px;
-	background-color: #f8f9fa;
-	border: 1px solid #eee;
-	border-radius: 4px;
-	font-size: 0.85rem;
+
+	@include mix.flex(row, space-between, center);
+	padding: $spacing-sm $spacing-md;
+	margin-bottom: $spacing-sm;
+	background-color: $color-bg-light;
+	border: 1px solid $color-border-light;
+	border-radius: $border-radius;
+
+	@include mix.font-size(sm);
 }
 
 .upload-feedback-item:last-child {
@@ -134,33 +137,33 @@
 }
 
 .upload-feedback-item.success {
-	border-color: #d4edda;
-	background-color: #f8fff9;
+
+	@include mix.status-bg(success);
 }
 
 .upload-feedback-item.error {
-	border-color: #f5c2c7;
-	background-color: #fff8f8;
+
+	@include mix.status-bg(error);
 }
 
 .upload-feedback-item.uploading,
 .upload-feedback-item.processing {
-	border-color: #e6f2ff;
-	background-color: #f5f9ff;
+	border-color: $color-primary-light;
+	background-color: $color-bg-primary-light;
 }
 
 .upload-feedback-item-name {
 	flex: 1;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	margin-right: 10px;
+
+	@include mix.text-truncate;
+	margin-right: $spacing-sm;
 }
 
 .upload-feedback-item-error {
-	color: vars.$error-color;
-	font-size: 0.8rem;
-	margin-left: 5px;
+
+	@include mix.status-color(error);
+	@include mix.font-size(xs);
+	margin-left: $spacing-xs;
 }
 
 /* =========================================
@@ -168,31 +171,34 @@
    ========================================= */
 
 .upload-feedback-summary {
-	padding: 10px 15px;
-	border-top: 1px solid #eee;
-	background-color: #f8f9fa;
+	padding: $spacing-sm $spacing-md;
+	border-top: 1px solid $color-border-light;
+	background-color: $color-bg-light;
 }
 
 .upload-feedback-summary div {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	font-size: 0.85rem;
+
+	@include mix.flex(row, flex-start, center);
+	gap: $spacing-sm;
+
+	@include mix.font-size(sm);
 }
 
 .upload-feedback-summary div:not(:last-child) {
-	margin-bottom: 5px;
+	margin-bottom: $spacing-xs;
 }
 
 .upload-feedback-summary div.success {
-	color: vars.$success-color;
+
+	@include mix.status-color(success);
 }
 
 .upload-feedback-summary div.error {
-	color: vars.$error-color;
+
+	@include mix.status-color(error);
 }
 
 .upload-feedback-summary div.processing,
 .upload-feedback-summary div.uploading {
-	color: vars.$primary-color;
+	color: $color-primary;
 }

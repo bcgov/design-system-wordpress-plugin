@@ -455,8 +455,10 @@ const DocumentUploader = ( {
 				{ /* Drag & Drop Area - only show if not in modal mode and no file is selected */ }
 				{ ! modalMode && ! file && (
 					<div
-						className={ `document-uploader-dropzone ${
-							isDragging ? 'dragging' : ''
+						className={ `upload-area__container ${
+							isDragging
+								? 'upload-area__container--drag-active'
+								: ''
 						}` }
 						onDragEnter={ handleDragEnter }
 						onDragOver={ handleDragOver }
@@ -476,58 +478,64 @@ const DocumentUploader = ( {
 							type="file"
 							ref={ fileInputRef }
 							onChange={ handleFileChange }
-							style={ { display: 'none' } }
+							className="upload-area__file-input"
 							accept={ Object.values( allowedMimeTypes ).join(
 								','
 							) }
 						/>
 
-						<div className="dropzone-icon">
-							<svg viewBox="0 0 64 64" width="64" height="64">
-								<path
-									d="M32 16v24M20 28l12-12 12 12"
-									fill="none"
-									stroke="currentColor"
-									strokeWidth="2"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-								/>
-								<path
-									d="M16 48h32M12 20v28c0 2.2 1.8 4 4 4h32c2.2 0 4-1.8 4-4V20"
-									fill="none"
-									stroke="currentColor"
-									strokeWidth="2"
-									strokeLinecap="round"
-								/>
-							</svg>
-						</div>
-						<div className="dropzone-text">
-							<p className="primary-text">
-								{ isDragging
-									? __(
-											'Drop file here',
-											'bcgov-design-system'
-									  )
-									: __(
-											'Drag & drop your file here or click to browse',
-											'bcgov-design-system'
-									  ) }
-							</p>
-							<p className="secondary-text">
-								{ __(
-									'Accepted file types:',
-									'bcgov-design-system'
-								) }{ ' ' }
-								{ Object.keys( allowedMimeTypes ).join( ', ' ) }
-							</p>
-							<p className="secondary-text">
-								{ __(
-									'Maximum file size:',
-									'bcgov-design-system'
-								) }{ ' ' }
-								{ Math.round( maxFileSize / ( 1024 * 1024 ) ) }{ ' ' }
-								MB
-							</p>
+						<div className="upload-area__content">
+							<div className="upload-area__icon">
+								<svg viewBox="0 0 64 64" width="64" height="64">
+									<path
+										d="M32 16v24M20 28l12-12 12 12"
+										fill="none"
+										stroke="currentColor"
+										strokeWidth="2"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+									/>
+									<path
+										d="M16 48h32M12 20v28c0 2.2 1.8 4 4 4h32c2.2 0 4-1.8 4-4V20"
+										fill="none"
+										stroke="currentColor"
+										strokeWidth="2"
+										strokeLinecap="round"
+									/>
+								</svg>
+							</div>
+							<div className="upload-area__text">
+								<p className="upload-area__text-primary">
+									{ isDragging
+										? __(
+												'Drop file here',
+												'bcgov-design-system'
+										  )
+										: __(
+												'Drag & drop your file here or click to browse',
+												'bcgov-design-system'
+										  ) }
+								</p>
+								<p className="upload-area__help-text">
+									{ __(
+										'Accepted file types:',
+										'bcgov-design-system'
+									) }{ ' ' }
+									{ Object.keys( allowedMimeTypes ).join(
+										', '
+									) }
+								</p>
+								<p className="upload-area__help-text">
+									{ __(
+										'Maximum file size:',
+										'bcgov-design-system'
+									) }{ ' ' }
+									{ Math.round(
+										maxFileSize / ( 1024 * 1024 )
+									) }{ ' ' }
+									MB
+								</p>
+							</div>
 						</div>
 					</div>
 				) }

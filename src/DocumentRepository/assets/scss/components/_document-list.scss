@@ -1,0 +1,91 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/mixins" as mix;
+@use "sass:color";
+
+.document-list {
+	width: 100%;
+	margin-bottom: $spacing-lg;
+
+	&__actions {
+
+		@include mix.flex(row, space-between, center, nowrap);
+		margin-bottom: $spacing-md;
+	}
+
+	&__left-actions {
+
+		@include mix.flex(row, flex-start, center, nowrap);
+		gap: $spacing-md;
+	}
+
+	&__right-actions {
+
+		@include mix.flex(row, flex-end, center, nowrap);
+		gap: $spacing-md;
+	}
+
+	&__table-actions {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: $spacing-md;
+		flex-wrap: wrap;
+		
+		.action-buttons-container {
+			display: flex;
+			align-items: center;
+			gap: $spacing-md;
+			margin-bottom: $spacing-md;
+			
+			.doc-repo-button {
+				min-height: 36px;
+			}
+			
+			.bulk-delete-button {
+				margin-left: $spacing-md;
+			}
+		}
+	}
+
+	.mode-toggle {
+
+		.doc-repo-button {
+			background-color: $color-bg-light;
+			color: $color-text;
+			border: 1px solid $color-border;
+			padding: $spacing-xs $spacing-sm;
+			border-radius: $border-radius;
+			cursor: pointer;
+			transition: all $transition-fast;
+
+			&:hover {
+				background-color: $color-bg-lighter;
+			}
+
+			&.active {
+				background-color: $color-primary;
+				color: $color-white;
+				border-color: $color-primary;
+			}
+		}
+	}
+
+	.bulk-delete-button {
+		background-color: $color-error;
+		color: $color-white;
+		border: none;
+		padding: $spacing-xs $spacing-sm;
+		border-radius: $border-radius;
+		cursor: pointer;
+		transition: all $transition-fast;
+
+		&:hover {
+			background-color: color.adjust($color-error, $lightness: -10%);
+		}
+
+		&:disabled {
+			background-color: $color-gray-300;
+			cursor: not-allowed;
+		}
+	}
+}

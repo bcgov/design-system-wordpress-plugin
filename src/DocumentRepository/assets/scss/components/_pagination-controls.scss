@@ -1,13 +1,14 @@
-@use "../abstracts" as *;
+@use "../abstracts/variables" as *;
+@use "../abstracts/mixins" as mix;
 
 .pagination-controls {
 
-	@include flex(row, center, center);
+	@include mix.flex(row, center, center);
 	margin: $spacing-lg 0;
 
 	&__button {
 
-		@include button-outline;
+		@include mix.button-outline;
 		margin: 0 $spacing-xs;
 		padding: $spacing-xs $spacing-sm;
 		min-width: 36px;
@@ -35,7 +36,7 @@
 		margin: 0 $spacing-md;
 		color: $color-text-light;
 
-		@include font-size(sm);
+		@include mix.font-size(sm);
 	}
 
 	@media screen and (max-width: $breakpoint-sm) {

@@ -1,97 +1,49 @@
-@use "../abstracts" as *;
+@use "../abstracts/variables" as *;
+@use "../abstracts/mixins" as mix;
+@use "sass:color";
 
 .retry-notice {
 	margin-bottom: $spacing-lg;
+	padding: $spacing-md;
+	background-color: $color-warning-light;
+	border: 1px solid $color-warning;
+	border-radius: $border-radius;
+	color: $color-text;
 
-	&__container {
-
-		@include status-bg(warning);
-		border: 1px solid;
-		border-radius: $border-radius;
-		padding: $spacing-md;
+	&__title {
+		font-weight: $font-weight-bold;
+		margin-bottom: $spacing-xs;
 	}
 
-	&__header {
-
-		@include flex(row, space-between, center);
+	&__message {
 		margin-bottom: $spacing-sm;
-
-		h3 {
-			margin: 0;
-			color: #cc9200;
-		}
-	}
-
-	&__content {
-		margin-bottom: $spacing-sm;
-	}
-
-	&__list {
-		list-style: none;
-		padding: 0;
-		margin: 0 0 $spacing-md 0;
-
-		li {
-
-			@include flex(row, flex-start, center);
-			padding: $spacing-xs 0;
-
-			.error-icon {
-				color: $color-error;
-				margin-right: $spacing-sm;
-
-				svg {
-					width: 16px;
-					height: 16px;
-				}
-			}
-
-			.error-text {
-				flex: 1;
-			}
-
-			.retry-button {
-
-				@include button-base;
-				background-color: transparent;
-				border: 1px solid #e3a714;
-				color: #cc9200;
-				padding: $spacing-xs $spacing-sm;
-
-				@include font-size(sm);
-
-				&:hover {
-					background-color: rgba($color-warning, 0.1);
-				}
-			}
-		}
 	}
 
 	&__actions {
 
-		@include flex(row, flex-end, center);
+		@include mix.flex(row, flex-start, center, nowrap);
 		gap: $spacing-sm;
+	}
 
-		.retry-all-button {
+	.doc-repo-button {
 
-			@include button-base;
-			background-color: #e3a714;
-			color: #fff;
-			border: none;
+		&--retry {
+			background-color: $color-warning;
+			color: $color-text;
+			border: 1px solid color.adjust($color-warning, $lightness: -10%);
 
 			&:hover {
-				background-color: #cc9200;
+				background-color: color.adjust($color-warning, $lightness: -5%);
 			}
 		}
 
-		.dismiss-button {
-
-			@include button-outline;
-			border-color: #e3a714;
-			color: #cc9200;
+		&--cancel {
+			background-color: transparent;
+			color: $color-text;
+			border: 1px solid $color-border;
 
 			&:hover {
-				background-color: rgba($color-warning, 0.1);
+				background-color: $color-bg-light;
 			}
 		}
 	}

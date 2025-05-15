@@ -10,21 +10,9 @@
  * used throughout the application.
  */
 
-@use "variables" as vars;
+@use "abstracts/variables" as *;
 @use "sass:color";
-
-/* =========================================
-   Variables - For document table
-   ========================================= */
-
-// Variables that may be missing
-$border-color: #e0e0e0;
-$background-light: #f9f9f9;
-$background-primary-light: #f0f7ff;
-$background-error-light: #fcf0f1;
-$font-size-sm: 0.875rem;
-$font-weight-bold: 600;
-$spacing-sm: 0.5rem;
+@use "abstracts/mixins" as mix;
 
 /* =========================================
    Base Element Styles - Least Specific
@@ -55,13 +43,13 @@ table {
 	th {
 		text-align: left;
 		padding: 0.75rem 1rem;
-		font-weight: 600;
-		border-bottom: 0.0625rem solid #ddd;
+		font-weight: $font-weight-bold;
+		border-bottom: 0.0625rem solid $color-border;
 	}
 
 	td {
 		padding: 0.75rem 1rem;
-		border-bottom: 0.0625rem solid #eee;
+		border-bottom: 0.0625rem solid $color-border-light;
 		vertical-align: middle;
 	}
 }
@@ -70,34 +58,33 @@ table {
 .components-notice {
 	display: flex;
 	align-items: flex-start;
-	padding: 1rem;
-	border-radius: 0.25rem;
-	margin-bottom: 1rem;
+	padding: $spacing-md;
+	border-radius: $border-radius;
+	margin-bottom: $spacing-md;
 
 	&.is-error {
-		background-color: #fcf0f1;
-		border-left: 0.25rem solid vars.$error-color;
+		background-color: $color-error-light;
+		border-left: 0.25rem solid $color-error;
 	}
 
 	&.is-success {
-		background-color: #edf7ed;
-		border-left: 0.25rem solid vars.$success-color;
+		background-color: $color-success-light;
+		border-left: 0.25rem solid $color-success;
 	}
 
 	.components-notice__content {
 		flex: 1;
-		font-size: 0.875rem;
+		font-size: $font-size-sm;
 	}
 
 	.components-notice__dismiss {
-		padding: 0.25rem;
-		background: none;
+		padding: $spacing-xs;
 		border: none;
 
 		svg {
 			width: 1rem;
 			height: 1rem;
-			color: #666;
+			color: $color-text-light;
 		}
 	}
 }
@@ -108,26 +95,76 @@ table {
 
 // Document Repository main container
 .document-repository {
-	font-family: vars.$font-family-base;
-	color: vars.$text-color;
+	font-family: $font-family-base;
+	color: $color-text;
 	max-width: 100%;
 
 	// Header section
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 1.5rem;
+	&__header {
+		margin-bottom: $spacing-lg;
+	}
 
-		h2 {
-			font-size: 1.5rem;
-			font-weight: 600;
-			margin: 0;
+	&__title {
+		font-size: $font-size-xxl;
+		font-weight: $font-weight-bold;
+		margin-bottom: $spacing-md;
+	}
+
+	&__description {
+		color: $color-text-light;
+		margin-bottom: $spacing-lg;
+	}
+
+	&__content {
+		background-color: $color-white;
+		border-radius: $border-radius;
+		box-shadow: $box-shadow-sm;
+		padding: $spacing-lg;
+	}
+
+	&__error {
+		background-color: $color-error-light;
+		border-left: 0.25rem solid $color-error;
+		color: $color-error;
+		padding: $spacing-md;
+		margin-bottom: $spacing-lg;
+		border-radius: $border-radius;
+
+		&__title {
+			font-weight: $font-weight-bold;
+			margin-bottom: $spacing-xs;
 		}
 
-		.actions {
-			display: flex;
-			gap: 0.75rem;
+		&__message {
+			margin-bottom: $spacing-sm;
+		}
+	}
+
+	&__loading {
+		text-align: center;
+		padding: $spacing-xl;
+		color: $color-text-light;
+	}
+
+	&__empty {
+		text-align: center;
+		padding: $spacing-xl;
+		color: $color-text-light;
+
+		&__icon {
+			font-size: 48px;
+			margin-bottom: $spacing-md;
+			color: $color-gray-400;
+		}
+
+		&__title {
+			font-size: $font-size-lg;
+			font-weight: $font-weight-bold;
+			margin-bottom: $spacing-sm;
+		}
+
+		&__message {
+			margin-bottom: $spacing-lg;
 		}
 	}
 
@@ -136,20 +173,20 @@ table {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-bottom: 1.5rem;
+		margin-bottom: $spacing-lg;
 		flex-wrap: wrap;
-		gap: 1rem;
+		gap: $spacing-md;
 
 		// View controls section
 		.view-controls {
 			display: flex;
-			gap: 0.5rem;
+			gap: $spacing-sm;
 		}
 
 		// Search filter section
 		.search-filter {
 			display: flex;
-			gap: 0.75rem;
+			gap: $spacing-md;
 			flex: 1;
 			max-width: 40rem;
 
@@ -157,22 +194,22 @@ table {
 				flex: 1;
 
 				input {
-					height: 2.5rem;
-					padding: 0 1rem;
-					border-radius: 0.25rem;
-					border: 0.0625rem solid #ddd;
-					font-size: 0.875rem;
+					height: $button-height-md;
+					padding: 0 $spacing-md;
+					border-radius: $border-radius;
+					border: 0.0625rem solid $color-border;
+					font-size: $font-size-sm;
 				}
 			}
 
 			.components-dropdown {
 				.components-button {
-					height: 2.5rem;
-					border: 0.0625rem solid #ddd;
-					background-color: #fff;
+					height: $button-height-md;
+					border: 0.0625rem solid $color-border;
+					background-color: $color-white;
 
 					svg {
-						margin-left: 0.5rem;
+						margin-left: $spacing-sm;
 					}
 				}
 			}
@@ -181,16 +218,16 @@ table {
 
 	// Document table container
 	.document-table-container {
-		border: 0.0625rem solid #ddd;
-		border-radius: 0.25rem;
+		border: 0.0625rem solid $color-border;
+		border-radius: $border-radius;
 		overflow: hidden;
-		margin-bottom: 1.5rem;
+		margin-bottom: $spacing-lg;
 
 		table {
 			margin: 0;
 
 			th {
-				background-color: #f6f7f7;
+				background-color: $color-gray-100;
 				white-space: nowrap;
 			}
 		}
@@ -201,20 +238,20 @@ table {
 .document-list {
 	display: flex;
 	flex-direction: column;
-	gap: 1.5rem;
-	margin-bottom: 2rem;
-	padding: 0.5rem;
+	gap: $spacing-lg;
+	margin-bottom: $spacing-xl;
+	padding: $spacing-sm;
 	align-items: stretch;
 	
 	// Document list actions
 	.document-list-actions {
 		display: flex;
 		justify-content: space-between;
-		margin-bottom: 1rem;
+		margin-bottom: $spacing-md;
 
 		.document-list-left-actions {
 			display: flex;
-			gap: 0.5rem;
+			gap: $spacing-sm;
 			align-items: center;
 			flex-wrap: wrap;
 
@@ -224,7 +261,7 @@ table {
 
 				.components-button {
 					svg {
-						margin-right: 0.5rem;
+						margin-right: $spacing-sm;
 					}
 				}
 			}
@@ -239,7 +276,7 @@ table {
 	// Enter Spreadsheet Mode button
 	.components-button-group {
 		display: flex;
-		gap: 0.5rem;
+		gap: $spacing-sm;
 	}
 	
 	// Pagination
@@ -247,12 +284,12 @@ table {
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		gap: 1rem;
-		margin: 1.5rem 0;
+		gap: $spacing-md;
+		margin: $spacing-lg 0;
 
 		.page-info {
-			font-size: 0.875rem;
-			color: #666;
+			font-size: $font-size-sm;
+			color: $color-text-light;
 		}
 
 		.components-button {
@@ -263,35 +300,35 @@ table {
 
 /* Document Table - Applied directly to top-level element */
 .document-table {
-	border: 0.0625rem solid $border-color;
-	border-radius: 0.25rem;
+	border: 0.0625rem solid $color-border;
+	border-radius: $border-radius;
 	overflow: hidden;
-	font-size: 0.875rem;
+	font-size: $font-size-sm;
 	display: table;
 	width: auto;
 	min-width: unset;
 	max-width: 100%;
-	margin: 0 0 1.5rem 0;
-	background-color: #fff;
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	margin: 0 0 $spacing-lg 0;
+	background-color: $color-white;
+	box-shadow: $box-shadow-sm;
 	align-self: flex-start;
 	table-layout: auto;
 
 	// Table header styles
 	.document-table-header {
 		display: table-header-group;
-		background-color: $background-light;
+		background-color: $color-gray-100;
 
 		.document-table-row {
-			border-bottom: 0.125rem solid $border-color;
+			border-bottom: 0.125rem solid $color-border;
 		}
 
 		.header {
 			font-weight: $font-weight-bold;
-			color: #333;
+			color: $color-text;
 			position: sticky;
 			top: 0;
-			background-color: $background-light;
+			background-color: $color-gray-100;
 			z-index: 2;
 		}
 	}
@@ -304,17 +341,17 @@ table {
 	// Table row styles
 	.document-table-row {
 		display: table-row;
-		transition: background-color 0.2s ease;
+		transition: background-color $transition-fast;
 
 		&:hover {
-			background-color: color.adjust($background-light, $lightness: 1%);
+			background-color: color.adjust($color-gray-100, $lightness: 1%);
 		}
 
 		&:nth-child(even) {
-			background-color: color.adjust($background-light, $lightness: 1.5%);
+			background-color: color.adjust($color-gray-100, $lightness: 1.5%);
 
 			&:hover {
-				background-color: color.adjust($background-light, $lightness: 0.5%);
+				background-color: color.adjust($color-gray-100, $lightness: 0.5%);
 			}
 		}
 	}
@@ -322,31 +359,31 @@ table {
 	// Table cell styles
 	.document-table-cell {
 		display: table-cell;
-		padding: 0.75rem 1rem;
-		border-bottom: 0.0625rem solid $border-color;
+		padding: $spacing-md;
+		border-bottom: 0.0625rem solid $color-border;
 		vertical-align: middle;
 		overflow: visible;
 		text-overflow: clip;
 		white-space: normal;
 
 		&.header {
-			padding-top: 1rem;
-			padding-bottom: 1rem;
+			padding-top: $spacing-md;
+			padding-bottom: $spacing-md;
 		}
 
 		// Spreadsheet mode cell styling
 		.components-text-control__input,
 		.components-select-control__input {
 			width: 100%;
-			min-height: 36px;
-			font-size: 0.875rem;
+			min-height: $button-height-md;
+			font-size: $font-size-sm;
 		}
 
 		// Action buttons
 		.action-buttons {
 			display: flex;
 			justify-content: flex-end;
-			gap: 0.25rem;
+			gap: $spacing-xs;
 
 			.table-action-button {
 				svg {
@@ -392,53 +429,5 @@ table {
 	.metadata-column {
 		min-width: 10rem;
 		max-width: 15rem;
-	}
-}
-
-/* Document Table - Upload and drag/drop area */
-.drag-drop-area {
-	border: 0.125rem dashed #ccc;
-	border-radius: 0.25rem;
-	padding: 2rem;
-	text-align: center;
-	cursor: pointer;
-	transition: all 0.3s ease;
-	margin-bottom: 1.5rem;
-	background-color: #fafafa;
-
-	&:hover,
-	&.is-drag-active {
-		background-color: #f0f0f0;
-		border-color: #999;
-	}
-
-	.drag-drop-content {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		gap: 1rem;
-
-		.drag-drop-icon {
-			margin-bottom: 0.5rem;
-			color: #666;
-		}
-
-		h3 {
-			margin: 0;
-			font-size: 1.25rem;
-			font-weight: 500;
-			color: #333;
-		}
-
-		p {
-			margin: 0;
-			font-size: 0.875rem;
-			color: #666;
-		}
-
-		.upload-button {
-			margin-top: 0.5rem;
-		}
 	}
 }

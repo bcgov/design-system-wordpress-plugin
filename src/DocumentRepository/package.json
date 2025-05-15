@@ -10,7 +10,7 @@
     "check-engines": "wp-scripts check-engines",
     "check-licenses": "wp-scripts check-licenses",
     "format": "wp-scripts format",
-    "lint:css": "wp-scripts lint-style",
+    "fix:css": "wp-scripts lint-style --fix --allow-empty-input",
     "fix:js": "wp-scripts lint-js --fix",
     "lint:md:docs": "wp-scripts lint-md-docs",
     "lint:pkg-json": "wp-scripts lint-pkg-json",

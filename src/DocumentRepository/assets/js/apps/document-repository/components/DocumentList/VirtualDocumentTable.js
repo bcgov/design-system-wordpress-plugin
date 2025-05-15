@@ -1,5 +1,5 @@
 /**
- * VirtualizedDocumentTable Component
+ * VirtualDocumentTable Component
  *
  * A performance-optimized version of DocumentTable that uses virtualization
  * to render only the visible rows in the viewport, greatly improving
@@ -12,7 +12,7 @@ import { CheckboxControl } from '@wordpress/components';
 import useVirtualization from './hooks/useVirtualization';
 
 /**
- * VirtualizedDocumentTable Component
+ * VirtualDocumentTable Component
  *
  * @param {Object}   props                    Component props
  * @param {Array}    props.documents          List of documents to display
@@ -28,7 +28,7 @@ import useVirtualization from './hooks/useVirtualization';
  * @param {Function} props.onMetadataChange   Callback when metadata is changed in spreadsheet mode
  * @param {Function} props.formatFileSize     Function to format file size
  */
-const VirtualizedDocumentTable = ( {
+const VirtualDocumentTable = ( {
 	documents = [],
 	selectedDocuments = [],
 	onSelectDocument,
@@ -308,4 +308,4 @@ const VirtualizedDocumentTable = ( {
 	);
 };
 
-export default VirtualizedDocumentTable;
+export default VirtualDocumentTable;

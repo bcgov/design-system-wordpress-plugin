@@ -18,30 +18,33 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/api-fetch */ "@wordpress/api-fetch");
-/* harmony import */ var _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _shared_components_MetadataModal__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../shared/components/MetadataModal */ "./assets/js/apps/shared/components/MetadataModal.js");
-/* harmony import */ var _components_Modals_DeleteFieldModal__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/Modals/DeleteFieldModal */ "./assets/js/apps/metadata-settings/components/Modals/DeleteFieldModal.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var _shared_components_MetadataModal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../shared/components/MetadataModal */ "./assets/js/apps/shared/components/MetadataModal.js");
+/* harmony import */ var _components_Modals_DeleteFieldModal__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/Modals/DeleteFieldModal */ "./assets/js/apps/metadata-settings/components/Modals/DeleteFieldModal.js");
+/* harmony import */ var _components_MetadataFieldList__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/MetadataFieldList */ "./assets/js/apps/metadata-settings/components/MetadataFieldList.js");
+/* harmony import */ var _components_MetadataFieldForm__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/MetadataFieldForm */ "./assets/js/apps/metadata-settings/components/MetadataFieldForm.js");
+/* harmony import */ var _hooks_useMetadataFields__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./hooks/useMetadataFields */ "./assets/js/apps/metadata-settings/hooks/useMetadataFields.js");
+/* harmony import */ var _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @wordpress/api-fetch */ "@wordpress/api-fetch");
+/* harmony import */ var _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
-function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
-function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
+function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(_typeof(e) + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, "catch": function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
+function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
-function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(_typeof(e) + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, "catch": function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
-function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
-function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 /**
  * Metadata Settings Application
  *
@@ -59,301 +62,86 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
 
 
 
-/**
- * Metadata List Component
- *
- * Container component for displaying a list of metadata fields.
- *
- * @param {Object}      props          - Component props
- * @param {JSX.Element} props.children - Child components to render
- * @return {JSX.Element} Metadata list container
- */
 
-var MetadataList = function MetadataList(_ref) {
-  var children = _ref.children;
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
-    className: "metadata-fields-list",
-    children: children
-  });
-};
 
-/**
- * Metadata Item Component
- *
- * Individual metadata field item with move controls.
- *
- * @param {Object}      props          - Component props
- * @param {JSX.Element} props.children - Child components to render
- * @return {JSX.Element} Metadata item with move controls
- */
-var MetadataItem = function MetadataItem(_ref2) {
-  var children = _ref2.children;
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
-    className: "metadata-field-item",
-    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
-      className: "metadata-field-info",
-      children: children
-    })
-  });
-};
-
-/**
- * Field Type Options
- *
- * Available metadata field types and their display labels.
- *
- * @constant {Object} FIELD_TYPES
- * @property {string} text   - Text field type
- * @property {string} select - Select/dropdown field type
- * @property {string} date   - Date field type
- */
-var FIELD_TYPES = {
-  text: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Text', 'bcgov-design-system'),
-  select: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Select', 'bcgov-design-system'),
-  date: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Date', 'bcgov-design-system')
-};
-
-/**
- * Custom hook for metadata API operations
- *
- * Provides methods for fetching and saving metadata fields.
- *
- * @function useMetadataAPI
- * @return {Object} API methods containing:
- * @property {Function} fetchFields - Fetches metadata fields
- * @property {Function} saveFields  - Saves metadata fields
- */
-var useMetadataAPI = function useMetadataAPI() {
-  var apiNamespace = window.documentRepositorySettings.apiNamespace;
-  var fetchFields = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useCallback)(/*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-    var fields;
-    return _regeneratorRuntime().wrap(function _callee$(_context) {
-      while (1) switch (_context.prev = _context.next) {
-        case 0:
-          _context.prev = 0;
-          _context.next = 3;
-          return _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_3___default()({
-            path: "/".concat(apiNamespace, "/metadata-fields")
-          });
-        case 3:
-          fields = _context.sent;
-          return _context.abrupt("return", {
-            success: true,
-            data: fields
-          });
-        case 7:
-          _context.prev = 7;
-          _context.t0 = _context["catch"](0);
-          return _context.abrupt("return", {
-            success: false,
-            error: _context.t0.message || (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Error loading metadata fields', 'bcgov-design-system')
-          });
-        case 10:
-        case "end":
-          return _context.stop();
-      }
-    }, _callee, null, [[0, 7]]);
-  })), [apiNamespace]);
-  var saveFields = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useCallback)(/*#__PURE__*/function () {
-    var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(fields) {
-      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-        while (1) switch (_context2.prev = _context2.next) {
-          case 0:
-            _context2.prev = 0;
-            _context2.next = 3;
-            return _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_3___default()({
-              path: "/".concat(apiNamespace, "/metadata-fields"),
-              method: 'PUT',
-              data: {
-                fields: fields
-              }
-            });
-          case 3:
-            return _context2.abrupt("return", {
-              success: true
-            });
-          case 6:
-            _context2.prev = 6;
-            _context2.t0 = _context2["catch"](0);
-            return _context2.abrupt("return", {
-              success: false,
-              error: _context2.t0.message || (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Error saving metadata fields', 'bcgov-design-system')
-            });
-          case 9:
-          case "end":
-            return _context2.stop();
-        }
-      }, _callee2, null, [[0, 6]]);
-    }));
-    return function (_x) {
-      return _ref4.apply(this, arguments);
-    };
-  }(), [apiNamespace]);
-  return {
-    fetchFields: fetchFields,
-    saveFields: saveFields
-  };
-};
-
-/**
- * Validates a metadata field configuration
- *
- * @function validateField
- * @param {Object} field               - Field configuration to validate
- * @param {Array}  [existingFields=[]] - Existing fields for duplicate checking
- * @param {number} [currentIndex=null] - Current field index
- * @return {Object} Validation errors
- */
-var validateField = function validateField(field) {
-  var existingFields = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-  var currentIndex = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-  var errors = {};
-  if (!field.id) {
-    errors.id = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Field ID is required', 'bcgov-design-system');
-  }
-  if (!field.label) {
-    errors.label = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Field label is required', 'bcgov-design-system');
-  }
-
-  // Check for duplicate labels (case-insensitive)
-  var hasDuplicateLabel = existingFields.some(function (existing, index) {
-    return index !== currentIndex && existing.label.toLowerCase() === field.label.toLowerCase();
-  });
-  if (hasDuplicateLabel) {
-    errors.label = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('A field with this label already exists', 'bcgov-design-system');
-  }
-
-  // Check for duplicate IDs
-  var hasDuplicateId = existingFields.some(function (existing, index) {
-    return index !== currentIndex && existing.id === field.id;
-  });
-  if (hasDuplicateId) {
-    errors.id = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('A field with this ID already exists', 'bcgov-design-system');
-  }
-  if (field.type === 'select' && (!field.options || field.options.length === 0)) {
-    errors.options = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Select fields require at least one option', 'bcgov-design-system');
-  }
-  return errors;
-};
-
-/**
- * Updates modal field state
- *
- * @function updateModalField
- * @param {Object} state     - Current state
- * @param {string} modalType - Type of modal (add/edit)
- * @param {Object} updates   - Field updates to apply
- * @return {Object} Updated state
- */
-var updateModalField = function updateModalField(state, modalType, updates) {
-  return _objectSpread(_objectSpread({}, state), {}, {
-    modals: _objectSpread(_objectSpread({}, state.modals), {}, _defineProperty({}, modalType, _objectSpread(_objectSpread({}, state.modals[modalType]), {}, {
-      field: _objectSpread(_objectSpread({}, state.modals[modalType].field), updates)
-    })))
-  });
-};
-
-/**
- * Gets initial state for a new field
- *
- * @function getInitialFieldState
- * @return {Object} Initial field state
- */
-var getInitialFieldState = function getInitialFieldState() {
-  return {
-    id: '',
-    label: '',
-    type: 'text',
-    options: [],
-    _rawOptionsText: ''
-  };
-};
 
 /**
  * Main Metadata Settings Application Component
  *
  * @return {JSX.Element} Metadata settings application
  */
-var MetadataApp = function MetadataApp() {
-  var _state$modals$edit$fi, _state$modals$edit$fi2, _state$modals$edit$fi3, _state$modals$edit$fi4;
-  // Consolidated state
-  var _useState = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({
-      fields: [],
-      isLoading: true,
-      error: null,
-      isSaving: false,
-      modals: {
-        add: {
-          isOpen: false,
-          field: {
-            id: '',
-            label: '',
-            type: 'text',
-            options: [],
-            _rawOptionsText: ''
-          },
-          errors: {
-            label: '',
-            submit: ''
-          }
-        },
-        edit: {
-          isOpen: false,
-          field: null,
-          index: null,
-          errors: {
-            label: '',
-            submit: ''
-          }
-        },
-        "delete": {
-          isOpen: false,
-          field: null
-        }
-      }
-    }),
-    _useState2 = _slicedToArray(_useState, 2),
-    state = _useState2[0],
-    setState = _useState2[1];
 
-  // API hooks
-  var _useMetadataAPI = useMetadataAPI(),
-    fetchFields = _useMetadataAPI.fetchFields,
-    saveFields = _useMetadataAPI.saveFields;
+var MetadataApp = function MetadataApp() {
+  var _state$modals$edit$fi;
+  var _useMetadataFields = (0,_hooks_useMetadataFields__WEBPACK_IMPORTED_MODULE_7__["default"])(),
+    state = _useMetadataFields.state,
+    setState = _useMetadataFields.setState,
+    fetchFields = _useMetadataFields.fetchFields,
+    saveFields = _useMetadataFields.saveFields,
+    validateField = _useMetadataFields.validateField,
+    getInitialFieldState = _useMetadataFields.getInitialFieldState;
 
   // Load fields on mount
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    var loadFields = /*#__PURE__*/function () {
-      var _ref5 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-        var result;
-        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-          while (1) switch (_context3.prev = _context3.next) {
-            case 0:
-              _context3.next = 2;
-              return fetchFields();
-            case 2:
-              result = _context3.sent;
-              setState(function (prev) {
-                return _objectSpread(_objectSpread({}, prev), {}, {
-                  fields: result.success ? result.data : [],
-                  error: result.success ? null : result.error,
-                  isLoading: false
-                });
-              });
-            case 4:
-            case "end":
-              return _context3.stop();
-          }
-        }, _callee3);
-      }));
-      return function loadFields() {
-        return _ref5.apply(this, arguments);
-      };
-    }();
-    loadFields();
+    fetchFields();
   }, [fetchFields]);
 
-  // Memoized handlers
+  // Handle field changes
+  var handleFieldChange = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useCallback)(function (modalType, field, value) {
+    setState(function (prev) {
+      var _prev$modals$modalTyp;
+      var currentField = prev.modals[modalType].field;
+      var updates = _defineProperty({}, field, value);
+
+      // If the field being changed is the label, generate ID but preserve label case
+      if (field === 'label') {
+        var baseId = value.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+        var fieldType = currentField.type.toLowerCase();
+        var generatedId = "".concat(baseId, "_").concat(fieldType);
+        updates = _objectSpread(_objectSpread({}, updates), {}, {
+          id: generatedId
+        });
+      }
+      // If the type is being changed, update the ID
+      if (field === 'type') {
+        var _currentField$label;
+        var _baseId = ((_currentField$label = currentField.label) === null || _currentField$label === void 0 ? void 0 : _currentField$label.toLowerCase().replace(/[^a-z0-9]+/g, '_')) || '';
+        var _generatedId = "".concat(_baseId, "_").concat(value.toLowerCase());
+        updates = _objectSpread(_objectSpread({}, updates), {}, {
+          id: _generatedId
+        });
+      }
+      var updatedField = _objectSpread(_objectSpread({}, currentField), updates);
+
+      // Get original values
+      var originalValues = (_prev$modals$modalTyp = prev.modals[modalType]) === null || _prev$modals$modalTyp === void 0 ? void 0 : _prev$modals$modalTyp.originalValues;
+
+      // Check for changes
+      var hasChanges = false;
+      if (originalValues) {
+        // Compare label
+        if (originalValues.label !== updatedField.label) {
+          hasChanges = true;
+        }
+        // Compare type
+        else if (originalValues.type !== updatedField.type) {
+          hasChanges = true;
+        }
+        // Compare options
+        else if (originalValues._rawOptionsText !== updatedField._rawOptionsText) {
+          hasChanges = true;
+        }
+      }
+      setHasChanges(hasChanges);
+      return _objectSpread(_objectSpread({}, prev), {}, {
+        modals: _objectSpread(_objectSpread({}, prev.modals), {}, _defineProperty({}, modalType, _objectSpread(_objectSpread({}, prev.modals[modalType]), {}, {
+          field: updatedField
+        })))
+      });
+    }, [setState]);
+  }, [setState]);
+
+  // Handle options changes
   var handleOptionsChange = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useCallback)(function (value, modalType) {
     var options = value.split('\n').map(function (line) {
       return line.trim();
@@ -361,25 +149,50 @@ var MetadataApp = function MetadataApp() {
       return line.length > 0;
     });
     setState(function (prev) {
+      var _prev$modals$modalTyp2;
+      var updatedField = _objectSpread(_objectSpread({}, prev.modals[modalType].field), {}, {
+        _rawOptionsText: value,
+        options: options
+      });
+
+      // Get original values
+      var originalValues = (_prev$modals$modalTyp2 = prev.modals[modalType]) === null || _prev$modals$modalTyp2 === void 0 ? void 0 : _prev$modals$modalTyp2.originalValues;
+
+      // Check for changes
+      var hasChanges = false;
+      if (originalValues) {
+        // Compare label
+        if (originalValues.label !== updatedField.label) {
+          hasChanges = true;
+        }
+        // Compare type
+        else if (originalValues.type !== updatedField.type) {
+          hasChanges = true;
+        }
+        // Compare options
+        else if (originalValues._rawOptionsText !== updatedField._rawOptionsText) {
+          hasChanges = true;
+        }
+      }
+      setHasChanges(hasChanges);
       return _objectSpread(_objectSpread({}, prev), {}, {
         modals: _objectSpread(_objectSpread({}, prev.modals), {}, _defineProperty({}, modalType, _objectSpread(_objectSpread({}, prev.modals[modalType]), {}, {
-          field: _objectSpread(_objectSpread({}, prev.modals[modalType].field), {}, {
-            _rawOptionsText: value,
-            options: options
-          })
+          field: updatedField
         })))
       });
-    });
-  }, []);
-  var handleAddField = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useCallback)(/*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+    }, [setState]);
+  }, [setState]);
+
+  // Handle adding a field
+  var handleAddField = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useCallback)(/*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
     var field, errors, result;
-    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-      while (1) switch (_context4.prev = _context4.next) {
+    return _regeneratorRuntime().wrap(function _callee$(_context) {
+      while (1) switch (_context.prev = _context.next) {
         case 0:
           field = state.modals.add.field;
           errors = validateField(field, state.fields);
           if (!(Object.keys(errors).length > 0)) {
-            _context4.next = 5;
+            _context.next = 5;
             break;
           }
           setState(function (prev) {
@@ -391,20 +204,20 @@ var MetadataApp = function MetadataApp() {
               })
             });
           });
-          return _context4.abrupt("return");
+          return _context.abrupt("return");
         case 5:
           setState(function (prev) {
             return _objectSpread(_objectSpread({}, prev), {}, {
               isSaving: true
             });
           });
-          _context4.prev = 6;
-          _context4.next = 9;
+          _context.prev = 6;
+          _context.next = 9;
           return saveFields([].concat(_toConsumableArray(state.fields), [_objectSpread(_objectSpread({}, field), {}, {
             order: state.fields.length
           })]));
         case 9:
-          result = _context4.sent;
+          result = _context.sent;
           if (result.success) {
             setState(function (prev) {
               return _objectSpread(_objectSpread({}, prev), {}, {
@@ -415,13 +228,7 @@ var MetadataApp = function MetadataApp() {
                 modals: _objectSpread(_objectSpread({}, prev.modals), {}, {
                   add: {
                     isOpen: false,
-                    field: {
-                      id: '',
-                      label: '',
-                      type: 'text',
-                      options: [],
-                      _rawOptionsText: ''
-                    },
+                    field: getInitialFieldState(),
                     errors: {
                       label: '',
                       submit: ''
@@ -444,18 +251,18 @@ var MetadataApp = function MetadataApp() {
               });
             });
           }
-          _context4.next = 16;
+          _context.next = 16;
           break;
         case 13:
-          _context4.prev = 13;
-          _context4.t0 = _context4["catch"](6);
+          _context.prev = 13;
+          _context.t0 = _context["catch"](6);
           setState(function (prev) {
             return _objectSpread(_objectSpread({}, prev), {}, {
               isSaving: false,
               modals: _objectSpread(_objectSpread({}, prev.modals), {}, {
                 add: _objectSpread(_objectSpread({}, prev.modals.add), {}, {
                   errors: {
-                    submit: _context4.t0.message || (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Failed to save field', 'bcgov-design-system')
+                    submit: _context.t0.message || (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Failed to save field', 'bcgov-design-system')
                   }
                 })
               })
@@ -463,199 +270,190 @@ var MetadataApp = function MetadataApp() {
           });
         case 16:
         case "end":
-          return _context4.stop();
+          return _context.stop();
       }
-    }, _callee4, null, [[6, 13]]);
-  })), [state.fields, state.modals.add, saveFields]);
+    }, _callee, null, [[6, 13]]);
+  })), [state.fields, state.modals.add, saveFields, validateField, getInitialFieldState, setState]);
 
   // Handle editing a field
-  var handleEditField = function handleEditField(field, index) {
+  var handleEditField = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useCallback)(function (field, index) {
     // Store original values for comparison
     var originalFieldValues = {
       label: field.label || '',
       type: field.type || '',
-      options: field.options || [],
-      _rawOptionsText: field._rawOptionsText || '',
+      options: normalizeOptions(field.options),
+      _rawOptionsText: field._rawOptionsText || formatOptionsToString(field),
       id: field.id || ''
     };
-    setOriginalValues(originalFieldValues);
     setState(function (prev) {
       return _objectSpread(_objectSpread({}, prev), {}, {
         modals: _objectSpread(_objectSpread({}, prev.modals), {}, {
           edit: {
             isOpen: true,
             field: _objectSpread({}, field),
-            index: index
+            index: index,
+            originalValues: originalFieldValues,
+            errors: {
+              label: '',
+              submit: ''
+            }
           }
         })
       });
     });
-  };
+    setHasChanges(false);
+  }, [normalizeOptions, formatOptionsToString, setState]);
+
+  // Format options array to string for textarea
+  var formatOptionsToString = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useCallback)(function (field) {
+    if (field._rawOptionsText !== undefined) {
+      return field._rawOptionsText;
+    }
+    return Array.isArray(field.options) ? field.options.join('\n') : '';
+  }, []);
 
   // Handle saving edited field
-  var handleSaveEditedField = /*#__PURE__*/function () {
-    var _ref7 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
-      var _state$modals$edit, field, index, errors, result;
-      return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-        while (1) switch (_context5.prev = _context5.next) {
-          case 0:
-            _state$modals$edit = state.modals.edit, field = _state$modals$edit.field, index = _state$modals$edit.index;
-            errors = validateField(field, state.fields, index);
-            if (!(Object.keys(errors).length > 0)) {
-              _context5.next = 5;
-              break;
-            }
-            setState(function (prev) {
-              return _objectSpread(_objectSpread({}, prev), {}, {
-                error: errors
-              });
+  var handleSaveEditedField = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useCallback)(/*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+    var _state$modals$edit, field, index, errors, result;
+    return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+      while (1) switch (_context2.prev = _context2.next) {
+        case 0:
+          _state$modals$edit = state.modals.edit, field = _state$modals$edit.field, index = _state$modals$edit.index;
+          errors = validateField(field, state.fields, index);
+          if (!(Object.keys(errors).length > 0)) {
+            _context2.next = 5;
+            break;
+          }
+          setState(function (prev) {
+            return _objectSpread(_objectSpread({}, prev), {}, {
+              error: errors
             });
-            return _context5.abrupt("return");
-          case 5:
-            setState(function (prev) {
-              return _objectSpread(_objectSpread({}, prev), {}, {
-                isSaving: true
-              });
+          });
+          return _context2.abrupt("return");
+        case 5:
+          setState(function (prev) {
+            return _objectSpread(_objectSpread({}, prev), {}, {
+              isSaving: true
             });
-            _context5.next = 8;
-            return saveFields([].concat(_toConsumableArray(state.fields.slice(0, index)), [field], _toConsumableArray(state.fields.slice(index + 1))));
-          case 8:
-            result = _context5.sent;
-            if (result.success) {
-              setState(function (prev) {
-                return _objectSpread(_objectSpread({}, prev), {}, {
-                  fields: [].concat(_toConsumableArray(state.fields.slice(0, index)), [field], _toConsumableArray(state.fields.slice(index + 1))),
-                  error: null,
-                  isSaving: false,
-                  modals: _objectSpread(_objectSpread({}, prev.modals), {}, {
-                    edit: {
-                      isOpen: false,
-                      field: null,
-                      index: null
-                    }
-                  })
-                });
-              });
-            } else {
-              setState(function (prev) {
-                return _objectSpread(_objectSpread({}, prev), {}, {
-                  error: result.error,
-                  isSaving: false
-                });
-              });
-            }
-          case 10:
-          case "end":
-            return _context5.stop();
-        }
-      }, _callee5);
-    }));
-    return function handleSaveEditedField() {
-      return _ref7.apply(this, arguments);
-    };
-  }();
-
-  // Handle deleting a field
-  var handleDeleteField = /*#__PURE__*/function () {
-    var _ref8 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(field) {
-      return _regeneratorRuntime().wrap(function _callee6$(_context6) {
-        while (1) switch (_context6.prev = _context6.next) {
-          case 0:
+          });
+          _context2.next = 8;
+          return saveFields([].concat(_toConsumableArray(state.fields.slice(0, index)), [field], _toConsumableArray(state.fields.slice(index + 1))));
+        case 8:
+          result = _context2.sent;
+          if (result.success) {
             setState(function (prev) {
               return _objectSpread(_objectSpread({}, prev), {}, {
+                fields: [].concat(_toConsumableArray(state.fields.slice(0, index)), [field], _toConsumableArray(state.fields.slice(index + 1))),
+                error: null,
+                isSaving: false,
                 modals: _objectSpread(_objectSpread({}, prev.modals), {}, {
-                  "delete": {
-                    isOpen: true,
-                    field: field
+                  edit: {
+                    isOpen: false,
+                    field: null,
+                    index: null,
+                    originalValues: null
                   }
                 })
               });
             });
-          case 1:
-          case "end":
-            return _context6.stop();
-        }
-      }, _callee6);
-    }));
-    return function handleDeleteField(_x2) {
-      return _ref8.apply(this, arguments);
-    };
-  }();
-
-  // Handle confirming field deletion
-  var handleConfirmDelete = /*#__PURE__*/function () {
-    var _ref9 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee7() {
-      var fieldId, updatedFields, result;
-      return _regeneratorRuntime().wrap(function _callee7$(_context7) {
-        while (1) switch (_context7.prev = _context7.next) {
-          case 0:
-            fieldId = state.modals["delete"].field.id;
+          } else {
             setState(function (prev) {
               return _objectSpread(_objectSpread({}, prev), {}, {
-                isSaving: true
-              });
-            });
-            _context7.prev = 2;
-            _context7.next = 5;
-            return _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_3___default()({
-              path: "/".concat(window.documentRepositorySettings.apiNamespace, "/metadata-fields/").concat(fieldId, "/cleanup"),
-              method: 'DELETE'
-            });
-          case 5:
-            // Then update the fields list
-            updatedFields = state.fields.filter(function (field) {
-              return field.id !== fieldId;
-            });
-            _context7.next = 8;
-            return saveFields(updatedFields);
-          case 8:
-            result = _context7.sent;
-            if (result.success) {
-              setState(function (prev) {
-                return _objectSpread(_objectSpread({}, prev), {}, {
-                  fields: updatedFields,
-                  isSaving: false,
-                  error: null,
-                  modals: _objectSpread(_objectSpread({}, prev.modals), {}, {
-                    "delete": {
-                      isOpen: false,
-                      field: null
-                    }
-                  })
-                });
-              });
-            } else {
-              setState(function (prev) {
-                return _objectSpread(_objectSpread({}, prev), {}, {
-                  error: result.error,
-                  isSaving: false
-                });
-              });
-            }
-            _context7.next = 15;
-            break;
-          case 12:
-            _context7.prev = 12;
-            _context7.t0 = _context7["catch"](2);
-            setState(function (prev) {
-              return _objectSpread(_objectSpread({}, prev), {}, {
-                error: _context7.t0.message || (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Error deleting metadata field', 'bcgov-design-system'),
+                error: result.error,
                 isSaving: false
               });
             });
-          case 15:
-          case "end":
-            return _context7.stop();
-        }
-      }, _callee7, null, [[2, 12]]);
-    }));
-    return function handleConfirmDelete() {
-      return _ref9.apply(this, arguments);
-    };
-  }();
+          }
+        case 10:
+        case "end":
+          return _context2.stop();
+      }
+    }, _callee2);
+  })), [state.fields, state.modals.edit, saveFields, validateField, setState]);
+
+  // Handle deleting a field
+  var handleDeleteField = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useCallback)(function (field) {
+    setState(function (prev) {
+      return _objectSpread(_objectSpread({}, prev), {}, {
+        modals: _objectSpread(_objectSpread({}, prev.modals), {}, {
+          "delete": {
+            isOpen: true,
+            field: field
+          }
+        })
+      });
+    });
+  }, [setState]);
+
+  // Handle confirming field deletion
+  var handleConfirmDelete = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useCallback)(/*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+    var fieldId, updatedFields, result;
+    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+      while (1) switch (_context3.prev = _context3.next) {
+        case 0:
+          fieldId = state.modals["delete"].field.id;
+          setState(function (prev) {
+            return _objectSpread(_objectSpread({}, prev), {}, {
+              isSaving: true
+            });
+          });
+          _context3.prev = 2;
+          _context3.next = 5;
+          return _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_8___default()({
+            path: "/".concat(window.documentRepositorySettings.apiNamespace, "/metadata-fields/").concat(fieldId, "/cleanup"),
+            method: 'DELETE'
+          });
+        case 5:
+          // Then update the fields list
+          updatedFields = state.fields.filter(function (field) {
+            return field.id !== fieldId;
+          });
+          _context3.next = 8;
+          return saveFields(updatedFields);
+        case 8:
+          result = _context3.sent;
+          if (result.success) {
+            setState(function (prev) {
+              return _objectSpread(_objectSpread({}, prev), {}, {
+                fields: updatedFields,
+                isSaving: false,
+                error: null,
+                modals: _objectSpread(_objectSpread({}, prev.modals), {}, {
+                  "delete": {
+                    isOpen: false,
+                    field: null
+                  }
+                })
+              });
+            });
+          } else {
+            setState(function (prev) {
+              return _objectSpread(_objectSpread({}, prev), {}, {
+                error: result.error,
+                isSaving: false
+              });
+            });
+          }
+          _context3.next = 15;
+          break;
+        case 12:
+          _context3.prev = 12;
+          _context3.t0 = _context3["catch"](2);
+          setState(function (prev) {
+            return _objectSpread(_objectSpread({}, prev), {}, {
+              error: _context3.t0.message || (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Error deleting metadata field', 'bcgov-design-system'),
+              isSaving: false
+            });
+          });
+        case 15:
+        case "end":
+          return _context3.stop();
+      }
+    }, _callee3, null, [[2, 12]]);
+  })), [state.fields, state.modals["delete"].field, saveFields, setState]);
 
   // Handle closing delete modal
-  var handleCloseDeleteModal = function handleCloseDeleteModal() {
+  var handleCloseDeleteModal = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useCallback)(function () {
     setState(function (prev) {
       return _objectSpread(_objectSpread({}, prev), {}, {
         modals: _objectSpread(_objectSpread({}, prev.modals), {}, {
@@ -666,77 +464,9 @@ var MetadataApp = function MetadataApp() {
         })
       });
     });
-  };
+  }, [setState]);
 
-  // Format options array to string for textarea
-  var formatOptionsToString = function formatOptionsToString(field) {
-    if (field._rawOptionsText !== undefined) {
-      return field._rawOptionsText;
-    }
-    return Array.isArray(field.options) ? field.options.join('\n') : '';
-  };
-
-  // Simplified state updates using helper functions
-  var _useState3 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
-    _useState4 = _slicedToArray(_useState3, 2),
-    hasChanges = _useState4[0],
-    setHasChanges = _useState4[1];
-  var _useState5 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
-    _useState6 = _slicedToArray(_useState5, 2),
-    originalValues = _useState6[0],
-    setOriginalValues = _useState6[1];
-
-  // Add function to check if any field values have changed from original
-  var checkForChanges = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useCallback)(function (modalType, currentValues) {
-    if (!originalValues) {
-      return false;
-    }
-
-    // Compare each field with its original value
-    var fieldsToCompare = ['label', 'type', 'options', '_rawOptionsText'];
-    var fieldHasChanges = fieldsToCompare.some(function (field) {
-      var original = String(originalValues[field] || '').trim();
-      var current = String(currentValues[field] || '').trim();
-      var isDifferent = original !== current;
-      return isDifferent;
-    });
-    return fieldHasChanges;
-  }, [originalValues]);
-
-  // Update handleFieldChange to preserve exact case
-  var handleFieldChange = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useCallback)(function (modalType, field, value) {
-    setState(function (prev) {
-      var currentField = prev.modals[modalType].field;
-      var updates = _defineProperty({}, field, value);
-
-      // If the field being changed is the label, generate ID but preserve label case
-      if (field === 'label') {
-        // Only transform the ID, not the label
-        var baseId = value.toLowerCase().replace(/[^a-z0-9]+/g, '_');
-        var fieldType = currentField.type.toLowerCase();
-        var generatedId = "".concat(baseId, "_").concat(fieldType);
-        updates = _objectSpread(_objectSpread({}, updates), {}, {
-          id: generatedId
-        });
-      }
-      // If the type is being changed, update the ID
-      if (field === 'type') {
-        var _currentField$label;
-        var _baseId = ((_currentField$label = currentField.label) === null || _currentField$label === void 0 ? void 0 : _currentField$label.toLowerCase().replace(/[^a-z0-9]+/g, '_')) || '';
-        var _generatedId = "".concat(_baseId, "_").concat(value.toLowerCase());
-        updates = _objectSpread(_objectSpread({}, updates), {}, {
-          id: _generatedId
-        });
-      }
-      var updatedField = _objectSpread(_objectSpread({}, currentField), updates);
-
-      // Check for changes against original values
-      checkForChanges(modalType, updatedField);
-      return updateModalField(prev, modalType, updates);
-    });
-  }, [checkForChanges]);
-
-  // Reset states when modal closes
+  // Handle modal close
   var handleModalClose = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useCallback)(function (modalType) {
     setState(function (prev) {
       return _objectSpread(_objectSpread({}, prev), {}, {
@@ -746,44 +476,59 @@ var MetadataApp = function MetadataApp() {
           errors: {
             label: '',
             submit: ''
-          }
+          },
+          originalValues: null
         })))
       });
     });
     setHasChanges(false);
-    setOriginalValues(null);
+  }, [getInitialFieldState, setState]);
+
+  // Check for changes
+  var _useState = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState2 = _slicedToArray(_useState, 2),
+    hasChanges = _useState2[0],
+    setHasChanges = _useState2[1];
+
+  // Normalize options
+  var normalizeOptions = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useCallback)(function (options) {
+    return Array.isArray(options) ? options.map(function (s) {
+      return String(s).trim();
+    }).filter(function (s) {
+      return s.length > 0;
+    }) : [];
   }, []);
   if (state.isLoading) {
-    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
       className: "dswp-document-metadata-settings",
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
         className: "metadata-settings-loading",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
           className: "spinner-wrapper",
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
             className: "components-spinner"
           })
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("p", {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("p", {
           children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Loading metadata fields…', 'bcgov-design-system')
         })]
       })
     });
   }
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
     className: "dswp-document-metadata-settings",
-    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
+    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
       className: "metadata-settings",
-      children: [state.error && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Notice, {
+      children: [state.error && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Notice, {
         status: "error",
         isDismissible: false,
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("p", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("p", {
           children: state.error
         })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Card, {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.CardHeader, {
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("h2", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Card, {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.CardHeader, {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("h2", {
             children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Document Metadata Fields', 'bcgov-design-system')
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
             className: "doc-repo-button save-button",
             onClick: function onClick() {
               return setState(function (prev) {
@@ -804,53 +549,20 @@ var MetadataApp = function MetadataApp() {
             disabled: state.isSaving,
             children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Add New Field', 'bcgov-design-system')
           })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.CardBody, {
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.CardBody, {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
             className: "metadata-fields-info",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("p", {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("p", {
               children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Customize the metadata fields that will be available for documents.', 'bcgov-design-system')
             })
-          }), state.fields.length === 0 ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
-            className: "no-fields-message",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("p", {
-              children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('No custom metadata fields defined yet. Click "Add New Field" to create one.', 'bcgov-design-system')
-            })
-          }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(MetadataList, {
-            children: state.fields.map(function (field, index) {
-              return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)(MetadataItem, {
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
-                  className: "metadata-field-info",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("h3", {
-                    children: field.label
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("p", {
-                    className: "field-id",
-                    children: ["ID: ", field.id]
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("p", {
-                    className: "field-type",
-                    children: ["Type:", ' ', FIELD_TYPES[field.type]]
-                  })]
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
-                  className: "metadata-field-actions",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
-                    className: "doc-repo-button edit-button",
-                    onClick: function onClick() {
-                      return handleEditField(field, index);
-                    },
-                    children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Edit', 'bcgov-design-system')
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
-                    className: "doc-repo-button delete-button",
-                    onClick: function onClick() {
-                      return handleDeleteField(field);
-                    },
-                    disabled: state.isSaving,
-                    children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Delete', 'bcgov-design-system')
-                  })]
-                })]
-              }, field.id);
-            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_components_MetadataFieldList__WEBPACK_IMPORTED_MODULE_5__["default"], {
+            fields: state.fields,
+            onEdit: handleEditField,
+            onDelete: handleDeleteField,
+            isSaving: state.isSaving
           })]
         })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_shared_components_MetadataModal__WEBPACK_IMPORTED_MODULE_4__["default"], {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_shared_components_MetadataModal__WEBPACK_IMPORTED_MODULE_3__["default"], {
         title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Edit Metadata Field', 'bcgov-design-system'),
         isOpen: state.modals.edit.isOpen,
         onClose: function onClose() {
@@ -859,36 +571,18 @@ var MetadataApp = function MetadataApp() {
         onSave: handleSaveEditedField,
         isSaving: state.isSaving,
         isDisabled: !hasChanges || !((_state$modals$edit$fi = state.modals.edit.field) !== null && _state$modals$edit$fi !== void 0 && _state$modals$edit$fi.label),
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
-          className: "metadata-field-form",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.TextControl, {
-            label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Field Label', 'bcgov-design-system'),
-            help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Display name for the field', 'bcgov-design-system'),
-            value: ((_state$modals$edit$fi2 = state.modals.edit.field) === null || _state$modals$edit$fi2 === void 0 ? void 0 : _state$modals$edit$fi2.label) || '',
-            onChange: function onChange(label) {
-              return handleFieldChange('edit', 'label', label);
-            },
-            required: true
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
-            className: "field-type-display",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("label", {
-              htmlFor: "edit-field-type-value",
-              children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Field Type', 'bcgov-design-system')
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
-              id: "edit-field-type-value",
-              className: "field-type-value",
-              children: FIELD_TYPES[(_state$modals$edit$fi3 = state.modals.edit.field) === null || _state$modals$edit$fi3 === void 0 ? void 0 : _state$modals$edit$fi3.type]
-            })]
-          }), ((_state$modals$edit$fi4 = state.modals.edit.field) === null || _state$modals$edit$fi4 === void 0 ? void 0 : _state$modals$edit$fi4.type) === 'select' && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.TextareaControl, {
-            label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Options', 'bcgov-design-system'),
-            value: formatOptionsToString(state.modals.edit.field),
-            onChange: function onChange(value) {
-              return handleOptionsChange(value, 'edit');
-            },
-            help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Enter one option per line', 'bcgov-design-system')
-          })]
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_components_MetadataFieldForm__WEBPACK_IMPORTED_MODULE_6__["default"], {
+          field: state.modals.edit.field,
+          errors: state.modals.edit.errors,
+          onChange: function onChange(field, value) {
+            return handleFieldChange('edit', field, value);
+          },
+          onOptionsChange: function onOptionsChange(value) {
+            return handleOptionsChange(value, 'edit');
+          },
+          isEdit: true
         })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_shared_components_MetadataModal__WEBPACK_IMPORTED_MODULE_4__["default"], {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_shared_components_MetadataModal__WEBPACK_IMPORTED_MODULE_3__["default"], {
         title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Add New Metadata Field', 'bcgov-design-system'),
         isOpen: state.modals.add.isOpen,
         onClose: function onClose() {
@@ -897,51 +591,18 @@ var MetadataApp = function MetadataApp() {
         onSave: handleAddField,
         isSaving: state.isSaving,
         isDisabled: !state.modals.add.field.label,
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
-          className: "metadata-field-form",
-          children: [state.modals.add.errors.submit && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Notice, {
-            status: "error",
-            isDismissible: false,
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("p", {
-              children: state.modals.add.errors.submit
-            })
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.TextControl, {
-            label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Field Label', 'bcgov-design-system'),
-            help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Display name for the field', 'bcgov-design-system'),
-            value: state.modals.add.field.label,
-            onChange: function onChange(label) {
-              return handleFieldChange('add', 'label', label);
-            },
-            required: true,
-            className: state.modals.add.errors.label ? 'has-error' : ''
-          }), state.modals.add.errors.label && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
-            className: "field-error",
-            children: state.modals.add.errors.label
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.SelectControl, {
-            label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Field Type', 'bcgov-design-system'),
-            value: state.modals.add.field.type,
-            options: Object.entries(FIELD_TYPES).map(function (_ref10) {
-              var _ref11 = _slicedToArray(_ref10, 2),
-                value = _ref11[0],
-                label = _ref11[1];
-              return {
-                value: value,
-                label: label
-              };
-            }),
-            onChange: function onChange(type) {
-              return handleFieldChange('add', 'type', type);
-            }
-          }), state.modals.add.field.type === 'select' && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.TextareaControl, {
-            label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Options', 'bcgov-design-system'),
-            value: formatOptionsToString(state.modals.add.field),
-            onChange: function onChange(value) {
-              return handleOptionsChange(value, 'add');
-            },
-            help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Enter one option per line', 'bcgov-design-system')
-          })]
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_components_MetadataFieldForm__WEBPACK_IMPORTED_MODULE_6__["default"], {
+          field: state.modals.add.field,
+          errors: state.modals.add.errors,
+          onChange: function onChange(field, value) {
+            return handleFieldChange('add', field, value);
+          },
+          onOptionsChange: function onOptionsChange(value) {
+            return handleOptionsChange(value, 'add');
+          },
+          isEdit: false
         })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_components_Modals_DeleteFieldModal__WEBPACK_IMPORTED_MODULE_5__["default"], {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_components_Modals_DeleteFieldModal__WEBPACK_IMPORTED_MODULE_4__["default"], {
         isOpen: state.modals["delete"].isOpen,
         onClose: handleCloseDeleteModal,
         onConfirm: handleConfirmDelete,
@@ -952,6 +613,261 @@ var MetadataApp = function MetadataApp() {
   });
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (MetadataApp);
+
+/***/ }),
+
+/***/ "./assets/js/apps/metadata-settings/components/MetadataFieldForm.js":
+/*!**************************************************************************!*\
+  !*** ./assets/js/apps/metadata-settings/components/MetadataFieldForm.js ***!
+  \**************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
+function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
+
+
+
+/**
+ * Field Type Options
+ *
+ * Available metadata field types and their display labels.
+ *
+ * @constant {Object} FIELD_TYPES
+ */
+
+var FIELD_TYPES = {
+  text: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Text', 'bcgov-design-system'),
+  select: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Select', 'bcgov-design-system'),
+  date: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Date', 'bcgov-design-system')
+};
+
+/**
+ * Metadata Field Form Component
+ *
+ * Form for adding or editing metadata fields.
+ *
+ * @param {Object}   props                 - Component props
+ * @param {Object}   props.field           - Field data
+ * @param {Object}   props.errors          - Validation errors
+ * @param {Function} props.onChange        - Callback when field values change
+ * @param {Function} props.onOptionsChange - Callback when options change
+ * @param {boolean}  props.isEdit          - Whether this is an edit form
+ * @return {JSX.Element} Metadata field form
+ */
+var MetadataFieldForm = function MetadataFieldForm(_ref) {
+  var field = _ref.field,
+    errors = _ref.errors,
+    _onChange = _ref.onChange,
+    onOptionsChange = _ref.onOptionsChange,
+    _ref$isEdit = _ref.isEdit,
+    isEdit = _ref$isEdit === void 0 ? false : _ref$isEdit;
+  // Format options array to string for textarea
+  var formatOptionsToString = function formatOptionsToString(fieldValue) {
+    if (fieldValue._rawOptionsText !== undefined) {
+      return fieldValue._rawOptionsText;
+    }
+    return Array.isArray(fieldValue.options) ? fieldValue.options.join('\n') : '';
+  };
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+    className: "metadata-field-form",
+    children: [(errors === null || errors === void 0 ? void 0 : errors.submit) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_0__.Notice, {
+      status: "error",
+      isDismissible: false,
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+        children: errors.submit
+      })
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_0__.TextControl, {
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Field Label', 'bcgov-design-system'),
+      help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Display name for the field', 'bcgov-design-system'),
+      value: field.label,
+      onChange: function onChange(label) {
+        return _onChange('label', label);
+      },
+      required: true,
+      className: errors !== null && errors !== void 0 && errors.label ? 'has-error' : ''
+    }), (errors === null || errors === void 0 ? void 0 : errors.label) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+      className: "field-error",
+      children: errors.label
+    }), isEdit ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+      className: "field-type-display",
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+        htmlFor: "edit-field-type-value",
+        children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Field Type', 'bcgov-design-system')
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+        id: "edit-field-type-value",
+        className: "field-type-value",
+        children: FIELD_TYPES[field.type]
+      })]
+    }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_0__.SelectControl, {
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Field Type', 'bcgov-design-system'),
+      value: field.type,
+      options: Object.entries(FIELD_TYPES).map(function (_ref2) {
+        var _ref3 = _slicedToArray(_ref2, 2),
+          value = _ref3[0],
+          typeLabel = _ref3[1];
+        return {
+          value: value,
+          label: typeLabel
+        };
+      }),
+      onChange: function onChange(type) {
+        return _onChange('type', type);
+      }
+    }), field.type === 'select' && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_0__.TextareaControl, {
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Options', 'bcgov-design-system'),
+      value: formatOptionsToString(field),
+      onChange: onOptionsChange,
+      help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Enter one option per line', 'bcgov-design-system')
+    })]
+  });
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (MetadataFieldForm);
+
+/***/ }),
+
+/***/ "./assets/js/apps/metadata-settings/components/MetadataFieldList.js":
+/*!**************************************************************************!*\
+  !*** ./assets/js/apps/metadata-settings/components/MetadataFieldList.js ***!
+  \**************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+
+
+
+/**
+ * Metadata List Component
+ *
+ * Container component for displaying a list of metadata fields.
+ *
+ * @param {Object}      props          - Component props
+ * @param {JSX.Element} props.children - Child components to render
+ * @return {JSX.Element} Metadata list container
+ */
+
+var MetadataList = function MetadataList(_ref) {
+  var children = _ref.children;
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+    className: "metadata-fields-list",
+    children: children
+  });
+};
+
+/**
+ * Metadata Item Component
+ *
+ * Individual metadata field item with move controls.
+ *
+ * @param {Object}      props          - Component props
+ * @param {JSX.Element} props.children - Child components to render
+ * @return {JSX.Element} Metadata item with move controls
+ */
+var MetadataItem = function MetadataItem(_ref2) {
+  var children = _ref2.children;
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+    className: "metadata-field-item",
+    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+      className: "metadata-field-info",
+      children: children
+    })
+  });
+};
+
+/**
+ * Field Type Options
+ *
+ * Available metadata field types and their display labels.
+ *
+ * @constant {Object} FIELD_TYPES
+ */
+var FIELD_TYPES = {
+  text: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Text', 'bcgov-design-system'),
+  select: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Select', 'bcgov-design-system'),
+  date: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Date', 'bcgov-design-system')
+};
+
+/**
+ * Metadata Field List Component
+ *
+ * Displays a list of metadata fields with edit and delete actions.
+ *
+ * @param {Object}   props          - Component props
+ * @param {Array}    props.fields   - Array of metadata fields
+ * @param {Function} props.onEdit   - Callback when edit button is clicked
+ * @param {Function} props.onDelete - Callback when delete button is clicked
+ * @param {boolean}  props.isSaving - Whether a save operation is in progress
+ * @return {JSX.Element} List of metadata fields
+ */
+var MetadataFieldList = function MetadataFieldList(_ref3) {
+  var fields = _ref3.fields,
+    onEdit = _ref3.onEdit,
+    onDelete = _ref3.onDelete,
+    isSaving = _ref3.isSaving;
+  if (fields.length === 0) {
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+      className: "no-fields-message",
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+        children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('No custom metadata fields defined yet. Click "Add New Field" to create one.', 'bcgov-design-system')
+      })
+    });
+  }
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(MetadataList, {
+    children: fields.map(function (field, index) {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(MetadataItem, {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          className: "metadata-field-info",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h3", {
+            children: field.label
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
+            className: "field-id",
+            children: ["ID: ", field.id]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
+            className: "field-type",
+            children: ["Type: ", FIELD_TYPES[field.type]]
+          })]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          className: "metadata-field-actions",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_0__.Button, {
+            className: "doc-repo-button edit-button",
+            onClick: function onClick() {
+              return onEdit(field, index);
+            },
+            children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Edit', 'bcgov-design-system')
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_0__.Button, {
+            className: "doc-repo-button delete-button",
+            onClick: function onClick() {
+              return onDelete(field);
+            },
+            disabled: isSaving,
+            children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Delete', 'bcgov-design-system')
+          })]
+        })]
+      }, field.id);
+    })
+  });
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (MetadataFieldList);
 
 /***/ }),
 
@@ -1066,6 +982,225 @@ var DeleteFieldModal = function DeleteFieldModal(_ref) {
   });
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (DeleteFieldModal);
+
+/***/ }),
+
+/***/ "./assets/js/apps/metadata-settings/hooks/useMetadataFields.js":
+/*!*********************************************************************!*\
+  !*** ./assets/js/apps/metadata-settings/hooks/useMetadataFields.js ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/api-fetch */ "@wordpress/api-fetch");
+/* harmony import */ var _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_2__);
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(_typeof(e) + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, "catch": function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
+function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
+function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
+function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
+
+
+
+
+/**
+ * Custom hook for managing metadata fields
+ *
+ * @return {Object} Field management methods and state
+ */
+var useMetadataFields = function useMetadataFields() {
+  var _useState = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({
+      fields: [],
+      isLoading: true,
+      error: null,
+      isSaving: false,
+      modals: {
+        add: {
+          isOpen: false,
+          field: {
+            id: '',
+            label: '',
+            type: 'text',
+            options: [],
+            _rawOptionsText: ''
+          },
+          errors: {
+            label: '',
+            submit: ''
+          }
+        },
+        edit: {
+          isOpen: false,
+          field: null,
+          index: null,
+          errors: {
+            label: '',
+            submit: ''
+          },
+          originalValues: null
+        },
+        "delete": {
+          isOpen: false,
+          field: null
+        }
+      }
+    }),
+    _useState2 = _slicedToArray(_useState, 2),
+    state = _useState2[0],
+    setState = _useState2[1];
+  var apiNamespace = window.documentRepositorySettings.apiNamespace;
+
+  // Fetch fields from the API
+  var fetchFields = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useCallback)(/*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+    var fields;
+    return _regeneratorRuntime().wrap(function _callee$(_context) {
+      while (1) switch (_context.prev = _context.next) {
+        case 0:
+          _context.prev = 0;
+          _context.next = 3;
+          return _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_2___default()({
+            path: "/".concat(apiNamespace, "/metadata-fields")
+          });
+        case 3:
+          fields = _context.sent;
+          setState(function (prev) {
+            return _objectSpread(_objectSpread({}, prev), {}, {
+              fields: fields,
+              error: null,
+              isLoading: false
+            });
+          });
+          return _context.abrupt("return", {
+            success: true,
+            data: fields
+          });
+        case 8:
+          _context.prev = 8;
+          _context.t0 = _context["catch"](0);
+          setState(function (prev) {
+            return _objectSpread(_objectSpread({}, prev), {}, {
+              error: _context.t0.message || (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Error loading metadata fields', 'bcgov-design-system'),
+              isLoading: false
+            });
+          });
+          return _context.abrupt("return", {
+            success: false,
+            error: _context.t0.message || (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Error loading metadata fields', 'bcgov-design-system')
+          });
+        case 12:
+        case "end":
+          return _context.stop();
+      }
+    }, _callee, null, [[0, 8]]);
+  })), [apiNamespace]);
+
+  // Save fields to the API
+  var saveFields = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useCallback)(/*#__PURE__*/function () {
+    var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(fields) {
+      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+        while (1) switch (_context2.prev = _context2.next) {
+          case 0:
+            _context2.prev = 0;
+            _context2.next = 3;
+            return _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_2___default()({
+              path: "/".concat(apiNamespace, "/metadata-fields"),
+              method: 'PUT',
+              data: {
+                fields: fields
+              }
+            });
+          case 3:
+            return _context2.abrupt("return", {
+              success: true
+            });
+          case 6:
+            _context2.prev = 6;
+            _context2.t0 = _context2["catch"](0);
+            return _context2.abrupt("return", {
+              success: false,
+              error: _context2.t0.message || (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Error saving metadata fields', 'bcgov-design-system')
+            });
+          case 9:
+          case "end":
+            return _context2.stop();
+        }
+      }, _callee2, null, [[0, 6]]);
+    }));
+    return function (_x) {
+      return _ref2.apply(this, arguments);
+    };
+  }(), [apiNamespace]);
+
+  // Validate a field
+  var validateField = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useCallback)(function (field) {
+    var existingFields = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+    var currentIndex = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+    var errors = {};
+    if (!field.id) {
+      errors.id = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Field ID is required', 'bcgov-design-system');
+    }
+    if (!field.label) {
+      errors.label = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Field label is required', 'bcgov-design-system');
+    }
+
+    // Check for duplicate labels (case-insensitive)
+    var hasDuplicateLabel = existingFields.some(function (existing, index) {
+      return index !== currentIndex && existing.label.toLowerCase() === field.label.toLowerCase();
+    });
+    if (hasDuplicateLabel) {
+      errors.label = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('A field with this label already exists', 'bcgov-design-system');
+    }
+
+    // Check for duplicate IDs
+    var hasDuplicateId = existingFields.some(function (existing, index) {
+      return index !== currentIndex && existing.id === field.id;
+    });
+    if (hasDuplicateId) {
+      errors.id = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('A field with this ID already exists', 'bcgov-design-system');
+    }
+    if (field.type === 'select' && (!field.options || field.options.length === 0)) {
+      errors.options = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Select fields require at least one option', 'bcgov-design-system');
+    }
+    return errors;
+  }, []);
+
+  // Get initial field state
+  var getInitialFieldState = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useCallback)(function () {
+    return {
+      id: '',
+      label: '',
+      type: 'text',
+      options: [],
+      _rawOptionsText: ''
+    };
+  }, []);
+  return {
+    state: state,
+    setState: setState,
+    fetchFields: fetchFields,
+    saveFields: saveFields,
+    validateField: validateField,
+    getInitialFieldState: getInitialFieldState
+  };
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (useMetadataFields);
 
 /***/ }),
 

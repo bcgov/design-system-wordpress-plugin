@@ -10,7 +10,8 @@
  */
 
 @use "sass:color";
-@use "variables" as *;
+@use "abstracts/variables" as *;
+@use "abstracts/mixins" as mix;
 
 /* =========================================
    Basic Modal Elements - Least Specific
@@ -41,7 +42,6 @@
 		width: 2rem;
 		height: 2rem;
 		border: none;
-		background: none;
 		z-index: 10;
 
 		svg {
@@ -103,36 +103,33 @@
 	background-color: #f6f7f7;
 
 	.components-button {
-		min-width: 5rem;
 
-		&.is-secondary {
+		@include mix.button-base;
+	}
 
-			@include button-secondary;
+	.components-button.is-primary,
+	.components-button.save-button {
+
+		@include mix.button-primary;
+	}
+
+	.components-button.is-secondary,
+	.components-button.cancel-button {
+		background-color: $color-bg-light;
+		color: $color-text;
+		border: 1px solid $color-border;
+
+		&:hover {
+			background-color: $color-bg-lighter;
+			color: $color-text;
+			border-color: $color-border-focus;
 		}
+	}
 
-		&.is-primary {
+	.components-button.is-destructive,
+	.components-button.delete-button {
 
-			@include button-primary;
-
-			&:disabled {
-				background-color: #e0e0e0;
-				border-color: #e0e0e0;
-				color: #666;
-				opacity: 1;
-			}
-		}
-
-		&.is-destructive {
-
-			@include button-destructive;
-
-			&:disabled {
-				background-color: rgba($error-color, 0.3);
-				border-color: rgba($error-color, 0.3);
-				color: #fff;
-				opacity: 1;
-			}
-		}
+		@include mix.button-destructive;
 	}
 }
 
@@ -195,15 +192,15 @@
 					border-radius: 0.25rem;
 
 					&:focus {
-						border-color: $primary-color;
-						box-shadow: 0 0 0 0.125rem rgba($primary-color, 0.2);
+						border-color: $color-primary;
+						box-shadow: 0 0 0 0.125rem rgba($color-primary, 0.2);
 						outline: none;
 					}
 				}
 
 				.error-message {
 					font-size: 0.75rem;
-					color: $error-color;
+					color: $color-error;
 				}
 			}
 		}
@@ -227,15 +224,15 @@
 	.warning-message,
 	.delete-warning {
 		display: flex;
-		gap: 1rem;
-		padding: 1rem;
-		background-color: #fff7f7;
-		border-radius: 0.25rem;
-		margin: 1rem 1.5rem 1.5rem;
+		gap: $spacing-md;
+		padding: $spacing-md;
+		background-color: $color-error-light;
+		border-radius: $border-radius;
+		margin: $spacing-md $spacing-lg $spacing-lg;
 
 		.warning-icon {
-			color: $error-color;
-			font-size: 1.5rem;
+			color: $color-error;
+			font-size: $font-size-lg;
 			flex-shrink: 0;
 		}
 
@@ -244,15 +241,15 @@
 
 			h3,
 			strong {
-				font-size: 1rem;
-				color: #333;
-				margin: 0 0 0.5rem;
+				font-size: $font-size-base;
+				color: $color-text;
+				margin: 0 0 $spacing-sm;
 				display: block;
 			}
 
 			p {
-				font-size: 0.875rem;
-				color: #666;
+				font-size: $font-size-sm;
+				color: $color-text-light;
 				margin: 0;
 			}
 		}
@@ -262,32 +259,32 @@
 	.document-info {
 		display: grid;
 		grid-template-columns: auto 1fr;
-		gap: 0.5rem 1rem;
-		margin: 0 1.5rem 1.5rem;
-		padding: 1rem;
-		background: #f0f0f0;
-		border-radius: 0.25rem;
+		gap: $spacing-sm $spacing-md;
+		margin: 0 $spacing-lg $spacing-lg;
+		padding: $spacing-md;
+		background: $color-gray-100;
+		border-radius: $border-radius;
 
 		h3 {
-			font-size: 0.875rem;
-			font-weight: 600;
-			margin: 0 0 0.75rem;
-			color: #333;
+			font-size: $font-size-sm;
+			font-weight: $font-weight-bold;
+			margin: 0 0 $spacing-md;
+			color: $color-text;
 			grid-column: 1 / -1;
 		}
 
 		.field-label,
 		.label {
-			font-size: 0.875rem;
-			color: #666;
-			font-weight: 400;
+			font-size: $font-size-sm;
+			color: $color-text-light;
+			font-weight: $font-weight-normal;
 		}
 
 		.field-value,
 		.value {
-			font-size: 0.875rem;
-			color: #333;
-			font-weight: 500;
+			font-size: $font-size-sm;
+			color: $color-text;
+			font-weight: $font-weight-medium;
 		}
 	}
 
@@ -295,10 +292,10 @@
 	.delete-actions {
 		display: flex;
 		justify-content: flex-end;
-		gap: 0.75rem;
-		padding: 1rem 1.5rem;
-		border-top: 0.0625rem solid #ddd;
-		background-color: #f6f7f7;
+		gap: $spacing-md;
+		padding: $spacing-md $spacing-lg;
+		border-top: 0.0625rem solid $color-border;
+		background-color: $color-gray-100;
 		margin: 0;
 	}
 }
@@ -309,42 +306,42 @@
 	.metadata-fields {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
-		gap: 1.5rem;
+		gap: $spacing-lg;
 
 		.metadata-field {
 			display: flex;
 			flex-direction: column;
-			gap: 0.5rem;
+			gap: $spacing-sm;
 
 			.field-label {
-				font-size: 0.75rem;
-				color: #666;
+				font-size: $font-size-xs;
+				color: $color-text-light;
 			}
 
 			.field-value {
-				font-size: 0.875rem;
-				color: #333;
-				font-weight: 500;
+				font-size: $font-size-sm;
+				color: $color-text;
+				font-weight: $font-weight-medium;
 			}
 		}
 	}
 
 	.system-metadata {
-		margin-top: 1.5rem;
-		padding-top: 1.5rem;
-		border-top: 0.0625rem solid #ddd;
+		margin-top: $spacing-lg;
+		padding-top: $spacing-lg;
+		border-top: 0.0625rem solid $color-border;
 
 		h3 {
-			font-size: 0.875rem;
-			font-weight: 600;
-			color: #333;
-			margin: 0 0 1rem;
+			font-size: $font-size-sm;
+			font-weight: $font-weight-bold;
+			color: $color-text;
+			margin: 0 0 $spacing-md;
 		}
 
 		.metadata-fields {
 			display: grid;
 			grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
-			gap: 1rem;
+			gap: $spacing-md;
 		}
 	}
 }
@@ -355,93 +352,42 @@
 	.field-form {
 		display: flex;
 		flex-direction: column;
-		gap: 1.5rem;
+		gap: $spacing-lg;
 
 		.form-row {
 			display: grid;
 			grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
-			gap: 1.5rem;
+			gap: $spacing-lg;
 
 			.form-field {
 				display: flex;
 				flex-direction: column;
-				gap: 0.5rem;
+				gap: $spacing-sm;
 
 				label {
-					font-size: 0.875rem;
-					font-weight: 600;
-					color: #333;
+					font-size: $font-size-sm;
+					font-weight: $font-weight-bold;
+					color: $color-text;
 				}
 
 				.components-text-control__input,
 				.components-select-control__input {
 					width: 100%;
-					padding: 0.5rem;
-					font-size: 0.875rem;
-					border: 0.0625rem solid #ddd;
-					border-radius: 0.25rem;
+					padding: $spacing-sm;
+					font-size: $font-size-sm;
+					border: 0.0625rem solid $color-border;
+					border-radius: $border-radius;
 
 					&:focus {
-						border-color: $primary-color;
-						box-shadow: 0 0 0 0.125rem rgba($primary-color, 0.2);
+						border-color: $color-primary;
+						box-shadow: 0 0 0 0.125rem rgba($color-primary, 0.2);
 						outline: none;
 					}
 				}
 
 				.error-message {
-					font-size: 0.75rem;
-					color: $error-color;
-				}
-			}
-		}
-
-		.options-section {
-
-			h3 {
-				font-size: 0.875rem;
-				font-weight: 600;
-				color: #333;
-				margin: 0 0 1rem;
-			}
-
-			.options-list {
-				display: flex;
-				flex-direction: column;
-				gap: 0.75rem;
-
-				.option-item {
-					display: flex;
-					align-items: center;
-					gap: 0.75rem;
-
-					.components-text-control__input {
-						flex: 1;
-					}
-
-					.components-button {
-						height: 2rem;
-						width: 2rem;
-						min-width: 2rem;
-						padding: 0;
-						color: $error-color;
-
-						svg {
-							width: 1rem;
-							height: 1rem;
-						}
-					}
-				}
-			}
-
-			.add-option-button {
-				margin-top: 1rem;
-				display: flex;
-				align-items: center;
-				gap: 0.5rem;
-
-				svg {
-					width: 1rem;
-					height: 1rem;
+					font-size: $font-size-xs;
+					color: $color-error;
 				}
 			}
 		}
@@ -455,7 +401,7 @@
 	// Using less specific selectors first
 	.components-button {
 		// Button base styles
-		@include button-base;
+		@include mix.button-base;
 	}
 
 	// Then more specific selectors
@@ -464,20 +410,20 @@
 
 		p {
 			font-size: $font-size-base;
-			color: $text-color;
+			color: $color-text;
 			margin: 0 0 $spacing-lg 0;
 			line-height: $line-height-base;
 		}
 
 		.documents-to-delete {
 
-			@include info-box;
+			@include mix.info-box;
 
 			h4 {
 				margin: 0 0 $spacing-sm 0;
 				font-size: $font-size-base;
 				font-weight: $font-weight-medium;
-				color: $text-color;
+				color: $color-text;
 			}
 
 			ul {
@@ -506,7 +452,7 @@
 
 				li {
 					font-size: $font-size-sm;
-					color: $text-color;
+					color: $color-text;
 					line-height: $line-height-base;
 					padding: $spacing-xs 0;
 					display: list-item;
@@ -515,12 +461,12 @@
 		}
 
 		.delete-warning {
-			color: $error-color;
+			color: $color-error;
 			font-size: $font-size-sm;
 			margin: 0 0 $spacing-lg 0;
 			padding: $spacing-sm $spacing-md;
-			background: $background-error-light;
-			border: 0.0625rem solid color.adjust($error-color, $alpha: -0.8);
+			background: $color-error-light;
+			border: 0.0625rem solid color.adjust($color-error, $alpha: -0.8);
 			border-radius: $border-radius-sm;
 			line-height: $line-height-base;
 			display: flex;
@@ -535,7 +481,69 @@
 
 		.modal-actions {
 
-			@include modal-actions;
+			@include mix.modal-actions;
+		}
+	}
+}
+
+/* =========================================
+   Metadata Fields List - Medium Specificity
+   ========================================= */
+
+.metadata-field-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: $spacing-md;
+	border: 1px solid $color-border;
+	border-radius: $border-radius;
+	margin-bottom: $spacing-md;
+	background-color: $color-white;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+	&:hover {
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	}
+	
+	.metadata-field-info {
+		flex: 1;
+		
+		h3 {
+			margin: 0 0 $spacing-xs;
+			font-size: $font-size-base;
+			font-weight: $font-weight-bold;
+			color: $color-text;
+		}
+		
+		p {
+			margin: 0;
+			font-size: $font-size-sm;
+			color: $color-text-light;
+			line-height: 1.4;
+			
+			&.field-id {
+				font-family: $font-family-mono;
+				font-size: $font-size-xs;
+				margin-bottom: $spacing-xs;
+			}
+		}
+	}
+	
+	.metadata-field-actions {
+		display: flex;
+		gap: $spacing-md;
+		
+		.components-button {
+			min-height: 36px;
+			
+			&.edit-button:hover {
+				background-color: rgba($color-primary, 0.1);
+				color: $color-primary;
+			}
+			
+			&.delete-button:hover {
+				background-color: rgba($color-error, 0.1);
+			}
 		}
 	}
 }

@@ -1323,7 +1323,7 @@ var UploadArea = function UploadArea(_ref) {
     }
   }, [handleUploadClick]);
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
-    className: "drag-drop-area ".concat(isDragging ? 'is-drag-active' : ''),
+    className: "upload-area__container ".concat(isDragging ? 'upload-area__container--drag-active' : ''),
     onDragEnter: handleDragEnter,
     onDragOver: handleDragOver,
     onDragLeave: handleDragLeave,
@@ -1336,17 +1336,15 @@ var UploadArea = function UploadArea(_ref) {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
       type: "file",
       ref: fileInputRef,
-      style: {
-        display: 'none'
-      },
+      className: "upload-area__file-input",
       onChange: handleFileInputChange,
       multiple: true,
       accept: acceptMimeTypes,
       "aria-hidden": "true"
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
-      className: "drag-drop-content",
+      className: "upload-area__content",
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
-        className: "drag-drop-icon",
+        className: "upload-area__icon",
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("svg", {
           xmlns: "http://www.w3.org/2000/svg",
           viewBox: "0 0 24 24",
@@ -1358,11 +1356,13 @@ var UploadArea = function UploadArea(_ref) {
           })
         })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h3", {
+        className: "upload-area__text",
         children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Drag & Drop or Click to Upload', 'bcgov-design-system')
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
+        className: "upload-area__help-text",
         children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Upload PDF documents to the repository', 'bcgov-design-system')
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
-        className: "doc-repo-button edit-button upload-button",
+        className: "upload-area__button",
         onClick: function onClick(e) {
           e.stopPropagation();
           handleUploadClick();
@@ -1596,10 +1596,10 @@ var UploadFeedback = function UploadFeedback(_ref) {
 
 /***/ }),
 
-/***/ "./assets/js/apps/document-repository/components/DocumentList/VirtualizedDocumentTable.js":
-/*!************************************************************************************************!*\
-  !*** ./assets/js/apps/document-repository/components/DocumentList/VirtualizedDocumentTable.js ***!
-  \************************************************************************************************/
+/***/ "./assets/js/apps/document-repository/components/DocumentList/VirtualDocumentTable.js":
+/*!********************************************************************************************!*\
+  !*** ./assets/js/apps/document-repository/components/DocumentList/VirtualDocumentTable.js ***!
+  \********************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -1615,7 +1615,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _hooks_useVirtualization__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./hooks/useVirtualization */ "./assets/js/apps/document-repository/components/DocumentList/hooks/useVirtualization.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 /**
- * VirtualizedDocumentTable Component
+ * VirtualDocumentTable Component
  *
  * A performance-optimized version of DocumentTable that uses virtualization
  * to render only the visible rows in the viewport, greatly improving
@@ -1628,7 +1628,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /**
- * VirtualizedDocumentTable Component
+ * VirtualDocumentTable Component
  *
  * @param {Object}   props                    Component props
  * @param {Array}    props.documents          List of documents to display
@@ -1645,7 +1645,7 @@ __webpack_require__.r(__webpack_exports__);
  * @param {Function} props.formatFileSize     Function to format file size
  */
 
-var VirtualizedDocumentTable = function VirtualizedDocumentTable(_ref) {
+var VirtualDocumentTable = function VirtualDocumentTable(_ref) {
   var _ref$documents = _ref.documents,
     documents = _ref$documents === void 0 ? [] : _ref$documents,
     _ref$selectedDocument = _ref.selectedDocuments,
@@ -1845,7 +1845,7 @@ var VirtualizedDocumentTable = function VirtualizedDocumentTable(_ref) {
     })
   });
 };
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (VirtualizedDocumentTable);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (VirtualDocumentTable);
 
 /***/ }),
 
@@ -3099,7 +3099,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _ErrorBoundary__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ErrorBoundary */ "./assets/js/apps/document-repository/components/DocumentList/ErrorBoundary.js");
 /* harmony import */ var _DocumentTable__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./DocumentTable */ "./assets/js/apps/document-repository/components/DocumentList/DocumentTable.js");
-/* harmony import */ var _VirtualizedDocumentTable__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./VirtualizedDocumentTable */ "./assets/js/apps/document-repository/components/DocumentList/VirtualizedDocumentTable.js");
+/* harmony import */ var _VirtualDocumentTable__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./VirtualDocumentTable */ "./assets/js/apps/document-repository/components/DocumentList/VirtualDocumentTable.js");
 /* harmony import */ var _UploadFeedback__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./UploadFeedback */ "./assets/js/apps/document-repository/components/DocumentList/UploadFeedback.js");
 /* harmony import */ var _shared_components_MetadataModal__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../shared/components/MetadataModal */ "./assets/js/apps/shared/components/MetadataModal.js");
 /* harmony import */ var _UploadArea__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./UploadArea */ "./assets/js/apps/document-repository/components/DocumentList/UploadArea.js");
@@ -3112,10 +3112,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _hooks_useDocumentManagement__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./hooks/useDocumentManagement */ "./assets/js/apps/document-repository/components/DocumentList/hooks/useDocumentManagement.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
-function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -3300,97 +3296,58 @@ var DocumentList = function DocumentList(_ref) {
       formatFileSize: formatFileSize
     };
   }, [localDocuments, selectedDocuments, onSelectDocument, onSelectAll, isDeleting, metadataFields, isSpreadsheetMode, bulkEditedMetadata, handleEditMetadata, handleMetadataChange, formatFileSize, setDeleteDocument]);
+  var handleFilesWithLog = function handleFilesWithLog(files) {
+    handleFiles(files);
+  };
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)(_ErrorBoundary__WEBPACK_IMPORTED_MODULE_3__["default"], {
     children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsxs)("div", {
       className: "document-list",
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)(_RetryNotice__WEBPACK_IMPORTED_MODULE_10__["default"], {
         failedOperations: failedOperations,
         onRetryAll: handleRetryAll
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)(_UploadArea__WEBPACK_IMPORTED_MODULE_8__["default"], {
-        onFilesSelected: handleFiles,
-        acceptMimeTypes: "application/pdf"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)("div", {
-        className: "document-list-actions",
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsxs)("div", {
-          className: "document-list-left-actions",
-          children: [selectedDocuments.length > 0 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsxs)("div", {
+        className: "document-list__actions",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)("div", {
+          className: "document-list__left-actions"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)("div", {
+          className: "document-list__right-actions",
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)(_UploadArea__WEBPACK_IMPORTED_MODULE_8__["default"], {
+            onFilesSelected: handleFilesWithLog
+          })
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsxs)("div", {
+        className: "document-list__table-actions",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsxs)("div", {
+          className: "action-buttons-container",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
+            className: "doc-repo-button spreadsheet-toggle".concat(isSpreadsheetMode ? ' isPressed' : ''),
+            onClick: function onClick() {
+              return toggleSpreadsheetMode(!isSpreadsheetMode);
+            },
+            isPressed: isSpreadsheetMode,
+            children: isSpreadsheetMode ? (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Exit Spreadsheet Mode', 'bcgov-design-system') : (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Enter Spreadsheet Mode', 'bcgov-design-system')
+          }), selectedDocuments.length > 0 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
             className: "doc-repo-button delete-button bulk-delete-button",
             onClick: openBulkDeleteConfirm,
             disabled: isMultiDeleting,
             children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.sprintf)(/* translators: %d: number of selected documents */
             (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Delete Selected (%d)', 'bcgov-design-system'), selectedDocuments.length)
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)("div", {
-            className: "mode-toggle",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsxs)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
-              className: "doc-repo-button edit-button",
-              onClick: function onClick() {
-                return toggleSpreadsheetMode(!isSpreadsheetMode);
-              },
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)("svg", {
-                viewBox: "0 0 24 24",
-                width: "16",
-                height: "16",
-                fill: "currentColor",
-                "aria-hidden": "true",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)("path", {
-                  d: "M4 4h16v16H4V4zm5.333 0v16m5.334-16v16M4 9.333h16m-16 5.334h16",
-                  strokeWidth: "2",
-                  stroke: "currentColor",
-                  fill: "none"
-                })
-              }), isSpreadsheetMode ? (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Exit Spreadsheet Mode', 'bcgov-design-system') : (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Enter Spreadsheet Mode', 'bcgov-design-system')]
-            })
-          }), isSpreadsheetMode && hasMetadataChanges && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
-            isPrimary: true,
-            onClick: handleSaveBulkChanges,
-            disabled: isSavingBulk,
-            children: isSavingBulk ? (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Saving Changes…', 'bcgov-design-system') : (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Save Changes', 'bcgov-design-system')
           })]
-        })
-      }), documents.length > VIRTUALIZATION_THRESHOLD ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)(_VirtualizedDocumentTable__WEBPACK_IMPORTED_MODULE_5__["default"], _objectSpread({}, documentTableProps)) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)(_DocumentTable__WEBPACK_IMPORTED_MODULE_4__["default"], _objectSpread({}, documentTableProps)), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)(_PaginationControls__WEBPACK_IMPORTED_MODULE_9__["default"], {
+        }), isSpreadsheetMode && hasMetadataChanges && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
+          className: "doc-repo-button save-button",
+          onClick: handleSaveBulkChanges,
+          isBusy: isSavingBulk,
+          disabled: isSavingBulk,
+          children: isSavingBulk ? (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Saving…', 'bcgov-design-system') : (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Save Changes', 'bcgov-design-system')
+        })]
+      }), documents.length >= VIRTUALIZATION_THRESHOLD ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)(_VirtualDocumentTable__WEBPACK_IMPORTED_MODULE_5__["default"], _objectSpread({}, documentTableProps)) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)(_DocumentTable__WEBPACK_IMPORTED_MODULE_4__["default"], _objectSpread({}, documentTableProps)), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)(_PaginationControls__WEBPACK_IMPORTED_MODULE_9__["default"], {
         currentPage: currentPage,
         totalPages: totalPages,
         onPageChange: onPageChange
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)(_UploadFeedback__WEBPACK_IMPORTED_MODULE_6__["default"], {
+      }), showUploadFeedback && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)(_UploadFeedback__WEBPACK_IMPORTED_MODULE_6__["default"], {
         uploadingFiles: uploadingFiles,
         showUploadFeedback: showUploadFeedback,
         onClose: closeUploadFeedback
-      }), bulkDeleteConfirmOpen && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)(_shared_components_MetadataModal__WEBPACK_IMPORTED_MODULE_7__["default"], {
-        title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Delete Selected Documents', 'bcgov-design-system'),
-        isOpen: bulkDeleteConfirmOpen,
-        onClose: closeBulkDeleteConfirm,
-        onSave: function onSave() {
-          return handleBulkDelete(selectedDocuments);
-        },
-        isSaving: isMultiDeleting,
-        isDisabled: false,
-        saveButtonText: isMultiDeleting ? (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Deleting…', 'bcgov-design-system') : /* translators: %d: number of selected documents */
-        (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.sprintf)(/* translators: %d: number of selected documents */
-        (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Delete Selected (%d)', 'bcgov-design-system'), selectedDocuments.length),
-        saveButtonClassName: "doc-repo-button delete-button",
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsxs)("div", {
-          className: "delete-confirmation-content",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)("p", {
-            children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.sprintf)(/* translators: %d: number of selected documents */
-            (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Are you sure you want to delete %d selected document(s)?', 'bcgov-design-system'), selectedDocuments.length)
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsxs)("div", {
-            className: "documents-to-delete",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)("h4", {
-              children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Documents to be deleted:', 'bcgov-design-system')
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)("ul", {
-              children: documents.filter(function (doc) {
-                return selectedDocuments.includes(doc.id);
-              }).map(function (doc) {
-                return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)("li", {
-                  children: doc.title || doc.filename
-                }, doc.id);
-              })
-            })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)("p", {
-            className: "delete-warning",
-            children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('This action cannot be undone.', 'bcgov-design-system')
-          })]
-        })
       }), deleteDocument && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)(_shared_components_MetadataModal__WEBPACK_IMPORTED_MODULE_7__["default"], {
         title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Delete Document', 'bcgov-design-system'),
         isOpen: !!deleteDocument,
@@ -3406,75 +3363,95 @@ var DocumentList = function DocumentList(_ref) {
         saveButtonClassName: "doc-repo-button delete-button",
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsxs)("div", {
           className: "delete-confirmation-content",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)("p", {
-            children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Are you sure you want to delete this document?', 'bcgov-design-system')
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)("div", {
+            className: "delete-warning",
+            children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Are you sure you want to delete this document? This action cannot be undone.', 'bcgov-design-system')
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsxs)("div", {
             className: "documents-to-delete",
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)("h4", {
               children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Document to be deleted:', 'bcgov-design-system')
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)("ul", {
               children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)("li", {
-                children: deleteDocument.title || deleteDocument.filename
+                children: deleteDocument.title
               })
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)("p", {
+          })]
+        })
+      }), bulkDeleteConfirmOpen && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)(_shared_components_MetadataModal__WEBPACK_IMPORTED_MODULE_7__["default"], {
+        title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Delete Selected Documents', 'bcgov-design-system'),
+        isOpen: bulkDeleteConfirmOpen,
+        onClose: closeBulkDeleteConfirm,
+        onSave: function onSave() {
+          return handleBulkDelete(selectedDocuments);
+        },
+        isSaving: isMultiDeleting,
+        isDisabled: false,
+        saveButtonText: isMultiDeleting ? (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Deleting…', 'bcgov-design-system') : (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Delete Selected', 'bcgov-design-system'),
+        saveButtonClassName: "doc-repo-button delete-button",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsxs)("div", {
+          className: "delete-confirmation-content",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)("div", {
             className: "delete-warning",
-            children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('This action cannot be undone.', 'bcgov-design-system')
+            children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Are you sure you want to delete the selected documents? This action cannot be undone.', 'bcgov-design-system')
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsxs)("div", {
+            className: "documents-to-delete",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)("h4", {
+              children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.sprintf)(/* translators: %d: number of selected documents */
+              (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Documents to be deleted (%d):', 'bcgov-design-system'), selectedDocuments.length)
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)("ul", {
+              children: localDocuments.filter(function (doc) {
+                return selectedDocuments.includes(doc.id);
+              }).map(function (doc) {
+                return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)("li", {
+                  children: doc.title
+                }, doc.id);
+              })
+            })]
           })]
         })
       }), editingMetadata && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsxs)(_shared_components_MetadataModal__WEBPACK_IMPORTED_MODULE_7__["default"], {
         title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Edit Document Metadata', 'bcgov-design-system'),
         isOpen: !!editingMetadata,
         onClose: function onClose() {
-          // Simply call handleEditMetadata with null to close the modal
-          handleEditMetadata(null);
+          return handleEditMetadata(null);
         },
         onSave: handleSaveMetadata,
         isSaving: isSavingMetadata,
-        isDisabled: !hasMetadataChanged(),
+        isDisabled: !hasMetadataChanged,
+        saveButtonText: isSavingMetadata ? (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Saving…', 'bcgov-design-system') : (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Save Changes', 'bcgov-design-system'),
+        saveButtonClassName: "doc-repo-button save-button",
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)("div", {
           className: "editable-metadata",
           children: metadataFields.map(function (field) {
-            var _editedValues$field$i;
-            var error = metadataErrors[field.id];
-            var currentValue = (_editedValues$field$i = editedValues[field.id]) !== null && _editedValues$field$i !== void 0 ? _editedValues$field$i : '';
             return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsxs)("div", {
               className: "metadata-field",
-              children: [field.type === 'select' ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.SelectControl, {
-                label: field.label,
-                value: currentValue,
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)("label", {
+                htmlFor: field.id,
+                children: field.label
+              }), field.type === 'select' ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.SelectControl, {
+                id: field.id,
+                value: editedValues[field.id] || '',
                 options: [{
                   label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Select…', 'bcgov-design-system'),
                   value: ''
-                }].concat(_toConsumableArray(Array.isArray(field.options) ? field.options.map(function (option) {
+                }].concat(_toConsumableArray(field.options.map(function (option) {
                   return {
                     label: option,
                     value: option
                   };
-                }) : Object.entries(field.options || {}).map(function (_ref2) {
-                  var _ref3 = _slicedToArray(_ref2, 2),
-                    value = _ref3[0],
-                    label = _ref3[1];
-                  return {
-                    label: label,
-                    value: value
-                  };
                 }))),
                 onChange: function onChange(value) {
                   return updateEditedField(field.id, value);
-                },
-                id: "metadata-field-".concat(field.id)
+                }
               }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.TextControl, {
-                label: field.label,
-                value: currentValue,
+                id: field.id,
+                value: editedValues[field.id] || '',
                 onChange: function onChange(value) {
                   return updateEditedField(field.id, value);
-                },
-                type: field.type === 'date' ? 'date' : 'text',
-                id: "metadata-field-".concat(field.id)
-              }), error && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)("div", {
+                }
+              }), metadataErrors[field.id] && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx)("div", {
                 className: "metadata-error",
-                children: error
+                children: metadataErrors[field.id]
               })]
             }, field.id);
           })
@@ -3990,7 +3967,7 @@ var DocumentUploader = function DocumentUploader(_ref) {
         },
         children: error
       }), !modalMode && !file && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
-        className: "document-uploader-dropzone ".concat(isDragging ? 'dragging' : ''),
+        className: "upload-area__container ".concat(isDragging ? 'upload-area__container--drag-active' : ''),
         onDragEnter: handleDragEnter,
         onDragOver: handleDragOver,
         onDragLeave: handleDragLeave,
@@ -4008,42 +3985,43 @@ var DocumentUploader = function DocumentUploader(_ref) {
           type: "file",
           ref: fileInputRef,
           onChange: handleFileChange,
-          style: {
-            display: 'none'
-          },
+          className: "upload-area__file-input",
           accept: Object.values(allowedMimeTypes).join(',')
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
-          className: "dropzone-icon",
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("svg", {
-            viewBox: "0 0 64 64",
-            width: "64",
-            height: "64",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("path", {
-              d: "M32 16v24M20 28l12-12 12 12",
-              fill: "none",
-              stroke: "currentColor",
-              strokeWidth: "2",
-              strokeLinecap: "round",
-              strokeLinejoin: "round"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("path", {
-              d: "M16 48h32M12 20v28c0 2.2 1.8 4 4 4h32c2.2 0 4-1.8 4-4V20",
-              fill: "none",
-              stroke: "currentColor",
-              strokeWidth: "2",
-              strokeLinecap: "round"
-            })]
-          })
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
-          className: "dropzone-text",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
-            className: "primary-text",
-            children: isDragging ? (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Drop file here', 'bcgov-design-system') : (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Drag & drop your file here or click to browse', 'bcgov-design-system')
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("p", {
-            className: "secondary-text",
-            children: [(0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Accepted file types:', 'bcgov-design-system'), ' ', Object.keys(allowedMimeTypes).join(', ')]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("p", {
-            className: "secondary-text",
-            children: [(0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Maximum file size:', 'bcgov-design-system'), ' ', Math.round(maxFileSize / (1024 * 1024)), ' ', "MB"]
+          className: "upload-area__content",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+            className: "upload-area__icon",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("svg", {
+              viewBox: "0 0 64 64",
+              width: "64",
+              height: "64",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("path", {
+                d: "M32 16v24M20 28l12-12 12 12",
+                fill: "none",
+                stroke: "currentColor",
+                strokeWidth: "2",
+                strokeLinecap: "round",
+                strokeLinejoin: "round"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("path", {
+                d: "M16 48h32M12 20v28c0 2.2 1.8 4 4 4h32c2.2 0 4-1.8 4-4V20",
+                fill: "none",
+                stroke: "currentColor",
+                strokeWidth: "2",
+                strokeLinecap: "round"
+              })]
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+            className: "upload-area__text",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
+              className: "upload-area__text-primary",
+              children: isDragging ? (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Drop file here', 'bcgov-design-system') : (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Drag & drop your file here or click to browse', 'bcgov-design-system')
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("p", {
+              className: "upload-area__help-text",
+              children: [(0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Accepted file types:', 'bcgov-design-system'), ' ', Object.keys(allowedMimeTypes).join(', ')]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("p", {
+              className: "upload-area__help-text",
+              children: [(0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Maximum file size:', 'bcgov-design-system'), ' ', Math.round(maxFileSize / (1024 * 1024)), ' ', "MB"]
+            })]
           })]
         })]
       }), modalMode && !file && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {

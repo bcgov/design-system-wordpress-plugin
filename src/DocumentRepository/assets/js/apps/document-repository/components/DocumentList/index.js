@@ -3,7 +3,7 @@ import { Button, SelectControl, TextControl } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
 import ErrorBoundary from './ErrorBoundary';
 import DocumentTable from './DocumentTable';
-import VirtualizedDocumentTable from './VirtualizedDocumentTable';
+import VirtualDocumentTable from './VirtualDocumentTable';
 import UploadFeedback from './UploadFeedback';
 import MetadataModal from '../../../shared/components/MetadataModal';
 import UploadArea from './UploadArea';
@@ -190,6 +190,10 @@ const DocumentList = ( {
 		]
 	);
 
+	const handleFilesWithLog = ( files ) => {
+		handleFiles( files );
+	};
+
 	return (
 		<ErrorBoundary>
 			<div className="document-list">
@@ -198,22 +202,43 @@ const DocumentList = ( {
 					onRetryAll={ handleRetryAll }
 				/>
 
-				{ /* Upload Section */ }
-				<UploadArea
-					onFilesSelected={ handleFiles }
-					acceptMimeTypes="application/pdf"
-				/>
+				<div className="document-list__actions">
+					<div className="document-list__left-actions">
+						{/* Delete button moved to table actions section */}
+					</div>
+					<div className="document-list__right-actions">
+						<UploadArea onFilesSelected={ handleFilesWithLog } />
+					</div>
+				</div>
 
-				{ /* Bulk Delete Button and Spreadsheet Mode Toggle */ }
-				<div className="document-list-actions">
-					<div className="document-list-left-actions">
+				<div className="document-list__table-actions">
+					<div className="action-buttons-container">
+						<Button
+							className={ `doc-repo-button spreadsheet-toggle${
+								isSpreadsheetMode ? ' isPressed' : ''
+							}` }
+							onClick={ () =>
+								toggleSpreadsheetMode( ! isSpreadsheetMode )
+							}
+							isPressed={ isSpreadsheetMode }
+						>
+							{ isSpreadsheetMode
+								? __(
+										'Exit Spreadsheet Mode',
+										'bcgov-design-system'
+								  )
+								: __(
+										'Enter Spreadsheet Mode',
+										'bcgov-design-system'
+								  ) }
+						</Button>
+
 						{ selectedDocuments.length > 0 && (
 							<Button
 								className="doc-repo-button delete-button bulk-delete-button"
 								onClick={ openBulkDeleteConfirm }
 								disabled={ isMultiDeleting }
 							>
-								{ /* translators: %d: number of selected documents */ }
 								{ sprintf(
 									/* translators: %d: number of selected documents */
 									__(
@@ -224,148 +249,45 @@ const DocumentList = ( {
 								) }
 							</Button>
 						) }
-						<div className="mode-toggle">
-							<Button
-								className="doc-repo-button edit-button"
-								onClick={ () =>
-									toggleSpreadsheetMode( ! isSpreadsheetMode )
-								}
-							>
-								<svg
-									viewBox="0 0 24 24"
-									width="16"
-									height="16"
-									fill="currentColor"
-									aria-hidden="true"
-								>
-									<path
-										d="M4 4h16v16H4V4zm5.333 0v16m5.334-16v16M4 9.333h16m-16 5.334h16"
-										strokeWidth="2"
-										stroke="currentColor"
-										fill="none"
-									/>
-								</svg>
-								{ isSpreadsheetMode
-									? __(
-											'Exit Spreadsheet Mode',
-											'bcgov-design-system'
-									  )
-									: __(
-											'Enter Spreadsheet Mode',
-											'bcgov-design-system'
-									  ) }
-							</Button>
-						</div>
-						{ /* Critical for spreadsheet mode: Save Changes button appears when changes are made */ }
-						{ isSpreadsheetMode && hasMetadataChanges && (
-							<Button
-								isPrimary
-								onClick={ handleSaveBulkChanges }
-								disabled={ isSavingBulk }
-							>
-								{ isSavingBulk
-									? __(
-											'Saving Changes…',
-											'bcgov-design-system'
-									  )
-									: __(
-											'Save Changes',
-											'bcgov-design-system'
-									  ) }
-							</Button>
-						) }
 					</div>
+
+					{ isSpreadsheetMode && hasMetadataChanges && (
+						<Button
+							className="doc-repo-button save-button"
+							onClick={ handleSaveBulkChanges }
+							isBusy={ isSavingBulk }
+							disabled={ isSavingBulk }
+						>
+							{ isSavingBulk
+								? __( 'Saving…', 'bcgov-design-system' )
+								: __(
+										'Save Changes',
+										'bcgov-design-system'
+								  ) }
+						</Button>
+					) }
 				</div>
 
-				{ /* Document Table */ }
-				{ documents.length > VIRTUALIZATION_THRESHOLD ? (
-					<VirtualizedDocumentTable { ...documentTableProps } />
+				{ documents.length >= VIRTUALIZATION_THRESHOLD ? (
+					<VirtualDocumentTable { ...documentTableProps } />
 				) : (
 					<DocumentTable { ...documentTableProps } />
 				) }
 
-				{ /* Pagination Controls */ }
 				<PaginationControls
 					currentPage={ currentPage }
 					totalPages={ totalPages }
 					onPageChange={ onPageChange }
 				/>
 
-				<UploadFeedback
-					uploadingFiles={ uploadingFiles }
-					showUploadFeedback={ showUploadFeedback }
-					onClose={ closeUploadFeedback }
-				/>
-
-				{ /* Bulk Delete Confirmation Modal */ }
-				{ bulkDeleteConfirmOpen && (
-					<MetadataModal
-						title={ __(
-							'Delete Selected Documents',
-							'bcgov-design-system'
-						) }
-						isOpen={ bulkDeleteConfirmOpen }
-						onClose={ closeBulkDeleteConfirm }
-						onSave={ () => handleBulkDelete( selectedDocuments ) }
-						isSaving={ isMultiDeleting }
-						isDisabled={ false }
-						saveButtonText={
-							isMultiDeleting
-								? __( 'Deleting…', 'bcgov-design-system' )
-								: /* translators: %d: number of selected documents */
-								  sprintf(
-										/* translators: %d: number of selected documents */
-										__(
-											'Delete Selected (%d)',
-											'bcgov-design-system'
-										),
-										selectedDocuments.length
-								  )
-						}
-						saveButtonClassName="doc-repo-button delete-button"
-					>
-						<div className="delete-confirmation-content">
-							<p>
-								{ /* translators: %d: number of selected documents */ }
-								{ sprintf(
-									/* translators: %d: number of selected documents */
-									__(
-										'Are you sure you want to delete %d selected document(s)?',
-										'bcgov-design-system'
-									),
-									selectedDocuments.length
-								) }
-							</p>
-							<div className="documents-to-delete">
-								<h4>
-									{ __(
-										'Documents to be deleted:',
-										'bcgov-design-system'
-									) }
-								</h4>
-								<ul>
-									{ documents
-										.filter( ( doc ) =>
-											selectedDocuments.includes( doc.id )
-										)
-										.map( ( doc ) => (
-											<li key={ doc.id }>
-												{ doc.title || doc.filename }
-											</li>
-										) ) }
-								</ul>
-							</div>
-							<p className="delete-warning">
-								{ __(
-									'This action cannot be undone.',
-									'bcgov-design-system'
-								) }
-							</p>
-						</div>
-					</MetadataModal>
+				{ showUploadFeedback && (
+					<UploadFeedback
+						uploadingFiles={ uploadingFiles }
+						showUploadFeedback={ showUploadFeedback }
+						onClose={ closeUploadFeedback }
+					/>
 				) }
 
-				{ /* Single Delete Confirmation Modal */ }
 				{ deleteDocument && (
 					<MetadataModal
 						title={ __( 'Delete Document', 'bcgov-design-system' ) }
@@ -382,12 +304,12 @@ const DocumentList = ( {
 						saveButtonClassName="doc-repo-button delete-button"
 					>
 						<div className="delete-confirmation-content">
-							<p>
+							<div className="delete-warning">
 								{ __(
-									'Are you sure you want to delete this document?',
+									'Are you sure you want to delete this document? This action cannot be undone.',
 									'bcgov-design-system'
 								) }
-							</p>
+							</div>
 							<div className="documents-to-delete">
 								<h4>
 									{ __(
@@ -396,18 +318,62 @@ const DocumentList = ( {
 									) }
 								</h4>
 								<ul>
-									<li>
-										{ deleteDocument.title ||
-											deleteDocument.filename }
-									</li>
+									<li>{ deleteDocument.title }</li>
 								</ul>
 							</div>
-							<p className="delete-warning">
+						</div>
+					</MetadataModal>
+				) }
+
+				{ /* Bulk Delete Confirmation Modal */ }
+				{ bulkDeleteConfirmOpen && (
+					<MetadataModal
+						title={ __(
+							'Delete Selected Documents',
+							'bcgov-design-system'
+						) }
+						isOpen={ bulkDeleteConfirmOpen }
+						onClose={ closeBulkDeleteConfirm }
+						onSave={ () => handleBulkDelete( selectedDocuments ) }
+						isSaving={ isMultiDeleting }
+						isDisabled={ false }
+						saveButtonText={
+							isMultiDeleting
+								? __( 'Deleting…', 'bcgov-design-system' )
+								: __( 'Delete Selected', 'bcgov-design-system' )
+						}
+						saveButtonClassName="doc-repo-button delete-button"
+					>
+						<div className="delete-confirmation-content">
+							<div className="delete-warning">
 								{ __(
-									'This action cannot be undone.',
+									'Are you sure you want to delete the selected documents? This action cannot be undone.',
 									'bcgov-design-system'
 								) }
-							</p>
+							</div>
+							<div className="documents-to-delete">
+								<h4>
+									{ sprintf(
+										/* translators: %d: number of selected documents */
+										__(
+											'Documents to be deleted (%d):',
+											'bcgov-design-system'
+										),
+										selectedDocuments.length
+									) }
+								</h4>
+								<ul>
+									{ localDocuments
+										.filter( ( doc ) =>
+											selectedDocuments.includes( doc.id )
+										)
+										.map( ( doc ) => (
+											<li key={ doc.id }>
+												{ doc.title }
+											</li>
+										) ) }
+								</ul>
+							</div>
 						</div>
 					</MetadataModal>
 				) }
@@ -419,97 +385,76 @@ const DocumentList = ( {
 							'bcgov-design-system'
 						) }
 						isOpen={ !! editingMetadata }
-						onClose={ () => {
-							// Simply call handleEditMetadata with null to close the modal
-							handleEditMetadata( null );
-						} }
+						onClose={ () => handleEditMetadata( null ) }
 						onSave={ handleSaveMetadata }
 						isSaving={ isSavingMetadata }
-						isDisabled={ ! hasMetadataChanged() }
+						isDisabled={ ! hasMetadataChanged }
+						saveButtonText={
+							isSavingMetadata
+								? __( 'Saving…', 'bcgov-design-system' )
+								: __( 'Save Changes', 'bcgov-design-system' )
+						}
+						saveButtonClassName="doc-repo-button save-button"
 					>
 						<div className="editable-metadata">
-							{ metadataFields.map( ( field ) => {
-								const error = metadataErrors[ field.id ];
-								const currentValue =
-									editedValues[ field.id ] ?? '';
-
-								return (
-									<div
-										key={ field.id }
-										className="metadata-field"
-									>
-										{ field.type === 'select' ? (
-											<SelectControl
-												label={ field.label }
-												value={ currentValue }
-												options={ [
-													{
-														label: __(
-															'Select…',
-															'bcgov-design-system'
-														),
-														value: '',
-													},
-													...( Array.isArray(
-														field.options
-													)
-														? field.options.map(
-																(
-																	option
-																) => ( {
-																	label: option,
-																	value: option,
-																} )
-														  )
-														: Object.entries(
-																field.options ||
-																	{}
-														  ).map(
-																( [
-																	value,
-																	label,
-																] ) => ( {
-																	label,
-																	value,
-																} )
-														  ) ),
-												] }
-												onChange={ ( value ) =>
-													updateEditedField(
-														field.id,
-														value
-													)
-												}
-												id={ `metadata-field-${ field.id }` }
-											/>
-										) : (
-											<TextControl
-												label={ field.label }
-												value={ currentValue }
-												onChange={ ( value ) =>
-													updateEditedField(
-														field.id,
-														value
-													)
-												}
-												type={
-													field.type === 'date'
-														? 'date'
-														: 'text'
-												}
-												id={ `metadata-field-${ field.id }` }
-											/>
-										) }
-										{ error && (
-											<div className="metadata-error">
-												{ error }
-											</div>
-										) }
-									</div>
-								);
-							} ) }
+							{ metadataFields.map( ( field ) => (
+								<div
+									key={ field.id }
+									className="metadata-field"
+								>
+									<label htmlFor={ field.id }>
+										{ field.label }
+									</label>
+									{ field.type === 'select' ? (
+										<SelectControl
+											id={ field.id }
+											value={
+												editedValues[ field.id ] || ''
+											}
+											options={ [
+												{
+													label: __(
+														'Select…',
+														'bcgov-design-system'
+													),
+													value: '',
+												},
+												...field.options.map(
+													( option ) => ( {
+														label: option,
+														value: option,
+													} )
+												),
+											] }
+											onChange={ ( value ) =>
+												updateEditedField(
+													field.id,
+													value
+												)
+											}
+										/>
+									) : (
+										<TextControl
+											id={ field.id }
+											value={
+												editedValues[ field.id ] || ''
+											}
+											onChange={ ( value ) =>
+												updateEditedField(
+													field.id,
+													value
+												)
+											}
+										/>
+									) }
+									{ metadataErrors[ field.id ] && (
+										<div className="metadata-error">
+											{ metadataErrors[ field.id ] }
+										</div>
+									) }
+								</div>
+							) ) }
 						</div>
-
 						<div className="non-editable-metadata">
 							<h3>
 								{ __(

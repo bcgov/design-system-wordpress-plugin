@@ -1,13 +1,13 @@
-@use "../abstracts" as *;
+@use "../abstracts/variables" as *;
+@use "../abstracts/mixins" as mix;
 
 .notification {
-
-	@include flex(row, flex-start, center);
 	padding: $spacing-md;
 	margin-bottom: $spacing-md;
 	border-radius: $border-radius;
+	border: 1px solid;
 	position: relative;
-	animation: notification-slide-in 0.3s ease-out;
+	animation: notification-slide-in $transition-base;
 
 	&__icon {
 		margin-right: $spacing-md;
@@ -28,17 +28,25 @@
 	}
 
 	&__message {
-		margin: 0;
+		margin-bottom: $spacing-sm;
+	}
+
+	&__actions {
+
+		@include mix.flex(row, flex-start, center, nowrap);
+		gap: $spacing-sm;
 	}
 
 	&__close {
-		background: none;
+		position: absolute;
+		top: $spacing-sm;
+		right: $spacing-sm;
+		padding: $spacing-xs;
 		border: none;
 		cursor: pointer;
 		color: inherit;
 		opacity: 0.7;
 		transition: opacity $transition-fast;
-		padding: $spacing-xs;
 
 		&:hover {
 			opacity: 1;
@@ -51,9 +59,9 @@
 	}
 
 	&--success {
-
-		@include status-bg(success);
-		color: #1e5928;
+		background-color: $color-success-light;
+		border-color: $color-success;
+		color: $color-success;
 
 		.notification__icon {
 			color: $color-success;
@@ -61,9 +69,9 @@
 	}
 
 	&--error {
-
-		@include status-bg(error);
-		color: #a51e23;
+		background-color: $color-error-light;
+		border-color: $color-error;
+		color: $color-error;
 
 		.notification__icon {
 			color: $color-error;
@@ -71,19 +79,19 @@
 	}
 
 	&--warning {
-
-		@include status-bg(warning);
-		color: #cc9200;
+		background-color: $color-warning-light;
+		border-color: $color-warning;
+		color: $color-warning;
 
 		.notification__icon {
-			color: #e3a714;
+			color: $color-warning;
 		}
 	}
 
 	&--info {
-
-		@include status-bg(info);
-		color: #284366;
+		background-color: $color-info-light;
+		border-color: $color-info;
+		color: $color-info;
 
 		.notification__icon {
 			color: $color-info;

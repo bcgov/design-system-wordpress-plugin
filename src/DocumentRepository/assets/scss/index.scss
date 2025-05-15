@@ -12,18 +12,10 @@
 // Import utilities
 @use "utils";
 
-// Import layouts
-@use "layout";
 
 // Import components
 @use "components";
 
 // Legacy styles - these will be gradually phased out as components are
 // updated to use the new modular structure
-@use "_button-styles" as legacy-buttons;
-@use "_drag-drop" as legacy-drag-drop;
-@use "_upload-status" as legacy-upload-status;
-@use "_upload-feedback" as legacy-upload-feedback;
-@use "_metadata-modals" as legacy-metadata-modals;
-@use "_metadata-settings" as legacy-metadata-settings;
 @use "_document-repository" as legacy-document-repository;
