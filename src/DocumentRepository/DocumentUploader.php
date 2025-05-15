@@ -237,11 +237,6 @@ class DocumentUploader {
             'post_type'   => $this->config->get_post_type(),
         ];
 
-        // Add excerpt/description if available.
-        if ( ! empty( $metadata['document_description'] ) ) {
-            $post_data['post_excerpt'] = sanitize_textarea_field( $metadata['document_description'] );
-        }
-
         // Insert post.
         $post_id = wp_insert_post( $post_data, true );
 

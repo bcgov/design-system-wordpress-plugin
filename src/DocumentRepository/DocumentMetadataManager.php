@@ -44,49 +44,13 @@ class DocumentMetadataManager {
             return $cached_fields;
         }
 
-        $fields = get_option( 'document_repository_metadata_fields', $this->get_default_metadata_fields() );
+        // Get fields from database or default to empty array if none exist
+        $fields = get_option( 'document_repository_metadata_fields', [] );
 
         // Cache the result.
         wp_cache_set( self::CACHE_KEY, $fields, '', self::CACHE_EXPIRATION );
 
         return $fields;
-    }
-
-    /**
-     * Get default metadata fields.
-     *
-     * @return array Default metadata field definitions.
-     */
-    public function get_default_metadata_fields(): array {
-        return [
-            [
-                'id'         => 'document_description',
-                'label'      => 'Description',
-                'type'       => 'textarea',
-                'order'      => 0,
-                'filterable' => true,
-            ],
-            [
-                'id'         => 'document_version',
-                'label'      => 'Version',
-                'type'       => 'text',
-                'order'      => 1,
-                'filterable' => true,
-            ],
-            [
-                'id'         => 'document_status',
-                'label'      => 'Status',
-                'type'       => 'select',
-                'options'    => [
-                    'draft'    => 'Draft',
-                    'review'   => 'Under Review',
-                    'approved' => 'Approved',
-                    'archived' => 'Archived',
-                ],
-                'order'      => 2,
-                'filterable' => true,
-            ],
-        ];
     }
 
     /**
