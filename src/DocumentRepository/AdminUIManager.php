@@ -134,7 +134,7 @@ class AdminUIManager {
         // Main app bundle.
         wp_register_script(
             'dswp-document-repository-app',
-            $plugin_url . '/src/DocumentRepository/build/document-repository.js',
+            $plugin_url . '/src/DocumentRepository/build/document-repository/index.js',
             [ 'wp-element', 'wp-api-fetch', 'wp-components', 'wp-i18n' ],
             $version,
             true
@@ -148,7 +148,7 @@ class AdminUIManager {
         // Metadata settings app bundle.
         wp_register_script(
             'dswp-document-repository-metadata-app',
-            $plugin_url . '/src/DocumentRepository/build/metadata-settings.js',
+            $plugin_url . '/src/DocumentRepository/build/metadata-settings/index.js',
             [ 'wp-element', 'wp-api-fetch', 'wp-components', 'wp-i18n' ],
             $version,
             true
@@ -157,7 +157,7 @@ class AdminUIManager {
         // Styles.
         wp_register_style(
             $this->config->get( 'css_handle' ),
-            $plugin_url . '/src/DocumentRepository/build/index.css',
+            $plugin_url . '/src/DocumentRepository/build/css/index.css',
             [ 'wp-components' ],
             $version
         );

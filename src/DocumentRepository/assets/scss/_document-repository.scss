@@ -144,6 +144,19 @@ table {
 		text-align: center;
 		padding: $spacing-xl;
 		color: $color-text-light;
+		
+		.components-spinner {
+			margin: 0 auto $spacing-md;
+		}
+		
+		p {
+			margin: $spacing-sm 0;
+		}
+		
+		.loading-description {
+			font-size: $font-size-sm;
+			opacity: 0.8;
+		}
 	}
 
 	&__empty {

@@ -39,6 +39,28 @@ const MetadataApp = () => {
 		getInitialFieldState,
 	} = useMetadataFields();
 
+	// Check for changes - moved to the top to fix "Cannot access before initialization" error
+	const [ hasChanges, setHasChanges ] = useState( false );
+	
+	// Normalize options - moved to the top
+	const normalizeOptions = useCallback(
+		( options ) =>
+			Array.isArray( options )
+				? options
+						.map( ( s ) => String( s ).trim() )
+						.filter( ( s ) => s.length > 0 )
+				: [],
+		[]
+	);
+
+	// Format options array to string for textarea - moved to the top
+	const formatOptionsToString = useCallback( ( field ) => {
+		if ( field._rawOptionsText !== undefined ) {
+			return field._rawOptionsText;
+		}
+		return Array.isArray( field.options ) ? field.options.join( '\n' ) : '';
+	}, [] );
+
 	// Load fields on mount
 	useEffect( () => {
 		fetchFields();
@@ -314,14 +336,6 @@ const MetadataApp = () => {
 		[ normalizeOptions, formatOptionsToString, setState ]
 	);
 
-	// Format options array to string for textarea
-	const formatOptionsToString = useCallback( ( field ) => {
-		if ( field._rawOptionsText !== undefined ) {
-			return field._rawOptionsText;
-		}
-		return Array.isArray( field.options ) ? field.options.join( '\n' ) : '';
-	}, [] );
-
 	// Handle saving edited field
 	const handleSaveEditedField = useCallback( async () => {
 		const { field, index } = state.modals.edit;
@@ -481,20 +495,6 @@ const MetadataApp = () => {
 			setHasChanges( false );
 		},
 		[ getInitialFieldState, setState ]
-	);
-
-	// Check for changes
-	const [ hasChanges, setHasChanges ] = useState( false );
-
-	// Normalize options
-	const normalizeOptions = useCallback(
-		( options ) =>
-			Array.isArray( options )
-				? options
-						.map( ( s ) => String( s ).trim() )
-						.filter( ( s ) => s.length > 0 )
-				: [],
-		[]
 	);
 
 	if ( state.isLoading ) {

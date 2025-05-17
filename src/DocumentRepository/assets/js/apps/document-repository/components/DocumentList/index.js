@@ -233,6 +233,22 @@ const DocumentList = ( {
 								  ) }
 						</Button>
 
+						{ isSpreadsheetMode && hasMetadataChanges && (
+							<Button
+								className="doc-repo-button save-button"
+								onClick={ handleSaveBulkChanges }
+								isBusy={ isSavingBulk }
+								disabled={ isSavingBulk }
+							>
+								{ isSavingBulk
+									? __( 'Saving…', 'bcgov-design-system' )
+									: __(
+											'Save Changes',
+											'bcgov-design-system'
+									  ) }
+							</Button>
+						) }
+
 						{ selectedDocuments.length > 0 && (
 							<Button
 								className="doc-repo-button delete-button bulk-delete-button"
@@ -250,22 +266,6 @@ const DocumentList = ( {
 							</Button>
 						) }
 					</div>
-
-					{ isSpreadsheetMode && hasMetadataChanges && (
-						<Button
-							className="doc-repo-button save-button"
-							onClick={ handleSaveBulkChanges }
-							isBusy={ isSavingBulk }
-							disabled={ isSavingBulk }
-						>
-							{ isSavingBulk
-								? __( 'Saving…', 'bcgov-design-system' )
-								: __(
-										'Save Changes',
-										'bcgov-design-system'
-								  ) }
-						</Button>
-					) }
 				</div>
 
 				{ documents.length >= VIRTUALIZATION_THRESHOLD ? (

@@ -5,6 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack --config webpack.config.js",
+    "build:doc-repo": "wp-scripts build --webpack-src-dir=assets/js/apps/document-repository --output-path=build/document-repository",
+    "build:metadata-settings": "wp-scripts build --webpack-src-dir=assets/js/apps/metadata-settings --output-path=build/metadata-settings",
+    "build:css": "wp-scripts build --webpack-src-dir=assets/scss --output-path=build/css",
     "build:prod": "webpack --config webpack.config.js --mode=production",
     "start": "webpack --config webpack.config.js --watch",
     "check-engines": "wp-scripts check-engines",

@@ -29,6 +29,7 @@ const App = () => {
 	// API data loading state
 	const [ isInitializing, setIsInitializing ] = useState( true );
 	const [ error, setError ] = useState( null );
+	const [ loadingStep, setLoadingStep ] = useState('Initializing');
 
 	// Metadata fields configuration
 	const [ metadataFields, setMetadataFields ] = useState( [] );
@@ -63,6 +64,14 @@ const App = () => {
 			try {
 				setIsInitializing( true );
 				setError( null );
+				setLoadingStep('Initializing');
+
+				// Add timeout guard for loading
+				const timeoutPromise = new Promise((_, reject) => {
+					setTimeout(() => {
+						reject(new Error(__('Loading document repository timed out. Please refresh the page.', 'bcgov-design-system')));
+					}, 10000); // 10 second timeout
+				});
 
 				// Check for required settings
 				const settings = window.documentRepositorySettings;
@@ -79,37 +88,45 @@ const App = () => {
 					);
 				}
 
-				// Fetch metadata fields
-				const response = await fetch(
-					`${ settings.apiRoot }${ settings.apiNamespace }/metadata-fields`,
-					{
-						headers: {
-							'X-WP-Nonce': settings.nonce,
-						},
-					}
-				);
+				// Promise race to ensure we don't wait forever
+				await Promise.race([
+					(async () => {
+						// Fetch metadata fields
+						setLoadingStep('Fetching metadata fields');
+						const response = await fetch(
+							`${ settings.apiRoot }${ settings.apiNamespace }/metadata-fields`,
+							{
+								headers: {
+									'X-WP-Nonce': settings.nonce,
+								},
+							}
+						);
 
-				if ( ! response.ok ) {
-					let errorMessage;
-					try {
-						const errorData = await response.json();
-						errorMessage = errorData.message || errorData.error;
-					} catch ( e ) {
-						errorMessage = response.statusText;
-					}
-					throw new Error(
-						__(
-							'Failed to fetch metadata fields: ',
-							'bcgov-design-system'
-						) + errorMessage
-					);
-				}
+						if ( ! response.ok ) {
+							let errorMessage;
+							try {
+								const errorData = await response.json();
+								errorMessage = errorData.message || errorData.error;
+							} catch ( e ) {
+								errorMessage = response.statusText;
+							}
+							throw new Error(
+								__(
+									'Failed to fetch metadata fields: ',
+									'bcgov-design-system'
+								) + errorMessage
+							);
+						}
 
-				const data = await response.json();
-				setMetadataFields( data );
+						const data = await response.json();
+						setMetadataFields( data );
 
-				// Fetch initial documents
-				await fetchDocuments();
+						// Fetch initial documents
+						setLoadingStep('Loading documents');
+						await fetchDocuments();
+					})(),
+					timeoutPromise
+				]);
 			} catch ( initError ) {
 				setError(
 					initError.message ||
@@ -347,6 +364,9 @@ const App = () => {
 			<div className="dswp-document-repository-loading">
 				<Spinner />
 				<p>
+					{ loadingStep }...
+				</p>
+				<p className="loading-description">
 					{ __(
 						'Loading document repository…',
 						'bcgov-design-system'

@@ -83,4 +83,4 @@ class SafeRender extends Component {
 	}
 }
 
-export default SafeRender;
+export { SafeRender as default };
