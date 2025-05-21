@@ -504,23 +504,23 @@
 	&:hover {
 		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 	}
-	
+
 	.metadata-field-info {
 		flex: 1;
-		
+
 		h3 {
 			margin: 0 0 $spacing-xs;
 			font-size: $font-size-base;
 			font-weight: $font-weight-bold;
 			color: $color-text;
 		}
-		
+
 		p {
 			margin: 0;
 			font-size: $font-size-sm;
 			color: $color-text-light;
 			line-height: 1.4;
-			
+
 			&.field-id {
 				font-family: $font-family-mono;
 				font-size: $font-size-xs;
@@ -528,19 +528,19 @@
 			}
 		}
 	}
-	
+
 	.metadata-field-actions {
 		display: flex;
 		gap: $spacing-md;
-		
+
 		.components-button {
 			min-height: 36px;
-			
+
 			&.edit-button:hover {
 				background-color: rgba($color-primary, 0.1);
 				color: $color-primary;
 			}
-			
+
 			&.delete-button:hover {
 				background-color: rgba($color-error, 0.1);
 			}

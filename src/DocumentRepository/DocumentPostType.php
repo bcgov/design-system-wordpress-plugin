@@ -1,8 +1,8 @@
 <?php
 
-namespace Bcgov\DesignSystemPlugin\DocumentRepository;
+namespace src\DocumentRepository;
 
-use Bcgov\DesignSystemPlugin\DocumentRepository\RepositoryConfig;
+use src\DocumentRepository\RepositoryConfig;
 
 /**
  * DocumentPostType - Custom Post Type Handler

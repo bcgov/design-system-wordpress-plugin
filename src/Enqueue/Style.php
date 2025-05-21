@@ -1,6 +1,6 @@
 <?php
 
-namespace Bcgov\DesignSystemPlugin\Enqueue;
+namespace src\Enqueue;
 
 /**
  * Class Style
@@ -10,7 +10,7 @@ namespace Bcgov\DesignSystemPlugin\Enqueue;
  * the appropriate stylesheet is loaded by WordPress and provides a mechanism for
  * versioning the stylesheet based on its file modification time.
  *
- * @package Bcgov\DesignSystemPlugin\Enqueue
+ * @package src\Enqueue
  * @since 1.0.0
  */
 class Style {

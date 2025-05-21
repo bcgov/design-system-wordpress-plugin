@@ -29,7 +29,7 @@ const App = () => {
 	// API data loading state
 	const [ isInitializing, setIsInitializing ] = useState( true );
 	const [ error, setError ] = useState( null );
-	const [ loadingStep, setLoadingStep ] = useState('Initializing');
+	const [ loadingStep, setLoadingStep ] = useState( 'Initializing' );
 
 	// Metadata fields configuration
 	const [ metadataFields, setMetadataFields ] = useState( [] );
@@ -64,14 +64,21 @@ const App = () => {
 			try {
 				setIsInitializing( true );
 				setError( null );
-				setLoadingStep('Initializing');
+				setLoadingStep( 'Initializing' );
 
 				// Add timeout guard for loading
-				const timeoutPromise = new Promise((_, reject) => {
-					setTimeout(() => {
-						reject(new Error(__('Loading document repository timed out. Please refresh the page.', 'bcgov-design-system')));
-					}, 10000); // 10 second timeout
-				});
+				const timeoutPromise = new Promise( ( _, reject ) => {
+					setTimeout( () => {
+						reject(
+							new Error(
+								__(
+									'Loading document repository timed out. Please refresh the page.',
+									'bcgov-design-system'
+								)
+							)
+						);
+					}, 10000 ); // 10 second timeout
+				} );
 
 				// Check for required settings
 				const settings = window.documentRepositorySettings;
@@ -89,10 +96,10 @@ const App = () => {
 				}
 
 				// Promise race to ensure we don't wait forever
-				await Promise.race([
-					(async () => {
+				await Promise.race( [
+					( async () => {
 						// Fetch metadata fields
-						setLoadingStep('Fetching metadata fields');
+						setLoadingStep( 'Fetching metadata fields' );
 						const response = await fetch(
 							`${ settings.apiRoot }${ settings.apiNamespace }/metadata-fields`,
 							{
@@ -106,7 +113,8 @@ const App = () => {
 							let errorMessage;
 							try {
 								const errorData = await response.json();
-								errorMessage = errorData.message || errorData.error;
+								errorMessage =
+									errorData.message || errorData.error;
 							} catch ( e ) {
 								errorMessage = response.statusText;
 							}
@@ -122,11 +130,11 @@ const App = () => {
 						setMetadataFields( data );
 
 						// Fetch initial documents
-						setLoadingStep('Loading documents');
+						setLoadingStep( 'Loading documents' );
 						await fetchDocuments();
-					})(),
-					timeoutPromise
-				]);
+					} )(),
+					timeoutPromise,
+				] );
 			} catch ( initError ) {
 				setError(
 					initError.message ||
@@ -363,9 +371,7 @@ const App = () => {
 		return (
 			<div className="dswp-document-repository-loading">
 				<Spinner />
-				<p>
-					{ loadingStep }...
-				</p>
+				<p>{ loadingStep }...</p>
 				<p className="loading-description">
 					{ __(
 						'Loading document repository…',

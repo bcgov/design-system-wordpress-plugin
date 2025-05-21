@@ -25,11 +25,6 @@ import { useEffect } from '@wordpress/element';
  * />
  */
 const UploadFeedback = ( { uploadingFiles, showUploadFeedback, onClose } ) => {
-	// Return null if feedback should not be shown or no files are being uploaded
-	if ( ! showUploadFeedback || uploadingFiles.length === 0 ) {
-		return null;
-	}
-
 	// Count files by their status for summary display
 	const successCount = uploadingFiles.filter(
 		( f ) => f.status === 'success'
@@ -51,7 +46,8 @@ const UploadFeedback = ( { uploadingFiles, showUploadFeedback, onClose } ) => {
 			showUploadFeedback &&
 			uploadingCount === 0 &&
 			processingCount === 0 &&
-			! hasPlaceholder
+			! hasPlaceholder &&
+			uploadingFiles.length > 0
 		) {
 			const timer = setTimeout( () => {
 				onClose();
@@ -65,7 +61,13 @@ const UploadFeedback = ( { uploadingFiles, showUploadFeedback, onClose } ) => {
 		processingCount,
 		hasPlaceholder,
 		onClose,
+		uploadingFiles.length,
 	] );
+
+	// Return null if feedback should not be shown or no files are being uploaded
+	if ( ! showUploadFeedback || uploadingFiles.length === 0 ) {
+		return null;
+	}
 
 	return (
 		<div className="upload-feedback">

@@ -41,7 +41,7 @@ const MetadataApp = () => {
 
 	// Check for changes - moved to the top to fix "Cannot access before initialization" error
 	const [ hasChanges, setHasChanges ] = useState( false );
-	
+
 	// Normalize options - moved to the top
 	const normalizeOptions = useCallback(
 		( options ) =>
@@ -109,26 +109,26 @@ const MetadataApp = () => {
 						prev.modals[ modalType ]?.originalValues;
 
 					// Check for changes
-					let hasChanges = false;
+					let hasFieldChanges = false;
 					if ( originalValues ) {
 						// Compare label
 						if ( originalValues.label !== updatedField.label ) {
-							hasChanges = true;
+							hasFieldChanges = true;
 						}
 						// Compare type
 						else if ( originalValues.type !== updatedField.type ) {
-							hasChanges = true;
+							hasFieldChanges = true;
 						}
 						// Compare options
 						else if (
 							originalValues._rawOptionsText !==
 							updatedField._rawOptionsText
 						) {
-							hasChanges = true;
+							hasFieldChanges = true;
 						}
 					}
 
-					setHasChanges( hasChanges );
+					setHasChanges( hasFieldChanges );
 
 					return {
 						...prev,
@@ -168,26 +168,26 @@ const MetadataApp = () => {
 						prev.modals[ modalType ]?.originalValues;
 
 					// Check for changes
-					let hasChanges = false;
+					let hasFieldChanges = false;
 					if ( originalValues ) {
 						// Compare label
 						if ( originalValues.label !== updatedField.label ) {
-							hasChanges = true;
+							hasFieldChanges = true;
 						}
 						// Compare type
 						else if ( originalValues.type !== updatedField.type ) {
-							hasChanges = true;
+							hasFieldChanges = true;
 						}
 						// Compare options
 						else if (
 							originalValues._rawOptionsText !==
 							updatedField._rawOptionsText
 						) {
-							hasChanges = true;
+							hasFieldChanges = true;
 						}
 					}
 
-					setHasChanges( hasChanges );
+					setHasChanges( hasFieldChanges );
 
 					return {
 						...prev,

@@ -26,7 +26,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * @param {Function} props.formatFileSize     - Function to format file size for display
  * @return {JSX.Element} Rendered document table row
  */
-function DocumentTableRow({
+function DocumentTableRow( {
 	document,
 	isSelected,
 	onSelect,
@@ -38,7 +38,7 @@ function DocumentTableRow({
 	bulkEditedMetadata,
 	onMetadataChange,
 	formatFileSize,
-}) {
+} ) {
 	const renderMetadataField = ( field ) => {
 		if ( ! isSpreadsheetMode ) {
 			return document.metadata && document.metadata[ field.id ]

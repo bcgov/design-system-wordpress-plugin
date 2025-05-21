@@ -24,7 +24,7 @@ import DocumentTableRow from './DocumentTableRow';
  * @param {Function} props.formatFileSize     - Function to format file size for display
  * @return {JSX.Element} Rendered document table
  */
-function DocumentTable({
+function DocumentTable( {
 	documents,
 	selectedDocuments,
 	onSelectDocument,
@@ -37,7 +37,7 @@ function DocumentTable({
 	bulkEditedMetadata,
 	onMetadataChange,
 	formatFileSize,
-}) {
+} ) {
 	// Check if all documents are currently selected
 	const allSelected =
 		documents.length > 0 && selectedDocuments.length === documents.length;

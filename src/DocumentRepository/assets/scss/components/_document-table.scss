@@ -1,5 +1,6 @@
 @use "../abstracts/variables" as *;
 @use "../abstracts/mixins" as mix;
+@use "sass:color";
 
 .document-table {
 	width: 100%;
@@ -269,24 +270,27 @@ button.components-button.doc-repo-button.spreadsheet-toggle {
 	min-height: 36px;
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 	margin-right: $spacing-sm;
-	
-	&:hover, &:focus {
+
+	&:hover,
+	&:focus {
 		background-color: $color-primary;
 		color: $color-white;
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 	}
-	
+
 	&:active {
 		transform: translateY(1px);
 	}
-	
-	&.isPressed, &[aria-pressed="true"] {
+
+	&.isPressed,
+	&[aria-pressed="true"] {
 		background-color: $color-primary;
 		color: $color-white;
-		border-color: darken($color-primary, 10%);
-		
-		&:hover, &:focus {
-			background-color: darken($color-primary, 10%);
+		border-color: color.adjust($color-primary, $lightness: -10%);
+
+		&:hover,
+		&:focus {
+			background-color: color.adjust($color-primary, $lightness: -10%);
 			color: $color-white;
 		}
 	}
@@ -294,17 +298,21 @@ button.components-button.doc-repo-button.spreadsheet-toggle {
 
 /* Style all doc-repo-button elements for consistent hover states */
 .doc-repo-button {
-	&:hover, &:focus {
+
+	&:hover,
+	&:focus {
 		opacity: 0.9;
 	}
-	
-	&.edit-button:hover, &.edit-button:focus {
+
+	&.edit-button:hover,
+	&.edit-button:focus {
 		background-color: rgba($color-primary, 0.1);
 		color: $color-primary-dark;
 		border-color: $color-primary;
 	}
-	
-	&.delete-button:hover, &.delete-button:focus {
+
+	&.delete-button:hover,
+	&.delete-button:focus {
 		background-color: rgba($color-error, 0.9);
 		color: $color-white;
 	}
@@ -312,8 +320,10 @@ button.components-button.doc-repo-button.spreadsheet-toggle {
 
 /* Ensure save button has good contrast on hover */
 .doc-repo-button.save-button {
-	&:hover, &:focus {
-		background-color: #006699; /* Slightly darker than primary */
+
+	&:hover,
+	&:focus {
+		background-color: #069; /* Slightly darker than primary */
 		color: $color-white;
 	}
 }

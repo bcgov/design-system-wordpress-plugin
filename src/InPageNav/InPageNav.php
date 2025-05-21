@@ -1,6 +1,6 @@
 <?php
 
-namespace Bcgov\DesignSystemPlugin\InPageNav;
+namespace src\InPageNav;
 
 /**
  * In-Page Navigation Handler Class
@@ -11,7 +11,7 @@ namespace Bcgov\DesignSystemPlugin\InPageNav;
  * - Editor integration
  * - Configuration options
  *
- * @package Bcgov\DesignSystemPlugin\InPageNav
+ * @package src\InPageNav
  * @since 1.0.0
  */
 class InPageNav {

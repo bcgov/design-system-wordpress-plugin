@@ -1,6 +1,6 @@
 <?php
 
-namespace Bcgov\DesignSystemPlugin\DocumentRepository;
+namespace src\DocumentRepository;
 
 /**
  * RepositoryConfig - Configuration Service

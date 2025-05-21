@@ -1,13 +1,13 @@
 <?php
 
-namespace Bcgov\DesignSystemPlugin\AutoAnchor;
+namespace src\AutoAnchor;
 
 /**
  * Class Settings
  *
  * This class handles the settings for automatically generating anchor IDs for heading blocks.
  *
- * @package Bcgov\DesignSystemPlugin\AutoAnchor
+ * @package src\AutoAnchor
  */
 class Settings {
     /**

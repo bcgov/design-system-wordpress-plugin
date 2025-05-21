@@ -1,6 +1,6 @@
 <?php
 
-namespace Bcgov\DesignSystemPlugin;
+namespace src;
 
 /**
  * Class NotificationBanner

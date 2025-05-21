@@ -204,7 +204,7 @@ const DocumentList = ( {
 
 				<div className="document-list__actions">
 					<div className="document-list__left-actions">
-						{/* Delete button moved to table actions section */}
+						{ /* Delete button moved to table actions section */ }
 					</div>
 					<div className="document-list__right-actions">
 						<UploadArea onFilesSelected={ handleFilesWithLog } />

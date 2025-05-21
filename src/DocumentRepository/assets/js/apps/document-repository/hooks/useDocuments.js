@@ -86,19 +86,23 @@ export const useDocuments = () => {
 			} );
 
 			// Add timeout to prevent indefinite loading
-			const timeoutPromise = new Promise((_, reject) => {
-				setTimeout(() => {
-					reject(new Error('Document fetch request timed out. Please try again.'));
-				}, 5000); // 5 second timeout
-			});
+			const timeoutPromise = new Promise( ( _, reject ) => {
+				setTimeout( () => {
+					reject(
+						new Error(
+							'Document fetch request timed out. Please try again.'
+						)
+					);
+				}, 5000 ); // 5 second timeout
+			} );
 
 			// Fetch documents from API with timeout
-			const response = await Promise.race([
-				apiFetch({
-					path: `/${apiNamespace}/documents?${queryParams.toString()}`,
-				}),
-				timeoutPromise
-			]);
+			const response = await Promise.race( [
+				apiFetch( {
+					path: `/${ apiNamespace }/documents?${ queryParams.toString() }`,
+				} ),
+				timeoutPromise,
+			] );
 
 			// Validate the response structure
 			if ( ! response || typeof response !== 'object' ) {

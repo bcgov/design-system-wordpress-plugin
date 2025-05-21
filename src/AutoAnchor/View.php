@@ -1,4 +1,6 @@
 <?php
+namespace src\AutoAnchor;
+
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
