@@ -1,8 +1,8 @@
 <?php
 
-namespace src\DocumentRepository;
+namespace Bcgov\DesignSystemPlugin\DocumentRepository;
 
-use src\DocumentRepository\RepositoryConfig;
+use Bcgov\DesignSystemPlugin\DocumentRepository\RepositoryConfig;
 
 /**
  * AdminUIManager - Admin UI Integration

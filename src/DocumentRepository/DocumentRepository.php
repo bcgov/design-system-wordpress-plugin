@@ -1,13 +1,14 @@
 <?php
 
-namespace src\DocumentRepository;
+namespace Bcgov\DesignSystemPlugin\DocumentRepository;
 
-use src\DocumentRepository\RepositoryConfig;
-use src\DocumentRepository\DocumentPostType;
-use src\DocumentRepository\DocumentUploader;
-use src\DocumentRepository\AdminUIManager;
-use src\DocumentRepository\RestApiController;
-use src\DocumentRepository\DocumentMetadataManager;
+use Bcgov\DesignSystemPlugin\DocumentRepository\{RepositoryConfig,
+    DocumentPostType,
+    DocumentUploader,
+    AdminUIManager,
+    RestApiController,
+    DocumentMetadataManager,
+};
 
 /**
  * DocumentRepository - Main Plugin Class

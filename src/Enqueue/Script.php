@@ -1,6 +1,6 @@
 <?php
 
-namespace src\Enqueue;
+namespace Bcgov\DesignSystemPlugin\Enqueue;
 
 /**
  * Class Script
@@ -10,7 +10,7 @@ namespace src\Enqueue;
  * the appropriate script is loaded by WordPress and provides a mechanism for
  * versioning the script based on its file modification time.
  *
- * @package src\Enqueue
+ * @package Bcgov\DesignSystemPlugin\Enqueue
  * @since 1.0.0
  */
 class Script {

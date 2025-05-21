@@ -1,8 +1,8 @@
 <?php
 
-namespace src\DocumentRepository;
+namespace Bcgov\DesignSystemPlugin\DocumentRepository;
 
-use src\DocumentRepository\RepositoryConfig;
+use Bcgov\DesignSystemPlugin\DocumentRepository\RepositoryConfig;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_Error;

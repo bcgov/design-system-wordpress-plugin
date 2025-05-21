@@ -20,14 +20,14 @@
 /**
  * Loads the autoloader.
  */
-if ( ! class_exists( 'src\NotificationBanner' ) ) {
+if ( ! class_exists( 'Bcgov\\DesignSystemPlugin\\NotificationBanner' ) ) {
     $local_composer  = __DIR__ . '/vendor/autoload.php';
     $server_composer = __DIR__ . '/../../../../vendor/autoload.php';
     if ( file_exists( $local_composer ) || file_exists( $server_composer ) ) {
         if ( file_exists( $server_composer ) ) {
             require_once $server_composer;
         }
-        if ( ! class_exists( 'src\NotificationBanner' ) ) {
+        if ( ! class_exists( 'Bcgov\\DesignSystemPlugin\\NotificationBanner' ) ) {
             require_once $local_composer;
         }
     }
@@ -109,24 +109,24 @@ function dswp_add_new_block_category( $categories ) {
 }
 add_filter( 'block_categories_all', 'dswp_add_new_block_category', 10, 2 );
 
-use src\{
+use Bcgov\DesignSystemPlugin\{
     DesignSystemSettings,
     NotificationBanner,
     ContentSecurityPolicy,
     SkipNavigation,
 };
 
-use src\Enqueue\{
+use Bcgov\DesignSystemPlugin\Enqueue\{
     Style,
     Script
 };
 
-use src\InPageNav\InPageNav;
+use Bcgov\DesignSystemPlugin\InPageNav\InPageNav;
 
-use src\AutoAnchor\Settings as AutoAnchorSettings;
+use Bcgov\DesignSystemPlugin\AutoAnchor\Settings as AutoAnchorSettings;
 
 // Import the new DocumentRepository.
-use src\DocumentRepository\DocumentRepository;
+use Bcgov\DesignSystemPlugin\DocumentRepository\DocumentRepository;
 
 /**
  * Design System settings
