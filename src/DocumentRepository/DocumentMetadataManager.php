@@ -44,7 +44,7 @@ class DocumentMetadataManager {
             return $cached_fields;
         }
 
-        // Get fields from database or default to empty array if none exist
+        // Get fields from database or default to empty array if none exist.
         $fields = get_option( 'document_repository_metadata_fields', [] );
 
         // Cache the result.

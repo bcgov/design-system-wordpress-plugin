@@ -131,12 +131,14 @@ class AdminUIManager {
             'apiNamespace' => $this->config->get_api_namespace(),
         ];
 
-        // Main app bundle.
+        $document_repository_asset = require( $plugin_dir . '/src/DocumentRepository/build/document-repository/index.asset.php' );
+        $metadata_settings_asset = require( $plugin_dir . '/src/DocumentRepository/build/metadata-settings/index.asset.php' );
+
         wp_register_script(
             'dswp-document-repository-app',
             $plugin_url . '/src/DocumentRepository/build/document-repository/index.js',
-            [ 'wp-element', 'wp-api-fetch', 'wp-components', 'wp-i18n' ],
-            $version,
+            $document_repository_asset['dependencies'],
+            $document_repository_asset['version'],
             true
         );
         wp_add_inline_script(
@@ -149,8 +151,8 @@ class AdminUIManager {
         wp_register_script(
             'dswp-document-repository-metadata-app',
             $plugin_url . '/src/DocumentRepository/build/metadata-settings/index.js',
-            [ 'wp-element', 'wp-api-fetch', 'wp-components', 'wp-i18n' ],
-            $version,
+            $metadata_settings_asset['dependencies'],
+            $metadata_settings_asset['version'],
             true
         );
 
@@ -159,7 +161,7 @@ class AdminUIManager {
             $this->config->get( 'css_handle' ),
             $plugin_url . '/src/DocumentRepository/build/css/index.css',
             [ 'wp-components' ],
-            $version
+            $document_repository_asset['version']
         );
     }
 
