@@ -1,6 +1,6 @@
 <?php
 
-namespace src;
+namespace Bcgov\DesignSystemPlugin;
 
 /**
  * Class DesignSystemSettings
@@ -9,7 +9,7 @@ namespace src;
  * It provides the base menu that other Design System components can add their
  * submenu pages to.
  *
- * @package src
+ * @package Bcgov\DesignSystemPlugin
  */
 class DesignSystemSettings {
 

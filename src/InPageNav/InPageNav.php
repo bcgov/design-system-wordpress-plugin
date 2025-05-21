@@ -1,6 +1,6 @@
 <?php
 
-namespace src\InPageNav;
+namespace Bcgov\DesignSystemPlugin\InPageNav;
 
 /**
  * In-Page Navigation Handler Class

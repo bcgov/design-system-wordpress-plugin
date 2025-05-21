@@ -1,8 +1,8 @@
 <?php
 
-namespace src\DocumentRepository;
+namespace Bcgov\DesignSystemPlugin\DocumentRepository;
 
-use src\DocumentRepository\RepositoryConfig;
+use Bcgov\DesignSystemPlugin\DocumentRepository\RepositoryConfig;
 use WP_Error;
 
 /**
@@ -40,19 +40,24 @@ class DocumentUploader {
      * @return array Modified upload directory settings.
      */
     public function custom_upload_dir( $uploads ) {
-        // Only modify upload directory for document repository uploads
+        // Verify nonce for security.
+        if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['_wpnonce'] ), 'document_repository_upload' ) ) {
+            return $uploads;
+        }
+
+        // Only modify upload directory for document repository uploads.
         if ( empty( $_POST['metadata'] ) || strpos( $_POST['metadata'], 'document_repository' ) === false ) {
             return $uploads;
         }
 
-        // For multisite, use the standard WordPress upload path with the current blog ID
+        // For multisite, use the standard WordPress upload path with the current blog ID.
         if ( is_multisite() ) {
             $uploads['subdir'] = '/documents';
-            $uploads['path'] = $uploads['basedir'] . $uploads['subdir'];
-            $uploads['url'] = $uploads['baseurl'] . $uploads['subdir'];
+            $uploads['path']   = $uploads['basedir'] . $uploads['subdir'];
+            $uploads['url']    = $uploads['baseurl'] . $uploads['subdir'];
         }
 
-        // Create directory if it doesn't exist
+        // Create directory if it doesn't exist.
         if ( ! file_exists( $uploads['path'] ) ) {
             wp_mkdir_p( $uploads['path'] );
         }
@@ -70,13 +75,13 @@ class DocumentUploader {
      * @return string The URL.
      */
     public function fix_attachment_url( $url, $attachment_id ) {
-        // Check if this is a document repository attachment
+        // Check if this is a document repository attachment.
         $post_id = get_post_meta( $attachment_id, '_document_repository_post_id', true );
         if ( ! $post_id ) {
             return $url;
         }
 
-        // In multisite, WordPress already handles the correct URL structure with the site ID
+        // In multisite, WordPress already handles the correct URL structure with the site ID.
         return $url;
     }
 
@@ -212,7 +217,7 @@ class DocumentUploader {
             );
         }
 
-        // Store reference to document post in attachment meta
+        // Store reference to document post in attachment meta.
         update_post_meta( $attachment_id, '_document_repository_post_id', $document_id );
 
         // Trigger document uploaded action.

@@ -1,8 +1,8 @@
 <?php
 
-namespace src\DocumentRepository;
+namespace Bcgov\DesignSystemPlugin\DocumentRepository;
 
-use src\DocumentRepository\RepositoryConfig;
+use Bcgov\DesignSystemPlugin\DocumentRepository\RepositoryConfig;
 use WP_Query;
 use WP_Error;
 
@@ -44,7 +44,7 @@ class DocumentMetadataManager {
             return $cached_fields;
         }
 
-        // Get fields from database or default to empty array if none exist
+        // Get fields from database or default to empty array if none exist.
         $fields = get_option( 'document_repository_metadata_fields', [] );
 
         // Cache the result.

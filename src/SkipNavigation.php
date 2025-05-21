@@ -1,6 +1,6 @@
 <?php
 
-namespace src;
+namespace Bcgov\DesignSystemPlugin;
 
 /**
  * Class SkipNavigation
