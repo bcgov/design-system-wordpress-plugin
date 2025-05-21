@@ -1,6 +1,6 @@
 {
   "name": "design-system-wordpress-plugin",
-  "version": "2.9.0",
+  "version": "2.10.0",
   "description": "Design System WordPress Plugin",
   "author": "govwordpress@gov.bc.ca",
   "license": "GPL-2.0-or-later",
@@ -40,7 +40,7 @@
     "build": "wp-scripts build",
     "lint:css": "wp-scripts lint-style 'src/**/*.scss' --allow-empty-input",
     "fix:css": "wp-scripts lint-style 'src/**/*.scss' --fix --allow-empty-input",
-    "lint:js": "wp-scripts lint-js src/scripts",
-    "fix:js": "wp-scripts lint-js src/scripts --fix"
+    "lint:js": "wp-scripts lint-js 'src/**/*.js'",
+    "fix:js": "wp-scripts lint-js 'src/**/*.js' --fix"
   }
 }

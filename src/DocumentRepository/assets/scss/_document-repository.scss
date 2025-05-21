@@ -1,0 +1,446 @@
+/* stylelint-disable no-descending-specificity */
+/* stylelint-disable rule-empty-line-before, comment-empty-line-before */
+/* stylelint-disable no-eol-whitespace, block-closing-brace-newline-before */
+
+/**
+ * Document Repository Styles
+ *
+ * This file contains styles for the Document Repository interface.
+ * It includes styles for the document list, table, and various UI components 
+ * used throughout the application.
+ */
+
+@use "abstracts/variables" as *;
+@use "sass:color";
+@use "abstracts/mixins" as mix;
+
+/* =========================================
+   Base Element Styles - Least Specific
+   ========================================= */
+
+// Basic SVG icon styles - less specific SVG selectors first
+svg {
+	width: 1.25rem;
+	height: 1.25rem;
+	transition: all 0.2s ease;
+}
+
+// Basic paragraph styles
+p {
+	line-height: 1.5;
+	margin: 0 0 1rem;
+}
+
+/* =========================================
+   General Components - Medium Specificity
+   ========================================= */
+
+// Table styles
+table {
+	width: 100%;
+	border-collapse: collapse;
+
+	th {
+		text-align: left;
+		padding: 0.75rem 1rem;
+		font-weight: $font-weight-bold;
+		border-bottom: 0.0625rem solid $color-border;
+	}
+
+	td {
+		padding: 0.75rem 1rem;
+		border-bottom: 0.0625rem solid $color-border-light;
+		vertical-align: middle;
+	}
+}
+
+// Notice component
+.components-notice {
+	display: flex;
+	align-items: flex-start;
+	padding: $spacing-md;
+	border-radius: $border-radius;
+	margin-bottom: $spacing-md;
+
+	&.is-error {
+		background-color: $color-error-light;
+		border-left: 0.25rem solid $color-error;
+	}
+
+	&.is-success {
+		background-color: $color-success-light;
+		border-left: 0.25rem solid $color-success;
+	}
+
+	.components-notice__content {
+		flex: 1;
+		font-size: $font-size-sm;
+	}
+
+	.components-notice__dismiss {
+		padding: $spacing-xs;
+		border: none;
+
+		svg {
+			width: 1rem;
+			height: 1rem;
+			color: $color-text-light;
+		}
+	}
+}
+
+/* =========================================
+   Document Repository Components - Higher Specificity
+   ========================================= */
+
+// Document Repository main container
+.document-repository {
+	font-family: $font-family-base;
+	color: $color-text;
+	max-width: 100%;
+
+	// Header section
+	&__header {
+		margin-bottom: $spacing-lg;
+	}
+
+	&__title {
+		font-size: $font-size-xxl;
+		font-weight: $font-weight-bold;
+		margin-bottom: $spacing-md;
+	}
+
+	&__description {
+		color: $color-text-light;
+		margin-bottom: $spacing-lg;
+	}
+
+	&__content {
+		background-color: $color-white;
+		border-radius: $border-radius;
+		box-shadow: $box-shadow-sm;
+		padding: $spacing-lg;
+	}
+
+	&__error {
+		background-color: $color-error-light;
+		border-left: 0.25rem solid $color-error;
+		color: $color-error;
+		padding: $spacing-md;
+		margin-bottom: $spacing-lg;
+		border-radius: $border-radius;
+
+		&__title {
+			font-weight: $font-weight-bold;
+			margin-bottom: $spacing-xs;
+		}
+
+		&__message {
+			margin-bottom: $spacing-sm;
+		}
+	}
+
+	&__loading {
+		text-align: center;
+		padding: $spacing-xl;
+		color: $color-text-light;
+		
+		.components-spinner {
+			margin: 0 auto $spacing-md;
+		}
+		
+		p {
+			margin: $spacing-sm 0;
+		}
+		
+		.loading-description {
+			font-size: $font-size-sm;
+			opacity: 0.8;
+		}
+	}
+
+	&__empty {
+		text-align: center;
+		padding: $spacing-xl;
+		color: $color-text-light;
+
+		&__icon {
+			font-size: 48px;
+			margin-bottom: $spacing-md;
+			color: $color-gray-400;
+		}
+
+		&__title {
+			font-size: $font-size-lg;
+			font-weight: $font-weight-bold;
+			margin-bottom: $spacing-sm;
+		}
+
+		&__message {
+			margin-bottom: $spacing-lg;
+		}
+	}
+
+	// Document controls section - organizing controls from less to more specific
+	.document-controls {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: $spacing-lg;
+		flex-wrap: wrap;
+		gap: $spacing-md;
+
+		// View controls section
+		.view-controls {
+			display: flex;
+			gap: $spacing-sm;
+		}
+
+		// Search filter section
+		.search-filter {
+			display: flex;
+			gap: $spacing-md;
+			flex: 1;
+			max-width: 40rem;
+
+			.components-search-control {
+				flex: 1;
+
+				input {
+					height: $button-height-md;
+					padding: 0 $spacing-md;
+					border-radius: $border-radius;
+					border: 0.0625rem solid $color-border;
+					font-size: $font-size-sm;
+				}
+			}
+
+			.components-dropdown {
+				.components-button {
+					height: $button-height-md;
+					border: 0.0625rem solid $color-border;
+					background-color: $color-white;
+
+					svg {
+						margin-left: $spacing-sm;
+					}
+				}
+			}
+		}
+	}
+
+	// Document table container
+	.document-table-container {
+		border: 0.0625rem solid $color-border;
+		border-radius: $border-radius;
+		overflow: hidden;
+		margin-bottom: $spacing-lg;
+
+		table {
+			margin: 0;
+
+			th {
+				background-color: $color-gray-100;
+				white-space: nowrap;
+			}
+		}
+	}
+}
+
+/* Document List and Document Table */
+.document-list {
+	display: flex;
+	flex-direction: column;
+	gap: $spacing-lg;
+	margin-bottom: $spacing-xl;
+	padding: $spacing-sm;
+	align-items: stretch;
+	
+	// Document list actions
+	.document-list-actions {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: $spacing-md;
+
+		.document-list-left-actions {
+			display: flex;
+			gap: $spacing-sm;
+			align-items: center;
+			flex-wrap: wrap;
+
+			.mode-toggle {
+				display: flex;
+				align-items: center;
+
+				.components-button {
+					svg {
+						margin-right: $spacing-sm;
+					}
+				}
+			}
+
+			.bulk-delete-button {
+				display: flex;
+				align-items: center;
+			}
+		}
+	}
+
+	// Enter Spreadsheet Mode button
+	.components-button-group {
+		display: flex;
+		gap: $spacing-sm;
+	}
+	
+	// Pagination
+	.pagination {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: $spacing-md;
+		margin: $spacing-lg 0;
+
+		.page-info {
+			font-size: $font-size-sm;
+			color: $color-text-light;
+		}
+
+		.components-button {
+			min-width: 5rem;
+		}
+	}
+}
+
+/* Document Table - Applied directly to top-level element */
+.document-table {
+	border: 0.0625rem solid $color-border;
+	border-radius: $border-radius;
+	overflow: hidden;
+	font-size: $font-size-sm;
+	display: table;
+	width: auto;
+	min-width: unset;
+	max-width: 100%;
+	margin: 0 0 $spacing-lg 0;
+	background-color: $color-white;
+	box-shadow: $box-shadow-sm;
+	align-self: flex-start;
+	table-layout: auto;
+
+	// Table header styles
+	.document-table-header {
+		display: table-header-group;
+		background-color: $color-gray-100;
+
+		.document-table-row {
+			border-bottom: 0.125rem solid $color-border;
+		}
+
+		.header {
+			font-weight: $font-weight-bold;
+			color: $color-text;
+			position: sticky;
+			top: 0;
+			background-color: $color-gray-100;
+			z-index: 2;
+		}
+	}
+
+	// Table body styles
+	.document-table-body {
+		display: table-row-group;
+	}
+
+	// Table row styles
+	.document-table-row {
+		display: table-row;
+		transition: background-color $transition-fast;
+
+		&:hover {
+			background-color: color.adjust($color-gray-100, $lightness: 1%);
+		}
+
+		&:nth-child(even) {
+			background-color: color.adjust($color-gray-100, $lightness: 1.5%);
+
+			&:hover {
+				background-color: color.adjust($color-gray-100, $lightness: 0.5%);
+			}
+		}
+	}
+
+	// Table cell styles
+	.document-table-cell {
+		display: table-cell;
+		padding: $spacing-md;
+		border-bottom: 0.0625rem solid $color-border;
+		vertical-align: middle;
+		overflow: visible;
+		text-overflow: clip;
+		white-space: normal;
+
+		&.header {
+			padding-top: $spacing-md;
+			padding-bottom: $spacing-md;
+		}
+
+		// Spreadsheet mode cell styling
+		.components-text-control__input,
+		.components-select-control__input {
+			width: 100%;
+			min-height: $button-height-md;
+			font-size: $font-size-sm;
+		}
+
+		// Action buttons
+		.action-buttons {
+			display: flex;
+			justify-content: flex-end;
+			gap: $spacing-xs;
+
+			.table-action-button {
+				svg {
+					margin: 0;
+				}
+			}
+		}
+	}
+
+	// Checkbox cell specifically
+	.document-table-cell:first-child {
+		width: 3rem;
+		min-width: 3rem;
+		max-width: 3rem;
+		text-align: center;
+
+		.components-checkbox-control__input-container {
+			margin: 0 auto;
+		}
+	}
+
+	// Title cell specifically
+	.document-table-cell:nth-child(2) {
+		min-width: 12rem;
+		max-width: none;
+		white-space: normal;
+		overflow: visible;
+		text-overflow: clip;
+	}
+
+	// Actions cell specifically
+	.document-table-cell:last-child {
+		width: 6rem;
+		min-width: 6rem;
+		max-width: 8rem;
+
+		&.actions {
+			white-space: nowrap;
+		}
+	}
+
+	// Metadata column specifically
+	.metadata-column {
+		min-width: 10rem;
+		max-width: 15rem;
+	}
+}

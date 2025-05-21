@@ -1,0 +1,21 @@
+/**
+ * Document Repository Main Stylesheet
+ *
+ * This file is the main entry point for all stylesheets in the Document
+ * Repository. It imports all the stylesheets in the correct order using
+ * the new modular structure.
+ */
+
+// Import abstracts (variables, functions, mixins)
+@use "abstracts" as *;
+
+// Import utilities
+@use "utils";
+
+
+// Import components
+@use "components";
+
+// Legacy styles - these will be gradually phased out as components are
+// updated to use the new modular structure
+@use "_document-repository" as legacy-document-repository;

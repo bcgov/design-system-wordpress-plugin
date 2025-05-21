@@ -1,0 +1,116 @@
+@use "sass:color";
+
+// Color Palette
+$color-primary: #0073aa;
+$color-primary-dark: color.adjust($color-primary, $lightness: -10%);
+$color-primary-light: color.adjust($color-primary, $lightness: 10%);
+$color-bg-primary-light: color.adjust($color-primary, $lightness: 35%);
+
+$color-secondary: #23282d;
+$color-secondary-light: #ffd45e;
+$color-secondary-dark: #e3a714;
+
+$color-link: #1a5a96;
+$color-link-hover: #00e;
+
+$color-success: #2e8540;
+$color-warning: #fcba19;
+$color-error: #d8292f;
+$color-info: #38598a;
+
+$color-text: #313132;
+$color-text-light: #666;
+$color-text-lighter: #999;
+
+$color-border: #ccc;
+$color-border-light: #eee;
+$color-border-focus: #66afe9;
+
+$color-bg-light: #f8f8f8;
+$color-bg-lighter: #f2f2f2;
+$color-bg-lightest: #fff;
+$color-bg-dark: #494949;
+
+// Gray scale colors
+$color-gray-50: #f9fafb;
+$color-gray-100: #f3f4f6;
+$color-gray-200: #e5e7eb;
+$color-gray-300: #d1d5db;
+$color-gray-400: #9ca3af;
+$color-gray-500: #6b7280;
+$color-gray-600: #4b5563;
+$color-gray-700: #374151;
+$color-gray-800: #1f2937;
+$color-gray-900: #111827;
+
+// Status colors with light variants
+$color-success-light: #eef9f1;
+$color-warning-light: #fef8e7;
+$color-error-light: #fbecec;
+$color-info-light: #eef2f7;
+
+// White and black
+$color-white: #fff;
+$color-black: #000;
+
+// Typography
+$font-family-base: "BCSans", "Noto Sans", verdana, arial, sans-serif;
+$font-family-heading: $font-family-base;
+$font-family-mono: "SFMono-Regular", consolas, "Liberation Mono", menlo, courier, monospace;
+
+$font-size-base: 16px;
+$font-size-sm: 14px;
+$font-size-xs: 12px;
+$font-size-lg: 18px;
+$font-size-xl: 20px;
+$font-size-xxl: 24px;
+
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-bold: 700;
+
+$line-height-base: 1.5;
+$line-height-tight: 1.2;
+$line-height-relaxed: 1.75;
+
+// Spacing
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+$spacing-xxl: 48px;
+
+// Border Radius
+$border-radius-sm: 2px;
+$border-radius: 4px;
+$border-radius-lg: 8px;
+
+// Animation
+$transition-fast: 0.15s ease-in-out;
+$transition-base: 0.3s ease-in-out;
+$transition-slow: 0.5s ease-in-out;
+
+// Breakpoints
+$breakpoint-sm: 576px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 992px;
+$breakpoint-xl: 1200px;
+
+// Z-index
+$z-index-negative: -1;
+$z-index-base: 1;
+$z-index-dropdown: 1000;
+$z-index-modal: 1050;
+$z-index-tooltip: 1100;
+
+// Button Heights
+$button-height-sm: 30px;
+$button-height-md: 36px;
+$button-height-lg: 42px;
+
+// Box Shadows
+$box-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+$box-shadow-md: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+$box-shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+$box-shadow-xl: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);

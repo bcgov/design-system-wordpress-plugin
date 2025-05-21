@@ -1,0 +1,254 @@
+@use "sass:color";
+@use "variables" as vars;
+
+// Layout Mixins
+// ---------------
+@mixin flex($direction: row, $justify: flex-start, $align: stretch, $wrap: nowrap) {
+	display: flex;
+	flex-direction: $direction;
+	justify-content: $justify;
+	align-items: $align;
+	flex-wrap: $wrap;
+}
+
+@mixin flex-center {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+@mixin grid($columns: 1, $gap: vars.$spacing-md) {
+	display: grid;
+	grid-template-columns: repeat($columns, 1fr);
+	gap: $gap;
+}
+
+// Typography Mixins
+// ---------------
+@mixin text-truncate {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+@mixin font-size($size) {
+
+	@if $size == xs {
+		font-size: vars.$font-size-xs;
+	} @else if $size == sm {
+		font-size: vars.$font-size-sm;
+	} @else if $size == base {
+		font-size: vars.$font-size-base;
+	} @else if $size == lg {
+		font-size: vars.$font-size-lg;
+	} @else if $size == xl {
+		font-size: vars.$font-size-xl;
+	} @else if $size == xxl {
+		font-size: vars.$font-size-xxl;
+	}
+}
+
+// Button Mixins
+// ---------------
+@mixin button-base {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: vars.$spacing-sm vars.$spacing-md;
+	border-radius: vars.$border-radius;
+	font-weight: vars.$font-weight-bold;
+	cursor: pointer;
+	transition: all vars.$transition-fast;
+	text-decoration: none;
+	border: 2px solid transparent;
+
+	&:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+}
+
+@mixin button-primary {
+
+	@include button-base;
+	background-color: vars.$color-primary;
+	color: #fff;
+
+	&:hover:not(:disabled),
+	&:focus:not(:disabled) {
+		background-color: vars.$color-primary-dark;
+	}
+}
+
+@mixin button-secondary {
+
+	@include button-base;
+	background-color: vars.$color-secondary;
+	color: vars.$color-text;
+
+	&:hover:not(:disabled),
+	&:focus:not(:disabled) {
+		background-color: vars.$color-secondary-dark;
+	}
+}
+
+@mixin button-outline {
+
+	@include button-base;
+	background-color: transparent;
+	border: 2px solid vars.$color-primary;
+	color: vars.$color-primary;
+
+	&:hover:not(:disabled),
+	&:focus:not(:disabled) {
+		background-color: rgba(vars.$color-primary, 0.1);
+	}
+}
+
+@mixin button-destructive {
+
+	@include button-base;
+	background-color: vars.$color-error;
+	color: #fff;
+
+	&:hover:not(:disabled),
+	&:focus:not(:disabled) {
+		background-color: color.adjust(vars.$color-error, $lightness: -5%);
+	}
+}
+
+// Button Reset Mixin
+@mixin button-reset {
+	border: none;
+	padding: 0;
+	margin: 0;
+	font: inherit;
+	color: inherit;
+	cursor: pointer;
+	outline: none;
+	box-shadow: none;
+	appearance: none;
+}
+
+// Status Mixins
+// ---------------
+@mixin status-color($status) {
+
+	@if $status == success {
+		color: vars.$color-success;
+	} @else if $status == warning {
+		color: vars.$color-warning;
+	} @else if $status == error {
+		color: vars.$color-error;
+	} @else if $status == info {
+		color: vars.$color-info;
+	}
+}
+
+@mixin status-bg($status) {
+
+	@if $status == success {
+		background-color: #eef9f1;
+		border-color: vars.$color-success;
+	} @else if $status == warning {
+		background-color: #fef8e7;
+		border-color: vars.$color-warning;
+	} @else if $status == error {
+		background-color: #fbecec;
+		border-color: vars.$color-error;
+	} @else if $status == info {
+		background-color: #eef2f7;
+		border-color: vars.$color-info;
+	}
+}
+
+// Effect Mixins
+// ---------------
+@mixin box-shadow($level: 1) {
+
+	@if $level == 1 {
+		box-shadow: vars.$box-shadow-sm;
+	} @else if $level == 2 {
+		box-shadow: vars.$box-shadow-md;
+	} @else if $level == 3 {
+		box-shadow: vars.$box-shadow-lg;
+	} @else if $level == 4 {
+		box-shadow: vars.$box-shadow-xl;
+	}
+}
+
+@mixin transition($property: all) {
+	transition: $property vars.$transition-base;
+}
+
+// Responsive Mixins
+// ---------------
+@mixin respond-to($breakpoint) {
+
+	@if $breakpoint == sm {
+
+		@media (min-width: vars.$breakpoint-sm) {
+			@content;
+		}
+	} @else if $breakpoint == md {
+
+		@media (min-width: vars.$breakpoint-md) {
+			@content;
+		}
+	} @else if $breakpoint == lg {
+
+		@media (min-width: vars.$breakpoint-lg) {
+			@content;
+		}
+	} @else if $breakpoint == xl {
+
+		@media (min-width: vars.$breakpoint-xl) {
+			@content;
+		}
+	}
+}
+
+// Form Control Mixins
+// ---------------
+@mixin form-control {
+	display: block;
+	width: 100%;
+	padding: vars.$spacing-sm;
+	font-size: vars.$font-size-base;
+	line-height: vars.$line-height-base;
+	color: vars.$color-text;
+	background-color: #fff;
+	border: 1px solid vars.$color-border;
+	border-radius: vars.$border-radius;
+	transition: border-color vars.$transition-fast;
+
+	&:focus {
+		border-color: vars.$color-border-focus;
+		outline: 0;
+	}
+}
+
+// Info Box Mixin
+@mixin info-box {
+	padding: vars.$spacing-md;
+	background-color: vars.$color-info-light;
+	border: 1px solid vars.$color-info;
+	border-radius: vars.$border-radius;
+	color: vars.$color-info;
+	margin-bottom: vars.$spacing-md;
+}
+
+// Modal Actions Mixin
+@mixin modal-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: vars.$spacing-md;
+	padding: vars.$spacing-md vars.$spacing-lg;
+	border-top: 1px solid vars.$color-border;
+	background-color: transparent;
+	margin: 0;
+
+	.components-button {
+		margin-left: vars.$spacing-md;
+	}
+}

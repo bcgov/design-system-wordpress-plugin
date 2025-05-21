@@ -1,0 +1,204 @@
+/**
+ * Upload Feedback Styles
+ *
+ * This file contains styles for the upload feedback popup in the Document
+ * Repository.
+ */
+
+@use "../abstracts/variables" as *;
+@use "../abstracts/mixins" as mix;
+
+/* =========================================
+   SVG Common Styles
+   ========================================= */
+
+// Base SVG styling used across all SVG elements
+%upload-feedback-svg {
+	width: 16px;
+	height: 16px;
+}
+
+/* =========================================
+   Upload Feedback Container
+   ========================================= */
+
+.upload-feedback {
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	width: 350px;
+	max-width: calc(100vw - 40px);
+	background-color: $color-bg-lightest;
+	border-radius: $border-radius;
+
+	@include mix.box-shadow(2);
+	z-index: $z-index-modal;
+	font-family: $font-family-base;
+	overflow: hidden;
+	border: 1px solid $color-border;
+}
+
+/* =========================================
+   SVG Styles by Element - Listed in specificity order
+   ========================================= */
+
+// All SVG styles grouped to avoid descending specificity issues
+.upload-feedback-item svg {
+
+	@extend %upload-feedback-svg;
+	flex-shrink: 0;
+}
+
+.upload-feedback-close svg {
+
+	@extend %upload-feedback-svg;
+}
+
+.upload-feedback-title svg {
+
+	@extend %upload-feedback-svg;
+	color: $color-primary;
+}
+
+.upload-feedback-summary div svg {
+
+	@extend %upload-feedback-svg;
+}
+
+.upload-feedback-item.success svg {
+
+	@include mix.status-color(success);
+}
+
+.upload-feedback-item.error svg {
+
+	@include mix.status-color(error);
+}
+
+/* =========================================
+   Header Styles
+   ========================================= */
+
+.upload-feedback-header {
+
+	@include mix.flex(row, space-between, center);
+	padding: $spacing-sm $spacing-md;
+	background-color: $color-bg-light;
+	border-bottom: 1px solid $color-border-light;
+}
+
+.upload-feedback-title {
+	font-weight: $font-weight-bold;
+
+	@include mix.font-size(sm);
+	@include mix.flex(row, flex-start, center);
+	gap: $spacing-sm;
+}
+
+.upload-feedback-close {
+
+	@include mix.button-reset;
+	padding: $spacing-xs;
+
+	@include mix.flex-center;
+	color: $color-text-light;
+
+	@include mix.transition(color);
+
+	&:hover {
+		color: $color-text;
+	}
+}
+
+/* =========================================
+   Items List Styles
+   ========================================= */
+
+.upload-feedback-items {
+	max-height: 200px;
+	overflow-y: auto;
+	padding: $spacing-sm $spacing-md;
+}
+
+.upload-feedback-item {
+
+	@include mix.flex(row, space-between, center);
+	padding: $spacing-sm $spacing-md;
+	margin-bottom: $spacing-sm;
+	background-color: $color-bg-light;
+	border: 1px solid $color-border-light;
+	border-radius: $border-radius;
+
+	@include mix.font-size(sm);
+}
+
+.upload-feedback-item:last-child {
+	margin-bottom: 0;
+}
+
+.upload-feedback-item.success {
+
+	@include mix.status-bg(success);
+}
+
+.upload-feedback-item.error {
+
+	@include mix.status-bg(error);
+}
+
+.upload-feedback-item.uploading,
+.upload-feedback-item.processing {
+	border-color: $color-primary-light;
+	background-color: $color-bg-primary-light;
+}
+
+.upload-feedback-item-name {
+	flex: 1;
+
+	@include mix.text-truncate;
+	margin-right: $spacing-sm;
+}
+
+.upload-feedback-item-error {
+
+	@include mix.status-color(error);
+	@include mix.font-size(xs);
+	margin-left: $spacing-xs;
+}
+
+/* =========================================
+   Summary Footer Styles
+   ========================================= */
+
+.upload-feedback-summary {
+	padding: $spacing-sm $spacing-md;
+	border-top: 1px solid $color-border-light;
+	background-color: $color-bg-light;
+}
+
+.upload-feedback-summary div {
+
+	@include mix.flex(row, flex-start, center);
+	gap: $spacing-sm;
+
+	@include mix.font-size(sm);
+}
+
+.upload-feedback-summary div:not(:last-child) {
+	margin-bottom: $spacing-xs;
+}
+
+.upload-feedback-summary div.success {
+
+	@include mix.status-color(success);
+}
+
+.upload-feedback-summary div.error {
+
+	@include mix.status-color(error);
+}
+
+.upload-feedback-summary div.processing,
+.upload-feedback-summary div.uploading {
+	color: $color-primary;
+}

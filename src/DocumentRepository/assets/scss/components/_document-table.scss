@@ -1,0 +1,329 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/mixins" as mix;
+@use "sass:color";
+
+.document-table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: $spacing-lg;
+	background-color: $color-bg-lightest;
+
+	&__header {
+		background-color: $color-gray-100;
+		border-bottom: 2px solid $color-gray-200;
+
+		th {
+			padding: $spacing-sm $spacing-md;
+			text-align: left;
+			font-weight: $font-weight-bold;
+			color: $color-gray-700;
+			white-space: nowrap;
+			user-select: none;
+
+			&.checkbox-column {
+				width: 40px;
+				text-align: center;
+			}
+
+			&.actions-column {
+				width: 120px;
+				text-align: center;
+			}
+		}
+	}
+
+	&__row {
+		display: flex;
+		align-items: center;
+		border-bottom: 1px solid $color-gray-200;
+		transition: background-color $transition-fast;
+
+		&:hover {
+			background-color: $color-gray-50;
+		}
+
+		&--selected {
+			background-color: $color-gray-50;
+		}
+
+		td {
+			padding: $spacing-md;
+			flex: 1;
+			min-width: 0; // Prevents flex items from overflowing
+
+			&.checkbox-column {
+				width: 40px;
+				text-align: center;
+			}
+
+			&.actions-column {
+				width: 120px;
+				text-align: center;
+				white-space: nowrap;
+			}
+		}
+	}
+
+	&__body {
+
+		.document-table__row:last-child {
+			border-bottom: none;
+		}
+	}
+
+	.document-title {
+
+		@include mix.text-truncate;
+		max-width: 300px;
+		font-weight: $font-weight-bold;
+		color: $color-link;
+
+		&:hover {
+			color: $color-link-hover;
+			text-decoration: underline;
+		}
+	}
+
+	.file-size {
+		white-space: nowrap;
+	}
+
+	.status-indicator {
+		display: inline-block;
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		margin-right: $spacing-xs;
+
+		&--published {
+			background-color: $color-success;
+		}
+
+		&--draft {
+			background-color: $color-warning;
+		}
+
+		&--error {
+			background-color: $color-error;
+		}
+	}
+
+	.action-buttons {
+
+		@include mix.flex(row, center, center, nowrap);
+		gap: $spacing-sm;
+
+		.edit-button,
+		.view-button,
+		.delete-button {
+			padding: $spacing-xs;
+			border-radius: $border-radius-sm;
+			transition: all $transition-fast;
+			cursor: pointer;
+
+			svg {
+				display: block;
+				width: 16px;
+				height: 16px;
+			}
+		}
+
+		.view-button {
+			color: $color-info;
+
+			&:hover {
+				background-color: rgba($color-info, 0.1);
+			}
+		}
+
+		.edit-button {
+			color: $color-primary;
+
+			&:hover {
+				background-color: rgba($color-primary, 0.1);
+			}
+		}
+
+		.delete-button {
+			color: $color-error;
+
+			&:hover {
+				background-color: rgba($color-error, 0.1);
+			}
+		}
+	}
+
+	// Make sure delete button icons in the red background are white
+	button.doc-repo-button.delete-button {
+		background-color: $color-error;
+		color: $color-white;
+
+		svg {
+			fill: $color-white;
+			color: $color-white;
+		}
+	}
+
+	.empty-state {
+		padding: $spacing-lg;
+		text-align: center;
+		color: $color-text-light;
+	}
+
+	&__footer {
+		background-color: $color-bg-lighter;
+		border-top: 1px solid $color-border;
+
+		td {
+			padding: $spacing-sm $spacing-md;
+		}
+	}
+
+	.document-cell {
+
+		&__title {
+
+			@include mix.text-truncate;
+			max-width: 300px;
+			display: block;
+		}
+
+		&__metadata {
+
+			@include mix.font-size(sm);
+			color: $color-text-light;
+			margin-top: $spacing-xs;
+		}
+	}
+
+	// Spreadsheet mode styling
+	.editable-cell {
+		position: relative;
+
+		.editable-field {
+			display: block;
+			width: 100%;
+			padding: $spacing-xs;
+			border: 1px solid transparent;
+			border-radius: $border-radius-sm;
+			transition: all $transition-fast;
+
+			&:hover {
+				border-color: $color-border;
+			}
+
+			&:focus {
+				outline: none;
+				border-color: $color-border-focus;
+				background-color: $color-white;
+			}
+		}
+
+		.field-error {
+			position: absolute;
+			bottom: -$spacing-md;
+			left: 0;
+			padding: $spacing-xs;
+			background-color: $color-error-light;
+			border: 1px solid $color-error;
+			color: $color-error;
+			font-size: $font-size-xs;
+			border-radius: $border-radius-sm;
+			z-index: $z-index-dropdown;
+			box-shadow: $box-shadow-sm;
+			max-width: 200px;
+		}
+	}
+
+	@media screen and (max-width: $breakpoint-md) {
+		display: block;
+		overflow-x: auto;
+
+		th,
+		td {
+			min-width: 100px;
+		}
+
+		.delete-button,
+		button.doc-repo-button.delete-button {
+			background-color: $color-error;
+			color: $color-white;
+
+			svg {
+				fill: $color-white;
+				color: $color-white;
+			}
+		}
+	}
+}
+
+/* Spreadsheet Mode Toggle Button Styles */
+button.components-button.doc-repo-button.spreadsheet-toggle {
+	background-color: $color-white;
+	color: $color-primary;
+	border: 2px solid $color-primary;
+	border-radius: $border-radius;
+	font-weight: $font-weight-bold;
+	padding: $spacing-sm $spacing-md;
+	transition: all 0.2s ease;
+	height: auto;
+	min-height: 36px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	margin-right: $spacing-sm;
+
+	&:hover,
+	&:focus {
+		background-color: $color-primary;
+		color: $color-white;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+	}
+
+	&:active {
+		transform: translateY(1px);
+	}
+
+	&.isPressed,
+	&[aria-pressed="true"] {
+		background-color: $color-primary;
+		color: $color-white;
+		border-color: color.adjust($color-primary, $lightness: -10%);
+
+		&:hover,
+		&:focus {
+			background-color: color.adjust($color-primary, $lightness: -10%);
+			color: $color-white;
+		}
+	}
+}
+
+/* Style all doc-repo-button elements for consistent hover states */
+.doc-repo-button {
+
+	&:hover,
+	&:focus {
+		opacity: 0.9;
+	}
+
+	&.edit-button:hover,
+	&.edit-button:focus {
+		background-color: rgba($color-primary, 0.1);
+		color: $color-primary-dark;
+		border-color: $color-primary;
+	}
+
+	&.delete-button:hover,
+	&.delete-button:focus {
+		background-color: rgba($color-error, 0.9);
+		color: $color-white;
+	}
+}
+
+/* Ensure save button has good contrast on hover */
+.doc-repo-button.save-button {
+
+	&:hover,
+	&:focus {
+		background-color: #069; /* Slightly darker than primary */
+		color: $color-white;
+	}
+}

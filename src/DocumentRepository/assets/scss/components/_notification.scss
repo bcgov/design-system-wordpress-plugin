@@ -1,0 +1,113 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/mixins" as mix;
+
+.notification {
+	padding: $spacing-md;
+	margin-bottom: $spacing-md;
+	border-radius: $border-radius;
+	border: 1px solid;
+	position: relative;
+	animation: notification-slide-in $transition-base;
+
+	&__icon {
+		margin-right: $spacing-md;
+
+		svg {
+			width: 20px;
+			height: 20px;
+		}
+	}
+
+	&__content {
+		flex: 1;
+	}
+
+	&__title {
+		font-weight: $font-weight-bold;
+		margin-bottom: $spacing-xs;
+	}
+
+	&__message {
+		margin-bottom: $spacing-sm;
+	}
+
+	&__actions {
+
+		@include mix.flex(row, flex-start, center, nowrap);
+		gap: $spacing-sm;
+	}
+
+	&__close {
+		position: absolute;
+		top: $spacing-sm;
+		right: $spacing-sm;
+		padding: $spacing-xs;
+		border: none;
+		cursor: pointer;
+		color: inherit;
+		opacity: 0.7;
+		transition: opacity $transition-fast;
+
+		&:hover {
+			opacity: 1;
+		}
+
+		svg {
+			width: 16px;
+			height: 16px;
+		}
+	}
+
+	&--success {
+		background-color: $color-success-light;
+		border-color: $color-success;
+		color: $color-success;
+
+		.notification__icon {
+			color: $color-success;
+		}
+	}
+
+	&--error {
+		background-color: $color-error-light;
+		border-color: $color-error;
+		color: $color-error;
+
+		.notification__icon {
+			color: $color-error;
+		}
+	}
+
+	&--warning {
+		background-color: $color-warning-light;
+		border-color: $color-warning;
+		color: $color-warning;
+
+		.notification__icon {
+			color: $color-warning;
+		}
+	}
+
+	&--info {
+		background-color: $color-info-light;
+		border-color: $color-info;
+		color: $color-info;
+
+		.notification__icon {
+			color: $color-info;
+		}
+	}
+}
+
+@keyframes notification-slide-in {
+
+	0% {
+		transform: translateY(-20px);
+		opacity: 0;
+	}
+
+	100% {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}

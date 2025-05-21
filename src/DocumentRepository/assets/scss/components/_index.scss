@@ -1,0 +1,16 @@
+/**
+ * Components Index
+ *
+ * This file forwards all component-specific styles
+ * for easy importing in the main stylesheet.
+ */
+
+@forward "document-table";
+@forward "upload-area";
+@forward "pagination-controls";
+@forward "retry-notice";
+@forward "notification";
+@forward "virtualized-table";
+@forward "upload-feedback";
+@forward "../_metadata-modals";
+@forward "form";

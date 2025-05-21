@@ -1,0 +1,94 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/mixins" as mix;
+
+.upload-area {
+	margin-bottom: $spacing-lg;
+
+	&__container {
+
+		@include mix.flex(column, center, center);
+		border: 2px dashed $color-border;
+		border-radius: $border-radius;
+		padding: $spacing-xl;
+		background-color: $color-bg-lighter;
+		transition: all $transition-base;
+		text-align: center;
+
+		&:hover {
+			border-color: $color-primary-light;
+			background-color: rgba($color-primary, 0.05);
+		}
+
+		&--drag-active {
+			border-color: $color-primary;
+			background-color: rgba($color-primary, 0.1);
+		}
+
+		&--error {
+			border-color: $color-error;
+			background-color: rgba($color-error, 0.05);
+		}
+	}
+
+	&__icon {
+		margin-bottom: $spacing-md;
+
+		svg {
+			width: 48px;
+			height: 48px;
+			color: $color-primary;
+		}
+	}
+
+	&__text {
+		margin-bottom: $spacing-md;
+		color: $color-text;
+	}
+
+	&__browse {
+		color: $color-link;
+		text-decoration: underline;
+		cursor: pointer;
+
+		&:hover {
+			color: $color-link-hover;
+		}
+	}
+
+	&__help-text {
+
+		@include mix.font-size(sm);
+		color: $color-text-light;
+		margin-top: $spacing-sm;
+	}
+
+	&__file-input {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		border: 0;
+	}
+
+	&__button {
+
+		@include mix.button-primary;
+		margin-top: $spacing-md;
+
+		&:hover,
+		&:focus {
+			background-color: $color-primary;
+			color: $color-white !important;
+		}
+	}
+
+	&__error-message {
+		margin-top: $spacing-md;
+		color: $color-error;
+
+		@include mix.font-size(sm);
+	}
+}

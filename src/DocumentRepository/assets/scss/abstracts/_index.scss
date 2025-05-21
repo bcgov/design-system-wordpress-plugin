@@ -1,0 +1,9 @@
+/**
+ * Abstracts Index
+ *
+ * This file forwards all abstracts (variables, mixins, etc.)
+ * for easy importing in the main stylesheet.
+ */
+
+@forward "variables";
+@forward "mixins";

@@ -1,0 +1,50 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/mixins" as mix;
+@use "sass:color";
+
+.retry-notice {
+	margin-bottom: $spacing-lg;
+	padding: $spacing-md;
+	background-color: $color-warning-light;
+	border: 1px solid $color-warning;
+	border-radius: $border-radius;
+	color: $color-text;
+
+	&__title {
+		font-weight: $font-weight-bold;
+		margin-bottom: $spacing-xs;
+	}
+
+	&__message {
+		margin-bottom: $spacing-sm;
+	}
+
+	&__actions {
+
+		@include mix.flex(row, flex-start, center, nowrap);
+		gap: $spacing-sm;
+	}
+
+	.doc-repo-button {
+
+		&--retry {
+			background-color: $color-warning;
+			color: $color-text;
+			border: 1px solid color.adjust($color-warning, $lightness: -10%);
+
+			&:hover {
+				background-color: color.adjust($color-warning, $lightness: -5%);
+			}
+		}
+
+		&--cancel {
+			background-color: transparent;
+			color: $color-text;
+			border: 1px solid $color-border;
+
+			&:hover {
+				background-color: $color-bg-light;
+			}
+		}
+	}
+}
