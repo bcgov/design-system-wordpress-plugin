@@ -5,6 +5,11 @@ namespace Bcgov\DesignSystemPlugin\DocumentRepository;
 use Bcgov\DesignSystemPlugin\DocumentRepository\RepositoryConfig;
 use WP_Error;
 
+// File upload required files fro WordPress.
+require_once ABSPATH . 'wp-admin/includes/file.php';
+require_once ABSPATH . 'wp-admin/includes/image.php';
+require_once ABSPATH . 'wp-admin/includes/media.php';
+
 /**
  * DocumentUploader - File Upload Handler
  *
@@ -32,7 +37,14 @@ class DocumentUploader {
         // Add filter to modify attachment URLs for our documents.
         add_filter( 'wp_get_attachment_url', [ $this, 'fix_attachment_url' ], 10, 2 );
 
-        // Prevent WordPress from organizing uploads by date.
+        // Register our upload directory filter on init.
+        add_action( 'init', [ $this, 'register_upload_directory_filter' ] );
+    }
+
+    /**
+     * Register the upload directory filter.
+     */
+    public function register_upload_directory_filter(): void {
         add_filter(
             'upload_dir',
             function ( $uploads ) {
@@ -187,11 +199,6 @@ class DocumentUploader {
             $metadata['title'] = pathinfo( $file['name'], PATHINFO_FILENAME );
         }
 
-        // Handle file upload to media library.
-        require_once ABSPATH . 'wp-admin/includes/file.php';
-        require_once ABSPATH . 'wp-admin/includes/image.php';
-        require_once ABSPATH . 'wp-admin/includes/media.php';
-
         // Add error handling for media_handle_upload.
         add_filter(
             'wp_media_upload_handler',
@@ -206,20 +213,20 @@ class DocumentUploader {
             }
         );
 
-        // Prevent WordPress from organizing uploads by date.
+        // Add temporary filter for this specific upload.
         add_filter(
             'upload_dir',
             function ( $uploads ) {
-				$uploads['subdir'] = '/documents';
-				$uploads['path']   = $uploads['basedir'] . $uploads['subdir'];
-				$uploads['url']    = $uploads['baseurl'] . $uploads['subdir'];
-				return $uploads;
-			},
+                $uploads['subdir'] = '/documents';
+                $uploads['path']   = $uploads['basedir'] . $uploads['subdir'];
+                $uploads['url']    = $uploads['baseurl'] . $uploads['subdir'];
+                return $uploads;
+            },
             20
         );
 
         // Use WordPress upload handling.
-        $attachment_id = media_handle_upload(
+        $attachment_id = \media_handle_upload(
             'file',
             0,
             [
@@ -227,7 +234,7 @@ class DocumentUploader {
             ]
         );
 
-        // Remove our custom upload directory filter.
+        // Remove our temporary upload directory filter.
         remove_all_filters( 'upload_dir', 20 );
 
         if ( is_wp_error( $attachment_id ) ) {
