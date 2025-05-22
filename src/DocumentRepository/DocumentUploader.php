@@ -33,14 +33,23 @@ class DocumentUploader {
         add_filter( 'wp_get_attachment_url', [ $this, 'fix_attachment_url' ], 10, 2 );
 
         // Prevent WordPress from organizing uploads by date.
-        add_filter( 'upload_dir', function( $uploads ) {
-            if ( isset( $_POST['metadata'] ) && strpos( $_POST['metadata'], 'document_repository' ) !== false ) {
-                $uploads['subdir'] = '/documents';
-                $uploads['path'] = $uploads['basedir'] . $uploads['subdir'];
-                $uploads['url'] = $uploads['baseurl'] . $uploads['subdir'];
-            }
-            return $uploads;
-        }, 20 );
+        add_filter(
+            'upload_dir',
+            function ( $uploads ) {
+                // Verify nonce for security.
+                if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['_wpnonce'] ), 'wp_rest' ) ) {
+                    return $uploads;
+                }
+
+                if ( isset( $_POST['metadata'] ) && strpos( $_POST['metadata'], 'document_repository' ) !== false ) {
+                    $uploads['subdir'] = '/documents';
+                    $uploads['path']   = $uploads['basedir'] . $uploads['subdir'];
+                    $uploads['url']    = $uploads['baseurl'] . $uploads['subdir'];
+                }
+                return $uploads;
+            },
+            20
+        );
     }
 
     /**
@@ -198,12 +207,16 @@ class DocumentUploader {
         );
 
         // Prevent WordPress from organizing uploads by date.
-        add_filter( 'upload_dir', function( $uploads ) {
-            $uploads['subdir'] = '/documents';
-            $uploads['path'] = $uploads['basedir'] . $uploads['subdir'];
-            $uploads['url'] = $uploads['baseurl'] . $uploads['subdir'];
-            return $uploads;
-        }, 20 );
+        add_filter(
+            'upload_dir',
+            function ( $uploads ) {
+				$uploads['subdir'] = '/documents';
+				$uploads['path']   = $uploads['basedir'] . $uploads['subdir'];
+				$uploads['url']    = $uploads['baseurl'] . $uploads['subdir'];
+				return $uploads;
+			},
+            20
+        );
 
         // Use WordPress upload handling.
         $attachment_id = media_handle_upload(

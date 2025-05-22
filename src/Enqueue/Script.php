@@ -28,13 +28,13 @@ class Script {
      */
     public function enqueue_global_scripts() {
         // Define the path to the JS file.
-        $_file = plugin_dir_path( dirname( dirname( __FILE__ ) ) ) . 'dist/index.js';
+        $_file = plugin_dir_path( dirname( __DIR__ ) ) . 'dist/index.js';
 
         // Get the file modification time to use as the version for cache busting.
         $version = filemtime( $_file );
 
         // Enqueue the  with a version parameter to prevent caching issues.
-        wp_enqueue_script( 'design-system-plugin-scripts', plugin_dir_url( dirname( dirname( __FILE__ ) ) ) . 'dist/index.js', array(), $version, true );    }
+        wp_enqueue_script( 'design-system-plugin-scripts', plugin_dir_url( dirname( __DIR__ ) ) . 'dist/index.js', array(), $version, true );    }
 
     /**
      * Initializes the class by hooking into WordPress actions to enqueue the scripts.

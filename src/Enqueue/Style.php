@@ -28,13 +28,13 @@ class Style {
      */
     public function enqueue_global_styles() {
         // Define the path to the CSS file.
-        $css_file = plugin_dir_path( dirname( dirname( __FILE__ ) ) ) . 'dist/index.css';
+        $css_file = plugin_dir_path( dirname( __DIR__ ) ) . 'dist/index.css';
 
         // Get the file modification time to use as the version for cache busting.
         $version = filemtime( $css_file );
 
         // Enqueue the stylesheet with a version parameter to prevent caching issues.
-        wp_enqueue_style( 'design-system-plugin-styles', plugin_dir_url( dirname( dirname( __FILE__ ) ) ) . 'dist/index.css', array(), $version );
+        wp_enqueue_style( 'design-system-plugin-styles', plugin_dir_url( dirname( __DIR__ ) ) . 'dist/index.css', array(), $version );
     }
 
     /**

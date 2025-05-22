@@ -131,8 +131,8 @@ class AdminUIManager {
             'apiNamespace' => $this->config->get_api_namespace(),
         ];
 
-        $document_repository_asset = require( $plugin_dir . '/src/DocumentRepository/build/document-repository/index.asset.php' );
-        $metadata_settings_asset = require( $plugin_dir . '/src/DocumentRepository/build/metadata-settings/index.asset.php' );
+        $document_repository_asset = require $plugin_dir . '/src/DocumentRepository/build/document-repository/index.asset.php';
+        $metadata_settings_asset   = require $plugin_dir . '/src/DocumentRepository/build/metadata-settings/index.asset.php';
 
         wp_register_script(
             'dswp-document-repository-app',

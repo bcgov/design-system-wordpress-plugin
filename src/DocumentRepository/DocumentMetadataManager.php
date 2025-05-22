@@ -209,18 +209,18 @@ class DocumentMetadataManager {
         $file_id = get_post_meta( $post_id, 'document_file_id', true );
         if ( $file_id ) {
             $metadata['document_file_id'] = $file_id;
-            
-            // Get the file path and URL
+
+            // Get the file path and URL.
             $file_path = get_attached_file( $file_id );
-            $file_url = wp_get_attachment_url( $file_id );
-            
-            // If the file is in the documents directory, update the URL
+            $file_url  = wp_get_attachment_url( $file_id );
+
+            // If the file is in the documents directory, update the URL.
             if ( strpos( $file_path, '/documents/' ) !== false ) {
                 $upload_dir = wp_upload_dir();
-                $file_url = $upload_dir['baseurl'] . '/documents/' . basename( $file_path );
+                $file_url   = $upload_dir['baseurl'] . '/documents/' . basename( $file_path );
             }
-            
-            $metadata['document_file_url'] = $file_url;
+
+            $metadata['document_file_url']  = $file_url;
             $metadata['document_file_name'] = basename( $file_path );
             $metadata['document_file_type'] = get_post_mime_type( $file_id );
             $metadata['document_file_size'] = filesize( $file_path );
@@ -350,11 +350,9 @@ class DocumentMetadataManager {
 
     /**
      * Clear cache - now a no-op function for backward compatibility.
-     *
-     * @param array|int $types Cache types to clear (documents, columns, etc.) or document ID.
      */
-    public function clear_cache( $types = [ 'documents', 'columns' ] ): void {
-        // This function is kept for backward compatibility but does nothing
+    public function clear_cache(): void {
+        // This function is kept for backward compatibility but does nothing.
         $this->log( 'Cache clearing requested but caching is disabled', 'debug' );
     }
 

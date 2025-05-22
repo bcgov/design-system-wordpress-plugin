@@ -298,7 +298,7 @@ const DocumentUploader = ( {
 		// Add metadata as JSON with document_repository flag
 		const metadataWithFlag = {
 			...metadata,
-			document_repository: true
+			document_repository: true,
 		};
 		const metadataJson = JSON.stringify( metadataWithFlag );
 		formData.append( 'metadata', metadataJson );
