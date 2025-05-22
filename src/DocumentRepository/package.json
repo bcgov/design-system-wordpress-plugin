@@ -4,7 +4,8 @@
   "description": "Document Repository for WordPress",
   "main": "index.js",
   "scripts": {
-    "build": "npm run build:doc-repo && npm run build:metadata-settings && npm run build:css",    "build:doc-repo": "wp-scripts build --webpack-src-dir=assets/js/apps/document-repository --output-path=build/document-repository",
+    "build": "npm run build:doc-repo && npm run build:metadata-settings && npm run build:css",    
+    "build:doc-repo": "wp-scripts build --webpack-src-dir=assets/js/apps/document-repository --output-path=build/document-repository",
     "build:metadata-settings": "wp-scripts build --webpack-src-dir=assets/js/apps/metadata-settings --output-path=build/metadata-settings",
     "build:css": "wp-scripts build --webpack-src-dir=assets/scss --output-path=build/css",
     "start": "webpack --config webpack.config.js --watch",

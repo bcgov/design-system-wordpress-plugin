@@ -293,9 +293,14 @@ const DocumentUploader = ( {
 		const formData = new FormData();
 		formData.append( 'file', file );
 		formData.append( 'title', title );
+		formData.append( '_wpnonce', window.documentRepositorySettings.nonce );
 
-		// Add metadata as JSON
-		const metadataJson = JSON.stringify( metadata );
+		// Add metadata as JSON with document_repository flag
+		const metadataWithFlag = {
+			...metadata,
+			document_repository: true
+		};
+		const metadataJson = JSON.stringify( metadataWithFlag );
 		formData.append( 'metadata', metadataJson );
 
 		try {
