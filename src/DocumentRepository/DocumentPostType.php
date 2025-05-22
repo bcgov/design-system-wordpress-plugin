@@ -89,6 +89,9 @@ class DocumentPostType {
 
         // Register custom taxonomies if needed.
         $this->register_taxonomies();
+
+        // Hide document attachments from media library
+        add_filter('ajax_query_attachments_args', [$this, 'hide_document_attachments']);
     }
 
     /**
@@ -185,5 +188,39 @@ class DocumentPostType {
 
         // Add nonce field for security.
         wp_nonce_field( 'document_file_meta_box', 'document_file_meta_box_nonce' );
+    }
+
+    /**
+     * Hide document attachments from the media library.
+     *
+     * @param array $query The query arguments.
+     * @return array Modified query arguments.
+     */
+    public function hide_document_attachments($query): array {
+        // Get all document post IDs
+        $document_ids = get_posts([
+            'post_type' => $this->config->get_post_type(),
+            'fields' => 'ids',
+            'posts_per_page' => -1,
+        ]);
+
+        if (!empty($document_ids)) {
+            // Get all attachment IDs associated with documents
+            $attachment_ids = [];
+            foreach ($document_ids as $doc_id) {
+                $file_id = get_post_meta($doc_id, 'document_file_id', true);
+                if ($file_id) {
+                    $attachment_ids[] = $file_id;
+                }
+            }
+
+            if (!empty($attachment_ids)) {
+                $query['post__not_in'] = isset($query['post__not_in']) 
+                    ? array_merge($query['post__not_in'], $attachment_ids)
+                    : $attachment_ids;
+            }
+        }
+
+        return $query;
     }
 }
