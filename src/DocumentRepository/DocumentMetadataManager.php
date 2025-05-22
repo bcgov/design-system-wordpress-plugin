@@ -227,11 +227,22 @@ class DocumentMetadataManager {
         // Add file data.
         $file_id = get_post_meta( $post_id, 'document_file_id', true );
         if ( $file_id ) {
-            $metadata['document_file_id']   = $file_id;
-            $metadata['document_file_url']  = wp_get_attachment_url( $file_id );
-            $metadata['document_file_name'] = basename( get_attached_file( $file_id ) );
+            $metadata['document_file_id'] = $file_id;
+            
+            // Get the file path and URL
+            $file_path = get_attached_file( $file_id );
+            $file_url = wp_get_attachment_url( $file_id );
+            
+            // If the file is in the documents directory, update the URL
+            if ( strpos( $file_path, '/documents/' ) !== false ) {
+                $upload_dir = wp_upload_dir();
+                $file_url = $upload_dir['baseurl'] . '/documents/' . basename( $file_path );
+            }
+            
+            $metadata['document_file_url'] = $file_url;
+            $metadata['document_file_name'] = basename( $file_path );
             $metadata['document_file_type'] = get_post_mime_type( $file_id );
-            $metadata['document_file_size'] = filesize( get_attached_file( $file_id ) );
+            $metadata['document_file_size'] = filesize( $file_path );
         }
 
         return $metadata;
