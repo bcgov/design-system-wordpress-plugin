@@ -46,7 +46,7 @@ class RepositoryConfig {
 
         // Cache settings.
         'cache_ttl'          => 60 * 60, // 1 hour.
-        'cache_enabled'      => true,
+        'cache_enabled'      => false,
     ];
 
     /**

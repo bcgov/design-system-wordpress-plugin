@@ -20,9 +20,6 @@ class DocumentMetadataManager {
      */
     private RepositoryConfig $config;
 
-    private const CACHE_KEY        = 'document_repository_metadata_fields';
-    private const CACHE_EXPIRATION = 3600; // 1 hour.
-
     /**
      * Constructor.
      *
@@ -38,19 +35,8 @@ class DocumentMetadataManager {
      * @return array Metadata field definitions.
      */
     public function get_metadata_fields(): array {
-        // Try to get from cache first.
-        $cached_fields = wp_cache_get( self::CACHE_KEY );
-        if ( false !== $cached_fields ) {
-            return $cached_fields;
-        }
-
         // Get fields from database or default to empty array if none exist.
-        $fields = get_option( 'document_repository_metadata_fields', [] );
-
-        // Cache the result.
-        wp_cache_set( self::CACHE_KEY, $fields, '', self::CACHE_EXPIRATION );
-
-        return $fields;
+        return get_option( 'document_repository_metadata_fields', [] );
     }
 
     /**
@@ -120,12 +106,7 @@ class DocumentMetadataManager {
         );
 
         // Save fields.
-        $result = update_option( 'document_repository_metadata_fields', $fields );
-
-        // Clear cache.
-        wp_cache_delete( self::CACHE_KEY );
-
-        return $result;
+        return update_option( 'document_repository_metadata_fields', $fields );
     }
 
     /**
@@ -227,11 +208,22 @@ class DocumentMetadataManager {
         // Add file data.
         $file_id = get_post_meta( $post_id, 'document_file_id', true );
         if ( $file_id ) {
-            $metadata['document_file_id']   = $file_id;
-            $metadata['document_file_url']  = wp_get_attachment_url( $file_id );
-            $metadata['document_file_name'] = basename( get_attached_file( $file_id ) );
+            $metadata['document_file_id'] = $file_id;
+
+            // Get the file path and URL.
+            $file_path = get_attached_file( $file_id );
+            $file_url  = wp_get_attachment_url( $file_id );
+
+            // If the file is in the documents directory, update the URL.
+            if ( strpos( $file_path, '/documents/' ) !== false ) {
+                $upload_dir = wp_upload_dir();
+                $file_url   = $upload_dir['baseurl'] . '/documents/' . basename( $file_path );
+            }
+
+            $metadata['document_file_url']  = $file_url;
+            $metadata['document_file_name'] = basename( $file_path );
             $metadata['document_file_type'] = get_post_mime_type( $file_id );
-            $metadata['document_file_size'] = filesize( get_attached_file( $file_id ) );
+            $metadata['document_file_size'] = filesize( $file_path );
         }
 
         return $metadata;
@@ -286,14 +278,11 @@ class DocumentMetadataManager {
             update_post_meta( $post_id, $field_id, $value );
         }
 
-        // Clear cache.
-        $this->clear_cache( [ 'documents' ] );
-
         return true;
     }
 
     /**
-     * Get documents with pagination and caching.
+     * Get documents with pagination.
      *
      * @param array $args Query arguments.
      * @return array Documents and pagination info.
@@ -309,16 +298,7 @@ class DocumentMetadataManager {
             'tax_query'  => [],
         ];
 
-        $args      = wp_parse_args( $args, $defaults );
-        $cache_key = 'document_repository_documents_page_' . wp_json_encode( $args );
-
-        // Check cache if enabled.
-        if ( $this->config->get( 'cache_enabled' ) ) {
-            $cached = get_transient( $cache_key );
-            if ( false !== $cached ) {
-                return $cached;
-            }
-        }
+        $args = wp_parse_args( $args, $defaults );
 
         // Build query.
         $query_args = [
@@ -360,66 +340,20 @@ class DocumentMetadataManager {
             ];
         }
 
-        $result = [
+        return [
             'documents'    => $documents,
             'total'        => $query->found_posts,
             'total_pages'  => $query->max_num_pages,
             'current_page' => $args['paged'],
         ];
-
-        // Cache results.
-        if ( $this->config->get( 'cache_enabled' ) ) {
-            set_transient( $cache_key, $result, $this->config->get( 'cache_ttl' ) );
-        }
-
-        $this->log( 'Documents query executed', 'debug' );
-        return $result;
     }
 
     /**
-     * Clear cache.
-     *
-     * @param array|int $types Cache types to clear (documents, columns, etc.) or document ID.
+     * Clear cache - now a no-op function for backward compatibility.
      */
-    public function clear_cache( $types = [ 'documents', 'columns' ] ): void {
-        global $wpdb;
-
-        // If $types is an integer (document ID), convert it to default array.
-        if ( is_int( $types ) || is_numeric( $types ) ) {
-            $this->log( 'Cache cleared for document ID: ' . $types, 'debug' );
-            $types = [ 'documents', 'columns' ];
-        }
-
-        // Ensure $types is an array.
-        if ( ! is_array( $types ) ) {
-            $types = [ 'documents', 'columns' ];
-        }
-
-        foreach ( $types as $type ) {
-            switch ( $type ) {
-                case 'documents':
-                    // Clear document count cache.
-                    delete_transient( 'document_repository_count' );
-
-                    // Clear document pages cache.
-                    $transient_like = $wpdb->esc_like( '_transient_document_repository_documents_page_' ) . '%';
-                    $wpdb->query(
-                        $wpdb->prepare(
-                            "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
-                            '%' . $transient_like
-                        )
-                    );
-                    break;
-
-                case 'columns':
-                    // Clear columns cache.
-                    delete_transient( 'document_repository_columns' );
-                    break;
-            }
-        }
-
-        do_action( 'document_repository_cache_cleared', $types );
-        $this->log( 'Cache cleared: ' . ( is_array( $types ) ? implode( ', ', $types ) : $types ), 'debug' );
+    public function clear_cache(): void {
+        // This function is kept for backward compatibility but does nothing.
+        $this->log( 'Cache clearing requested but caching is disabled', 'debug' );
     }
 
     /**
