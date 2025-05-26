@@ -50,34 +50,16 @@ document.addEventListener( 'DOMContentLoaded', function () {
 			const mobileBreakpoint =
 				parseInt( nav.dataset.dswpMobileBreakpoint ) || 768;
 
-			// Add a CSS rule to hide the entire navigation block below the mobile breakpoint
-			const style = document.createElement( 'style' );
-			style.innerHTML = `
-				@media (max-width: ${mobileBreakpoint}px) {
-					.dswp-block-navigation-is-mobile-overlay,
-					.dswp-block-navigation-is-always-overlay,
-					.dswp-block-navigation-is-never-overlay {
-						display: none !important;
-					}
-				}
-			`;
-			document.head.appendChild( style );
+			// Add a CSS rule to show the navigation block above the mobile breakpoint
+			// (Removed previous style.innerHTML and document.head.appendChild(style) blocks for showInDesktop)
 		}
 
 		if ( showInMobile ) {
 			const mobileBreakpoint =
 				parseInt( nav.dataset.dswpMobileBreakpoint ) || 768;
 
-			// Add a CSS rule to hide the entire navigation block from the mobile breakpoint and above
-			const style = document.createElement( 'style' );
-			style.innerHTML = `
-				@media (min-width: ${mobileBreakpoint}px) {
-					.wp-block-design-system-wordpress-plugin-navigation {
-						display: none !important;
-					}
-				}
-			`;
-			document.head.appendChild( style );
+			// Add a CSS rule to show the navigation block below the mobile breakpoint
+			// (Removed previous style.innerHTML and document.head.appendChild(style) blocks for showInMobile)
 		}
 
 		/**
@@ -274,37 +256,28 @@ document.addEventListener( 'DOMContentLoaded', function () {
 		}
 
 		// Mobile menu toggle functionality
-		if ( elements.mobileNavIcon ) {
-			elements.mobileNavIcon.addEventListener( 'click', function () {
-				elements.menuContainer.classList.toggle( 'is-menu-open' );
-				const isOpen =
-					elements.menuContainer.classList.contains( 'is-menu-open' );
+		if (elements.mobileNavIcon) {
+			elements.mobileNavIcon.addEventListener('click', function () {
+				console.log('Toggle button clicked');
+				elements.menuContainer.classList.toggle('is-menu-open');
+				const isOpen = elements.menuContainer.classList.contains('is-menu-open');
 
-				elements.mobileNavIcon.setAttribute(
-					'aria-expanded',
-					isOpen.toString()
-				);
+				elements.mobileNavIcon.setAttribute('aria-expanded', isOpen.toString());
 
 				// Toggle hamburger animation
-				elements.topBar.classList.toggle(
-					'dswp-nav-mobile-menu-top-bar-open'
-				);
-				elements.middleBar.classList.toggle(
-					'dswp-nav-mobile-menu-middle-bar-open'
-				);
-				if ( elements.bottomBar ) {
-					elements.bottomBar.classList.toggle(
-						'dswp-nav-mobile-menu-bottom-bar-open'
-					);
+				elements.topBar.classList.toggle('dswp-nav-mobile-menu-top-bar-open');
+				elements.middleBar.classList.toggle('dswp-nav-mobile-menu-middle-bar-open');
+				if (elements.bottomBar) {
+					elements.bottomBar.classList.toggle('dswp-nav-mobile-menu-bottom-bar-open');
 				}
 
 				elements.iconText.innerText = isOpen ? 'Close menu' : 'Menu';
 				elements.menuContainer.style.display = isOpen ? 'grid' : 'none';
 
-				if ( ! isOpen ) {
+				if (!isOpen) {
 					closeAllSubmenus();
 				}
-			} );
+			});
 		}
 
 		// Close menu when clicking outside
@@ -521,5 +494,34 @@ document.addEventListener( 'DOMContentLoaded', function () {
 				}
 			}
 		});
+
+		// Adjust display logic based on screen size
+		function updateDisplay() {
+			const mobileBreakpoint = parseInt(nav.dataset.dswpMobileBreakpoint) || 768;
+			const isMobileView = window.innerWidth <= mobileBreakpoint;
+
+			console.log('Updating display for nav:', nav);
+			console.log('Mobile breakpoint:', mobileBreakpoint);
+			console.log('Is mobile view:', isMobileView);
+			console.log('Show in desktop:', showInDesktop);
+			console.log('Show in mobile:', showInMobile);
+
+			if (showInDesktop && !isMobileView) {
+				console.log('Displaying for desktop');
+				nav.style.display = 'flex';
+			} else if (showInMobile && isMobileView) {
+				console.log('Displaying for mobile');
+				nav.style.display = 'flex';
+			} else {
+				console.log('Hiding navigation');
+				nav.style.display = 'none';
+			}
+		}
+
+		// Initial display update
+		updateDisplay();
+
+		// Update display on resize
+		window.addEventListener('resize', updateDisplay);
 	} );
 } );
