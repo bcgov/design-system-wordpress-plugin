@@ -443,12 +443,14 @@ function save({
   const {
     overlayMenu,
     mobileBreakpoint,
-    showInDesktop
+    showInDesktop,
+    showInMobile
   } = attributes;
   const blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useBlockProps.save({
     className: `dswp-block-navigation-is-${overlayMenu}-overlay`,
     'data-dswp-mobile-breakpoint': mobileBreakpoint,
-    'data-show-in-desktop': showInDesktop
+    'data-show-in-desktop': showInDesktop,
+    'data-show-in-mobile': showInMobile
   });
   const innerBlocksProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useInnerBlocksProps.save({
     className: 'dswp-block-navigation__container'
