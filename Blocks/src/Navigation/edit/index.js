@@ -312,12 +312,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<ToggleControl
 						label={ __( 'Show in Desktop', 'dswp' ) }
 						checked={ showInDesktop }
-						onChange={ ( value ) => setAttributes( { showInDesktop: value } ) }
+						onChange={ ( value ) => {
+							setAttributes( { showInDesktop: value } );
+							if (value) {
+								setAttributes( { showInMobile: false } );
+							}
+						}}
 					/>
 					<ToggleControl
 						label={ __( 'Show in Mobile', 'dswp' ) }
 						checked={ showInMobile }
-						onChange={ ( value ) => setAttributes( { showInMobile: value } ) }
+						onChange={ ( value ) => {
+							setAttributes( { showInMobile: value } );
+							if (value) {
+								setAttributes( { showInDesktop: false } );
+							}
+						}}
 					/>
 					<SelectControl
 						label={ __( 'Select Menu', 'dswp' ) }
