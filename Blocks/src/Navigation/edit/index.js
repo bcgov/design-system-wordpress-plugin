@@ -381,7 +381,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						</Button>
 					</ButtonGroup>
 
-					{ overlayMenu === 'mobile' && (
+					{ (showInDesktop || showInMobile || overlayMenu === 'mobile') && (
 						<div style={ { marginTop: '1rem' } }>
 							<RangeControl
 								label={ __( 'Mobile Breakpoint (px)', 'dswp' ) }

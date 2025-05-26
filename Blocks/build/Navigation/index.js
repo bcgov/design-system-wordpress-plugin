@@ -330,7 +330,7 @@ function Edit({
             }),
             children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Never', 'dswp')
           })]
-        }), overlayMenu === 'mobile' && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)("div", {
+        }), (showInDesktop || showInMobile || overlayMenu === 'mobile') && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)("div", {
           style: {
             marginTop: '1rem'
           },
