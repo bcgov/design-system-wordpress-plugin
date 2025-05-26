@@ -55,6 +55,14 @@
     "mobileBreakpoint": {
       "type": "number",
       "default": 768
+    },
+    "showInDesktop": {
+      "type": "boolean",
+      "default": true
+    },
+    "showInMobile": {
+      "type": "boolean",
+      "default": true
     }
   },
   "editorScript": "file:./index.js",

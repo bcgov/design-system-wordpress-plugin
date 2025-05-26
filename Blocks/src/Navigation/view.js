@@ -40,6 +40,27 @@ document.addEventListener( 'DOMContentLoaded', function () {
 			'dswp-block-navigation-is-always-overlay'
 		);
 
+		// Check if showInDesktop is enabled
+		const showInDesktop = nav.dataset.showInDesktop === 'true';
+
+		if ( showInDesktop ) {
+			const mobileBreakpoint =
+				parseInt( nav.dataset.dswpMobileBreakpoint ) || 768;
+
+			// Add a CSS rule to hide the entire navigation block below the mobile breakpoint
+			const style = document.createElement( 'style' );
+			style.innerHTML = `
+				@media (max-width: ${mobileBreakpoint}px) {
+					.dswp-block-navigation-is-mobile-overlay,
+					.dswp-block-navigation-is-always-overlay,
+					.dswp-block-navigation-is-never-overlay {
+						display: none !important;
+					}
+				}
+			`;
+			document.head.appendChild( style );
+		}
+
 		/**
 		 * Menu State Management Functions
 		 */

@@ -5,6 +5,7 @@ import {
 	ButtonGroup,
 	Button,
 	RangeControl,
+	ToggleControl,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useEffect, useRef, useCallback, useMemo } from '@wordpress/element';
@@ -35,7 +36,7 @@ const ALLOWED_BLOCKS = [
  * @return {JSX.Element} Navigation block editor interface
  */
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { menuId, overlayMenu, mobileBreakpoint = 768 } = attributes;
+	const { menuId, overlayMenu, mobileBreakpoint = 768, showInDesktop, showInMobile } = attributes;
 
 	/**
 	 * WordPress dispatch and registry hooks for block manipulation
@@ -308,6 +309,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		<>
 			<InspectorControls>
 				<PanelBody title={ __( 'Navigation Settings', 'dswp' ) }>
+					<ToggleControl
+						label={ __( 'Show in Desktop', 'dswp' ) }
+						checked={ showInDesktop }
+						onChange={ ( value ) => setAttributes( { showInDesktop: value } ) }
+					/>
+					<ToggleControl
+						label={ __( 'Show in Mobile', 'dswp' ) }
+						checked={ showInMobile }
+						onChange={ ( value ) => setAttributes( { showInMobile: value } ) }
+					/>
 					<SelectControl
 						label={ __( 'Select Menu', 'dswp' ) }
 						value={ menuId || 0 }
