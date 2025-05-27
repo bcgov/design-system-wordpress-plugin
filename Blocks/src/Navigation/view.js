@@ -495,15 +495,15 @@ document.addEventListener( 'DOMContentLoaded', function () {
 			const isMobileView = window.innerWidth <= mobileBreakpoint;
 
 			// If both visibility options are explicitly set to false, show the menu
-			if (showInDesktop === false && showInMobile === false) {
+			if ( showInDesktop === false && showInMobile === false ) {
 				nav.style.display = 'flex';
 				return;
 			}
 
 			// Otherwise, follow the normal visibility rules
-			if (showInDesktop === false && !isMobileView) {
+			if ( showInDesktop === false && ! isMobileView ) {
 				nav.style.display = 'none';
-			} else if (showInMobile === false && isMobileView) {
+			} else if ( showInMobile === false && isMobileView ) {
 				nav.style.display = 'none';
 			} else {
 				nav.style.display = 'flex';
