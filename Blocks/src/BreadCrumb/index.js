@@ -15,9 +15,9 @@ import './editor.scss';
 
 /**
  * Register Breadcrumb Block
- * 
+ *
  * @description Registers a custom Gutenberg block for displaying breadcrumb navigation
- * @param {string} metadata.name - The block's unique identifier
+ * @param {string} metadata.name      - The block's unique identifier
  * @param {Object} blockConfiguration - Configuration object for the block
  */
 registerBlockType( metadata.name, {
@@ -30,7 +30,7 @@ registerBlockType( metadata.name, {
 	/**
 	 * Save Method
 	 * Returns null as the block's content is rendered dynamically via PHP
-	 * @returns {null}
+	 * @return {null} This block is dynamic and does not save content to the post content.
 	 */
 	save: () => null,
 } );

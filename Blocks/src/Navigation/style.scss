@@ -12,6 +12,8 @@
 	border-radius: 4px;
 	color: inherit;
 	transition: all 0.3s ease;
+	z-index: 1100;
+	position: relative;
 
 	svg {
 		// * Done
@@ -269,7 +271,7 @@
 		z-index: 1000;
 		padding-top: 1rem;
 		box-sizing: border-box;
-		margin-block-start: 0.3rem !important;
+		margin-block-start: 3rem !important;
 		padding-bottom: 5rem;
 		border-bottom: solid 3px #00000096;
 

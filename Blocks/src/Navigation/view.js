@@ -40,9 +40,11 @@ document.addEventListener( 'DOMContentLoaded', function () {
 			'dswp-block-navigation-is-always-overlay'
 		);
 
-		/**
-		 * Menu State Management Functions
-		 */
+		// Check if showInDesktop is enabled
+		const showInDesktop = nav.dataset.showInDesktop === 'true';
+
+		// Check if showInMobile is enabled
+		const showInMobile = nav.dataset.showInMobile === 'true';
 
 		/**
 		 * Closes all open submenus within the navigation
@@ -471,15 +473,47 @@ document.addEventListener( 'DOMContentLoaded', function () {
 
 		// Add active link highlighting
 		const activePage = window.location.pathname;
-		nav.querySelectorAll('.wp-block-navigation-item__content').forEach(link => {
-			if(new URL(link.href).pathname === activePage){
-				link.classList.add('active');
-				// Add active class to parent item if it exists
-				const parentItem = link.closest('.wp-block-navigation-item');
-				if (parentItem) {
-					parentItem.classList.add('active');
+		nav.querySelectorAll( '.wp-block-navigation-item__content' ).forEach(
+			( link ) => {
+				if ( new URL( link.href ).pathname === activePage ) {
+					link.classList.add( 'active' );
+					// Add active class to parent item if it exists
+					const parentItem = link.closest(
+						'.wp-block-navigation-item'
+					);
+					if ( parentItem ) {
+						parentItem.classList.add( 'active' );
+					}
 				}
 			}
-		});
+		);
+
+		// Adjust display logic based on screen size
+		function updateDisplay() {
+			const mobileBreakpoint =
+				parseInt( nav.dataset.dswpMobileBreakpoint ) || 768;
+			const isMobileView = window.innerWidth <= mobileBreakpoint;
+
+			// If both visibility options are explicitly set to false, show the menu
+			if ( showInDesktop === false && showInMobile === false ) {
+				nav.style.display = 'flex';
+				return;
+			}
+
+			// Otherwise, follow the normal visibility rules
+			if ( showInDesktop === false && ! isMobileView ) {
+				nav.style.display = 'none';
+			} else if ( showInMobile === false && isMobileView ) {
+				nav.style.display = 'none';
+			} else {
+				nav.style.display = 'flex';
+			}
+		}
+
+		// Initial display update
+		updateDisplay();
+
+		// Update display on resize
+		window.addEventListener( 'resize', updateDisplay );
 	} );
 } );
