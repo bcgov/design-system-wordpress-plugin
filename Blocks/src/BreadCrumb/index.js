@@ -30,7 +30,7 @@ registerBlockType( metadata.name, {
 	/**
 	 * Save Method
 	 * Returns null as the block's content is rendered dynamically via PHP
-	 * @return {null}
+	 * @return {null} This block is dynamic and does not save content to the post content.
 	 */
 	save: () => null,
 } );
