@@ -115,13 +115,13 @@ class AdminUIManager {
      * Register all admin scripts and styles.
      */
     private function register_admin_scripts(): void {
-        // Get the plugin root directory URL using WordPress constants.
-        $plugin_dir = WP_PLUGIN_DIR . '/design-system-wordpress-plugin';
-        $plugin_url = WP_PLUGIN_URL . '/design-system-wordpress-plugin';
-        $build_path = $plugin_dir . '/src/DocumentRepository/build';
+        // Get the plugin root directory path and URL using WordPress functions.
+        $plugin_dir = plugin_dir_path( dirname( __DIR__ ) );
+        $plugin_url = plugins_url( '', dirname( __DIR__ ) );
+        $build_path = $plugin_dir . 'src/DocumentRepository/build';
 
         // Get version from file modification time, or use fallback if file doesn't exist.
-        $js_file = $build_path . '/document-repository.js';
+        $js_file = $build_path . '/document-repository/index.js';
         $version = file_exists( $js_file ) ? filemtime( $js_file ) : time();
 
         // Add nonce to script data.
@@ -131,8 +131,8 @@ class AdminUIManager {
             'apiNamespace' => $this->config->get_api_namespace(),
         ];
 
-        $document_repository_asset = require $plugin_dir . '/src/DocumentRepository/build/document-repository/index.asset.php';
-        $metadata_settings_asset   = require $plugin_dir . '/src/DocumentRepository/build/metadata-settings/index.asset.php';
+        $document_repository_asset = require $build_path . '/document-repository/index.asset.php';
+        $metadata_settings_asset   = require $build_path . '/metadata-settings/index.asset.php';
 
         wp_register_script(
             'dswp-document-repository-app',
