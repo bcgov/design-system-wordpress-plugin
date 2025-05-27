@@ -36,7 +36,13 @@ const ALLOWED_BLOCKS = [
  * @return {JSX.Element} Navigation block editor interface
  */
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { menuId, overlayMenu, mobileBreakpoint = 768, showInDesktop, showInMobile } = attributes;
+	const {
+		menuId,
+		overlayMenu,
+		mobileBreakpoint = 768,
+		showInDesktop,
+		showInMobile,
+	} = attributes;
 
 	/**
 	 * WordPress dispatch and registry hooks for block manipulation
@@ -314,20 +320,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						checked={ showInDesktop }
 						onChange={ ( value ) => {
 							setAttributes( { showInDesktop: value } );
-							if (value) {
+							if ( value ) {
 								setAttributes( { showInMobile: false } );
 							}
-						}}
+						} }
 					/>
 					<ToggleControl
 						label={ __( 'Show in Mobile', 'dswp' ) }
 						checked={ showInMobile }
 						onChange={ ( value ) => {
 							setAttributes( { showInMobile: value } );
-							if (value) {
+							if ( value ) {
 								setAttributes( { showInDesktop: false } );
 							}
-						}}
+						} }
 					/>
 					<SelectControl
 						label={ __( 'Select Menu', 'dswp' ) }
@@ -381,7 +387,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						</Button>
 					</ButtonGroup>
 
-					{ (showInDesktop || showInMobile || overlayMenu === 'mobile') && (
+					{ ( showInDesktop ||
+						showInMobile ||
+						overlayMenu === 'mobile' ) && (
 						<div style={ { marginTop: '1rem' } }>
 							<RangeControl
 								label={ __( 'Mobile Breakpoint (px)', 'dswp' ) }

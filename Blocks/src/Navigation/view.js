@@ -46,26 +46,6 @@ document.addEventListener( 'DOMContentLoaded', function () {
 		// Check if showInMobile is enabled
 		const showInMobile = nav.dataset.showInMobile === 'true';
 
-		if ( showInDesktop ) {
-			const mobileBreakpoint =
-				parseInt( nav.dataset.dswpMobileBreakpoint ) || 768;
-
-			// Add a CSS rule to show the navigation block above the mobile breakpoint
-			// (Removed previous style.innerHTML and document.head.appendChild(style) blocks for showInDesktop)
-		}
-
-		if ( showInMobile ) {
-			const mobileBreakpoint =
-				parseInt( nav.dataset.dswpMobileBreakpoint ) || 768;
-
-			// Add a CSS rule to show the navigation block below the mobile breakpoint
-			// (Removed previous style.innerHTML and document.head.appendChild(style) blocks for showInMobile)
-		}
-
-		/**
-		 * Menu State Management Functions
-		 */
-
 		/**
 		 * Closes all open submenus within the navigation
 		 */
@@ -256,28 +236,37 @@ document.addEventListener( 'DOMContentLoaded', function () {
 		}
 
 		// Mobile menu toggle functionality
-		if (elements.mobileNavIcon) {
-			elements.mobileNavIcon.addEventListener('click', function () {
-				console.log('Toggle button clicked');
-				elements.menuContainer.classList.toggle('is-menu-open');
-				const isOpen = elements.menuContainer.classList.contains('is-menu-open');
+		if ( elements.mobileNavIcon ) {
+			elements.mobileNavIcon.addEventListener( 'click', function () {
+				elements.menuContainer.classList.toggle( 'is-menu-open' );
+				const isOpen =
+					elements.menuContainer.classList.contains( 'is-menu-open' );
 
-				elements.mobileNavIcon.setAttribute('aria-expanded', isOpen.toString());
+				elements.mobileNavIcon.setAttribute(
+					'aria-expanded',
+					isOpen.toString()
+				);
 
 				// Toggle hamburger animation
-				elements.topBar.classList.toggle('dswp-nav-mobile-menu-top-bar-open');
-				elements.middleBar.classList.toggle('dswp-nav-mobile-menu-middle-bar-open');
-				if (elements.bottomBar) {
-					elements.bottomBar.classList.toggle('dswp-nav-mobile-menu-bottom-bar-open');
+				elements.topBar.classList.toggle(
+					'dswp-nav-mobile-menu-top-bar-open'
+				);
+				elements.middleBar.classList.toggle(
+					'dswp-nav-mobile-menu-middle-bar-open'
+				);
+				if ( elements.bottomBar ) {
+					elements.bottomBar.classList.toggle(
+						'dswp-nav-mobile-menu-bottom-bar-open'
+					);
 				}
 
 				elements.iconText.innerText = isOpen ? 'Close menu' : 'Menu';
 				elements.menuContainer.style.display = isOpen ? 'grid' : 'none';
 
-				if (!isOpen) {
+				if ( ! isOpen ) {
 					closeAllSubmenus();
 				}
-			});
+			} );
 		}
 
 		// Close menu when clicking outside
@@ -484,36 +473,32 @@ document.addEventListener( 'DOMContentLoaded', function () {
 
 		// Add active link highlighting
 		const activePage = window.location.pathname;
-		nav.querySelectorAll('.wp-block-navigation-item__content').forEach(link => {
-			if(new URL(link.href).pathname === activePage){
-				link.classList.add('active');
-				// Add active class to parent item if it exists
-				const parentItem = link.closest('.wp-block-navigation-item');
-				if (parentItem) {
-					parentItem.classList.add('active');
+		nav.querySelectorAll( '.wp-block-navigation-item__content' ).forEach(
+			( link ) => {
+				if ( new URL( link.href ).pathname === activePage ) {
+					link.classList.add( 'active' );
+					// Add active class to parent item if it exists
+					const parentItem = link.closest(
+						'.wp-block-navigation-item'
+					);
+					if ( parentItem ) {
+						parentItem.classList.add( 'active' );
+					}
 				}
 			}
-		});
+		);
 
 		// Adjust display logic based on screen size
 		function updateDisplay() {
-			const mobileBreakpoint = parseInt(nav.dataset.dswpMobileBreakpoint) || 768;
+			const mobileBreakpoint =
+				parseInt( nav.dataset.dswpMobileBreakpoint ) || 768;
 			const isMobileView = window.innerWidth <= mobileBreakpoint;
 
-			console.log('Updating display for nav:', nav);
-			console.log('Mobile breakpoint:', mobileBreakpoint);
-			console.log('Is mobile view:', isMobileView);
-			console.log('Show in desktop:', showInDesktop);
-			console.log('Show in mobile:', showInMobile);
-
-			if (showInDesktop && !isMobileView) {
-				console.log('Displaying for desktop');
+			if ( showInDesktop && ! isMobileView ) {
 				nav.style.display = 'flex';
-			} else if (showInMobile && isMobileView) {
-				console.log('Displaying for mobile');
+			} else if ( showInMobile && isMobileView ) {
 				nav.style.display = 'flex';
 			} else {
-				console.log('Hiding navigation');
 				nav.style.display = 'none';
 			}
 		}
@@ -522,6 +507,6 @@ document.addEventListener( 'DOMContentLoaded', function () {
 		updateDisplay();
 
 		// Update display on resize
-		window.addEventListener('resize', updateDisplay);
+		window.addEventListener( 'resize', updateDisplay );
 	} );
 } );

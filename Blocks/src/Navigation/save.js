@@ -2,7 +2,8 @@ import { useBlockProps, useInnerBlocksProps } from '@wordpress/block-editor';
 import MobileMenuIcon from './edit/mobile-menu-icon';
 
 export default function save( { attributes } ) {
-	const { overlayMenu, mobileBreakpoint, showInDesktop, showInMobile } = attributes;
+	const { overlayMenu, mobileBreakpoint, showInDesktop, showInMobile } =
+		attributes;
 
 	const blockProps = useBlockProps.save( {
 		className: `dswp-block-navigation-is-${ overlayMenu }-overlay`,
