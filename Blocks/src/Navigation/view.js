@@ -494,12 +494,19 @@ document.addEventListener( 'DOMContentLoaded', function () {
 				parseInt( nav.dataset.dswpMobileBreakpoint ) || 768;
 			const isMobileView = window.innerWidth <= mobileBreakpoint;
 
-			if ( showInDesktop && ! isMobileView ) {
+			// If both visibility options are explicitly set to false, show the menu
+			if (showInDesktop === false && showInMobile === false) {
 				nav.style.display = 'flex';
-			} else if ( showInMobile && isMobileView ) {
-				nav.style.display = 'flex';
-			} else {
+				return;
+			}
+
+			// Otherwise, follow the normal visibility rules
+			if (showInDesktop === false && !isMobileView) {
 				nav.style.display = 'none';
+			} else if (showInMobile === false && isMobileView) {
+				nav.style.display = 'none';
+			} else {
+				nav.style.display = 'flex';
 			}
 		}
 
