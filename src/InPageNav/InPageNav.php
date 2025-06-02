@@ -28,12 +28,15 @@ class InPageNav {
      */
     public function __construct() {
         // Get plugin version from main plugin file.
-        $plugin_data   = get_file_data(
-            WP_PLUGIN_DIR . '/design-system-wordpress-plugin/design-system-wordpress-plugin.php',
+
+        $plugin_dir  = plugin_dir_path( dirname( __DIR__ ) ) . 'design-system-wordpress-plugin.php';
+        $plugin_data = get_file_data(
+            $plugin_dir,
             [
-				'Version' => 'Version',
-			]
+                'Version' => 'Version',
+            ]
         );
+
         $this->version = isset( $plugin_data['Version'] ) ? $plugin_data['Version'] : '1.0.0';
 
         $this->init();
