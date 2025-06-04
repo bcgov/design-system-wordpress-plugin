@@ -185,7 +185,3 @@ $auto_anchor_settings->init();
 
 // Initialize InPageNav.
 $in_page_nav = new InPageNav();
-
-// Initialize the DocumentRepository. Bring back when MVP.
-// $document_repository = new DocumentRepository();
-// $document_repository->init();
