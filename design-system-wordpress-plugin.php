@@ -8,7 +8,7 @@
  * Requires at least: 6.4.4
  * Tested up to: 6.5
  * Requires PHP: 7.4
- * Version: 2.11.0
+ * Version: 2.12.0
  * License: Apache License Version 2.0
  * License URI: LICENSE
  * Text Domain: design-system-wordpress-plugin
@@ -185,7 +185,3 @@ $auto_anchor_settings->init();
 
 // Initialize InPageNav.
 $in_page_nav = new InPageNav();
-
-// Initialize the DocumentRepository.
-$document_repository = new DocumentRepository();
-$document_repository->init();

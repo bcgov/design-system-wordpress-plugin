@@ -1,7 +1,7 @@
 {
     "name": "bcgov-plugin/design-system-wordpress-plugin",
     "description": "Design System WordPress Plugin",
-    "version": "2.11.0",
+    "version": "2.12.0",
     "type": "wordpress-plugin",
     "license": "Apache-2.0",
     "repositories": [
