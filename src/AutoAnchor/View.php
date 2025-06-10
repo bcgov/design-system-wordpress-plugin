@@ -1,5 +1,5 @@
 <?php
-namespace src\AutoAnchor;
+namespace Bcgov\DesignSystemPlugin\AutoAnchor;
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit;

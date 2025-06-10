@@ -1,11 +1,11 @@
 <?php
-namespace src\DocumentRepository\View;
+namespace Bcgov\DesignSystemPlugin\DocumentRepository;
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-use Bcgov\DesignSystemPlugin\DocumentRepository\Settings;
+use Bcgov\DesignSystemPlugin\DocumentRepository\View;
 ?>
 <div class="wrap">
     <h1><?php esc_html_e( 'Document Repository Settings', 'dswp' ); ?></h1>

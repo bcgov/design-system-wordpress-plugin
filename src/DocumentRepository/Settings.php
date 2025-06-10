@@ -33,7 +33,7 @@ class Settings {
      * @return void
      */
     public function add_toggle_styles( $hook ) {
-        // Check if we're on our settings page
+        // Check if we're on our settings page.
         if ( 'design-system_page_dswp-document-repository-settings' !== $hook ) {
             return;
         }
@@ -72,19 +72,6 @@ class Settings {
      * @return void
      */
     public function add_menu() {
-        // First check if the parent menu exists
-        global $admin_page_hooks;
-        if ( ! isset( $admin_page_hooks['dswp-admin-menu'] ) ) {
-            add_menu_page(
-                __( 'Design System', 'dswp' ),
-                __( 'Design System', 'dswp' ),
-                'manage_options',
-                'dswp-admin-menu',
-                '',
-                'dashicons-admin-generic'
-            );
-        }
-
         add_submenu_page(
             'dswp-admin-menu',
             __( 'Document Repository Settings', 'dswp' ),
@@ -105,7 +92,7 @@ class Settings {
             return;
         }
 
-        // Include the template file
+        // Include the template file.
         require_once __DIR__ . '/View/settings.php';
     }
 }

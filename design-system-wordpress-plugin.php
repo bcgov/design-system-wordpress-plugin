@@ -20,6 +20,30 @@
 /**
  * Loads the autoloader.
  */
+
+
+use Bcgov\DesignSystemPlugin\{
+    DesignSystemSettings,
+    NotificationBanner,
+    ContentSecurityPolicy,
+    SkipNavigation,
+};
+
+use Bcgov\DesignSystemPlugin\Enqueue\{
+    Style,
+    Script
+};
+
+use Bcgov\DesignSystemPlugin\InPageNav\InPageNav;
+
+use Bcgov\DesignSystemPlugin\AutoAnchor\Settings as AutoAnchorSettings;
+
+// Import the new DocumentRepository.
+use Bcgov\DesignSystemPlugin\DocumentRepository\{
+    DocumentRepository,
+    Settings as DocumentRepositorySettings
+};
+
 if ( ! class_exists( 'Bcgov\\DesignSystemPlugin\\NotificationBanner' ) ) {
     $local_composer  = __DIR__ . '/vendor/autoload.php';
     $server_composer = __DIR__ . '/../../../../vendor/autoload.php';
@@ -109,27 +133,6 @@ function dswp_add_new_block_category( $categories ) {
 }
 add_filter( 'block_categories_all', 'dswp_add_new_block_category', 10, 2 );
 
-use Bcgov\DesignSystemPlugin\{
-    DesignSystemSettings,
-    NotificationBanner,
-    ContentSecurityPolicy,
-    SkipNavigation,
-};
-
-use Bcgov\DesignSystemPlugin\Enqueue\{
-    Style,
-    Script
-};
-
-use Bcgov\DesignSystemPlugin\InPageNav\InPageNav;
-
-use Bcgov\DesignSystemPlugin\AutoAnchor\Settings as AutoAnchorSettings;
-
-// Import the new DocumentRepository.
-use Bcgov\DesignSystemPlugin\DocumentRepository\{
-    DocumentRepository,
-    Settings as DocumentRepositorySettings
-};
 
 /**
  * Design System settings
@@ -198,6 +201,16 @@ $in_page_nav = new InPageNav();
 $document_repository_settings = new DocumentRepositorySettings();
 $document_repository_settings->init();
 
-// Initialize the DocumentRepository.
-$document_repository = new DocumentRepository();
-$document_repository->init();
+
+// Check if Document Repository is enabled.
+if ( get_option( 'dswp_document_repository_enabled', '0' ) === '1' ) {
+    // Initialize Document Repository.
+	$document_repository = new DocumentRepository();
+
+    // For admin area, initialize everything.
+    if ( is_admin() ) {
+        $document_repository->init();
+    } else { // For frontend, initialize only frontend-specific features.
+        $document_repository->init_frontend();
+    }
+}
