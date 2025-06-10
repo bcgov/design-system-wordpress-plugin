@@ -126,7 +126,10 @@ use Bcgov\DesignSystemPlugin\InPageNav\InPageNav;
 use Bcgov\DesignSystemPlugin\AutoAnchor\Settings as AutoAnchorSettings;
 
 // Import the new DocumentRepository.
-use Bcgov\DesignSystemPlugin\DocumentRepository\DocumentRepository;
+use Bcgov\DesignSystemPlugin\DocumentRepository\{
+    DocumentRepository,
+    Settings as DocumentRepositorySettings
+};
 
 /**
  * Design System settings
@@ -186,6 +189,14 @@ $auto_anchor_settings->init();
 // Initialize InPageNav.
 $in_page_nav = new InPageNav();
 
+
+/**
+ * Document Repository.
+ */
+
+// Initialize the Document Repository Settings.
+$document_repository_settings = new DocumentRepositorySettings();
+$document_repository_settings->init();
 
 // Initialize the DocumentRepository.
 $document_repository = new DocumentRepository();

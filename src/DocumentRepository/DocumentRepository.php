@@ -75,6 +75,11 @@ class DocumentRepository {
      * @return void
      */
     public function init(): void {
+        // Check if the Document Repository feature is enabled
+        if ( get_option( 'dswp_document_repository_enabled', '0' ) !== '1' ) {
+            return;
+        }
+
         // Core WordPress integration hooks.
         add_action( 'init', [ $this, 'register_post_types' ] );
         add_action( 'rest_api_init', [ $this, 'register_rest_routes' ], 10 );
