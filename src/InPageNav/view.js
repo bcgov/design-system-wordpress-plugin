@@ -1,3 +1,5 @@
+/* global dswpInPageNav */
+
 /**
  * In-Page Navigation Frontend Implementation
  *
@@ -14,15 +16,33 @@ document.addEventListener( 'DOMContentLoaded', () => {
 	const mainContent =
 		document.querySelector( '#main-content' ) ||
 		document.querySelector( 'main' ) ||
-		document.querySelector( '.content-area' );
+		document.querySelector( '.content-area' ) ||
+		document.querySelector( '.entry-content' ) || // Common WordPress class
+		document.querySelector( '.post-content' ) || // Another common class
+		document.querySelector( 'article' ); // Fallback to article element
+
 	if ( ! mainContent ) {
 		return;
 	}
 
-	// Find all h2 and h3 headings that have IDs.
-	const headings = Array.from(
-		mainContent.querySelectorAll( 'h2[id], h3[id]' )
-	);
+	// First, ensure all h2 and h3 elements have IDs
+	const allHeadings = mainContent.querySelectorAll( 'h2, h3' );
+	allHeadings.forEach( ( heading, index ) => {
+		if ( ! heading.id ) {
+			// Generate a slug from the heading text
+			const slug = heading.textContent
+				.toLowerCase()
+				.replace( /[^a-z0-9]+/g, '-' )
+				.replace( /(^-|-$)/g, '' );
+
+			// Add a unique ID using the slug and index
+			heading.id = `section-${ slug }-${ index }`;
+		}
+	} );
+
+	// Now find all h2 and h3 headings (they should all have IDs now).
+	const headings = Array.from( mainContent.querySelectorAll( 'h2, h3' ) );
+
 	// Exit if there aren't enough headings to warrant navigation.
 	if ( headings.length < 2 ) {
 		return;
@@ -90,21 +110,18 @@ document.addEventListener( 'DOMContentLoaded', () => {
 			// Desktop view: Always show expanded navigation.
 			navToggle.style.display = 'none';
 			nav.classList.add( 'is-expanded' );
+		} else if ( window.scrollY < 50 ) {
+			// At top of page: Show expanded navigation.
+			nav.classList.add( 'is-expanded' );
+			navToggle.setAttribute( 'aria-expanded', 'true' );
+			navToggle.style.display = 'none';
 		} else {
-			// Mobile view: Show/hide based on scroll position.
-			if ( window.scrollY < 50 ) {
-				// At top of page: Show expanded navigation.
-				nav.classList.add( 'is-expanded' );
-				navToggle.setAttribute( 'aria-expanded', 'true' );
-				navToggle.style.display = 'none';
-			} else {
-				// When scrolling: Show toggle button.
-				navToggle.style.display = 'flex';
-				// Collapse nav unless manually expanded.
-				if ( ! nav.hasAttribute( 'data-manual-expanded' ) ) {
-					nav.classList.remove( 'is-expanded' );
-					navToggle.setAttribute( 'aria-expanded', 'false' );
-				}
+			// When scrolling: Show toggle button.
+			navToggle.style.display = 'flex';
+			// Collapse nav unless manually expanded.
+			if ( ! nav.hasAttribute( 'data-manual-expanded' ) ) {
+				nav.classList.remove( 'is-expanded' );
+				navToggle.setAttribute( 'aria-expanded', 'false' );
 			}
 		}
 
@@ -163,7 +180,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
 			// Calculate scroll position with offset.
 			const offset =
-				nav.offsetHeight + dswpInPageNav.options.scroll_offset;
+				nav.offsetHeight +
+				( dswpInPageNav?.options?.scroll_offset || 0 );
 
 			// Smooth scroll to target.
 			window.scrollTo( {
@@ -175,7 +193,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 			} );
 
 			// Update URL hash without triggering scroll.
-			history.pushState( null, null, `#${ targetId }` );
+			window.history.pushState( null, null, `#${ targetId }` );
 
 			// Reset navigation state after clicking.
 			nav.removeAttribute( 'data-manual-expanded' );

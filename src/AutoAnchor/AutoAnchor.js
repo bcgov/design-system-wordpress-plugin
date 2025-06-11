@@ -64,7 +64,14 @@ const withAutoAnchor = createHigherOrderComponent( ( BlockEdit ) => {
 					} );
 				}
 			}
-		}, [ attributes.content, isEnabled ] );
+		}, [
+			attributes.content,
+			isEnabled,
+			name,
+			attributes.anchor,
+			attributes.isAutoAnchor,
+			setAttributes,
+		] );
 
 		return createElement( BlockEdit, props );
 	};

@@ -12,7 +12,7 @@ use Bcgov\DesignSystemPlugin\AutoAnchor\Settings;
     <form method="post" action="options.php">
         <?php
         settings_fields( 'dswp_options_group' );
-        $value = get_option( Settings::OPTION_NAME, '1' );
+        $value = get_option( Settings::OPTION_NAME, '0' );
         ?>
         <table class="form-table">
             <tr>
