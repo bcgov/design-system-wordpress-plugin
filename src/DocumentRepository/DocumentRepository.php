@@ -288,10 +288,6 @@ class DocumentRepository {
      * This runs on plugin activation or update to ensure all files use the correct structure.
      */
     public function migrate_existing_files() {
-        // Skip if not in multisite.
-        if ( ! is_multisite() ) {
-            return;
-        }
 
         // Get all document posts.
         $post_type = $this->config->get_post_type();

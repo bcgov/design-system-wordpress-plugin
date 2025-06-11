@@ -81,13 +81,6 @@ class DocumentUploader {
             return $uploads;
         }
 
-        // For multisite, use the standard WordPress upload path with the current blog ID.
-        if ( is_multisite() ) {
-            $uploads['subdir'] = '/documents';
-            $uploads['path']   = $uploads['basedir'] . $uploads['subdir'];
-            $uploads['url']    = $uploads['baseurl'] . $uploads['subdir'];
-        }
-
         // Create directory if it doesn't exist.
         if ( ! file_exists( $uploads['path'] ) ) {
             wp_mkdir_p( $uploads['path'] );
