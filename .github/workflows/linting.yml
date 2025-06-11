@@ -8,4 +8,4 @@ on:
 
 jobs:
   trigger:
-    uses: bcgov/des-git-workflows/development/.github/workflows/linting.yml
+    uses: bcgov/des-git-workflows/.github/workflows/linting.yml@development  
