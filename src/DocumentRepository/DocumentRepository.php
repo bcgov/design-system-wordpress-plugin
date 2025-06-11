@@ -70,7 +70,22 @@ class DocumentRepository {
     }
 
     /**
+     * Initialize frontend-specific functionality.
+     * This method is called when the plugin runs on the frontend (not admin).
+     *
+     * @return void
+     */
+    public function init_frontend(): void {
+        // Register post types for frontend visibility.
+        add_action( 'init', [ $this, 'register_post_types' ] );
+
+        // Register REST routes for frontend access if needed.
+        add_action( 'rest_api_init', [ $this, 'register_rest_routes' ], 10 );
+    }
+
+    /**
      * Initialize the plugin by registering WordPress hooks and integrations.
+     * This method is called when the plugin runs in the admin area.
      *
      * @return void
      */
