@@ -22,7 +22,6 @@ import { registerPlugin } from '@wordpress/plugins';
  * Renders a toggle control in the editor sidebar for enabling/disabling
  * in-page navigation on the current page settings panel.
  *
- * @component
  * @return {JSX.Element} Settings panel with toggle control
  */
 const InPageNavPanel = () => {

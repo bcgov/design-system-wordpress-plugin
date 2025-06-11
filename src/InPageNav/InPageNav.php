@@ -87,30 +87,32 @@ class InPageNav {
      */
     public function enqueue_assets() {
         // Only load assets on single pages.
-        if ( ! is_page() ) { return;
+        if ( ! is_page() ) {
+            return;
         }
 
         // Check if in-page navigation is enabled for this page.
         $show_nav = get_post_meta( get_the_ID(), 'show_inpage_nav', true );
-        if ( ! $show_nav ) { return;
+        if ( ! $show_nav ) {
+            return;
         }
 
-        // Get plugin root directory paths.
-        $plugin_dir = WP_PLUGIN_DIR . '/design-system-wordpress-plugin';
-        $plugin_url = plugins_url( '', $plugin_dir . '/design-system-wordpress-plugin.php' );
+        // Get the plugin root directory.
+        $plugin_dir = plugin_dir_path( dirname( __DIR__ ) );
+        $plugin_url = plugin_dir_url( dirname( __DIR__ ) );
 
         // Register and enqueue the stylesheet.
-        wp_register_style(
-            'in-page-nav-styles',
-            $plugin_url . '/src/InPageNav/build/style-in-page-nav.css',
+        wp_enqueue_style(
+            'dswp-in-page-nav-styles',
+            $plugin_url . 'dist/style-in-page-nav.css',
             array(),
             $this->version
         );
 
         // Register and enqueue the script.
-        wp_register_script(
-            'in-page-nav-script',
-            $plugin_url . '/src/InPageNav/build/in-page-nav.js',
+        wp_enqueue_script(
+            'dswp-in-page-nav-script',
+            $plugin_url . 'dist/in-page-nav.js',
             array(),
             $this->version,
             true
@@ -118,15 +120,15 @@ class InPageNav {
 
         // Pass configuration options to JavaScript.
         wp_localize_script(
-            'in-page-nav-script',
+            'dswp-in-page-nav-script',
             'dswpInPageNav',
             [
-				'options' => [
-					'mobile_breakpoint' => 1800,
-					'scroll_offset'     => 60,
-					'heading_selectors' => [ 'h2', 'h3' ],
-				],
-			]
+                'options' => [
+                    'mobile_breakpoint' => 1800,
+                    'scroll_offset'     => 60,
+                    'heading_selectors' => [ 'h2', 'h3' ],
+                ],
+            ]
         );
     }
 
@@ -139,17 +141,27 @@ class InPageNav {
      * @return void
      */
     public function enqueue_editor_assets() {
-        // Determine script file locations.
-        $script_path = plugin_dir_path( dirname( dirname( dirname( __DIR__ ) ) ) ) . 'dist/in-page-nav-editor.js';
-        $script_url  = plugin_dir_url( dirname( dirname( dirname( __DIR__ ) ) ) ) . 'dist/in-page-nav-editor.js';
+        // Get the plugin root directory.
+        $plugin_dir = plugin_dir_path( dirname( __DIR__ ) );
+        $plugin_url = plugin_dir_url( dirname( __DIR__ ) );
 
-        $asset_file_path = plugin_dir_path( dirname( dirname( dirname( __DIR__ ) ) ) ) . 'dist/in-page-nav-editor.asset.php';
+        // Determine script file locations.
+        $script_path     = $plugin_dir . 'dist/in-page-nav-editor.js';
+        $script_url      = $plugin_url . 'dist/in-page-nav-editor.js';
+        $asset_file_path = $plugin_dir . 'dist/in-page-nav-editor.asset.php';
 
         // Set up dependencies with fallback.
         $asset_file = file_exists( $asset_file_path )
             ? include $asset_file_path
             : [
-                'dependencies' => [ 'wp-plugins', 'wp-edit-post', 'wp-element', 'wp-components', 'wp-data' ],
+                'dependencies' => [
+                    'wp-plugins',
+                    'wp-editor',
+                    'wp-edit-post',
+                    'wp-element',
+                    'wp-components',
+                    'wp-data',
+                ],
                 'version'      => $this->version,
             ];
 

@@ -57,7 +57,7 @@ class Settings {
             self::OPTION_NAME,
             [
                 'type'              => 'string',
-                'default'           => '1',
+                'default'           => '0',
                 'show_in_rest'      => true,
                 'sanitize_callback' => function ( $value ) {
                     return $value ? '1' : '0';

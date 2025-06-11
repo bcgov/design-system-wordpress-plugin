@@ -85,7 +85,7 @@ add_action( 'init', 'design_system_register_blocks' );
  */
 function enqueue_auto_anchor_script() {
     // Check if the feature is enabled.
-    if ( get_option( 'dswp_auto_anchor_enabled', '1' ) !== '1' ) {
+    if ( get_option( 'dswp_auto_anchor_enabled', '0' ) !== '1' ) {
         return;
     }
 

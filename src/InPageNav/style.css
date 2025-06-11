@@ -5,28 +5,39 @@
  * behavior and smooth transitions. Follows BC Government design patterns.
  */
 
+/* CSS Variables with Fallbacks
+   ========================================================================== */
+:root {
+    --dswp-layout-content-size: 1200px;
+    --dswp-padding-right: 2rem;
+    --dswp-padding-left: 2rem;
+}
+
 /* Container Layout
    ========================================================================== */
 .dswp-nav-content-container {
     position: relative;
-    max-width: var(--dswp-layout-content-size);
+    max-width: var(--dswp-layout-content-size, 1200px);
     margin: 0 auto;
+    width: 100%;
 }
 
 /* Navigation Base Styles
    ========================================================================== */
 .dswp-in-page-nav {
-    padding-right: var(--wp--style--root--padding-right);
-    padding-left: var(--wp--style--root--padding-left);
+    padding-right: var(--wp--style--root--padding-right, var(--dswp-padding-right));
+    padding-left: var(--wp--style--root--padding-left, var(--dswp-padding-left));
     position: sticky;
     top: 0;
-    width: var(--dswp-layout-content-size);
+    width: 100%;
+    max-width: var(--dswp-layout-content-size, 1200px);
     margin: auto;
     padding-top: 1rem;
     background-color: #f3f3f3;
     z-index: 50;
     border-bottom: 0.25rem solid #e6e6e6;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: block !important; /* Ensure visibility */
 }
 
 /* Navigation Header
