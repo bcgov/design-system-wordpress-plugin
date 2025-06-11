@@ -93,6 +93,6 @@ class Settings {
         }
 
         // Include the template file.
-        require_once __DIR__ . '/View/settings.php';
+        require_once __DIR__ . '/View.php';
     }
 }
