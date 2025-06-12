@@ -81,6 +81,9 @@ class DocumentRepository {
 
         // Register REST routes for frontend access if needed.
         add_action( 'rest_api_init', [ $this, 'register_rest_routes' ], 10 );
+        
+        // Hook to re-register metadata fields when they are updated (frontend)
+        add_action( 'document_repository_metadata_fields_updated', [ $this->get_post_type(), 'register_metadata_fields' ] );
     }
 
     /**
@@ -101,6 +104,9 @@ class DocumentRepository {
             'bcgov_document_repository_document_uploaded',
             [ $this->get_metadata_manager(), 'clear_cache' ]
         );
+        
+        // Hook to re-register metadata fields when they are updated
+        add_action( 'document_repository_metadata_fields_updated', [ $this->get_post_type(), 'register_metadata_fields' ] );
 
         // Migrate existing files to the new direct path structure.
         add_action( 'admin_init', [ $this, 'migrate_existing_files' ] );

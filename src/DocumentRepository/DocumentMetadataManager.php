@@ -106,7 +106,14 @@ class DocumentMetadataManager {
         );
 
         // Save fields.
-        return update_option( 'document_repository_metadata_fields', $fields );
+        $result = update_option( 'document_repository_metadata_fields', $fields );
+        
+        // Trigger re-registration of metadata fields with WordPress REST API
+        if ( $result ) {
+            do_action( 'document_repository_metadata_fields_updated' );
+        }
+        
+        return $result;
     }
 
     /**
@@ -278,7 +285,47 @@ class DocumentMetadataManager {
             update_post_meta( $post_id, $field_id, $value );
         }
 
+        // Update file-related metadata to ensure it's current in REST API
+        $this->update_file_metadata( $post_id );
+
         return true;
+    }
+
+    /**
+     * Update file-related metadata for a document.
+     * This ensures file data is current and available via REST API.
+     *
+     * @param int $post_id Document post ID.
+     */
+    private function update_file_metadata( int $post_id ): void {
+        $file_id = get_post_meta( $post_id, 'document_file_id', true );
+        if ( $file_id ) {
+            // Get the file path and URL.
+            $file_path = get_attached_file( $file_id );
+            $file_url  = wp_get_attachment_url( $file_id );
+
+            // If the file is in the documents directory, update the URL.
+            if ( $file_path && strpos( $file_path, '/documents/' ) !== false ) {
+                $upload_dir = wp_upload_dir();
+                $file_url   = $upload_dir['baseurl'] . '/documents/' . basename( $file_path );
+            }
+
+            // Update file metadata
+            if ( $file_url ) {
+                update_post_meta( $post_id, 'document_file_url', $file_url );
+            }
+            if ( $file_path ) {
+                update_post_meta( $post_id, 'document_file_name', basename( $file_path ) );
+                if ( file_exists( $file_path ) ) {
+                    update_post_meta( $post_id, 'document_file_size', filesize( $file_path ) );
+                }
+            }
+            
+            $mime_type = get_post_mime_type( $file_id );
+            if ( $mime_type ) {
+                update_post_meta( $post_id, 'document_file_type', $mime_type );
+            }
+        }
     }
 
     /**
