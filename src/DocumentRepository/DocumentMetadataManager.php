@@ -107,12 +107,12 @@ class DocumentMetadataManager {
 
         // Save fields.
         $result = update_option( 'document_repository_metadata_fields', $fields );
-        
-        // Trigger re-registration of metadata fields with WordPress REST API
+
+        // Trigger re-registration of metadata fields with WordPress REST API.
         if ( $result ) {
             do_action( 'document_repository_metadata_fields_updated' );
         }
-        
+
         return $result;
     }
 
@@ -285,7 +285,7 @@ class DocumentMetadataManager {
             update_post_meta( $post_id, $field_id, $value );
         }
 
-        // Update file-related metadata to ensure it's current in REST API
+        // Update file-related metadata to ensure it's current in REST API.
         $this->update_file_metadata( $post_id );
 
         return true;
@@ -310,7 +310,7 @@ class DocumentMetadataManager {
                 $file_url   = $upload_dir['baseurl'] . '/documents/' . basename( $file_path );
             }
 
-            // Update file metadata
+            // Update file metadata.
             if ( $file_url ) {
                 update_post_meta( $post_id, 'document_file_url', $file_url );
             }
@@ -320,7 +320,7 @@ class DocumentMetadataManager {
                     update_post_meta( $post_id, 'document_file_size', filesize( $file_path ) );
                 }
             }
-            
+
             $mime_type = get_post_mime_type( $file_id );
             if ( $mime_type ) {
                 update_post_meta( $post_id, 'document_file_type', $mime_type );

@@ -100,7 +100,7 @@ class DocumentPostType {
     /**
      * Register metadata fields with WordPress REST API.
      * This makes the metadata accessible through the default WordPress REST API endpoints.
-     * 
+     *
      * This is a public method that can be called to re-register metadata fields
      * when they are updated.
      */
@@ -114,22 +114,22 @@ class DocumentPostType {
      */
     private function register_metadata_rest_fields(): void {
         $post_type = $this->config->get_post_type();
-        
-        // Get configured metadata fields from the options table
+
+        // Get configured metadata fields from the options table.
         $metadata_fields = get_option( 'document_repository_metadata_fields', [] );
-        
-        // Register each metadata field with WordPress REST API
+
+        // Register each metadata field with WordPress REST API.
         foreach ( $metadata_fields as $field ) {
-            $field_id = $field['id'];
+            $field_id   = $field['id'];
             $field_type = $field['type'];
-            
-            // Determine the proper schema type for REST API
-            $schema_type = 'string'; // Default
+
+            // Determine the proper schema type for REST API.
+            $schema_type   = 'string'; // Default.
             $schema_format = null;
-            
+
             switch ( $field_type ) {
                 case 'date':
-                    $schema_type = 'string';
+                    $schema_type   = 'string';
                     $schema_format = 'date';
                     break;
                 case 'select':
@@ -140,64 +140,68 @@ class DocumentPostType {
                     $schema_type = 'string';
                     break;
             }
-            
-            // Build the schema
+
+            // Build the schema.
             $schema = [
-                'type' => $schema_type,
-                'description' => $field['label'] ?? $field_id,
+                'type'         => $schema_type,
+                'description'  => $field['label'] ?? $field_id,
                 'show_in_rest' => true,
-                'single' => true,
+                'single'       => true,
             ];
-            
+
             if ( $schema_format ) {
                 $schema['format'] = $schema_format;
             }
-            
-            // Add enum for select fields
-            if ( $field_type === 'select' && !empty( $field['options'] ) ) {
+
+            // Add enum for select fields.
+            if ( 'select' === $field_type && ! empty( $field['options'] ) ) {
                 $schema['enum'] = is_array( $field['options'] ) ? $field['options'] : array_keys( $field['options'] );
             }
-            
-            // Register the meta field
+
+            // Register the meta field.
             register_post_meta( $post_type, $field_id, $schema );
         }
-        
-        // Also register the document file ID field
-        register_post_meta( $post_type, 'document_file_id', [
-            'type' => 'integer',
-            'description' => 'Document file attachment ID',
-            'show_in_rest' => true,
-            'single' => true,
-        ] );
-        
-        // Register other standard document metadata fields
+
+        // Also register the document file ID field.
+        register_post_meta(
+            $post_type,
+            'document_file_id',
+            [
+				'type'         => 'integer',
+				'description'  => 'Document file attachment ID',
+				'show_in_rest' => true,
+				'single'       => true,
+			]
+        );
+
+        // Register other standard document metadata fields.
         $standard_fields = [
-            'document_file_url' => [
-                'type' => 'string',
-                'description' => 'Document file URL',
+            'document_file_url'  => [
+                'type'         => 'string',
+                'description'  => 'Document file URL',
                 'show_in_rest' => true,
-                'single' => true,
+                'single'       => true,
             ],
             'document_file_name' => [
-                'type' => 'string',
-                'description' => 'Document file name',
+                'type'         => 'string',
+                'description'  => 'Document file name',
                 'show_in_rest' => true,
-                'single' => true,
+                'single'       => true,
             ],
             'document_file_type' => [
-                'type' => 'string',
-                'description' => 'Document file MIME type',
+                'type'         => 'string',
+                'description'  => 'Document file MIME type',
                 'show_in_rest' => true,
-                'single' => true,
+                'single'       => true,
             ],
             'document_file_size' => [
-                'type' => 'integer',
-                'description' => 'Document file size in bytes',
+                'type'         => 'integer',
+                'description'  => 'Document file size in bytes',
                 'show_in_rest' => true,
-                'single' => true,
+                'single'       => true,
             ],
         ];
-        
+
         foreach ( $standard_fields as $field_id => $schema ) {
             register_post_meta( $post_type, $field_id, $schema );
         }
