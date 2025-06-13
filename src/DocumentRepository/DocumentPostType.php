@@ -60,8 +60,8 @@ class DocumentPostType {
 
         $args = [
             'labels'             => $labels,
-            'public'             => false,
-            'publicly_queryable' => false,
+            'public'             => true,
+            'publicly_queryable' => true,
             'show_ui'            => true,
             'show_in_menu'       => false,
             'query_var'          => false,
