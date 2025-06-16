@@ -2,13 +2,10 @@
 
 namespace Bcgov\DesignSystemPlugin\DocumentRepository;
 
+use Bcgov\DesignSystemPlugin\DocumentRepository\MediaUploadHelper;
 use Bcgov\DesignSystemPlugin\DocumentRepository\RepositoryConfig;
 use WP_Error;
 
-// File upload required files fro WordPress.
-require_once ABSPATH . 'wp-admin/includes/file.php';
-require_once ABSPATH . 'wp-admin/includes/image.php';
-require_once ABSPATH . 'wp-admin/includes/media.php';
 
 /**
  * DocumentUploader - File Upload Handler
@@ -219,13 +216,7 @@ class DocumentUploader {
         );
 
         // Use WordPress upload handling.
-        $attachment_id = \media_handle_upload(
-            'file',
-            0,
-            [
-                'post_title' => $metadata['title'],
-            ]
-        );
+        $attachment_id = MediaUploadHelper::handle_upload( [ 'post_title' => $metadata['title'] ] );
 
         // Remove our temporary upload directory filter.
         remove_all_filters( 'upload_dir', 20 );
