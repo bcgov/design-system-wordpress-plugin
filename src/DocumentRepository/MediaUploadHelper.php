@@ -14,7 +14,7 @@ class MediaUploadHelper {
     /**
      * Ensure WordPress media upload dependencies are loaded.
      */
-    public static function ensure_media_dependencies(): void {
+    private static function ensure_media_dependencies(): void {
         if ( ! function_exists( 'media_handle_upload' ) ) {
             require_once ABSPATH . 'wp-admin/includes/file.php';
             require_once ABSPATH . 'wp-admin/includes/image.php';
