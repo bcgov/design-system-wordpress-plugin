@@ -2,6 +2,7 @@
 
 namespace Bcgov\DesignSystemPlugin\DocumentRepository;
 
+use Bcgov\DesignSystemPlugin\DocumentRepository\MediaUploadHelper;
 use Bcgov\DesignSystemPlugin\DocumentRepository\RepositoryConfig;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -432,19 +433,8 @@ class RestApiController {
         // File replacement if provided.
         $file = $request->get_file_params()['file'] ?? null;
         if ( $file && UPLOAD_ERR_OK === $file['error'] ) {
-            // Handle file upload to media library.
-            require_once ABSPATH . 'wp-admin/includes/file.php';
-            require_once ABSPATH . 'wp-admin/includes/image.php';
-            require_once ABSPATH . 'wp-admin/includes/media.php';
-
-            // Upload new file.
-            $attachment_id = media_handle_upload(
-                'file',
-                0,
-                [
-                    'post_title' => $post->post_title,
-                ]
-            );
+            // Use WordPress upload handling.
+            $attachment_id = MediaUploadHelper::handle_upload( [ 'post_title' => $post->$post_title ] );
 
             if ( is_wp_error( $attachment_id ) ) {
                 return $attachment_id;
