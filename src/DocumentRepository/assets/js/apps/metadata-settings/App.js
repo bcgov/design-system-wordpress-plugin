@@ -33,8 +33,10 @@ const MetadataApp = () => {
 	const {
 		state,
 		setState,
+		createField,
+		deleteField,
 		fetchFields,
-		saveFields,
+		editField,
 		validateField,
 		getInitialFieldState,
 	} = useMetadataFields();
@@ -228,18 +230,13 @@ const MetadataApp = () => {
 		setState( ( prev ) => ( { ...prev, isSaving: true } ) );
 
 		try {
-			const result = await saveFields( [
-				...state.fields,
-				{ ...field, order: state.fields.length },
-			] );
+			const newField = { ...field, order: state.fields.length };
+			const result = await createField( newField );
 
 			if ( result.success ) {
 				setState( ( prev ) => ( {
 					...prev,
-					fields: [
-						...prev.fields,
-						{ ...field, order: prev.fields.length },
-					],
+					fields: [ ...prev.fields, newField ],
 					isSaving: false,
 					modals: {
 						...prev.modals,
@@ -296,7 +293,7 @@ const MetadataApp = () => {
 	}, [
 		state.fields,
 		state.modals.add,
-		saveFields,
+		createField,
 		validateField,
 		getInitialFieldState,
 		setState,
@@ -338,7 +335,7 @@ const MetadataApp = () => {
 
 	// Handle saving edited field
 	const handleSaveEditedField = useCallback( async () => {
-		const { field, index } = state.modals.edit;
+		const { field, index, originalValues } = state.modals.edit;
 		const errors = validateField( field, state.fields, index );
 
 		if ( Object.keys( errors ).length > 0 ) {
@@ -348,18 +345,17 @@ const MetadataApp = () => {
 
 		setState( ( prev ) => ( { ...prev, isSaving: true } ) );
 
-		const result = await saveFields( [
-			...state.fields.slice( 0, index ),
-			field,
-			...state.fields.slice( index + 1 ),
-		] );
+		// Enforce immutable id by overwriting edited field's id with original id
+		const fieldToEdit = { ...field, id: originalValues?.id ?? field.id };
+
+		const result = await editField( fieldToEdit );
 
 		if ( result.success ) {
 			setState( ( prev ) => ( {
 				...prev,
 				fields: [
 					...state.fields.slice( 0, index ),
-					field,
+					fieldToEdit,
 					...state.fields.slice( index + 1 ),
 				],
 				error: null,
@@ -384,7 +380,7 @@ const MetadataApp = () => {
 	}, [
 		state.fields,
 		state.modals.edit,
-		saveFields,
+		editField,
 		validateField,
 		setState,
 	] );
@@ -422,7 +418,7 @@ const MetadataApp = () => {
 			const updatedFields = state.fields.filter(
 				( field ) => field.id !== fieldId
 			);
-			const result = await saveFields( updatedFields );
+			const result = await deleteField( fieldId );
 
 			if ( result.success ) {
 				setState( ( prev ) => ( {
@@ -457,7 +453,7 @@ const MetadataApp = () => {
 				isSaving: false,
 			} ) );
 		}
-	}, [ state.fields, state.modals.delete.field, saveFields, setState ] );
+	}, [ state.fields, state.modals.delete.field, deleteField, setState ] );
 
 	// Handle closing delete modal
 	const handleCloseDeleteModal = useCallback( () => {

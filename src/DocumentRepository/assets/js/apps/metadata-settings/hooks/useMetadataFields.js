@@ -83,14 +83,14 @@ const useMetadataFields = () => {
 		}
 	}, [ apiNamespace ] );
 
-	// Save fields to the API
-	const saveFields = useCallback(
-		async ( fields ) => {
+	// Save a new metadata field via the API
+	const createField = useCallback(
+		async ( field ) => {
 			try {
 				await apiFetch( {
 					path: `/${ apiNamespace }/metadata-fields`,
-					method: 'PUT',
-					data: { fields },
+					method: 'POST',
+					data: field,
 				} );
 				return { success: true };
 			} catch ( err ) {
@@ -99,7 +99,56 @@ const useMetadataFields = () => {
 					error:
 						err.message ||
 						__(
-							'Error saving metadata fields',
+							'Error creating metadata field',
+							'bcgov-design-system'
+						),
+				};
+			}
+		},
+		[ apiNamespace ]
+	);
+
+	// Delete a field from the API
+	const deleteField = useCallback(
+		async ( id ) => {
+			try {
+				await apiFetch( {
+					path: `/${ apiNamespace }/metadata-fields/${ id }`,
+					method: 'DELETE',
+				} );
+				return { success: true };
+			} catch ( err ) {
+				return {
+					success: false,
+					error:
+						err.message ||
+						__(
+							'Error deleting metadata field',
+							'bcgov-design-system'
+						),
+				};
+			}
+		},
+		[ apiNamespace ]
+	);
+
+	// Edit a field from the API
+	const editField = useCallback(
+		async ( field ) => {
+			try {
+				await apiFetch( {
+					path: `/${ apiNamespace }/metadata-fields/${ field.id }`,
+					method: 'PUT',
+					data: field,
+				} );
+				return { success: true };
+			} catch ( err ) {
+				return {
+					success: false,
+					error:
+						err.message ||
+						__(
+							'Error editing metadata field',
 							'bcgov-design-system'
 						),
 				};
@@ -182,7 +231,9 @@ const useMetadataFields = () => {
 		state,
 		setState,
 		fetchFields,
-		saveFields,
+		createField,
+		deleteField,
+		editField,
 		validateField,
 		getInitialFieldState,
 	};
