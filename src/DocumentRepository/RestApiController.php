@@ -139,6 +139,11 @@ class RestApiController {
             '/metadata-fields/(?P<id>[a-z0-9_]+)',
             [
                 [
+                    'methods'             => 'PUT',
+                    'callback'            => [ $this, 'update_metadata_field' ],
+                    'permission_callback' => [ $this, 'check_edit_permission' ],
+                ],
+                [
                     'methods'             => 'DELETE',
                     'callback'            => [ $this, 'delete_metadata_field' ],
                     'permission_callback' => [ $this, 'check_edit_permission' ],
@@ -604,6 +609,37 @@ class RestApiController {
         }
 
         return new WP_REST_Response( null, 204 );
+    }
+
+    /**
+     * Update a metadata field.
+     *
+     * @param WP_REST_Request $request The request object.
+     * @return WP_REST_Response|WP_Error The response object or error.
+     */
+    public function update_metadata_field( WP_REST_Request $request ) {
+        $id    = $request->get_param( 'id' );
+        $field = $request->get_json_params();
+
+        if ( ! $id || ! is_array( $field ) ) {
+            return new WP_Error(
+                'invalid_field',
+                'Field ID and data required',
+                [ 'status' => 400 ]
+            );
+        }
+
+        $result = $this->metadata_manager->update_metadata_field( $id, $field );
+
+        if ( ! $result ) {
+            return new WP_Error(
+                'field_not_found',
+                'Field not found',
+                [ 'status' => 404 ]
+            );
+        }
+
+        return new WP_REST_Response( $field, 200 );
     }
 
     /**

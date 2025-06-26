@@ -8,16 +8,18 @@
  * @module useMetadataAPI
  * @return {Object} API interaction methods
  * @property {Function} fetchFields - Fetches metadata fields from the API
- * @property {Function} saveFields  - Saves metadata fields to the API
+ * @property {Function} createField - Adds a metadata field to the API
+ * @property {Function} deleteField - Deletes a metadata field from the API
+ * @property {Function} editField   - Edits a metadata field in the API
  *
  * @example
- * const { fetchFields, saveFields } = useMetadataAPI();
+ * const { fetchFields, createField, deleteField, editField } = useMetadataAPI();
  *
  * // Fetch fields
  * const { success, data, error } = await fetchFields();
  *
- * // Save fields
- * const { success, error } = await saveFields(updatedFields);
+ * // Add a field
+ * const { success, error } = await createField(newField);
  */
 
 import { useCallback } from '@wordpress/element';
@@ -64,24 +66,30 @@ export const useMetadataAPI = () => {
 	}, [ apiNamespace ] );
 
 	/**
-	 * Save metadata fields to the API
+	 * Create a new metadata field via the API
 	 *
-	 * Updates the metadata field configuration on the server.
+	 * Sends a request to add a new metadata field to the server.
 	 *
 	 * @async
-	 * @function saveFields
-	 * @param {Array} fields - Array of metadata field configurations to save
+	 * @function createField
+	 * @param {Object}  field               - The metadata field to create
+	 * @param {string}  field.id            - The unique ID of the new field
+	 * @param {string}  field.label         - The user-facing label for the field
+	 * @param {string}  field.type          - The type of the field (e.g., 'text', 'select', 'date')
+	 * @param {Array}   [field.options]     - Options for select-type fields
+	 * @param {string}  [field.description] - Optional description of the field
+	 * @param {boolean} [field.required]    - Whether the field is required
 	 * @return {Promise<Object>} Response object
 	 * @return {boolean} response.success - Whether the operation succeeded
 	 * @return {string} [response.error] - Error message if unsuccessful
 	 */
-	const saveFields = useCallback(
-		async ( fields ) => {
+	const createField = useCallback(
+		async ( field ) => {
 			try {
 				await apiFetch( {
 					path: `/${ apiNamespace }/metadata-fields`,
-					method: 'PUT',
-					data: { fields },
+					method: 'POST',
+					data: field,
 				} );
 				return { success: true };
 			} catch ( err ) {
@@ -90,7 +98,7 @@ export const useMetadataAPI = () => {
 					error:
 						err.message ||
 						__(
-							'Error saving metadata fields',
+							'Error creating metadata field',
 							'bcgov-design-system'
 						),
 				};
@@ -99,5 +107,82 @@ export const useMetadataAPI = () => {
 		[ apiNamespace ]
 	);
 
-	return { fetchFields, saveFields };
+	/**
+	 * Delete a metadata field from the API
+	 *
+	 * Sends a request to delete the specified metadata field by ID.
+	 *
+	 * @async
+	 * @function deleteField
+	 * @param {string} id - The ID of the metadata field to delete
+	 * @return {Promise<Object>} Response object
+	 * @return {boolean} response.success - Whether the operation succeeded
+	 * @return {string} [response.error] - Error message if unsuccessful
+	 */
+	const deleteField = useCallback(
+		async ( id ) => {
+			try {
+				await apiFetch( {
+					path: `/${ apiNamespace }/metadata-fields/${ id }`,
+					method: 'DELETE',
+				} );
+				return { success: true };
+			} catch ( err ) {
+				return {
+					success: false,
+					error:
+						err.message ||
+						__(
+							'Error deleting metadata field',
+							'bcgov-design-system'
+						),
+				};
+			}
+		},
+		[ apiNamespace ]
+	);
+
+	/**
+	 * Edit a single metadata field to the API
+	 *
+	 * Updates a specific metadata field on the server using its ID.
+	 *
+	 * @async
+	 * @function editField
+	 * @param {Object}  field               - The metadata field to edit
+	 * @param {string}  field.id            - The unique ID of the field
+	 * @param {string}  field.label         - The user-facing label for the field
+	 * @param {string}  field.type          - The type of the field (e.g., 'text', 'select', 'date')
+	 * @param {Array}   [field.options]     - Options for select-type fields
+	 * @param {string}  [field.description] - Optional description of the field
+	 * @param {boolean} [field.required]    - Whether the field is required
+	 * @return {Promise<Object>} Response object
+	 * @return {boolean} response.success - Whether the operation succeeded
+	 * @return {string} [response.error] - Error message if unsuccessful
+	 */
+	const editField = useCallback(
+		async ( field ) => {
+			try {
+				await apiFetch( {
+					path: `/${ apiNamespace }/metadata-fields/${ field.id }`,
+					method: 'PUT',
+					data: field,
+				} );
+				return { success: true };
+			} catch ( err ) {
+				return {
+					success: false,
+					error:
+						err.message ||
+						__(
+							'Error saving metadata field',
+							'bcgov-design-system'
+						),
+				};
+			}
+		},
+		[ apiNamespace ]
+	);
+
+	return { fetchFields, createField, deleteField, editField };
 };
