@@ -80,12 +80,17 @@ const EditFieldModal = ( {
 
 			{ /* Field Type display */ }
 			<div className="field-type-display">
-				<label>{ __( 'Field Type', 'bcgov-design-system' ) }</label>
-				<div className="field-type-value">
+				<label htmlFor="field-type-value">
+					{ __( 'Field Type', 'bcgov-design-system' ) }
+				</label>
+				<div id="field-type-value" className="field-type-value">
 					{ FIELD_TYPES[ field.type ] || field.type }
 				</div>
 				<p className="help-text">
-					{ __( 'Field type cannot be changed after creation', 'bcgov-design-system' ) }
+					{ __(
+						'Field type cannot be changed after creation',
+						'bcgov-design-system'
+					) }
 				</p>
 			</div>
 

@@ -7,8 +7,8 @@
  *
  * @module fieldTypes
  * @constant {Object} FIELD_TYPES
- * @property {string} text   - Text input field type
- * @property {string} date   - Date picker field type
+ * @property {string} text - Text input field type
+ * @property {string} date - Date picker field type
  *
  * @example
  * // Using field types in form validation

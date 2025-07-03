@@ -208,15 +208,15 @@ class DocumentPostType {
      */
     private function register_taxonomy_fields(): void {
         $metadata_fields = get_option( 'document_repository_metadata_fields', [] );
-        
+
         foreach ( $metadata_fields as $field ) {
             if ( 'taxonomy' === $field['type'] ) {
-                // Use the metadata manager to register the taxonomy
+                // Use the metadata manager to register the taxonomy.
                 $metadata_manager = new DocumentMetadataManager( $this->config );
-                $metadata_manager->register_field_taxonomy( 
-                    $field['id'], 
-                    $field['label'], 
-                    $field['options'] ?? [] 
+                $metadata_manager->register_field_taxonomy(
+                    $field['id'],
+                    $field['label'],
+                    $field['options'] ?? []
                 );
             }
         }
@@ -353,6 +353,4 @@ class DocumentPostType {
 
         return $query;
     }
-
-
 }

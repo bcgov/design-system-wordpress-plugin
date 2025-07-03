@@ -536,13 +536,19 @@ class RestApiController {
      * @return WP_REST_Response|WP_Error The response object or error.
      */
     public function add_metadata_field( WP_REST_Request $request ) {
-        error_log('RestApiController::add_metadata_field called');
-        
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+            do_action( 'bcgov_design_system_debug', 'RestApiController::add_metadata_field called' );
+        }
+
         $field = $request->get_params();
-        error_log('RestApiController::add_metadata_field field data: ' . json_encode($field));
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+            do_action( 'bcgov_design_system_debug', 'Field data: ' . wp_json_encode( $field ) );
+        }
 
         if ( ! isset( $field['id'] ) || ! isset( $field['label'] ) || ! isset( $field['type'] ) ) {
-            error_log('RestApiController::add_metadata_field validation failed - missing required fields');
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                do_action( 'bcgov_design_system_debug', 'Validation failed - missing required fields' );
+            }
             return new WP_Error(
                 'invalid_field',
                 'Field must have id, label, and type',
@@ -551,10 +557,14 @@ class RestApiController {
         }
 
         $result = $this->metadata_manager->add_metadata_field( $field );
-        error_log('RestApiController::add_metadata_field metadata_manager result: ' . ($result ? 'SUCCESS' : 'FAILED'));
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+            do_action( 'bcgov_design_system_debug', 'Metadata manager result: ' . ( $result ? 'SUCCESS' : 'FAILED' ) );
+        }
 
         if ( ! $result ) {
-            error_log('RestApiController::add_metadata_field failed - field exists or other error');
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                do_action( 'bcgov_design_system_debug', 'Failed - field exists or other error' );
+            }
             return new WP_Error(
                 'field_exists',
                 'A field with this ID already exists',
@@ -562,7 +572,9 @@ class RestApiController {
             );
         }
 
-        error_log('RestApiController::add_metadata_field successful - returning field');
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+            do_action( 'bcgov_design_system_debug', 'Successful - returning field' );
+        }
         return new WP_REST_Response( $field, 201 );
     }
 

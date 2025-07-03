@@ -72,8 +72,14 @@ export const validateField = (
 	}
 
 	// Validate field type
-	if ( ! field.type || ! [ 'text', 'date', 'taxonomy' ].includes( field.type ) ) {
-		errors.type = __( 'Please select a valid field type', 'bcgov-design-system' );
+	if (
+		! field.type ||
+		! [ 'text', 'date', 'taxonomy' ].includes( field.type )
+	) {
+		errors.type = __(
+			'Please select a valid field type',
+			'bcgov-design-system'
+		);
 	}
 
 	// Validate taxonomy field options

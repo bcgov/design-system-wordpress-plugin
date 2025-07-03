@@ -36,8 +36,6 @@ import {
 	CardHeader,
 	CardBody,
 	CardFooter,
-	Modal,
-	DropZone,
 	Spinner,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';

@@ -7,9 +7,9 @@ use WP_Query;
 use WP_Error;
 
 /**
- * DocumentMetadataManager - Metadata and Cache Handler
+ * DocumentMetadataManager - Metadata and Cache Handler.
  *
- * This service manages document metadata, custom fields, and caching for
+ * This service manages document metadata, custom fields, and caching for.
  * document queries and metadata settings.
  */
 class DocumentMetadataManager {
@@ -108,7 +108,7 @@ class DocumentMetadataManager {
         // Save fields.
         $result = update_option( 'document_repository_metadata_fields', $fields );
 
-        // Handle taxonomy fields
+        // Handle taxonomy fields.
         if ( $result ) {
             foreach ( $fields as $field ) {
                 if ( 'taxonomy' === $field['type'] ) {
@@ -175,12 +175,12 @@ class DocumentMetadataManager {
         }
 
         $result = $this->save_metadata_fields( $fields );
-        
-        // Handle taxonomy field updates
+
+        // Handle taxonomy field updates.
         if ( $result && 'taxonomy' === $field['type'] ) {
             $this->update_taxonomy_terms( $field );
         }
-        
+
         return $result;
     }
 
@@ -435,7 +435,7 @@ class DocumentMetadataManager {
             return false;
         }
 
-        // Register the taxonomy with terms
+        // Register the taxonomy with terms.
         return $this->register_field_taxonomy( $field['id'], $field['label'], $field['options'] ?? [] );
     }
 
@@ -459,11 +459,11 @@ class DocumentMetadataManager {
      */
     public function register_field_taxonomy( string $field_id, string $field_label, array $field_options = [] ): bool {
         $taxonomy_name = $this->get_taxonomy_name_for_field( $field_id );
-        $post_type = $this->config->get_post_type();
+        $post_type     = $this->config->get_post_type();
 
-        // Check if taxonomy is already registered
+        // Check if taxonomy is already registered.
         if ( taxonomy_exists( $taxonomy_name ) ) {
-            // If taxonomy exists, still try to create any missing terms
+            // If taxonomy exists, still try to create any missing terms.
             if ( ! empty( $field_options ) ) {
                 $this->create_taxonomy_terms( $taxonomy_name, $field_options );
             }
@@ -471,15 +471,15 @@ class DocumentMetadataManager {
         }
 
         $labels = [
-            'name'              => $field_label,
-            'singular_name'     => $field_label,
-            'search_items'      => sprintf( 'Search %s', $field_label ),
-            'all_items'         => sprintf( 'All %s', $field_label ),
-            'edit_item'         => sprintf( 'Edit %s', $field_label ),
-            'update_item'       => sprintf( 'Update %s', $field_label ),
-            'add_new_item'      => sprintf( 'Add New %s', $field_label ),
-            'new_item_name'     => sprintf( 'New %s Name', $field_label ),
-            'menu_name'         => $field_label,
+            'name'          => $field_label,
+            'singular_name' => $field_label,
+            'search_items'  => sprintf( 'Search %s', $field_label ),
+            'all_items'     => sprintf( 'All %s', $field_label ),
+            'edit_item'     => sprintf( 'Edit %s', $field_label ),
+            'update_item'   => sprintf( 'Update %s', $field_label ),
+            'add_new_item'  => sprintf( 'Add New %s', $field_label ),
+            'new_item_name' => sprintf( 'New %s Name', $field_label ),
+            'menu_name'     => $field_label,
         ];
 
         $args = [
@@ -490,16 +490,16 @@ class DocumentMetadataManager {
             'query_var'         => false,
             'rewrite'           => false,
             'show_in_rest'      => true,
-            'meta_box_cb'       => false, // We'll handle the UI ourselves
+            'meta_box_cb'       => false, // We'll handle the UI ourselves.
         ];
 
         $result = register_taxonomy( $taxonomy_name, $post_type, $args );
-        
+
         if ( ! is_wp_error( $result ) && ! empty( $field_options ) ) {
-            // Create terms after successful taxonomy registration
+            // Create terms after successful taxonomy registration.
             $this->create_taxonomy_terms( $taxonomy_name, $field_options );
         }
-        
+
         return ! is_wp_error( $result );
     }
 
@@ -517,7 +517,7 @@ class DocumentMetadataManager {
                 continue;
             }
 
-            // Check if term already exists
+            // Check if term already exists.
             $existing_term = get_term_by( 'name', $term_name, $taxonomy_name );
             if ( ! $existing_term ) {
                 $result = wp_insert_term( $term_name, $taxonomy_name );
@@ -526,7 +526,7 @@ class DocumentMetadataManager {
                 }
             }
         }
-        
+
         return true;
     }
 
@@ -542,25 +542,30 @@ class DocumentMetadataManager {
         }
 
         $taxonomy_name = $this->get_taxonomy_name_for_field( $field['id'] );
-        
-        // Get existing terms
-        $existing_terms = get_terms( [
-            'taxonomy' => $taxonomy_name,
-            'hide_empty' => false,
-        ] );
+
+        // Get existing terms.
+        $existing_terms = get_terms(
+            [
+				'taxonomy'   => $taxonomy_name,
+				'hide_empty' => false,
+			]
+        );
 
         if ( is_wp_error( $existing_terms ) ) {
             return false;
         }
 
-        $existing_term_names = array_map( function( $term ) {
-            return $term->name;
-        }, $existing_terms );
+        $existing_term_names = array_map(
+            function ( $term ) {
+                return $term->name;
+            },
+            $existing_terms
+        );
 
         $new_term_names = array_map( 'trim', $field['options'] );
-        $new_term_names = array_filter( $new_term_names ); // Remove empty values
+        $new_term_names = array_filter( $new_term_names ); // Remove empty values.
 
-        // Delete terms that are no longer in the options
+        // Delete terms that are no longer in the options.
         $terms_to_delete = array_diff( $existing_term_names, $new_term_names );
         foreach ( $terms_to_delete as $term_name ) {
             $term = get_term_by( 'name', $term_name, $taxonomy_name );
@@ -569,7 +574,7 @@ class DocumentMetadataManager {
             }
         }
 
-        // Add new terms
+        // Add new terms.
         $terms_to_add = array_diff( $new_term_names, $existing_term_names );
         $this->create_taxonomy_terms( $taxonomy_name, $terms_to_add );
 

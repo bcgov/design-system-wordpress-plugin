@@ -436,7 +436,11 @@ const DocumentList = ( {
 									) : (
 										<TextControl
 											id={ field.id }
-											type={ field.type === 'date' ? 'date' : 'text' }
+											type={
+												field.type === 'date'
+													? 'date'
+													: 'text'
+											}
 											value={
 												editedValues[ field.id ] || ''
 											}
