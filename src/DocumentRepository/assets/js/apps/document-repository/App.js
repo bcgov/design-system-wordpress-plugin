@@ -8,7 +8,7 @@
  * <App />
  */
 
-import { useState, useEffect } from '@wordpress/element';
+import { useMemo, useState, useEffect } from '@wordpress/element';
 import { Modal, Notice, Spinner, Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
@@ -227,13 +227,30 @@ const App = () => {
 	const [ uploadProgress, setUploadProgress ] = useState( 0 );
 
 	/**
+	 * Debounced document fetch
+	 *
+	 * Prevents rapid consecutive calls to fetchDocuments by delaying execution
+	 * until 1 second has passed without additional calls. Useful after bulk uploads
+	 * to avoid overloading the server and reduce timeout risk.
+	 *
+	 * @function debouncedFetchDocuments
+	 */
+	const debouncedFetchDocuments = useMemo( () => {
+		let timer;
+		return ( ...args ) => {
+			clearTimeout( timer );
+			timer = setTimeout( () => fetchDocuments( ...args ), 1000 );
+		};
+	}, [ fetchDocuments ] );
+
+	/**
 	 * Handle upload success and move to next file
 	 *
 	 * @function handleUploadSuccess
 	 */
 	const handleUploadSuccess = () => {
 		// Update the document list by fetching the latest documents
-		fetchDocuments();
+		debouncedFetchDocuments();
 
 		// Reset upload state
 		setShowUploadModal( false );
