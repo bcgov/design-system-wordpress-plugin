@@ -2,6 +2,7 @@ import {
 	Button,
 	CheckboxControl,
 	TextControl,
+	SelectControl,
 } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
 
@@ -47,6 +48,29 @@ function DocumentTableRow( {
 
 		const fieldValue =
 			bulkEditedMetadata[ document.id ]?.[ field.id ] || '';
+
+		if ( field.type === 'taxonomy' ) {
+			const options = ( field.options || [] ).map( ( option ) => ( {
+				label: option,
+				value: option,
+			} ) );
+
+			return (
+				<SelectControl
+					value={ fieldValue }
+					options={ [
+						{
+							label: __( 'Select…', 'bcgov-design-system' ),
+							value: '',
+						},
+						...options,
+					] }
+					onChange={ ( newValue ) =>
+						onMetadataChange( document.id, field.id, newValue )
+					}
+				/>
+			);
+		}
 
 		return (
 			<TextControl

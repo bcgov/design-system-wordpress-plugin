@@ -20,6 +20,7 @@ const useMetadataFields = () => {
 					id: '',
 					label: '',
 					type: 'text',
+					options: [],
 					_rawOptionsText: '',
 				},
 				errors: {
@@ -199,6 +200,16 @@ const useMetadataFields = () => {
 				);
 			}
 
+			if (
+				field.type === 'taxonomy' &&
+				( ! field.options || field.options.length === 0 )
+			) {
+				errors.options = __(
+					'Taxonomy fields require at least one term',
+					'bcgov-design-system'
+				);
+			}
+
 			return errors;
 		},
 		[]
@@ -210,6 +221,7 @@ const useMetadataFields = () => {
 			id: '',
 			label: '',
 			type: 'text',
+			options: [],
 			_rawOptionsText: '',
 		} ),
 		[]

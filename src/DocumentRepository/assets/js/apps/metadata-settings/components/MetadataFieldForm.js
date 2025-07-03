@@ -1,6 +1,7 @@
 import {
 	TextControl,
 	SelectControl,
+	TextareaControl,
 	Notice,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
@@ -15,6 +16,7 @@ import { __ } from '@wordpress/i18n';
 const FIELD_TYPES = {
 	text: __( 'Text', 'bcgov-design-system' ),
 	date: __( 'Date', 'bcgov-design-system' ),
+	taxonomy: __( 'Taxonomy', 'bcgov-design-system' ),
 };
 
 /**
@@ -26,6 +28,7 @@ const FIELD_TYPES = {
  * @param {Object}   props.field           - Field data
  * @param {Object}   props.errors          - Validation errors
  * @param {Function} props.onChange        - Callback when field values change
+ * @param {Function} props.onOptionsChange - Callback when options change
  * @param {boolean}  props.isEdit          - Whether this is an edit form
  * @return {JSX.Element} Metadata field form
  */
@@ -33,8 +36,19 @@ const MetadataFieldForm = ( {
 	field,
 	errors,
 	onChange,
+	onOptionsChange,
 	isEdit = false,
 } ) => {
+	// Format options array to string for textarea
+	const formatOptionsToString = ( fieldValue ) => {
+		if ( fieldValue._rawOptionsText !== undefined ) {
+			return fieldValue._rawOptionsText;
+		}
+		return Array.isArray( fieldValue.options )
+			? fieldValue.options.join( '\n' )
+			: '';
+	};
+
 	return (
 		<div className="metadata-field-form">
 			{ errors?.submit && (
@@ -81,6 +95,18 @@ const MetadataFieldForm = ( {
 						} )
 					) }
 					onChange={ ( type ) => onChange( 'type', type ) }
+				/>
+			) }
+
+			{ field.type === 'taxonomy' && (
+				<TextareaControl
+					label={ __( 'Taxonomy Terms', 'bcgov-design-system' ) }
+					value={ formatOptionsToString( field ) }
+					onChange={ onOptionsChange }
+					help={ __(
+						'Enter one taxonomy term per line. These will become the available options for this taxonomy.',
+						'bcgov-design-system'
+					) }
 				/>
 			) }
 		</div>

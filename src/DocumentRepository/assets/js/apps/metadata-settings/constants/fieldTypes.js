@@ -30,4 +30,7 @@ export const FIELD_TYPES = {
 
 	/** Date picker field type */
 	date: __( 'Date', 'bcgov-design-system' ),
+
+	/** Taxonomy field type */
+	taxonomy: __( 'Taxonomy', 'bcgov-design-system' ),
 };

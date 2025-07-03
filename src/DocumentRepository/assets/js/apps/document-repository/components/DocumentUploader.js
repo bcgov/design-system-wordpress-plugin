@@ -30,6 +30,7 @@ import {
 	Button,
 	FormFileUpload,
 	TextControl,
+	SelectControl,
 	Notice,
 	Card,
 	CardHeader,
@@ -358,7 +359,7 @@ const DocumentUploader = ( {
 	 * @return {JSX.Element} Rendered form field
 	 */
 	const renderField = ( field ) => {
-		const { id, label: fieldLabel, type, required } = field;
+		const { id, label: fieldLabel, type, options, required } = field;
 
 		switch ( type ) {
 			case 'text':
@@ -381,6 +382,29 @@ const DocumentUploader = ( {
 						label={ fieldLabel }
 						type="date"
 						value={ metadata[ id ] || '' }
+						onChange={ ( value ) =>
+							handleMetadataChange( id, value )
+						}
+						required={ required }
+					/>
+				);
+
+			case 'taxonomy':
+				return (
+					<SelectControl
+						key={ id }
+						label={ fieldLabel }
+						value={ metadata[ id ] || '' }
+						options={ [
+							{
+								label: __( 'Select…', 'bcgov-design-system' ),
+								value: '',
+							},
+							...( options || [] ).map( ( option ) => ( {
+								label: option,
+								value: option,
+							} ) ),
+						] }
 						onChange={ ( value ) =>
 							handleMetadataChange( id, value )
 						}

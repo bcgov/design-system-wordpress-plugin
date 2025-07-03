@@ -72,8 +72,19 @@ export const validateField = (
 	}
 
 	// Validate field type
-	if ( ! field.type || ! [ 'text', 'date' ].includes( field.type ) ) {
+	if ( ! field.type || ! [ 'text', 'date', 'taxonomy' ].includes( field.type ) ) {
 		errors.type = __( 'Please select a valid field type', 'bcgov-design-system' );
+	}
+
+	// Validate taxonomy field options
+	if (
+		field.type === 'taxonomy' &&
+		( ! field.options || field.options.length === 0 )
+	) {
+		errors.options = __(
+			'Taxonomy fields require at least one term',
+			'bcgov-design-system'
+		);
 	}
 
 	return errors;

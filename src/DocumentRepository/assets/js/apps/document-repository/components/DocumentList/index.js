@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from '@wordpress/element';
-import { Button, TextControl } from '@wordpress/components';
+import { Button, SelectControl, TextControl } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
 import ErrorBoundary from './ErrorBoundary';
 import DocumentTable from './DocumentTable';
@@ -405,19 +405,49 @@ const DocumentList = ( {
 									<label htmlFor={ field.id }>
 										{ field.label }
 									</label>
-									<TextControl
-										id={ field.id }
-										type={ field.type === 'date' ? 'date' : 'text' }
-										value={
-											editedValues[ field.id ] || ''
-										}
-										onChange={ ( value ) =>
-											updateEditedField(
-												field.id,
-												value
-											)
-										}
-									/>
+									{ field.type === 'taxonomy' ? (
+										<SelectControl
+											id={ field.id }
+											value={
+												editedValues[ field.id ] || ''
+											}
+											options={ [
+												{
+													label: __(
+														'Select…',
+														'bcgov-design-system'
+													),
+													value: '',
+												},
+												...( field.options || [] ).map(
+													( option ) => ( {
+														label: option,
+														value: option,
+													} )
+												),
+											] }
+											onChange={ ( value ) =>
+												updateEditedField(
+													field.id,
+													value
+												)
+											}
+										/>
+									) : (
+										<TextControl
+											id={ field.id }
+											type={ field.type === 'date' ? 'date' : 'text' }
+											value={
+												editedValues[ field.id ] || ''
+											}
+											onChange={ ( value ) =>
+												updateEditedField(
+													field.id,
+													value
+												)
+											}
+										/>
+									) }
 									{ metadataErrors[ field.id ] && (
 										<div className="metadata-error">
 											{ metadataErrors[ field.id ] }

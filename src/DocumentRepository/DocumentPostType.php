@@ -93,6 +93,9 @@ class DocumentPostType {
         // Register metadata fields with WordPress REST API.
         $this->register_metadata_rest_fields();
 
+        // Register taxonomy fields.
+        $this->register_taxonomy_fields();
+
         // Hide document attachments from media library.
         add_filter( 'ajax_query_attachments_args', [ $this, 'hide_document_attachments' ] );
     }
@@ -106,6 +109,7 @@ class DocumentPostType {
      */
     public function register_metadata_fields(): void {
         $this->register_metadata_rest_fields();
+        $this->register_taxonomy_fields();
     }
 
     /**
@@ -196,6 +200,25 @@ class DocumentPostType {
 
         foreach ( $standard_fields as $field_id => $schema ) {
             register_post_meta( $post_type, $field_id, $schema );
+        }
+    }
+
+    /**
+     * Register taxonomies for taxonomy-type metadata fields.
+     */
+    private function register_taxonomy_fields(): void {
+        $metadata_fields = get_option( 'document_repository_metadata_fields', [] );
+        
+        foreach ( $metadata_fields as $field ) {
+            if ( 'taxonomy' === $field['type'] ) {
+                // Use the metadata manager to register the taxonomy
+                $metadata_manager = new DocumentMetadataManager( $this->config );
+                $metadata_manager->register_field_taxonomy( 
+                    $field['id'], 
+                    $field['label'], 
+                    $field['options'] ?? [] 
+                );
+            }
         }
     }
 
@@ -330,4 +353,6 @@ class DocumentPostType {
 
         return $query;
     }
+
+
 }
