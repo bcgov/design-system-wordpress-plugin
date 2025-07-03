@@ -132,9 +132,6 @@ class DocumentPostType {
                     $schema_type   = 'string';
                     $schema_format = 'date';
                     break;
-                case 'select':
-                    $schema_type = 'string';
-                    break;
                 case 'text':
                 default:
                     $schema_type = 'string';
@@ -151,11 +148,6 @@ class DocumentPostType {
 
             if ( $schema_format ) {
                 $schema['format'] = $schema_format;
-            }
-
-            // Add enum for select fields.
-            if ( 'select' === $field_type && ! empty( $field['options'] ) ) {
-                $schema['enum'] = is_array( $field['options'] ) ? $field['options'] : array_keys( $field['options'] );
             }
 
             // Register the meta field.

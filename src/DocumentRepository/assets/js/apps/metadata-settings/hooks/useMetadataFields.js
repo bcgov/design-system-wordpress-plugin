@@ -20,7 +20,6 @@ const useMetadataFields = () => {
 					id: '',
 					label: '',
 					type: 'text',
-					options: [],
 					_rawOptionsText: '',
 				},
 				errors: {
@@ -200,16 +199,6 @@ const useMetadataFields = () => {
 				);
 			}
 
-			if (
-				field.type === 'select' &&
-				( ! field.options || field.options.length === 0 )
-			) {
-				errors.options = __(
-					'Select fields require at least one option',
-					'bcgov-design-system'
-				);
-			}
-
 			return errors;
 		},
 		[]
@@ -221,7 +210,6 @@ const useMetadataFields = () => {
 			id: '',
 			label: '',
 			type: 'text',
-			options: [],
 			_rawOptionsText: '',
 		} ),
 		[]

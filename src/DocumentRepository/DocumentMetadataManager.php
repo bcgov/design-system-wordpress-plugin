@@ -60,14 +60,9 @@ class DocumentMetadataManager {
         }
 
         // Validate type.
-        $valid_types = [ 'text', 'select', 'date' ];
+        $valid_types = [ 'text', 'date' ];
         if ( ! in_array( $field['type'], $valid_types, true ) ) {
             $errors[] = __( 'Invalid field type', 'bcgov-design-system' );
-        }
-
-        // Validate select options.
-        if ( 'select' === $field['type'] && empty( $field['options'] ) ) {
-            $errors[] = __( 'Select fields require at least one option', 'bcgov-design-system' );
         }
 
         return $errors;
@@ -263,22 +258,15 @@ class DocumentMetadataManager {
                     case 'textarea':
                         $value = sanitize_textarea_field( $value );
                         break;
-                    case 'select':
-                        // Validate against allowed options.
-                        if ( ! empty( $field['options'] ) && ! in_array( $value, $field['options'], true ) ) {
-                            $value = ''; // Set to empty if invalid.
-                            break;
-                        }
+                    case 'date':
                         $value = sanitize_text_field( $value );
                         break;
-                    case 'date':
-                        // Basic date format validation.
-                        if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $value ) ) {
-                            $value = ''; // Set to empty if invalid.
-                            break;
-                        }
+                    default:
+                        $value = sanitize_text_field( $value );
                         break;
                 }
+            } else {
+                $value = sanitize_text_field( $value );
             }
 
             // Save the sanitized value.

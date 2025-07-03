@@ -197,7 +197,6 @@ class AdminUIManager {
             $data['currentFields'] = $this->metadata_manager->get_metadata_fields();
             $data['fieldTypes']    = [
                 'text'   => 'Text',
-                'select' => 'Select',
                 'date'   => 'Date',
             ];
         }

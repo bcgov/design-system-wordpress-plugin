@@ -31,8 +31,6 @@
 import {
 	Modal,
 	TextControl,
-	SelectControl,
-	TextareaControl,
 	Button,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
@@ -43,7 +41,6 @@ const EditFieldModal = ( {
 	onClose,
 	field,
 	onFieldChange,
-	onOptionsChange,
 	onSave,
 	errors = {},
 } ) => {
@@ -79,29 +76,16 @@ const EditFieldModal = ( {
 				error={ errors.label }
 			/>
 
-			{ /* Field Type selection */ }
-			<SelectControl
-				label={ __( 'Field Type', 'bcgov-design-system' ) }
-				value={ field.type }
-				options={ Object.entries( FIELD_TYPES ).map(
-					( [ value, label ] ) => ( { value, label } )
-				) }
-				onChange={ ( value ) => onFieldChange( 'type', value ) }
-			/>
-
-			{ /* Options input (only shown for select fields) */ }
-			{ field.type === 'select' && (
-				<TextareaControl
-					label={ __( 'Options', 'bcgov-design-system' ) }
-					value={ field._rawOptionsText }
-					onChange={ onOptionsChange }
-					help={ __(
-						'Enter one option per line',
-						'bcgov-design-system'
-					) }
-					error={ errors.options }
-				/>
-			) }
+			{ /* Field Type display */ }
+			<div className="field-type-display">
+				<label>{ __( 'Field Type', 'bcgov-design-system' ) }</label>
+				<div className="field-type-value">
+					{ FIELD_TYPES[ field.type ] || field.type }
+				</div>
+				<p className="help-text">
+					{ __( 'Field type cannot be changed after creation', 'bcgov-design-system' ) }
+				</p>
+			</div>
 
 			{ /* Modal action buttons */ }
 			<div className="modal-actions">

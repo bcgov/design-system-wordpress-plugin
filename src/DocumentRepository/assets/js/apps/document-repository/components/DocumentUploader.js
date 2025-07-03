@@ -12,10 +12,11 @@
  * @param {boolean}  [props.modalMode=false] - Whether to render in modal mode
  *
  * @example
- * const metadataFields = [
- *   { id: 'title', label: 'Title', type: 'text', required: true },
- *   { id: 'category', label: 'Category', type: 'select', options: ['A', 'B', 'C'] }
- * ];
+ * // Example metadata fields structure
+ * [
+ *   { id: 'author', label: 'Author', type: 'text' },
+ *   { id: 'publish_date', label: 'Publish Date', type: 'date' }
+ * ]
  *
  * <DocumentUploader
  *   metadataFields={metadataFields}
@@ -29,13 +30,14 @@ import {
 	Button,
 	FormFileUpload,
 	TextControl,
-	SelectControl,
-	Spinner,
 	Notice,
 	Card,
 	CardHeader,
 	CardBody,
 	CardFooter,
+	Modal,
+	DropZone,
+	Spinner,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
@@ -356,7 +358,7 @@ const DocumentUploader = ( {
 	 * @return {JSX.Element} Rendered form field
 	 */
 	const renderField = ( field ) => {
-		const { id, label: fieldLabel, type, options, required } = field;
+		const { id, label: fieldLabel, type, required } = field;
 
 		switch ( type ) {
 			case 'text':
@@ -365,31 +367,6 @@ const DocumentUploader = ( {
 						key={ id }
 						label={ fieldLabel }
 						value={ metadata[ id ] || '' }
-						onChange={ ( value ) =>
-							handleMetadataChange( id, value )
-						}
-						required={ required }
-					/>
-				);
-
-			case 'select':
-				return (
-					<SelectControl
-						key={ id }
-						label={ fieldLabel }
-						value={ metadata[ id ] || '' }
-						options={ [
-							{
-								label: __( 'Select…', 'bcgov-design-system' ),
-								value: '',
-							},
-							...Object.entries( options ).map(
-								( [ value, label ] ) => ( {
-									label,
-									value,
-								} )
-							),
-						] }
 						onChange={ ( value ) =>
 							handleMetadataChange( id, value )
 						}

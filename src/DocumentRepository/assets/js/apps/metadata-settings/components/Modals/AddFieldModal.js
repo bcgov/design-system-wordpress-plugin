@@ -31,7 +31,6 @@ import {
 	Modal,
 	TextControl,
 	SelectControl,
-	TextareaControl,
 	Button,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
@@ -42,7 +41,6 @@ const AddFieldModal = ( {
 	onClose,
 	field,
 	onFieldChange,
-	onOptionsChange,
 	onSave,
 	errors = {},
 } ) => {
@@ -87,20 +85,6 @@ const AddFieldModal = ( {
 				) }
 				onChange={ ( value ) => onFieldChange( 'type', value ) }
 			/>
-
-			{ /* Options input (only shown for select fields) */ }
-			{ field.type === 'select' && (
-				<TextareaControl
-					label={ __( 'Options', 'bcgov-design-system' ) }
-					value={ field._rawOptionsText }
-					onChange={ onOptionsChange }
-					help={ __(
-						'Enter one option per line',
-						'bcgov-design-system'
-					) }
-					error={ errors.options }
-				/>
-			) }
 
 			{ /* Modal action buttons */ }
 			<div className="modal-actions">

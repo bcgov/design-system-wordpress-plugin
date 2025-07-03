@@ -768,33 +768,18 @@ class RestApiController {
         $validation_errors = [];
 
         foreach ( $metadata as $field_id => $value ) {
-            if ( isset( $field_map[ $field_id ] ) ) {
-                $field = $field_map[ $field_id ];
+            // Skip if not a registered field.
+            if ( ! isset( $field_map[ $field_id ] ) ) {
+                continue;
+            }
 
-                // Required field validation.
-                if ( ! empty( $field['required'] ) && empty( $value ) ) {
-                    /* translators: %s: Field label. */
-                    $error_message                  = __( '%s is required', 'bcgov-design-system' );
-                    $validation_errors[ $field_id ] = sprintf( $error_message, $field['label'] );
-                    continue;
-                }
+            $field = $field_map[ $field_id ];
 
-                // Select field validation.
-                if ( 'select' === $field['type'] && ! empty( $field['options'] ) && ! empty( $value ) ) {
-                    if ( ! in_array( $value, $field['options'], true ) ) {
-                        /* translators: %s: Field label. */
-                        $error_message                  = __( 'Invalid option for %s', 'bcgov-design-system' );
-                        $validation_errors[ $field_id ] = sprintf( $error_message, $field['label'] );
-                    }
-                }
-
-                // Date field validation.
-                if ( 'date' === $field['type'] && ! empty( $value ) ) {
-                    if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $value ) ) {
-                        /* translators: %s: Field label. */
-                        $error_message                  = __( 'Invalid date format for %s. Use YYYY-MM-DD', 'bcgov-design-system' );
-                        $validation_errors[ $field_id ] = sprintf( $error_message, $field['label'] );
-                    }
+            // Date field validation.
+            if ( 'date' === $field['type'] && ! empty( $value ) ) {
+                $timestamp = strtotime( $value );
+                if ( false === $timestamp ) {
+                    $errors[ $field_id ] = __( 'Invalid date format', 'bcgov-design-system' );
                 }
             }
         }
