@@ -12,10 +12,11 @@
  * @param {boolean}  [props.modalMode=false] - Whether to render in modal mode
  *
  * @example
- * const metadataFields = [
- *   { id: 'title', label: 'Title', type: 'text', required: true },
- *   { id: 'category', label: 'Category', type: 'select', options: ['A', 'B', 'C'] }
- * ];
+ * // Example metadata fields structure
+ * [
+ *   { id: 'author', label: 'Author', type: 'text' },
+ *   { id: 'publish_date', label: 'Publish Date', type: 'date' }
+ * ]
  *
  * <DocumentUploader
  *   metadataFields={metadataFields}
@@ -30,12 +31,12 @@ import {
 	FormFileUpload,
 	TextControl,
 	SelectControl,
-	Spinner,
 	Notice,
 	Card,
 	CardHeader,
 	CardBody,
 	CardFooter,
+	Spinner,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
@@ -372,7 +373,21 @@ const DocumentUploader = ( {
 					/>
 				);
 
-			case 'select':
+			case 'date':
+				return (
+					<TextControl
+						key={ id }
+						label={ fieldLabel }
+						type="date"
+						value={ metadata[ id ] || '' }
+						onChange={ ( value ) =>
+							handleMetadataChange( id, value )
+						}
+						required={ required }
+					/>
+				);
+
+			case 'taxonomy':
 				return (
 					<SelectControl
 						key={ id }
@@ -383,27 +398,11 @@ const DocumentUploader = ( {
 								label: __( 'Select…', 'bcgov-design-system' ),
 								value: '',
 							},
-							...Object.entries( options ).map(
-								( [ value, label ] ) => ( {
-									label,
-									value,
-								} )
-							),
+							...( options || [] ).map( ( option ) => ( {
+								label: option,
+								value: option,
+							} ) ),
 						] }
-						onChange={ ( value ) =>
-							handleMetadataChange( id, value )
-						}
-						required={ required }
-					/>
-				);
-
-			case 'date':
-				return (
-					<TextControl
-						key={ id }
-						label={ fieldLabel }
-						type="date"
-						value={ metadata[ id ] || '' }
 						onChange={ ( value ) =>
 							handleMetadataChange( id, value )
 						}

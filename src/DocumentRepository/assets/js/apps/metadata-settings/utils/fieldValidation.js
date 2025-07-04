@@ -24,10 +24,10 @@ import { __ } from '@wordpress/i18n';
  * @param {Array}  [field.options]     - Options for select fields
  * @param {Array}  [existingFields=[]] - Array of existing fields to check for duplicates
  * @param {number} [currentIndex=null] - Index of the current field in the existing fields array
- * @return {Object} Object containing validation errors, empty if valid. Properties may include:
- *                   - id: Error message for ID validation
+ * @return {Object} errors - Object containing validation errors with structure:
+ *                   - id: Error message for field ID validation
  *                   - label: Error message for label validation
- *                   - options: Error message for options validation
+ *                   - type: Error message for type validation
  *
  * @example
  * const field = {
@@ -71,13 +71,24 @@ export const validateField = (
 		);
 	}
 
-	// Validate select field options
+	// Validate field type
 	if (
-		field.type === 'select' &&
+		! field.type ||
+		! [ 'text', 'date', 'taxonomy' ].includes( field.type )
+	) {
+		errors.type = __(
+			'Please select a valid field type',
+			'bcgov-design-system'
+		);
+	}
+
+	// Validate taxonomy field options
+	if (
+		field.type === 'taxonomy' &&
 		( ! field.options || field.options.length === 0 )
 	) {
 		errors.options = __(
-			'Select fields require at least one option',
+			'Taxonomy fields require at least one term',
 			'bcgov-design-system'
 		);
 	}

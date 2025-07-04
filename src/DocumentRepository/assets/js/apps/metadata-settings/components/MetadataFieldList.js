@@ -38,7 +38,6 @@ const MetadataItem = ( { children } ) => (
  */
 const FIELD_TYPES = {
 	text: __( 'Text', 'bcgov-design-system' ),
-	select: __( 'Select', 'bcgov-design-system' ),
 	date: __( 'Date', 'bcgov-design-system' ),
 };
 

@@ -536,9 +536,19 @@ class RestApiController {
      * @return WP_REST_Response|WP_Error The response object or error.
      */
     public function add_metadata_field( WP_REST_Request $request ) {
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+            do_action( 'bcgov_design_system_debug', 'RestApiController::add_metadata_field called' );
+        }
+
         $field = $request->get_params();
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+            do_action( 'bcgov_design_system_debug', 'Field data: ' . wp_json_encode( $field ) );
+        }
 
         if ( ! isset( $field['id'] ) || ! isset( $field['label'] ) || ! isset( $field['type'] ) ) {
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                do_action( 'bcgov_design_system_debug', 'Validation failed - missing required fields' );
+            }
             return new WP_Error(
                 'invalid_field',
                 'Field must have id, label, and type',
@@ -547,8 +557,14 @@ class RestApiController {
         }
 
         $result = $this->metadata_manager->add_metadata_field( $field );
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+            do_action( 'bcgov_design_system_debug', 'Metadata manager result: ' . ( $result ? 'SUCCESS' : 'FAILED' ) );
+        }
 
         if ( ! $result ) {
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                do_action( 'bcgov_design_system_debug', 'Failed - field exists or other error' );
+            }
             return new WP_Error(
                 'field_exists',
                 'A field with this ID already exists',
@@ -556,6 +572,9 @@ class RestApiController {
             );
         }
 
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+            do_action( 'bcgov_design_system_debug', 'Successful - returning field' );
+        }
         return new WP_REST_Response( $field, 201 );
     }
 
@@ -768,33 +787,18 @@ class RestApiController {
         $validation_errors = [];
 
         foreach ( $metadata as $field_id => $value ) {
-            if ( isset( $field_map[ $field_id ] ) ) {
-                $field = $field_map[ $field_id ];
+            // Skip if not a registered field.
+            if ( ! isset( $field_map[ $field_id ] ) ) {
+                continue;
+            }
 
-                // Required field validation.
-                if ( ! empty( $field['required'] ) && empty( $value ) ) {
-                    /* translators: %s: Field label. */
-                    $error_message                  = __( '%s is required', 'bcgov-design-system' );
-                    $validation_errors[ $field_id ] = sprintf( $error_message, $field['label'] );
-                    continue;
-                }
+            $field = $field_map[ $field_id ];
 
-                // Select field validation.
-                if ( 'select' === $field['type'] && ! empty( $field['options'] ) && ! empty( $value ) ) {
-                    if ( ! in_array( $value, $field['options'], true ) ) {
-                        /* translators: %s: Field label. */
-                        $error_message                  = __( 'Invalid option for %s', 'bcgov-design-system' );
-                        $validation_errors[ $field_id ] = sprintf( $error_message, $field['label'] );
-                    }
-                }
-
-                // Date field validation.
-                if ( 'date' === $field['type'] && ! empty( $value ) ) {
-                    if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $value ) ) {
-                        /* translators: %s: Field label. */
-                        $error_message                  = __( 'Invalid date format for %s. Use YYYY-MM-DD', 'bcgov-design-system' );
-                        $validation_errors[ $field_id ] = sprintf( $error_message, $field['label'] );
-                    }
+            // Date field validation.
+            if ( 'date' === $field['type'] && ! empty( $value ) ) {
+                $timestamp = strtotime( $value );
+                if ( false === $timestamp ) {
+                    $errors[ $field_id ] = __( 'Invalid date format', 'bcgov-design-system' );
                 }
             }
         }

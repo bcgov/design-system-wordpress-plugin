@@ -405,7 +405,7 @@ const DocumentList = ( {
 									<label htmlFor={ field.id }>
 										{ field.label }
 									</label>
-									{ field.type === 'select' ? (
+									{ field.type === 'taxonomy' ? (
 										<SelectControl
 											id={ field.id }
 											value={
@@ -419,7 +419,7 @@ const DocumentList = ( {
 													),
 													value: '',
 												},
-												...field.options.map(
+												...( field.options || [] ).map(
 													( option ) => ( {
 														label: option,
 														value: option,
@@ -436,6 +436,11 @@ const DocumentList = ( {
 									) : (
 										<TextControl
 											id={ field.id }
+											type={
+												field.type === 'date'
+													? 'date'
+													: 'text'
+											}
 											value={
 												editedValues[ field.id ] || ''
 											}

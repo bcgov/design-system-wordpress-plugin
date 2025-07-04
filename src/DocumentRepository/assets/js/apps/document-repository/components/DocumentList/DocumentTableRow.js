@@ -1,8 +1,8 @@
 import {
 	Button,
 	CheckboxControl,
-	SelectControl,
 	TextControl,
+	SelectControl,
 } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
 
@@ -49,18 +49,11 @@ function DocumentTableRow( {
 		const fieldValue =
 			bulkEditedMetadata[ document.id ]?.[ field.id ] || '';
 
-		if ( field.type === 'select' ) {
-			const options = Array.isArray( field.options )
-				? field.options.map( ( option ) => ( {
-						label: option,
-						value: option,
-				  } ) )
-				: Object.entries( field.options || {} ).map(
-						( [ optionValue, label ] ) => ( {
-							label,
-							value: optionValue,
-						} )
-				  );
+		if ( field.type === 'taxonomy' ) {
+			const options = ( field.options || [] ).map( ( option ) => ( {
+				label: option,
+				value: option,
+			} ) );
 
 			return (
 				<SelectControl

@@ -15,8 +15,8 @@ import { __ } from '@wordpress/i18n';
  */
 const FIELD_TYPES = {
 	text: __( 'Text', 'bcgov-design-system' ),
-	select: __( 'Select', 'bcgov-design-system' ),
 	date: __( 'Date', 'bcgov-design-system' ),
+	taxonomy: __( 'Taxonomy', 'bcgov-design-system' ),
 };
 
 /**
@@ -98,13 +98,13 @@ const MetadataFieldForm = ( {
 				/>
 			) }
 
-			{ field.type === 'select' && (
+			{ field.type === 'taxonomy' && (
 				<TextareaControl
-					label={ __( 'Options', 'bcgov-design-system' ) }
+					label={ __( 'Taxonomy Terms', 'bcgov-design-system' ) }
 					value={ formatOptionsToString( field ) }
 					onChange={ onOptionsChange }
 					help={ __(
-						'Enter one option per line',
+						'Enter one taxonomy term per line. These will become the available options for this taxonomy.',
 						'bcgov-design-system'
 					) }
 				/>

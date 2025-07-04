@@ -201,11 +201,11 @@ const useMetadataFields = () => {
 			}
 
 			if (
-				field.type === 'select' &&
+				field.type === 'taxonomy' &&
 				( ! field.options || field.options.length === 0 )
 			) {
 				errors.options = __(
-					'Select fields require at least one option',
+					'Taxonomy fields require at least one term',
 					'bcgov-design-system'
 				);
 			}

@@ -88,14 +88,14 @@ const AddFieldModal = ( {
 				onChange={ ( value ) => onFieldChange( 'type', value ) }
 			/>
 
-			{ /* Options input (only shown for select fields) */ }
-			{ field.type === 'select' && (
+			{ /* Options input (only shown for taxonomy fields) */ }
+			{ field.type === 'taxonomy' && (
 				<TextareaControl
-					label={ __( 'Options', 'bcgov-design-system' ) }
+					label={ __( 'Taxonomy Terms', 'bcgov-design-system' ) }
 					value={ field._rawOptionsText }
 					onChange={ onOptionsChange }
 					help={ __(
-						'Enter one option per line',
+						'Enter one taxonomy term per line. These will become the available options for this taxonomy.',
 						'bcgov-design-system'
 					) }
 					error={ errors.options }

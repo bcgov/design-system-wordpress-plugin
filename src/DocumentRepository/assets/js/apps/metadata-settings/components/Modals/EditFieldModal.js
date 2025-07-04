@@ -31,7 +31,6 @@
 import {
 	Modal,
 	TextControl,
-	SelectControl,
 	TextareaControl,
 	Button,
 } from '@wordpress/components';
@@ -79,24 +78,30 @@ const EditFieldModal = ( {
 				error={ errors.label }
 			/>
 
-			{ /* Field Type selection */ }
-			<SelectControl
-				label={ __( 'Field Type', 'bcgov-design-system' ) }
-				value={ field.type }
-				options={ Object.entries( FIELD_TYPES ).map(
-					( [ value, label ] ) => ( { value, label } )
-				) }
-				onChange={ ( value ) => onFieldChange( 'type', value ) }
-			/>
+			{ /* Field Type display */ }
+			<div className="field-type-display">
+				<label htmlFor="field-type-value">
+					{ __( 'Field Type', 'bcgov-design-system' ) }
+				</label>
+				<div id="field-type-value" className="field-type-value">
+					{ FIELD_TYPES[ field.type ] || field.type }
+				</div>
+				<p className="help-text">
+					{ __(
+						'Field type cannot be changed after creation',
+						'bcgov-design-system'
+					) }
+				</p>
+			</div>
 
-			{ /* Options input (only shown for select fields) */ }
-			{ field.type === 'select' && (
+			{ /* Options input (only shown for taxonomy fields) */ }
+			{ field.type === 'taxonomy' && (
 				<TextareaControl
-					label={ __( 'Options', 'bcgov-design-system' ) }
+					label={ __( 'Taxonomy Terms', 'bcgov-design-system' ) }
 					value={ field._rawOptionsText }
 					onChange={ onOptionsChange }
 					help={ __(
-						'Enter one option per line',
+						'Enter one taxonomy term per line. These will modify the available options for this taxonomy.',
 						'bcgov-design-system'
 					) }
 					error={ errors.options }
