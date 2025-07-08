@@ -398,10 +398,19 @@ const DocumentUploader = ( {
 								label: __( 'Select…', 'bcgov-design-system' ),
 								value: '',
 							},
-							...( options || [] ).map( ( option ) => ( {
-								label: option,
-								value: option,
-							} ) ),
+							...( options || [] ).map( ( option ) => {
+								// Handle both old format (string) and new format (object with id/name)
+								if ( typeof option === 'string' ) {
+									return {
+										label: option,
+										value: option,
+									};
+								}
+								return {
+									label: option.label || option.name,
+									value: option.value || option.id,
+								};
+							} ),
 						] }
 						onChange={ ( value ) =>
 							handleMetadataChange( id, value )
