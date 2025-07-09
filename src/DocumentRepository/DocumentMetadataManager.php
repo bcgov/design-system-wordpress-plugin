@@ -152,7 +152,7 @@ class DocumentMetadataManager {
 
         // Trigger re-registration of metadata fields with WordPress REST API.
         if ( $result ) {
-            do_action( 'document_repository_metadata_fields_updated' );
+            do_action( 'bcgov_document_repository_metadata_fields_updated' );
         }
 
         return $result;

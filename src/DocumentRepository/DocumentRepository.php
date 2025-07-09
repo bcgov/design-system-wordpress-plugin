@@ -83,7 +83,7 @@ class DocumentRepository {
         add_action( 'rest_api_init', [ $this, 'register_rest_routes' ], 10 );
 
         // Hook to re-register metadata fields when they are updated (frontend).
-        add_action( 'document_repository_metadata_fields_updated', [ $this->get_post_type(), 'register_metadata_fields' ] );
+        add_action( 'bcgov_document_repository_metadata_fields_updated', [ $this->get_document_post_type_instance(), 'register_metadata_fields' ] );
     }
 
     /**
@@ -97,16 +97,16 @@ class DocumentRepository {
         add_action( 'init', [ $this, 'register_post_types' ] );
         add_action( 'rest_api_init', [ $this, 'register_rest_routes' ], 10 );
         add_action( 'admin_menu', [ $this, 'register_admin_menus' ] );
-        add_action( 'admin_enqueue_scripts', [ $this->get_admin_ui(), 'enqueue_admin_scripts' ] );
+        add_action( 'admin_enqueue_scripts', [ $this->get_admin_ui_manager_instance(), 'enqueue_admin_scripts' ] );
 
         // Event listeners.
         add_action(
             'bcgov_document_repository_document_uploaded',
-            [ $this->get_metadata_manager(), 'clear_cache' ]
+            [ $this->get_metadata_manager_instance(), 'clear_cache' ]
         );
 
         // Hook to re-register metadata fields when they are updated.
-        add_action( 'document_repository_metadata_fields_updated', [ $this->get_post_type(), 'register_metadata_fields' ] );
+        add_action( 'bcgov_document_repository_metadata_fields_updated', [ $this->get_document_post_type_instance(), 'register_metadata_fields' ] );
 
         // Migrate existing files to the new direct path structure.
         add_action( 'admin_init', [ $this, 'migrate_existing_files' ] );
@@ -116,7 +116,7 @@ class DocumentRepository {
      * Register custom post type for documents.
      */
     public function register_post_types(): void {
-        $this->get_post_type()->register();
+        $this->get_document_post_type_instance()->register();
     }
 
     /**
@@ -199,7 +199,7 @@ class DocumentRepository {
         }
 
         // Register the routes.
-        $this->get_rest_api()->register_routes();
+        $this->get_rest_api_controller_instance()->register_routes();
 
         // Log registered routes for debugging.
         global $wp_rest_server;
@@ -217,8 +217,8 @@ class DocumentRepository {
      * Register admin menus and submenus.
      */
     public function register_admin_menus(): void {
-        $this->get_admin_ui()->add_repository_menu();
-        $this->get_admin_ui()->add_metadata_settings_submenu();
+        $this->get_admin_ui_manager_instance()->add_repository_menu();
+        $this->get_admin_ui_manager_instance()->add_metadata_settings_submenu();
     }
 
     /**
@@ -226,7 +226,7 @@ class DocumentRepository {
      *
      * @return DocumentPostType
      */
-    public function get_post_type(): DocumentPostType {
+    public function get_document_post_type_instance(): DocumentPostType {
         if ( null === $this->post_type ) {
             $this->post_type = new DocumentPostType( $this->config );
         }
@@ -238,7 +238,7 @@ class DocumentRepository {
      *
      * @return DocumentUploader
      */
-    public function get_uploader(): DocumentUploader {
+    public function get_document_uploader_instance(): DocumentUploader {
         if ( null === $this->uploader ) {
             $this->uploader = new DocumentUploader( $this->config );
         }
@@ -250,12 +250,12 @@ class DocumentRepository {
      *
      * @return AdminUIManager
      */
-    public function get_admin_ui(): AdminUIManager {
+    public function get_admin_ui_manager_instance(): AdminUIManager {
         if ( null === $this->admin_ui ) {
             $this->admin_ui = new AdminUIManager(
                 $this->config,
-                $this->get_uploader(),
-                $this->get_metadata_manager()
+                $this->get_document_uploader_instance(),
+                $this->get_metadata_manager_instance()
             );
         }
         return $this->admin_ui;
@@ -266,12 +266,12 @@ class DocumentRepository {
      *
      * @return RestApiController
      */
-    public function get_rest_api(): RestApiController {
+    public function get_rest_api_controller_instance(): RestApiController {
         if ( null === $this->rest_api ) {
             $this->rest_api = new RestApiController(
                 $this->config,
-                $this->get_uploader(),
-                $this->get_metadata_manager()
+                $this->get_document_uploader_instance(),
+                $this->get_metadata_manager_instance()
             );
         }
         return $this->rest_api;
@@ -282,7 +282,7 @@ class DocumentRepository {
      *
      * @return DocumentMetadataManager
      */
-    public function get_metadata_manager(): DocumentMetadataManager {
+    public function get_metadata_manager_instance(): DocumentMetadataManager {
         if ( null === $this->metadata_manager ) {
             $this->metadata_manager = new DocumentMetadataManager( $this->config );
         }
