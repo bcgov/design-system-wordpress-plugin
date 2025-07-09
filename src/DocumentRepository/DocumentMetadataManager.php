@@ -36,7 +36,40 @@ class DocumentMetadataManager {
      */
     public function get_metadata_fields(): array {
         // Get fields from database or default to empty array if none exist.
-        return get_option( 'document_repository_metadata_fields', [] );
+        $fields = get_option( 'document_repository_metadata_fields', [] );
+
+        // For taxonomy fields, add term IDs to options.
+        foreach ( $fields as &$field ) {
+            if ( 'taxonomy' === $field['type'] && ! empty( $field['options'] ) ) {
+                $taxonomy_name = $this->get_taxonomy_name_for_field( $field['id'] );
+                $terms         = get_terms(
+                    array(
+						'taxonomy'   => $taxonomy_name,
+						'hide_empty' => false,
+                    )
+                );
+
+                // Convert options from just term names to objects with ID and name.
+                $options_with_ids = array();
+                foreach ( $field['options'] as $option_name ) {
+                    // Find the matching term.
+                    foreach ( $terms as $term ) {
+                        if ( $term->name === $option_name ) {
+                            $options_with_ids[] = array(
+                                'id'    => $term->term_id,
+                                'name'  => $term->name,
+                                'value' => $term->term_id, // For select field value.
+                                'label' => $term->name,    // For select field label.
+                            );
+                            break;
+                        }
+                    }
+                }
+                $field['options'] = $options_with_ids;
+            }
+        }
+
+        return $fields;
     }
 
     /**
@@ -228,6 +261,19 @@ class DocumentMetadataManager {
             $metadata[ $key ] = is_array( $values ) && 1 === count( $values ) ? $values[0] : $values;
         }
 
+        // Add taxonomy values for taxonomy-type metadata fields.
+        $fields = $this->get_metadata_fields();
+        foreach ( $fields as $field ) {
+            if ( 'taxonomy' === $field['type'] ) {
+                $taxonomy_name = $this->get_taxonomy_name_for_field( $field['id'] );
+                $terms         = wp_get_object_terms( $post_id, $taxonomy_name, [ 'fields' => 'ids' ] );
+
+                if ( ! is_wp_error( $terms ) ) {
+                    $metadata[ $field['id'] ] = $terms;
+                }
+            }
+        }
+
         // Add file data.
         $file_id = get_post_meta( $post_id, 'document_file_id', true );
         if ( $file_id ) {
@@ -269,7 +315,29 @@ class DocumentMetadataManager {
                 continue;
             }
 
-            // Sanitize value based on field type.
+            // Check if this is a taxonomy field.
+            if ( isset( $field_map[ $field_id ] ) && 'taxonomy' === $field_map[ $field_id ]['type'] ) {
+                // This is a taxonomy field - set the term relationships instead of saving as meta.
+                $taxonomy_name = $this->get_taxonomy_name_for_field( $field_id );
+
+                if ( ! empty( $value ) ) {
+                    // Handle both single values and arrays.
+                    $terms = is_array( $value ) ? $value : [ $value ];
+
+                    // Convert term IDs to integers if they're strings.
+                    $terms = array_map( 'intval', $terms );
+
+                    // Set the taxonomy terms for this document.
+                    $result = wp_set_object_terms( $post_id, $terms, $taxonomy_name );
+
+                } else {
+                    // Clear taxonomy terms if value is empty.
+                    wp_set_object_terms( $post_id, [], $taxonomy_name );
+                }
+                continue;
+            }
+
+            // Sanitize value based on field type for regular metadata.
             if ( isset( $field_map[ $field_id ] ) ) {
                 $field = $field_map[ $field_id ];
                 switch ( $field['type'] ) {
@@ -290,7 +358,7 @@ class DocumentMetadataManager {
                 $value = sanitize_text_field( $value );
             }
 
-            // Save the sanitized value.
+            // Save the sanitized value as post meta.
             update_post_meta( $post_id, $field_id, $value );
         }
 

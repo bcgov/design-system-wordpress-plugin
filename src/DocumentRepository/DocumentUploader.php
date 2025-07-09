@@ -277,9 +277,35 @@ class DocumentUploader {
         // Save attachment ID as post meta.
         update_post_meta( $post_id, 'document_file_id', $attachment_id );
 
-        // Save metadata.
+        // Get metadata manager to check field types.
+        $metadata_manager = new DocumentMetadataManager( $this->config );
+        $metadata_fields  = $metadata_manager->get_metadata_fields();
+        $field_map        = array_column( $metadata_fields, null, 'id' );
+
+        // Save metadata and handle taxonomy fields.
         foreach ( $metadata as $key => $value ) {
-            if ( 'title' !== $key ) {
+            if ( 'title' === $key ) {
+                continue;
+            }
+
+            // Check if this is a taxonomy field.
+            if ( isset( $field_map[ $key ] ) && 'taxonomy' === $field_map[ $key ]['type'] ) {
+                // This is a taxonomy field - set the term relationships instead of saving as meta.
+                $taxonomy_name = $metadata_manager->get_taxonomy_name_for_field( $key );
+
+                if ( ! empty( $value ) ) {
+                    // Handle both single values and arrays.
+                    $terms = is_array( $value ) ? $value : [ $value ];
+
+                    // Convert term IDs to integers if they're strings.
+                    $terms = array_map( 'intval', $terms );
+
+                    // Set the taxonomy terms for this document.
+                    $result = wp_set_object_terms( $post_id, $terms, $taxonomy_name );
+
+                }
+            } else {
+                // Regular metadata field - save as post meta.
                 update_post_meta( $post_id, $key, $value );
             }
         }

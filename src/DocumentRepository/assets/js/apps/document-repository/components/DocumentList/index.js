@@ -420,10 +420,26 @@ const DocumentList = ( {
 													value: '',
 												},
 												...( field.options || [] ).map(
-													( option ) => ( {
-														label: option,
-														value: option,
-													} )
+													( option ) => {
+														// Handle both old format (string) and new format (object with id/name)
+														if (
+															typeof option ===
+															'string'
+														) {
+															return {
+																label: option,
+																value: option,
+															};
+														}
+														return {
+															label:
+																option.label ||
+																option.name,
+															value:
+																option.value ||
+																option.id,
+														};
+													}
 												),
 											] }
 											onChange={ ( value ) =>

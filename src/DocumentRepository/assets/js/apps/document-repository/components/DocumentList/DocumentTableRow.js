@@ -41,19 +41,49 @@ function DocumentTableRow( {
 } ) {
 	const renderMetadataField = ( field ) => {
 		if ( ! isSpreadsheetMode ) {
-			return document.metadata && document.metadata[ field.id ]
-				? document.metadata[ field.id ]
-				: '—';
+			const fieldValue =
+				document.metadata && document.metadata[ field.id ]
+					? document.metadata[ field.id ]
+					: '';
+
+			// For taxonomy fields, convert ID back to name for display
+			if ( field.type === 'taxonomy' && fieldValue ) {
+				const matchingOption = ( field.options || [] ).find(
+					( option ) => {
+						if ( typeof option === 'string' ) {
+							return option === fieldValue;
+						}
+						return ( option.value || option.id ) === fieldValue;
+					}
+				);
+
+				if ( matchingOption ) {
+					return typeof matchingOption === 'string'
+						? matchingOption
+						: matchingOption.label || matchingOption.name;
+				}
+			}
+
+			return fieldValue || '—';
 		}
 
 		const fieldValue =
 			bulkEditedMetadata[ document.id ]?.[ field.id ] || '';
 
 		if ( field.type === 'taxonomy' ) {
-			const options = ( field.options || [] ).map( ( option ) => ( {
-				label: option,
-				value: option,
-			} ) );
+			const options = ( field.options || [] ).map( ( option ) => {
+				// Handle both old format (string) and new format (object with id/name)
+				if ( typeof option === 'string' ) {
+					return {
+						label: option,
+						value: option,
+					};
+				}
+				return {
+					label: option.label || option.name,
+					value: option.value || option.id,
+				};
+			} );
 
 			return (
 				<SelectControl
