@@ -6,9 +6,8 @@ on:
       - development
   workflow_dispatch:
 
-permissions:
-  contents: read
-
 jobs:
   trigger:
+    permissions:
+      contents: read
     uses: bcgov/des-git-workflows/.github/workflows/linting.yml@main
