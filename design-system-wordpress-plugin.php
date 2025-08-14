@@ -16,38 +16,44 @@
  *
  * @package DesignSystemPlugin
  */
-
-/**
- * Loads the autoloader.
- */
-
-
+use Bcgov\DesignSystemPlugin\AutoAnchor\Settings as AutoAnchorSettings;
 use Bcgov\DesignSystemPlugin\{
+    ContentSecurityPolicy,
     DesignSystemSettings,
     NotificationBanner,
-    ContentSecurityPolicy,
     SkipNavigation,
 };
-
 use Bcgov\DesignSystemPlugin\Enqueue\{
-    Style,
-    Script
+    Script,
+    Style
 };
-
 use Bcgov\DesignSystemPlugin\InPageNav\InPageNav;
 
-use Bcgov\DesignSystemPlugin\AutoAnchor\Settings as AutoAnchorSettings;
+/**
+ * Load Composer autoloader and verify required classes exist.
+ * If the autoloader or any required class is missing, halt plugin execution.
+ */
+$autoloader_path = __DIR__ . '/vendor/autoload.php';
+if ( file_exists( $autoloader_path ) ) {
+    require_once $autoloader_path;
+}
 
-if ( ! class_exists( 'Bcgov\\DesignSystemPlugin\\NotificationBanner' ) ) {
-    $local_composer  = __DIR__ . '/vendor/autoload.php';
-    $server_composer = __DIR__ . '/../../../../vendor/autoload.php';
-    if ( file_exists( $local_composer ) || file_exists( $server_composer ) ) {
-        if ( file_exists( $server_composer ) ) {
-            require_once $server_composer;
-        }
-        if ( ! class_exists( 'Bcgov\\DesignSystemPlugin\\NotificationBanner' ) ) {
-            require_once $local_composer;
-        }
+// Required classes for the plugin to function.
+$required_classes = [
+    AutoAnchorSettings::class,
+    ContentSecurityPolicy::class,
+    DesignSystemSettings::class,
+    Script::class,
+    Style::class,
+    InPageNav::class,
+    NotificationBanner::class,
+    SkipNavigation::class,
+];
+
+// Check if all required classes exist.
+foreach ( $required_classes as $class ) {
+    if ( ! class_exists( $class ) ) {
+        return;
     }
 }
 
@@ -163,8 +169,8 @@ $skip_navigation->init();
  */
 
 // Initialize the enqueueing styles class.
-$enque_styles = new Style();
-$enque_styles->init();
+$enqueue_styles = new Style();
+$enqueue_styles->init();
 
 // Initialize the enqueueing scripts class.
 $enqueue_scripts = new Script();
