@@ -118,18 +118,35 @@ class InPageNav {
             true
         );
 
-        // Pass configuration options to JavaScript.
-        wp_localize_script(
-            'dswp-in-page-nav-script',
-            'dswpInPageNav',
-            [
-                'options' => [
-                    'mobile_breakpoint' => 1800,
-                    'scroll_offset'     => 60,
-                    'heading_selectors' => [ 'h2', 'h3' ],
-                ],
-            ]
-        );
+        		// Get page excerpt if available.
+		$page_excerpt = '';
+		if ( is_page() ) {
+			$post = get_post();
+			if ( $post && ! empty( $post->post_excerpt ) ) {
+				$page_excerpt = wp_strip_all_tags( $post->post_excerpt );
+			} elseif ( $post && ! empty( $post->post_content ) ) {
+				// Fallback to first paragraph if no excerpt.
+				$content         = wp_strip_all_tags( $post->post_content );
+				$first_paragraph = strtok( $content, "\n" );
+				if ( strlen( $first_paragraph ) > 20 ) {
+					$page_excerpt = $first_paragraph;
+				}
+			}
+		}
+
+		// Pass configuration options and excerpt to JavaScript.
+		wp_localize_script(
+			'dswp-in-page-nav-script',
+			'dswpInPageNav',
+			[
+				'options'      => [
+					'mobile_breakpoint' => 1800,
+					'scroll_offset'     => 60,
+					'heading_selectors' => [ 'h2' ],
+				],
+				'page_excerpt' => $page_excerpt,
+			]
+		);
     }
 
     /**
