@@ -12,6 +12,12 @@
 
 // Wait for DOM to be fully loaded before initializing.
 document.addEventListener( 'DOMContentLoaded', () => {
+	// Detect WordPress admin bar and add class to body
+	const adminBar = document.getElementById( 'wpadminbar' );
+	if ( adminBar ) {
+		document.body.classList.add( 'admin-bar' );
+	}
+
 	// Find the main content area using various common selectors.
 	const mainContent =
 		document.querySelector( '#main-content' ) ||
@@ -25,8 +31,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 		return;
 	}
 
-	// First, ensure all h2 and h3 elements have IDs
-	const allHeadings = mainContent.querySelectorAll( 'h2, h3' );
+	// First, ensure all h2 elements have IDs
+	const allHeadings = mainContent.querySelectorAll( 'h2' );
+
 	allHeadings.forEach( ( heading, index ) => {
 		if ( ! heading.id ) {
 			// Generate a slug from the heading text
@@ -40,11 +47,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
 		}
 	} );
 
-	// Now find all h2 and h3 headings (they should all have IDs now).
-	const headings = Array.from( mainContent.querySelectorAll( 'h2, h3' ) );
+	// Now find all h2 headings (they should all have IDs now).
+	const headings = Array.from( mainContent.querySelectorAll( 'h2' ) );
 
 	// Exit if there aren't enough headings to warrant navigation.
-	if ( headings.length < 2 ) {
+	if ( headings.length < 1 ) {
 		return;
 	}
 
@@ -53,6 +60,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 	nav.className = 'dswp-in-page-nav';
 	nav.setAttribute( 'role', 'navigation' );
 	nav.setAttribute( 'aria-label', 'On this page' );
+
+	// Get page excerpt from PHP
+	const pageExcerpt = window.dswpInPageNav?.page_excerpt || '';
 
 	// Insert the navigation HTML structure with accessibility attributes.
 	nav.innerHTML = `
@@ -71,14 +81,26 @@ document.addEventListener( 'DOMContentLoaded', () => {
             class="nav-links" 
             role="list" 
             aria-labelledby="nav-title">
+            ${
+				pageExcerpt
+					? `
+                <li class="nav-excerpt">
+                    <span class="excerpt-text">${ pageExcerpt }</span>
+                </li>
+            `
+					: ''
+			}
             ${ headings
 				.map(
-					( heading ) => `
+					( heading, index ) => `
                 <li>
                     <a href="#${ heading.id }" 
                        data-heading-id="${ heading.id }"
                        aria-current="false">
-                        ${ heading.textContent }
+                        <span class="heading-number">${ index + 1 }.</span>
+                        <span class="heading-text">${
+							heading.textContent
+						}</span>
                     </a>
                 </li>
             `
@@ -94,6 +116,19 @@ document.addEventListener( 'DOMContentLoaded', () => {
 	wrapper.appendChild( nav );
 	wrapper.appendChild( mainContent );
 
+	// Set initial active state - on mobile, first link should be active by default
+	if ( window.innerWidth <= 768 ) {
+		const firstLink = nav.querySelector( 'a[data-heading-id]' );
+		if ( firstLink ) {
+			firstLink.setAttribute( 'aria-current', 'true' );
+			// Also set the current class for mobile styling
+			const listItem = firstLink.closest( 'li' );
+			if ( listItem ) {
+				listItem.classList.add( 'current' );
+			}
+		}
+	}
+
 	/**
 	 * Updates the active navigation link based on scroll position.
 	 * Handles both desktop and mobile responsive behaviors.
@@ -107,16 +142,18 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
 		// Handle responsive behavior.
 		if ( window.innerWidth > 768 ) {
-			// Desktop view: Always show expanded navigation.
+			// Desktop view: Always show expanded navigation, no scroll behavior needed.
 			navToggle.style.display = 'none';
 			nav.classList.add( 'is-expanded' );
 		} else if ( window.scrollY < 50 ) {
-			// At top of page: Show expanded navigation.
+			// Mobile view: At top of page - Show expanded navigation.
 			nav.classList.add( 'is-expanded' );
+			nav.classList.remove( 'is-scrolled' );
 			navToggle.setAttribute( 'aria-expanded', 'true' );
 			navToggle.style.display = 'none';
 		} else {
-			// When scrolling: Show toggle button.
+			// Mobile view: When scrolling - Show toggle button and add scrolled state.
+			nav.classList.add( 'is-scrolled' );
 			navToggle.style.display = 'flex';
 			// Collapse nav unless manually expanded.
 			if ( ! nav.hasAttribute( 'data-manual-expanded' ) ) {
@@ -127,14 +164,21 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
 		// Determine which heading is currently in view.
 		let currentHeading = null;
-		for ( const heading of headings ) {
-			if (
-				heading.getBoundingClientRect().top + window.scrollY <
-				scrollPosition
-			) {
-				currentHeading = heading;
-			} else {
-				break;
+
+		// On mobile, default to first heading if at top of page
+		if ( window.innerWidth <= 768 && window.scrollY < 50 ) {
+			currentHeading = headings[ 0 ];
+		} else {
+			// Normal scroll-based detection
+			for ( const heading of headings ) {
+				if (
+					heading.getBoundingClientRect().top + window.scrollY <
+					scrollPosition
+				) {
+					currentHeading = heading;
+				} else {
+					break;
+				}
 			}
 		}
 
@@ -143,10 +187,21 @@ document.addEventListener( 'DOMContentLoaded', () => {
 			const isCurrent =
 				currentHeading &&
 				link.getAttribute( 'data-heading-id' ) === currentHeading.id;
-			link.classList.toggle( 'dswp-current', isCurrent );
+
+			// Always update aria-current for accessibility
 			link.setAttribute( 'aria-current', isCurrent ? 'true' : 'false' );
-			const listItem = link.closest( 'li' );
-			listItem.classList.toggle( 'current', isCurrent );
+
+			// Only apply visual styling classes on mobile
+			if ( window.innerWidth <= 768 ) {
+				link.classList.toggle( 'dswp-current', isCurrent );
+				const listItem = link.closest( 'li' );
+				listItem.classList.toggle( 'current', isCurrent );
+			} else {
+				// Remove all visual styling classes on desktop
+				link.classList.remove( 'dswp-current' );
+				const listItem = link.closest( 'li' );
+				listItem.classList.remove( 'current' );
+			}
 		} );
 	};
 

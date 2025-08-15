@@ -27,17 +27,33 @@
 .dswp-in-page-nav {
     padding-right: var(--wp--style--root--padding-right, var(--dswp-padding-right));
     padding-left: var(--wp--style--root--padding-left, var(--dswp-padding-left));
-    position: sticky;
-    top: 0;
+    position: relative; /* Default position for desktop */
     width: 100%;
     max-width: var(--dswp-layout-content-size, 1200px);
     margin: auto;
     padding-top: 1rem;
-    background-color: #f3f3f3;
+    background-color: #ffffff;
     z-index: 50;
-    border-bottom: 0.25rem solid #e6e6e6;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     display: block !important; /* Ensure visibility */
+}
+
+/* Mobile-only sticky positioning */
+@media (max-width: 768px) {
+    .dswp-in-page-nav {
+        position: sticky;
+        top: 0;
+    }
+
+    /* Adjust for WordPress admin bar if present */
+    .admin-bar .dswp-in-page-nav {
+        top: 46px;
+    }
+
+    /* Light gray background when scrolling on mobile */
+    .dswp-in-page-nav.is-scrolled {
+        background-color: #f8f8f8;
+        transition: background-color 0.3s ease;
+    }
 }
 
 /* Navigation Header
@@ -51,8 +67,9 @@
 
 .dswp-in-page-nav h4 {
     margin: 0;
-    font-size: 1.6rem;
+    font-size: 20px;
     font-weight: bold;
+    padding-left: 1.5rem;
 }
 
 /* Toggle Button Styles
@@ -91,18 +108,21 @@
    ========================================================================== */
 .dswp-in-page-nav .nav-links {
     list-style: none;
-    padding: 1rem 2rem;
+    padding-inline-start: 0px;
 }
 
 .dswp-in-page-nav .nav-links li {
     padding-left: 2rem;
     border-left: solid 1px;
-    padding-bottom: .75rem;
 }
 
 /* Active state indicator */
-.dswp-in-page-nav .nav-links .current {
-    border-left: solid 5px #005ea2;
+/* Active state indicator - mobile only */
+@media (max-width: 768px) {
+    .dswp-in-page-nav .nav-links .current {
+        border-left: solid 3px #1b1b1b;
+        padding-left: 1.9rem !important;
+    }
 }
 
 /* Link Styles */
@@ -111,7 +131,32 @@
     text-decoration: none;
     display: block;
     padding: 0.25rem 0;
-    font-size: 1.2rem;
+    font-size: 16px;
+}
+
+/* Excerpt Styles */
+.dswp-in-page-nav .nav-excerpt {
+    border-left: solid 1px #ccc;
+    padding-left: 1.5rem!important;
+    padding-bottom: .75rem;
+}
+
+.dswp-in-page-nav .excerpt-text {
+    color: #666;
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+/* Heading Number Styles */
+.dswp-in-page-nav .heading-number {
+    color: #005ea2;
+    font-weight: normal;
+    margin-right: 0.25rem;
+    display: inline-block;
+}
+
+.dswp-in-page-nav .heading-text {
+    color: #005ea2;
 }
 
 .dswp-in-page-nav a:hover {
@@ -122,6 +167,13 @@
 .dswp-in-page-nav a.dswp-current {
     font-weight: bold;
     color: #005ea2;
+}
+
+/* Selected link text styling - mobile only */
+@media (max-width: 768px) {
+    .dswp-in-page-nav .nav-links .current .heading-text {
+        font-weight: bold;
+    }
 }
 
 /* Responsive Mobile Styles
