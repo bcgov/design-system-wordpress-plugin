@@ -8,7 +8,7 @@
  * Requires at least: 6.4.4
  * Tested up to: 6.5
  * Requires PHP: 7.4
- * Version: 2.13.0
+ * Version: 2.14.0
  * License: Apache License Version 2.0
  * License URI: LICENSE
  * Text Domain: design-system-wordpress-plugin
@@ -30,31 +30,15 @@ use Bcgov\DesignSystemPlugin\Enqueue\{
 use Bcgov\DesignSystemPlugin\InPageNav\InPageNav;
 
 /**
- * Load Composer autoloader and verify required classes exist.
- * If the autoloader or any required class is missing, halt plugin execution.
+ * Load Composer autoloader and verify required class exists.
+ * If the autoloader or the required class is missing, halt plugin execution.
  */
 $autoloader_path = __DIR__ . '/vendor/autoload.php';
 if ( file_exists( $autoloader_path ) ) {
     require_once $autoloader_path;
 }
-
-// Required classes for the plugin to function.
-$required_classes = [
-    AutoAnchorSettings::class,
-    ContentSecurityPolicy::class,
-    DesignSystemSettings::class,
-    Script::class,
-    Style::class,
-    InPageNav::class,
-    NotificationBanner::class,
-    SkipNavigation::class,
-];
-
-// Check if all required classes exist.
-foreach ( $required_classes as $class ) {
-    if ( ! class_exists( $class ) ) {
-        return;
-    }
+if ( ! class_exists( 'Bcgov\\DesignSystemPlugin\\DesignSystemSettings' ) ) {
+    return;
 }
 
 /**
