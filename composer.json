@@ -1,7 +1,6 @@
 {
     "name": "bcgov-plugin/design-system-wordpress-plugin",
     "description": "Design System WordPress Plugin",
-    "version": "2.13.0",
     "type": "wordpress-plugin",
     "license": "Apache-2.0",
     "repositories": [
@@ -20,10 +19,10 @@
         }
     },
     "scripts": {
-        "update-version":[ 
-            " bash update-version.sh" 
+        "update-version":[
+            "bash update-version.sh"
         ],
-        "test-setup":[ 
+        "test-setup":[
             "bash vendor/bcgov/wordpress-utils/bin/install-wp-tests.sh wordpress_test root 'rootpassword' 0.0.0.0 latest"
         ],
         "production": [

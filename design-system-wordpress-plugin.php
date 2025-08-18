@@ -8,7 +8,7 @@
  * Requires at least: 6.4.4
  * Tested up to: 6.5
  * Requires PHP: 7.4
- * Version: 2.13.0
+ * Version: 2.14.0
  * License: Apache License Version 2.0
  * License URI: LICENSE
  * Text Domain: design-system-wordpress-plugin
@@ -16,39 +16,29 @@
  *
  * @package DesignSystemPlugin
  */
-
-/**
- * Loads the autoloader.
- */
-
-
+use Bcgov\DesignSystemPlugin\AutoAnchor\Settings as AutoAnchorSettings;
 use Bcgov\DesignSystemPlugin\{
+    ContentSecurityPolicy,
     DesignSystemSettings,
     NotificationBanner,
-    ContentSecurityPolicy,
     SkipNavigation,
 };
-
 use Bcgov\DesignSystemPlugin\Enqueue\{
-    Style,
-    Script
+    Script,
+    Style
 };
-
 use Bcgov\DesignSystemPlugin\InPageNav\InPageNav;
 
-use Bcgov\DesignSystemPlugin\AutoAnchor\Settings as AutoAnchorSettings;
-
-if ( ! class_exists( 'Bcgov\\DesignSystemPlugin\\NotificationBanner' ) ) {
-    $local_composer  = __DIR__ . '/vendor/autoload.php';
-    $server_composer = __DIR__ . '/../../../../vendor/autoload.php';
-    if ( file_exists( $local_composer ) || file_exists( $server_composer ) ) {
-        if ( file_exists( $server_composer ) ) {
-            require_once $server_composer;
-        }
-        if ( ! class_exists( 'Bcgov\\DesignSystemPlugin\\NotificationBanner' ) ) {
-            require_once $local_composer;
-        }
-    }
+/**
+ * Load Composer autoloader and verify required class exists.
+ * If the autoloader or the required class is missing, halt plugin execution.
+ */
+$autoloader_path = __DIR__ . '/vendor/autoload.php';
+if ( file_exists( $autoloader_path ) ) {
+    require_once $autoloader_path;
+}
+if ( ! class_exists( 'Bcgov\\DesignSystemPlugin\\DesignSystemSettings' ) ) {
+    return;
 }
 
 /**
@@ -163,8 +153,8 @@ $skip_navigation->init();
  */
 
 // Initialize the enqueueing styles class.
-$enque_styles = new Style();
-$enque_styles->init();
+$enqueue_styles = new Style();
+$enqueue_styles->init();
 
 // Initialize the enqueueing scripts class.
 $enqueue_scripts = new Script();
