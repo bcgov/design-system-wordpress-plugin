@@ -10,5 +10,3 @@ jobs:
 
   js-css-linting:
     uses: bcgov/des-git-workflows/.github/workflows/js-css-lint.yml@1.1.0
-    with:
-      node_version: '24' # Custom Node.js version
