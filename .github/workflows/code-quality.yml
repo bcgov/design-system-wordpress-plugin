@@ -1,0 +1,14 @@
+name: Complete WordPress Code Quality
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  php-validation:
+    uses: bcgov/des-git-workflows/.github/workflows/phpcs-validate.yml@1.1.0
+
+  pattern-validation:
+    uses: bcgov/des-git-workflows/.github/workflows/pattern-validate.yml@1.1.0
+
+  js-css-linting:
+    uses: bcgov/des-git-workflows/.github/workflows/js-css-lint.yml@1.1.0
+    with:
+      node_version: '24' # Custom Node.js version
