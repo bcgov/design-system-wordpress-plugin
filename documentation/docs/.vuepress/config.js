@@ -55,12 +55,7 @@ export default defineUserConfig({
 			{
 				text: "Developers",
 				collapsible: true,
-				children: [
-					{
-						text: "Unit Test Best Practices",
-						link: "/guide/Developers/UnitTestBestPractices",
-					},
-				],
+				children: [],
 			},
 		],
 	}),
