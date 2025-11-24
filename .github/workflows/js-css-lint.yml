@@ -1,0 +1,10 @@
+name: JS and CSS Linting
+
+on: [pull_request, workflow_dispatch]
+
+permissions:
+  contents: read
+
+jobs:
+  js-css-linting:
+    uses: bcgov/des-git-workflows/.github/workflows/js-css-lint.yml@1.1.0
