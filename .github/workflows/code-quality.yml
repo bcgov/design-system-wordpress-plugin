@@ -1,5 +1,9 @@
 name: Complete WordPress Code Quality
-on: [push, pull_request, workflow_dispatch]
+
+on: [pull_request, workflow_dispatch]
+
+permissions:
+  contents: read
 
 jobs:
   php-validation:
