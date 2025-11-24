@@ -21,19 +21,18 @@
     "email": "govwordpress@gov.bc.ca"
   },
   "engines": {
-    "npm": ">= 10.7.0",
-    "node": ">=20.15.1"
+    "node": ">=24.11.0"
   },
   "main": "index.js",
   "devDependencies": {
-    "@bcgov/wordpress-eslint": "git+https://github.com/bcgov/wordpress-eslint.git#semver:1.x",
-    "@bcgov/wordpress-stylelintrc": "git+https://github.com/bcgov/wordpress-stylelintrc.git#semver:1.x",
+    "@bcgov/wordpress-eslint": "github:bcgov/wordpress-eslint#semver:1.x",
+    "@bcgov/wordpress-stylelintrc": "github:bcgov/wordpress-stylelintrc#semver:1.x",
     "@wordpress/scripts": "^28.6.0"
   },
   "dependencies": {
-    "@wordpress/compose": "^7.19.0",
-    "@wordpress/element": "^6.19.0",
-    "@wordpress/hooks": "^4.19.0"
+    "@wordpress/compose": "^7.35.0",
+    "@wordpress/element": "^6.35.0",
+    "@wordpress/hooks": "^4.35.0"
   },
   "scripts": {
     "start": "wp-scripts start",
