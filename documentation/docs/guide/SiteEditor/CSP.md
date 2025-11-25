@@ -63,7 +63,7 @@ Example additions:
 
 Example additions:
 
-- `api.example.com *.sentry.io www.google-analytics.com`
+- `api.example.com *.sentry.io`
 
 ### Img-src Policy
 
@@ -108,10 +108,6 @@ Example additions:
 - YouTube/Vimeo embeds
   - frame-src: `*.youtube.com youtu.be *.vimeo.com`
   - img-src: `i.ytimg.com` (for thumbnails)
-
-- Google Analytics / GTM
-  - script-src: `www.googletagmanager.com www.google-analytics.com`
-  - connect-src: `www.google-analytics.com www.googletagmanager.com`
 
 - Mapbox
   - script-src: `api.mapbox.com`
