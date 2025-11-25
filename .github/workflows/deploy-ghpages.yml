@@ -1,8 +1,12 @@
 name: Deploy to GitHub pages
 on:
+  # allow manual deployment from the Actions tab
+  workflow_dispatch:
   push:
     branches:
       - main
+      # Also deploy when we push to an unpublished release like 'release/2.16'
+      - release/**
   release:
     types:
       - published
@@ -17,7 +21,7 @@ jobs:
         with:
           node-version: "22.14.0"
 
-      - name: Install and Build 🔧 
+      - name: Install and Build 🔧
         run: |
           cd documentation
           npm install
