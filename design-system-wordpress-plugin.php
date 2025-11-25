@@ -42,6 +42,18 @@ if ( ! class_exists( 'Bcgov\\DesignSystemPlugin\\DesignSystemSettings' ) ) {
 }
 
 /**
+ * Make dashicons available to public views for use in breadcrumbs.
+ */
+add_action(
+    'wp_enqueue_scripts',
+    function () {
+		if ( has_block( 'design-system-wordpress-plugin/breadcrumb' ) ) {
+			wp_enqueue_style( 'dashicons' );
+		}
+	}
+);
+
+/**
  * The function design_system_register_blocks registers block types from metadata in block.json files
  * found in subdirectories of the Blocks/build folder.
  */
