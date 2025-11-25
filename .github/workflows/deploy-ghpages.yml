@@ -5,8 +5,6 @@ on:
   push:
     branches:
       - main
-      # Also deploy when we push to an unpublished release like 'release/2.16'
-      - release/**
   release:
     types:
       - published
