@@ -1,4 +1,6 @@
+<!-- markdownlint-disable MD033 -->
 # Notification Banner — Admin Tool Guide
+
 
 Use this tool to control which sources your WordPress site can load for scripts, styles, images, fonts, media, XHR/WebSocket connections, and frames. Tight CSP rules improve security and reduce the risk of cross‑site scripting (XSS).
 
@@ -10,7 +12,7 @@ The tool lives in:
 
 - WordPress Admin → Design System → Notification Banner
 
-Click Save Settings to apply changes.
+Click Save Settings to apply changes, and see a preview below the Banner Preview label.
 
 ![Notification Banner HOWTO](/images/NOTIFICATION_BANNER_HOWTO.gif)
 
@@ -18,99 +20,30 @@ Click Save Settings to apply changes.
 
 ## How the banner tool works
 
-- Each field accepts a space‑separated allowlist of sources (no commas).
-- If a field is left empty, the plugin uses its built‑in defaults (shown as helper text under each label).
-- You can add:
-  - Keywords: `'self'` `'none'` `'unsafe-inline'` `'unsafe-eval'` `data:` `blob:` `https:`
-  - Hosts: `example.com` `sub.example.com`
-  - Wildcards: `*.example.com`
-- Use the least‑privilege set you can. Prefer HTTPS. Avoid `'unsafe-inline'` and `'unsafe-eval'` when possible.
-
-Tip: To revert a directive to defaults, clear the field and Save Settings. To block a type entirely, enter `'none'`.
-
----
-
-## Directive reference
-
-Below is what each field controls and examples of what you might add. The defaults shown in the UI include the design system’s domains (e.g., gov.bc.ca, twimg.com, flickr domains, and YouTube for embeds).
-
-### Default-src Policy
-
-- Fallback for all resource types without an explicit directive.
-- Keep minimal. Add broad hosts here only if you can’t scope them to a more specific directive.
-
-Example additions:
-
-- `https: cdn.example.com`
-
-### Script-src Policy
-
-- JavaScript files and inline JS.
-- Prefer hosted files over inline scripts. Remove 'unsafe-inline'/'unsafe-eval' if your site doesn’t require them.
-
-Example additions:
-
-- `cdn.jsdelivr.net cdn.skypack.dev www.googletagmanager.com www.google-analytics.com`
-
-### Style-src Policy
-
-- CSS files and inline styles.
-- If you must allow inline styles, keep 'unsafe-inline'. Consider using hashed inline styles instead of broad allowance.
-
-Example additions:
-
-- `fonts.googleapis.com cdn.jsdelivr.net`
-
-### Connect-src Policy
-
-- Fetch/XHR, WebSocket, EventSource, analytics beacons, and GraphQL endpoints.
-
-Example additions:
-
-- `api.example.com *.sentry.io www.google-analytics.com`
-
-### Img-src Policy
-
-- Images and favicons. data: allows inline base64 images.
-
-Example additions:
-
-- `i.ytimg.com cdn.example.com data:`
-
-### Font-src Policy
-
-- Font files (woff, woff2, ttf). data: enables embedded fonts like `data:font/woff2;base64,d09GMgABAAAAAA...')`
-
-Example additions:
-
-- `fonts.gstatic.com data:`
-
-### Media-src Policy
-
-- Audio and video files (not iframes).
-
-Example additions:
-
-- `media.example.com`
-
-### Frame-src Policy
-
-- Origins allowed in iframes (and workers for some browsers).
-
-Example additions:
-
-- `*.youtube.com youtu.be *.vimeo.com *.rumble.com`
+- Enable/Disable the banner using the radio buttons.
+- The Banner Content textbox will accept plain text, or even HTML tags:
+  - `<strong>strong</strong>`
+  - `<b>bold</b>`
+  - `<em>emphasis</em>`
+  - `<i>italic</i>`
+- Choose the background banner color using the color-coded background status colors:
+  - <span style="background-color:#f8bb47; color:green; padding: 3px">Warning</span>
+  - <span style="background-color:#ce3e39; color:blue; padding: 3px">Danger</span>
+  - <span style="background-color:#42814a; color:purple; padding: 3px">Success</span>
+  - <span style="background-color:#053662; color:red; padding: 3px">Info</span>
+- To hide the banner, simply click 'Disable' beside 'Enable Banner'.
 
 ---
 
 ## Common recipes
 
-- Google Fonts
-  - style-src: `fonts.googleapis.com`
-  - font-src: `fonts.gstatic.com data`:
+- Test Site Banner
+  - text: `This is the Dev/Test Environment. The content you are viewing is not final and subject to change.`
+  - background color: <span style="background-color:#ce3e39; color:blue; padding: 3px">Danger</span>
 
-- YouTube/Vimeo embeds
-  - frame-src: `*.youtube.com youtu.be *.vimeo.com`
+- Site under maintenance
+  - text: `This site is under maintenance. Please check back periodically for udpates`
+  - background color: <span style="background-color:#f8bb47; color:green; padding: 3px">Danger</span>
   - img-src: `i.ytimg.com` (for thumbnails)
 
 - Google Analytics / GTM
@@ -152,3 +85,5 @@ Tip: If something still doesn’t load, verify the exact hostname in the violati
 
 - Do I need commas?
   - No. Use spaces between entries.
+
+<!-- markdownlint-enable MD033 -->
