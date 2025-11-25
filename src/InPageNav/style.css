@@ -214,7 +214,6 @@
     .dswp-in-page-nav .nav-links {
         position: relative;
         height: 2rem;
-        overflow: hidden;
         transition: height 0.3s ease;
         width: 100%;
     }
