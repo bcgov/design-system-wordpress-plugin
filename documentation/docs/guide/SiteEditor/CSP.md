@@ -17,12 +17,12 @@ Click Save Settings to apply changes.
 - Each field accepts a space‑separated allowlist of sources (no commas).
 - If a field is left empty, the plugin uses its built‑in defaults (shown as helper text under each label).
 - You can add:
-  - Keywords: 'self' 'none' 'unsafe-inline' 'unsafe-eval' data: blob: https:
-  - Hosts: example.com sub.example.com
-  - Wildcards: *.example.com
-- Use the least‑privilege set you can. Prefer HTTPS. Avoid 'unsafe-inline' and 'unsafe-eval' when possible.
+  - Keywords: `'self'` `'none'` `'unsafe-inline'` `'unsafe-eval'` `data:` `blob:` `https:`
+  - Hosts: `example.com` `sub.example.com`
+  - Wildcards: `*.example.com`
+- Use the least‑privilege set you can. Prefer HTTPS. Avoid `'unsafe-inline'` and `'unsafe-eval'` when possible.
 
-Tip: To revert a directive to defaults, clear the field and Save Settings. To block a type entirely, enter 'none'.
+Tip: To revert a directive to defaults, clear the field and Save Settings. To block a type entirely, enter `'none'`.
 
 ---
 
@@ -31,80 +31,96 @@ Tip: To revert a directive to defaults, clear the field and Save Settings. To bl
 Below is what each field controls and examples of what you might add. The defaults shown in the UI include the design system’s domains (e.g., gov.bc.ca, twimg.com, flickr domains, and YouTube for embeds).
 
 ### Default-src Policy
+
 - Fallback for all resource types without an explicit directive.
 - Keep minimal. Add broad hosts here only if you can’t scope them to a more specific directive.
 
 Example additions:
-- https: cdn.example.com
+
+- `https: cdn.example.com`
 
 ### Script-src Policy
+
 - JavaScript files and inline JS.
 - Prefer hosted files over inline scripts. Remove 'unsafe-inline'/'unsafe-eval' if your site doesn’t require them.
 
 Example additions:
-- cdn.jsdelivr.net cdn.skypack.dev www.googletagmanager.com www.google-analytics.com
+
+- `cdn.jsdelivr.net cdn.skypack.dev www.googletagmanager.com www.google-analytics.com`
 
 ### Style-src Policy
+
 - CSS files and inline styles.
 - If you must allow inline styles, keep 'unsafe-inline'. Consider using hashed inline styles instead of broad allowance.
 
 Example additions:
-- fonts.googleapis.com cdn.jsdelivr.net
+
+- `fonts.googleapis.com cdn.jsdelivr.net`
 
 ### Connect-src Policy
+
 - Fetch/XHR, WebSocket, EventSource, analytics beacons, and GraphQL endpoints.
 
 Example additions:
-- api.example.com *.sentry.io www.google-analytics.com
+
+- `api.example.com *.sentry.io www.google-analytics.com`
 
 ### Img-src Policy
+
 - Images and favicons. data: allows inline base64 images.
 
 Example additions:
-- i.ytimg.com cdn.example.com data:
+
+- `i.ytimg.com cdn.example.com data:`
 
 ### Font-src Policy
-- Font files (woff, woff2, ttf). data: enables embedded fonts.
+
+- Font files (woff, woff2, ttf). data: enables embedded fonts like `data:font/woff2;base64,d09GMgABAAAAAA...')`
 
 Example additions:
-- fonts.gstatic.com data:
+
+- `fonts.gstatic.com data:`
 
 ### Media-src Policy
+
 - Audio and video files (not iframes).
 
 Example additions:
-- media.example.com
+
+- `media.example.com`
 
 ### Frame-src Policy
+
 - Origins allowed in iframes (and workers for some browsers).
 
 Example additions:
-- *.youtube.com youtu.be *.vimeo.com *.rumble.com
+
+- `*.youtube.com youtu.be *.vimeo.com *.rumble.com`
 
 ---
 
 ## Common recipes
 
 - Google Fonts
-  - style-src: fonts.googleapis.com
-  - font-src: fonts.gstatic.com data:
+  - style-src: `fonts.googleapis.com`
+  - font-src: `fonts.gstatic.com data`:
 
 - YouTube/Vimeo embeds
-  - frame-src: *.youtube.com youtu.be *.vimeo.com
-  - img-src: i.ytimg.com (for thumbnails)
+  - frame-src: `*.youtube.com youtu.be *.vimeo.com`
+  - img-src: `i.ytimg.com` (for thumbnails)
 
 - Google Analytics / GTM
-  - script-src: www.googletagmanager.com www.google-analytics.com
-  - connect-src: www.google-analytics.com www.googletagmanager.com
+  - script-src: `www.googletagmanager.com www.google-analytics.com`
+  - connect-src: `www.google-analytics.com www.googletagmanager.com`
 
 - Mapbox
-  - script-src: api.mapbox.com
-  - style-src: api.mapbox.com
-  - img-src: api.mapbox.com
-  - connect-src: events.mapbox.com
+  - script-src: `api.mapbox.com`
+  - style-src: `api.mapbox.com`
+  - img-src: `api.mapbox.com`
+  - connect-src: `events.mapbox.com`
 
 - Generic CDN
-  - Add the CDN host to the specific directive you need (script-src, style-src, img-src, etc.), e.g., cdn.example.com
+  - Add the CDN host to the specific directive you need (script-src, style-src, img-src, etc.), e.g., `cdn.example.com`
 
 ---
 
@@ -119,6 +135,7 @@ Example additions:
 Tip: If something still doesn’t load, verify the exact hostname in the violation message and add that host (or a wildcard like *.example.com) to the correct directive.
 
 ![Rumble Frame Source](/images/CSP_FRAME_SRC.gif)
+
 ---
 
 ## FAQ
@@ -131,13 +148,3 @@ Tip: If something still doesn’t load, verify the exact hostname in the violati
 
 - Do I need commas?
   - No. Use spaces between entries.
-
-- Do nonces or hashes work?
-  - This tool focuses on host-based allowlists and keywords. Prefer hosted assets; avoid inline code when possible.
-
----
-
-## Change log reminders
-
-- Keep changes small and test immediately.
-- Document why a new host is required (e.g., “Added api.example.com to connect-src for search autosuggest”).
