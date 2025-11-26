@@ -1,9 +1,6 @@
 <!-- markdownlint-disable MD033 -->
 # Notification Banner — Admin Tool Guide
 
-
-Use this tool to control which sources your WordPress site can load for scripts, styles, images, fonts, media, XHR/WebSocket connections, and frames. Tight CSP rules improve security and reduce the risk of cross‑site scripting (XSS).
-
 Use this tool to enable a Notification Banner at the top of each page of your website.
 You can choose the text shown in the banner, as well as its background color.
 HTML code is also valid if you want to add additional structure.
@@ -59,16 +56,3 @@ Click Save Settings to apply changes, and see a preview below the Banner Preview
 4. Verify the text and background color of the banner are correct.
 
 ![Show Notification Banner](/images/SHOW_NOTIFICATION_BANNER.gif)
-
----
-
-## FAQ
-
-- How do I reset to defaults?
-  - Clear the field and click Save Settings.
-
-- Can I disable a resource type completely?
-  - Enter 'none' in that directive and save.
-
-- Do I need commas?
-  - No. Use spaces between entries.
