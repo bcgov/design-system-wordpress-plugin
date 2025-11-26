@@ -39,37 +39,24 @@ Click Save Settings to apply changes, and see a preview below the Banner Preview
 
 - Test Site Banner
   - text: `This is the Dev/Test Environment. The content you are viewing is not final and subject to change.`
-  - background color: <span style="background-color:#ce3e39; color:blue; padding: 3px">Danger</span>
+  - background color: <span style="background-color:#ce3e39; padding: 3px">Danger</span>
 
 - Site under maintenance
   - text: `This site is under maintenance. Please check back periodically for udpates`
-  - background color: <span style="background-color:#f8bb47; color:green; padding: 3px">Danger</span>
-  - img-src: `i.ytimg.com` (for thumbnails)
+  - background color: <span style="background-color:#f8bb47; color: navy; padding: 3px">Warning</span>
 
-- Google Analytics / GTM
-  - script-src: `www.googletagmanager.com www.google-analytics.com`
-  - connect-src: `www.google-analytics.com www.googletagmanager.com`
-
-- Mapbox
-  - script-src: `api.mapbox.com`
-  - style-src: `api.mapbox.com`
-  - img-src: `api.mapbox.com`
-  - connect-src: `events.mapbox.com`
-
-- Generic CDN
-  - Add the CDN host to the specific directive you need (script-src, style-src, img-src, etc.), e.g., `cdn.example.com`
+- Informational Banner
+  - text: `Here are instructions for filling in this form...`
+  - background color: <span style="background-color:#053662; padding: 3px">Information</span>
 
 ---
 
 ## Testing changes
 
 1. Save Settings.
-2. Hard‑refresh the page in your browser (Shift+Reload).
-3. Open DevTools → Console. Look for “Refused to connect/script/style from … because it violates the Content Security Policy”.
-4. Add the blocked origin to the correct directive and save again.
-5. Repeat until violations are gone.
-
-Tip: If something still doesn’t load, verify the exact hostname in the violation message and add that host (or a wildcard like *.example.com) to the correct directive.
+2. Verify the banner preview matches expectations.
+3. Hard‑refresh the page in your browser (Shift+Reload).
+4. Navigate to your homepage and verify the text and background color of the banner are correct.
 
 ![Rumble Frame Source](/images/CSP_FRAME_SRC.gif)
 
