@@ -25,8 +25,15 @@ Provides an automatic table of contents for Pages by collecting all H2 headings 
 - Edit a Page.
 - Open the “In-page Navigation” panel in the document settings.
 - Toggle “Enable in-page navigation” on.
-- Update the Page.
+- Update the Page **(See Desktop/Mobile view below for a demonstration)**:
+
+### Editor Usage: Desktop View
+
 ![In-page Navigation HOWTO](/images/IN_PAGE_NAVIGATION_DEMO.gif)
+
+### Editor Usage: Mobile View
+
+![In-page Navigation HOWTO](/images/MOBILE_IN_PAGE_NAVIGATION_DEMO.gif)
 
 ## Responsive Behavior
 
