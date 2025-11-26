@@ -55,10 +55,10 @@ Click Save Settings to apply changes, and see a preview below the Banner Preview
 
 1. Save Settings.
 2. Verify the banner preview matches expectations.
-3. Hard‑refresh the page in your browser (Shift+Reload).
-4. Navigate to your homepage and verify the text and background color of the banner are correct.
+3. Navigate to your homepage and hard-refresh your browser
+4. Verify the text and background color of the banner are correct.
 
-![Rumble Frame Source](/images/CSP_FRAME_SRC.gif)
+![Show Notification Banner](/images/SHOW_NOTIFICATION_BANNER.gif)
 
 ---
 
@@ -72,5 +72,3 @@ Click Save Settings to apply changes, and see a preview below the Banner Preview
 
 - Do I need commas?
   - No. Use spaces between entries.
-
-<!-- markdownlint-enable MD033 -->
