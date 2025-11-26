@@ -19,8 +19,8 @@ Click Save Settings to apply changes, and see a preview below the Banner Preview
 
 - Enable/Disable the banner using the radio buttons.
 - The Banner Content textbox can accept plain text or HTML Markup, such as:
-  - <strong>`<strong>strong</strong>`</strong>
-  - <em>`<em>emphasis</em>`</em>
+  - `<strong>`<strong>strong (bold)</strong>`</strong>`
+  - <em>`<em>emphasis (italics)</em>`</em>
   - `<u>`<u>underline (use with caution; can confuse links)</u>`</u>`
   - `<s>`<s>Strikethrough</s>`</s>`
   - `<mark>`<mark>Highlighted text</mark>`</mark>`
