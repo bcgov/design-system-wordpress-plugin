@@ -130,7 +130,7 @@ Example additions:
 
 Tip: If something still doesn’t load, verify the exact hostname in the violation message and add that host (or a wildcard like *.example.com) to the correct directive.
 
-![Rumble Frame Source](/images/CSP_FRAME_SRC.gif)
+![CSP Frame Source](/images/CSP_FRAME_SRC.gif)
 
 ---
 
