@@ -18,11 +18,17 @@ Click Save Settings to apply changes, and see a preview below the Banner Preview
 ## How the banner tool works
 
 - Enable/Disable the banner using the radio buttons.
-- The Banner Content textbox will accept plain text, or HTML Markup:
-  - `<strong>strong</strong>`
-  - `<b>bold</b>`
-  - `<em>emphasis</em>`
-  - `<i>italic</i>`
+- The Banner Content textbox can accept plain text or HTML Markup, such as:
+  - <strong>`<strong>strong</strong>`</strong>
+  - <em>`<em>emphasis</em>`</em>
+  - `<u>`<u>underline (use with caution; can confuse links)</u>`</u>`
+  - `<s>`<s>Strikethrough</s>`</s>`
+  - `<mark>`<mark>Highlighted text</mark>`</mark>`
+  - `<pre>`<pre>preformatted text (preserves spaces and line breaks)</pre>`</pre>`
+  - other specialized text markup: `<abbr>`, `<code>`, `<kbd>`, `<var>`, `<sup>`, and `<sub>`
+  - list item markup: `<ul>`, `<ol>`, `<li>`, `<dl>`, `<dt>`, `<dd>`
+  - quotations and citations: `<blockquote>`, `<q>`, `<cite>`
+  - headings: `<H1>` - `<H6>`
 
 - Choose the background banner color using the color-coded background status colors:
    <span style="background-color:#f8bb47; color:black; padding: 3px">Warning</span>,
