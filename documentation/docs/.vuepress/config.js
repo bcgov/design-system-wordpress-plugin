@@ -39,16 +39,16 @@ export default defineUserConfig({
 						link: "/guide/SiteEditor/InPageNavigation",
 					},
 					{
-						text: "Navigation",
-						link: "/guide/SiteEditor/Navigation",
+						text: "Navigation Block",
+						link: "/guide/SiteEditor/NavigationBlock",
 					},
 					{
 						text: "Auto Anchor",
 						link: "/guide/SiteEditor/AutoAnchor",
 					},
 					{
-						text: "BreadCrumb",
-						link: "/guide/SiteEditor/BreadCrumb",
+						text: "BreadCrumb Block",
+						link: "/guide/SiteEditor/BreadCrumbBlock",
 					},
 				],
 			},
