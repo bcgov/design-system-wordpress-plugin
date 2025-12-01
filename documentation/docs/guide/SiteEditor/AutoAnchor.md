@@ -7,7 +7,7 @@ Find it in:
 
 - Block Inserter (+) → Core → Heading
 - Auto Anchor is applied automatically to core/heading when enabled
-After inserting a Heading, the anchor ID is created in the editor and used on the frontend for deep-links.
+After inserting a heading, the anchor ID is created in the editor and used on the frontend for deep-links.
 
 ![Add a Heading Block with Auto Anchor](/images/ADD_AUTO_ANCHOR.png)
 
