@@ -127,6 +127,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 				listItem.classList.add( 'current' );
 			}
 		}
+		// Expand navigation on initial load to show the first element
+		nav.classList.add( 'is-expanded' );
 	}
 
 	/**
@@ -165,21 +167,22 @@ document.addEventListener( 'DOMContentLoaded', () => {
 		// Determine which heading is currently in view.
 		let currentHeading = null;
 
-		// On mobile, default to first heading if at top of page
-		if ( window.innerWidth <= 768 && window.scrollY < 50 ) {
-			currentHeading = headings[ 0 ];
-		} else {
-			// Normal scroll-based detection
-			for ( const heading of headings ) {
-				if (
-					heading.getBoundingClientRect().top + window.scrollY <
-					scrollPosition
-				) {
-					currentHeading = heading;
-				} else {
-					break;
-				}
+		// Normal scroll-based detection
+		for ( const heading of headings ) {
+			if (
+				heading.getBoundingClientRect().top + window.scrollY <
+				scrollPosition
+			) {
+				currentHeading = heading;
+			} else {
+				break;
 			}
+		}
+
+		// Fallback: default to first heading
+		// This ensures the navigation always shows a current link on mobile
+		if ( ! currentHeading ) {
+			currentHeading = headings[ 0 ];
 		}
 
 		// Update navigation links to reflect current section.
