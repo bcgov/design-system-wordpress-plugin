@@ -10,7 +10,7 @@
         }
     ],
     "require-dev": {
-        "bcgov/wordpress-utils": "2.7.0",
+        "bcgov/wordpress-utils": "2.8.0",
         "yoast/phpunit-polyfills": "^1.0"
     },
     "autoload": {
@@ -39,7 +39,7 @@
             "Bcgov\\Script\\Standards::phpcbf"
         ],
         "test": [
-            "vendor/bin/phpunit --configuration vendor/bcgov/wordpress-utils/phpunit.xml.dist"
+            "vendor/bin/phpunit --configuration vendor/bcgov/wordpress-utils/phpunit.xml.dist --testdox"
         ],
         "coverage": [
             "./vendor/bin/phpunit --coverage-html ./coverage/php/"
