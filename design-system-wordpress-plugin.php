@@ -8,7 +8,7 @@
  * Requires at least: 6.4.4
  * Tested up to: 6.5
  * Requires PHP: 7.4
- * Version: 2.15.0
+ * Version: 2.16.0
  * License: Apache License Version 2.0
  * License URI: LICENSE
  * Text Domain: design-system-wordpress-plugin
@@ -40,6 +40,18 @@ if ( file_exists( $autoloader_path ) ) {
 if ( ! class_exists( 'Bcgov\\DesignSystemPlugin\\DesignSystemSettings' ) ) {
     return;
 }
+
+/**
+ * Make dashicons available to public views for use in breadcrumbs.
+ */
+add_action(
+    'wp_enqueue_scripts',
+    function () {
+		if ( has_block( 'design-system-wordpress-plugin/breadcrumb' ) ) {
+			wp_enqueue_style( 'dashicons' );
+		}
+	}
+);
 
 /**
  * The function design_system_register_blocks registers block types from metadata in block.json files
