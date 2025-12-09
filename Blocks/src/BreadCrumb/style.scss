@@ -9,7 +9,7 @@
     // Flexbox layout for horizontal navigation
     display: flex;
     align-items: center;
-    gap: 4px; // Small spacing between breadcrumb items
+    gap: 10.625rem; // Small spacing between breadcrumb items
     min-height: 24px; // Minimum height for consistent layout
     flex-wrap: wrap;
     
@@ -41,35 +41,8 @@
         color: #666; // Muted color for current page
     }
     
-    // Separator styling
     .dswp-breadcrumb-separator {
-        color: #666; // Muted color for separators
-    }
-}
-
-/**
- * Breadcrumb Block Separator Icons
- * 
- * Custom styling for separator icons using Dashicons
- * Ensures consistent sizing and alignment across different contexts
- */
-.wp-block-design-system-wordpress-plugin-breadcrumb {
-    .dswp-breadcrumb-separator {
-        // Dashicon base styling
-        .dashicons {
-            font-size: 16px; // Consistent icon size
-            width: auto;
-            height: auto;
-            vertical-align: middle; // Vertical alignment
-            line-height: 1;
-            
-            // Special styling for forward slash icon
-            &.dswp-forward-slash {
-                transform: rotate(120deg) scaleX(1.5); // Rotate and stretch
-                position: relative;
-                top: -1px; // Fine-tune vertical positioning
-                display: inline-block;
-            }
-        }
+        color: #666;
+        font-size: 22px;
     }
 }

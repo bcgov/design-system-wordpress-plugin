@@ -17,10 +17,6 @@
   "style": "file:./style-index.css",
   "render": "file:./render.php",
   "attributes": {
-    "dividerType": {
-      "type": "string",
-      "default": "slash"
-    },
     "currentAsLink": {
       "type": "boolean",
       "default": false

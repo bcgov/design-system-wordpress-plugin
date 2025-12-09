@@ -1,47 +1,4 @@
 /**
- * Divider Selector Styles
- * Defines the appearance of the divider type selection buttons in the block inspector
- */
-.dswp-divider-selector {
-    margin-bottom: 16px;
-
-
-    .components-button-group {
-        .components-button {
-            height: 36px;
-            min-width: 7rem;
-            padding: 6px 12px;
-            justify-content: center;
-            font-size: 16px;
-
-            &.is-pressed {
-                background: #000;
-                color: white;
-            }
-        }
-    }
-}
-
-/**
- * Dashicons Styling
- * Custom styling for separator icons used in breadcrumb navigation
- */
-.dashicons {
-    font-size: 16px;
-    width: auto;
-    height: auto;
-    vertical-align: middle;
-    line-height: 1;
-
-    &.dswp-forward-slash {
-        transform: rotate(120deg) scaleX(1.5);
-        position: relative;
-        top: -1px;
-        display: inline-block;
-    }
-}
-
-/**
  * Current Page Link Toggle Styles
  * Adjusts the appearance of the toggle control in the inspector
  */

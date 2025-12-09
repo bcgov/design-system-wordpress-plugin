@@ -14,19 +14,9 @@ namespace DesignSystemWordPressPlugin\Breadcrumb;
 // Get current page context.
 $current_page_id = get_the_ID();
 
-// Extract block attributes with default fallbacks.
-$divider_type    = isset( $attributes['dividerType'] ) ? $attributes['dividerType'] : 'slash';
 $current_as_link = isset( $attributes['currentAsLink'] ) ? $attributes['currentAsLink'] : false;
 
-/**
- * Define separator icons using Dashicons
- * Allows for dynamic selection between slash and chevron separators
- */
-$chevron_svg = '<span class="dashicons dashicons-arrow-right-alt2"></span>';
-$slash_svg   = '<span class="dashicons dashicons-minus dswp-forward-slash"></span>';
 
-// Select appropriate divider based on block settings.
-$divider = 'chevron' === $divider_type ? $chevron_svg : $slash_svg;
 
 /**
  * Build Page Hierarchy
@@ -88,7 +78,7 @@ $hierarchy[] = array(
                 <span class="dswp-breadcrumb-separator">
                     <?php
                     echo wp_kses(
-                        $divider,
+                        '/',
                         array(
 							'span' => array(
 								'class' => true,
