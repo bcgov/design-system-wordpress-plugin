@@ -6,7 +6,7 @@
 	"license": "GPL-2.0-or-later",
 	"main": "build/index.js",
 	"scripts": {
-		"build:production": "npm ci && npm run build:navigation && npm run build:breadcrumb && npm run fix:md && npm run test:unit",
+		"build:production": "npm ci && npm run build:navigation && npm run build:breadcrumb && npm run fix:md && npm run test",
 		"build": "wp-scripts build",
 		"build:navigation": "wp-scripts lint-js --fix && wp-scripts build --webpack-src-dir=src/Navigation --output-path=build/Navigation",
 		"build:breadcrumb": "wp-scripts lint-js --fix && wp-scripts build --webpack-src-dir=src/Breadcrumb --output-path=build/Breadcrumb ",
