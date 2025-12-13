@@ -39,7 +39,7 @@
             "Bcgov\\Script\\Standards::phpcbf"
         ],
         "test": [
-            "vendor/bin/phpunit --configuration vendor/bcgov/wordpress-utils/phpunit.xml.dist"
+            "vendor/bin/phpunit --configuration vendor/bcgov/wordpress-utils/phpunit.xml.dist --testdox"
         ],
         "coverage": [
             "./vendor/bin/phpunit --coverage-html ./coverage/php/"
