@@ -1,0 +1,6 @@
+name: WordPress PHP Testing
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  test-php:
+    uses: bcgov/des-git-workflows/.github/workflows/wordpress-php-tests.yml@1.2.0
