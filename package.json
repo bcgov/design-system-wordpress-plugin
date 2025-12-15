@@ -1,6 +1,6 @@
 {
   "name": "design-system-wordpress-plugin",
-  "version": "2.16.0",
+  "version": "2.17.0",
   "description": "Design System WordPress Plugin",
   "author": "govwordpress@gov.bc.ca",
   "license": "GPL-2.0-or-later",
@@ -27,7 +27,8 @@
   "devDependencies": {
     "@bcgov/wordpress-eslint": "github:bcgov/wordpress-eslint#semver:1.x",
     "@bcgov/wordpress-stylelintrc": "github:bcgov/wordpress-stylelintrc#semver:1.x",
-    "@wordpress/scripts": "^28.6.0"
+    "@wordpress/scripts": "^28.6.0",
+    "@wordpress/env": "^10.35.0"
   },
   "dependencies": {
     "@babel/runtime": "^7.28.4",
@@ -41,6 +42,8 @@
     "lint:css": "wp-scripts lint-style 'src/**/*.scss' --allow-empty-input",
     "fix:css": "wp-scripts lint-style 'src/**/*.scss' --fix --allow-empty-input",
     "lint:js": "wp-scripts lint-js 'src/**/*.js'",
-    "fix:js": "wp-scripts lint-js 'src/**/*.js' --fix"
+    "fix:js": "wp-scripts lint-js 'src/**/*.js' --fix",
+    "test:unit:php": "wp-env run tests-cli --env-cwd=wp-content/plugins/design-system-wordpress-plugin composer run test",
+    "wp-env": "wp-env"
   }
 }
