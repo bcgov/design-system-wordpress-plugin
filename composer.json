@@ -10,7 +10,7 @@
         }
     ],
     "require-dev": {
-        "bcgov/wordpress-utils": "2.7.0",
+        "bcgov/wordpress-utils": "2.8.1",
         "yoast/phpunit-polyfills": "^1.0"
     },
     "autoload": {
@@ -21,9 +21,6 @@
     "scripts": {
         "update-version":[
             "bash update-version.sh"
-        ],
-        "test-setup":[
-            "bash vendor/bcgov/wordpress-utils/bin/install-wp-tests.sh wordpress_test root 'rootpassword' 0.0.0.0 latest"
         ],
         "production": [
             "composer validate",
@@ -39,7 +36,7 @@
             "Bcgov\\Script\\Standards::phpcbf"
         ],
         "test": [
-            "vendor/bin/phpunit --configuration vendor/bcgov/wordpress-utils/phpunit.xml.dist --testdox"
+             "vendor/bin/phpunit --testdox "
         ],
         "coverage": [
             "./vendor/bin/phpunit --coverage-html ./coverage/php/"

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1b88b7d503ec0d4af26248bd027a3801",
+    "content-hash": "89e1bc9e6a0010c1e871ebb26260c05b",
     "packages": [],
     "packages-dev": [
         {
@@ -57,17 +57,17 @@
         },
         {
             "name": "bcgov/wordpress-utils",
-            "version": "2.7.0",
+            "version": "2.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bcgov/wordpress-utils.git",
-                "reference": "2d8bef951a59a5c53a1ca8cfee15ad66f7ee227f"
+                "reference": "8092c32aa2e832e9d2d14be7ecb8ca02f338eb6b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://blog.gov.bc.ca/satis//dist/bcgov/wordpress-utils/bcgov-wordpress-utils-2d8bef951a59a5c53a1ca8cfee15ad66f7ee227f-zip-1374e6.zip",
-                "reference": "2d8bef951a59a5c53a1ca8cfee15ad66f7ee227f",
-                "shasum": "7bfcdd645a6b0e7cb6657e6b6a97d6cc2981565f"
+                "url": "https://blog.gov.bc.ca/satis//dist/bcgov/wordpress-utils/bcgov-wordpress-utils-8092c32aa2e832e9d2d14be7ecb8ca02f338eb6b-zip-b1d282.zip",
+                "reference": "8092c32aa2e832e9d2d14be7ecb8ca02f338eb6b",
+                "shasum": "0f2226f82e7fbe8493702255b488a811c546df22"
             },
             "require": {
                 "brain/monkey": "^2.6",
@@ -76,7 +76,7 @@
                 "php": ">=7.4",
                 "phpcompatibility/phpcompatibility-wp": "^2.1",
                 "phpunit/phpunit": "^9.5",
-                "wp-coding-standards/wpcs": "^3.0.1"
+                "wp-coding-standards/wpcs": "^3.2"
             },
             "require-dev": {
                 "phpcsstandards/phpcsutils": "^1.0"
@@ -92,11 +92,10 @@
             },
             "scripts": {
                 "phpcs": [
-                    "./vendor/bin/phpcs --config-set --config-set error_severity 1 -i;",
-                    "./vendor/bin/phpcs -ps --colors ./ &2>/dev/null;"
+                    "./vendor/bin/phpcs;"
                 ],
                 "phpcbf": [
-                    "./vendor/bin/phpcbf -ps --colors ./ &2>/dev/null;"
+                    "./vendor/bin/phpcbf;"
                 ],
                 "test": [
                     "./vendor/bin/phpunit"
@@ -106,13 +105,20 @@
                 ],
                 "checklist": [
                     "Bcgov\\Script\\Checklists::postProductionChecksForScripts"
+                ],
+                "phpcs-allow-todo": [
+                    "./vendor/bin/phpcs --exclude=Generic.Commenting.Todo;"
                 ]
             },
+            "license": [
+                "MIT"
+            ],
+            "description": "A collection of utilities for WordPress plugin and theme development.",
             "support": {
-                "source": "https://github.com/bcgov/wordpress-utils/tree/2.7.0",
+                "source": "https://github.com/bcgov/wordpress-utils/tree/2.8.1",
                 "issues": "https://github.com/bcgov/wordpress-utils/issues"
             },
-            "time": "2025-06-23T20:25:10+00:00"
+            "time": "2025-11-20T16:44:28+00:00"
         },
         {
             "name": "brain/monkey",
@@ -5269,5 +5275,5 @@
     "prefer-lowest": false,
     "platform": {},
     "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.6.0"
 }

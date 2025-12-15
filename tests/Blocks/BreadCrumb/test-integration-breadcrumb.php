@@ -27,11 +27,7 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 		parent::set_up();
 
 		// Register the breadcrumb block.
-		// __DIR__ = tests/Blocks/BreadCrumb.
-		// dirname(__DIR__) = tests/Blocks.
-		// dirname(dirname(__DIR__)) = tests.
-		// dirname(dirname(dirname(__DIR__))) = plugin root.
-		$plugin_root = dirname( dirname( dirname( __DIR__ ) ) );
+		$plugin_root = dirname( __DIR__, 3 );
 		require_once $plugin_root . '/design-system-wordpress-plugin.php';
 	}
 
@@ -587,11 +583,7 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 		);
 
 		// Get plugin root directory.
-		// __DIR__ = tests/Blocks/BreadCrumb.
-		// dirname(__DIR__) = tests/Blocks.
-		// dirname(dirname(__DIR__)) = tests.
-		// dirname(dirname(dirname(__DIR__))) = plugin root.
-		$plugin_root = dirname( dirname( dirname( __DIR__ ) ) );
+		$plugin_root = dirname( __DIR__, 3 );
 
 		// Include the render template.
 		// Try build path first (production), then src path (development).
