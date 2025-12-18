@@ -8,3 +8,5 @@ permissions:
 jobs:
   test-php:
     uses: bcgov/des-git-workflows/.github/workflows/wordpress-php-tests.yml@1.2.0
+    with:
+      node-version: "24" # Will use the latest available Node.js 24.x version
