@@ -1,0 +1,22 @@
+# Dependabot configuration file for automated dependency updates
+# 
+# This configuration enables Dependabot to automatically check for updates
+# to GitHub Actions used in this repository's workflows.
+#
+# Configuration details:
+# - package-ecosystem: Monitors GitHub Actions dependencies
+# - directory: Scans workflows in the root directory
+# - schedule: Checks for updates on a weekly basis
+# - open-pull-requests-limit: Allows up to 10 concurrent pull requests
+# - ignore: Excludes major version updates for bcgov/des-git-workflows
+#   to prevent breaking changes from being automatically proposed
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "bcgov/des-git-workflows"
+        update-types: ["version-update:semver-major"]
