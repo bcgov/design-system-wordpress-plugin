@@ -42,6 +42,7 @@
     "fix:css": "wp-scripts lint-style 'src/**/*.scss' --fix --allow-empty-input",
     "lint:js": "wp-scripts lint-js 'src/**/*.js'",
     "fix:js": "wp-scripts lint-js 'src/**/*.js' --fix",
+    "test": "wp-scripts test-unit-js --passWithNoTests",
     "test:e2e": "wp-scripts test-playwright",
     "test:e2e:help": "wp-scripts test-playwright --help",
     "test:e2e:debug": "wp-scripts test-playwright --debug",
