@@ -1,9 +1,16 @@
 import { test, expect, Editor } from '@wordpress/e2e-test-utils-playwright';
 import { Page } from '@playwright/test';
 
-// TODO: Future tests: mobile functionality.
-
+/**
+ * @todo Future tests: mobile functionality.
+ */
 test.describe('InPageNav', () => {
+
+    /**
+     * @todo Fix: The "enable in-page nav" toggle appears on non-page post types but when enabled
+     * on them doesn't appear on the frontend. It should probably not be an option in the editor
+     * in these cases.
+     */
     test.describe('Visibility', () => {
         test('should not appear when enabled without h2s', async ({ admin, editor }) => {
             await admin.createNewPost({
@@ -61,7 +68,7 @@ test.describe('InPageNav', () => {
         });
 
         /**
-         * TODO: Test that excerpt appears in InPageNav. The test environment currently doesn't seem to let excerpts be set.
+         * @todo Test that excerpt appears in InPageNav. The test environment currently doesn't seem to let excerpts be set.
          */
         test('should create links for h2s and scroll to them when clicked, keyboard', async ({ editor }) => {
             await editor.setContent(`
@@ -175,6 +182,9 @@ test.describe('InPageNav', () => {
             await expect(preview.getByRole('heading', { name: 'Heading 2' })).toHaveId('existing-id');
         });
 
+        /**
+         * @todo Fix special character handling so that, for example é -> e in the id.
+         */
         test('should replace special characters in ids', async ({ editor }) => {
             await editor.setContent(`
                 <!-- wp:heading -->
@@ -184,7 +194,6 @@ test.describe('InPageNav', () => {
             await closeChoosePatternModal(editor);
             const preview = await getPreviewPage(editor);
 
-            // TODO: Fix special character handling so that, for example é -> e in the id.
             await expect(preview.getByRole('heading', { name: 'Québec & Māori – Intro/' })).toHaveId('section-qu-bec-m-ori-intro-overview-0');
         });
     })
