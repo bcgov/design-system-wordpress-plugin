@@ -1,0 +1,13 @@
+.gitattributes	        export-ignore
+.github                 export-ignore
+.gitignore	            export-ignore
+.gitkeep                export-ignore
+.npmrc                  export-ignore
+.stylelintrc            export-ignore
+.wp-env.json            export-ignore
+playwright.config.js	export-ignore
+package-lock.json	    export-ignore
+package.json	        export-ignore
+README.md	            export-ignore
+documentation           export-ignore
+tests                   export-ignore
