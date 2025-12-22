@@ -171,7 +171,7 @@ class SkipNavigationTest extends \WP_UnitTestCase {
 		$this->assertStringContainsString( '<div id="main-content"', $modified_content, 'ID should be added to the first div' );
 
 		// Call the method again with a different block content - should NOT add ID again (main_content_added is true).
-		$block_content2 = '<div class="wp-block-post-content"><p>Different content.</p></div>';
+		$block_content2    = '<div class="wp-block-post-content"><p>Different content.</p></div>';
 		$modified_content2 = $skip_nav->modify_block_render( $block_content2, $block );
 
 		// The second block should NOT have the ID because main_content_added is already true.
@@ -207,7 +207,7 @@ class SkipNavigationTest extends \WP_UnitTestCase {
 		$this->assertStringContainsString( '<main', $modified_content, 'Main tag should still be present' );
 
 		// Call the method again - should NOT add ID again.
-		$block_content2 = '<main class="site-main"><p>Different content.</p></main>';
+		$block_content2    = '<main class="site-main"><p>Different content.</p></main>';
 		$modified_content2 = $skip_nav->modify_block_render( $block_content2, $block );
 
 		// The second block should NOT have the ID because main_content_added is already true.
@@ -240,7 +240,7 @@ class SkipNavigationTest extends \WP_UnitTestCase {
 		$this->assertStringContainsString( '<nav id="main-navigation"', $modified_content, 'ID should be added to nav tag' );
 
 		// Test with existing attributes.
-		$block_content2 = '<nav class="wp-block-navigation" aria-label="Main"><ul><li>Item</li></ul></nav>';
+		$block_content2    = '<nav class="wp-block-navigation" aria-label="Main"><ul><li>Item</li></ul></nav>';
 		$modified_content2 = $skip_nav->modify_block_render( $block_content2, $block );
 
 		// Verify ID is added even with existing attributes.
@@ -438,11 +438,10 @@ class SkipNavigationTest extends \WP_UnitTestCase {
 
 		// Simulate second navigation block.
 		$block_content2 = '<nav class="wp-block-navigation"><ul><li>Item 2</li></ul></nav>';
-		$modified2 = $skip_nav->modify_block_render( $block_content2, $block1 );
+		$modified2      = $skip_nav->modify_block_render( $block_content2, $block1 );
 
 		// Both should have the ID.
 		$this->assertStringContainsString( 'id="main-navigation"', $modified1, 'First navigation block should have main-navigation ID' );
 		$this->assertStringContainsString( 'id="main-navigation"', $modified2, 'Second navigation block should also have main-navigation ID' );
 	}
 }
-
