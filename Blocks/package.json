@@ -9,7 +9,7 @@
 		"node": "^24.12.0"
 	},
 	"scripts": {
-		"build:production": "npm ci && npm run build:navigation && npm run build:breadcrumb && npm run fix:md && npm run test",
+		"build:production": "npm i && npm run build:navigation && npm run build:breadcrumb && npm run fix:md && npm run test",
 		"build": "npm i && wp-scripts build",
 		"build:navigation": "npm i && wp-scripts lint-js --fix && wp-scripts build --webpack-src-dir=src/Navigation --output-path=build/Navigation",
 		"build:breadcrumb": "npm i && wp-scripts lint-js --fix && wp-scripts build --webpack-src-dir=src/Breadcrumb --output-path=build/Breadcrumb ",
@@ -32,7 +32,7 @@
 	"devDependencies": {
 		"@bcgov/wordpress-eslint": "github:bcgov/wordpress-eslint#semver:1.x",
 		"@bcgov/wordpress-stylelintrc": "github:bcgov/wordpress-stylelintrc#semver:1.x",
-		"@wordpress/scripts": "^31.1.0",
+        "@wordpress/scripts": "^29.0.0",
 		"prettier": "^2.8.8"
 	},
 	"dependencies": {
