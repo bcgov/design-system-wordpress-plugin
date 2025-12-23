@@ -18,6 +18,7 @@
 namespace DesignSystemWordPressPlugin\Tests\NotificationBanner;
 
 use Bcgov\DesignSystemPlugin\NotificationBanner;
+use Bcgov\DesignSystemPlugin\DesignSystemSettings;
 
 /**
  * NotificationBanner Test Class
@@ -64,6 +65,11 @@ class NotificationBannerTest extends \WP_UnitTestCase {
 		$this->assertArrayHasKey( 'banner_enabled', $wp_settings_fields['dswp-notification-menu']['dswp_notification_menu_settings_section'], 'Banner enabled field should be registered' );
 		$this->assertArrayHasKey( 'banner_content', $wp_settings_fields['dswp-notification-menu']['dswp_notification_menu_settings_section'], 'Banner content field should be registered' );
 		$this->assertArrayHasKey( 'banner_color', $wp_settings_fields['dswp-notification-menu']['dswp_notification_menu_settings_section'], 'Banner color field should be registered' );
+
+		// Verify default values are correctly set (especially important when feature has never been used).
+		$this->assertEquals( '0', get_option( 'dswp_notification_banner_enabled', '0' ), 'Enabled option should default to 0' );
+		$this->assertEquals( '', get_option( 'dswp_notification_banner_notification', '' ), 'Notification option should default to empty string' );
+		$this->assertEquals( '#FFA500', get_option( 'dswp_notification_banner_color', '#FFA500' ), 'Color option should default to #FFA500 in admin context' );
 	}
 
 	/**
@@ -77,7 +83,10 @@ class NotificationBannerTest extends \WP_UnitTestCase {
 	public function test_admin_menu_is_added_correctly() {
 		global $submenu;
 
-		// Initialize NotificationBanner to register menu.
+		// Initialize both DesignSystemSettings (creates parent menu) and NotificationBanner (creates submenu).
+		$design_system_settings = new DesignSystemSettings();
+		$design_system_settings->init();
+
 		$notification_banner = new NotificationBanner();
 		$notification_banner->init();
 
@@ -85,25 +94,18 @@ class NotificationBannerTest extends \WP_UnitTestCase {
 		set_current_screen( 'admin' );
 		do_action( 'admin_menu' );
 
-		// Verify menu exists (if parent menu exists).
-		// Note: This test may be skipped if parent menu doesn't exist in test environment.
-		if ( isset( $submenu['dswp-admin-menu'] ) ) {
-			$found = false;
-			foreach ( $submenu['dswp-admin-menu'] as $item ) {
-				if ( 'dswp-notification-menu' === $item[2] ) {
-					$found = true;
-					$this->assertEquals( 'manage_options', $item[1], 'Menu should require manage_options capability' );
-					break;
-				}
+		// Verify menu exists and submenu was added.
+		$this->assertArrayHasKey( 'dswp-admin-menu', $submenu, 'Parent menu should exist' );
+
+		$found = false;
+		foreach ( $submenu['dswp-admin-menu'] as $item ) {
+			if ( 'dswp-notification-menu' === $item[2] ) {
+				$found = true;
+				$this->assertEquals( 'manage_options', $item[1], 'Menu should require manage_options capability' );
+				break;
 			}
-			$this->assertTrue( $found, 'Notification Banner submenu should be added' );
-		} else {
-			// Parent menu doesn't exist, but we can verify the action is hooked by checking
-			// if the method exists and can be called, or by checking if admin_menu has any hooks.
-			// Since we can't easily check the specific instance method, we verify the class has the method.
-			$this->assertTrue( method_exists( NotificationBanner::class, 'add_menu' ), 'add_menu method should exist' );
-			$this->assertTrue( has_action( 'admin_menu' ) !== false, 'admin_menu action should have hooks registered' );
 		}
+		$this->assertTrue( $found, 'Notification Banner submenu should be added' );
 	}
 
 	/**
