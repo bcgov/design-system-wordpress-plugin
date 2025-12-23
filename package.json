@@ -42,6 +42,11 @@
     "fix:css": "wp-scripts lint-style 'src/**/*.scss' --fix --allow-empty-input",
     "lint:js": "wp-scripts lint-js 'src/**/*.js'",
     "fix:js": "wp-scripts lint-js 'src/**/*.js' --fix",
+    "test": "wp-scripts test-unit-js --passWithNoTests",
+    "test:e2e": "wp-scripts test-playwright",
+    "test:e2e:help": "wp-scripts test-playwright --help",
+    "test:e2e:debug": "wp-scripts test-playwright --debug",
+    "test:e2e:headed": "wp-scripts test-playwright --headed",
     "test:unit:php": "wp-env run tests-cli --env-cwd=wp-content/plugins/design-system-wordpress-plugin composer run test",
     "wp-env": "wp-env"
   }
