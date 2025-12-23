@@ -27,7 +27,7 @@
     "@bcgov/wordpress-eslint": "github:bcgov/wordpress-eslint#semver:1.x",
     "@bcgov/wordpress-stylelintrc": "github:bcgov/wordpress-stylelintrc#semver:1.x",
     "@wordpress/env": "^10.36.0",
-    "@wordpress/scripts": "^30.3.0"
+    "@wordpress/scripts": "^29.0.0"
   },
   "dependencies": {
     "@babel/runtime": "^7.28.4",
