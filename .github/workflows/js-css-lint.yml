@@ -9,4 +9,4 @@ jobs:
   js-css-linting:
     uses: bcgov/des-git-workflows/.github/workflows/js-css-lint.yml@1.2.0
     with:
-      node_version: '22'
+      node_version: "24" # Will use the latest available Node.js 24.x version

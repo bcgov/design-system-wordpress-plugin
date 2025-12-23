@@ -20,24 +20,24 @@
     "email": "govwordpress@gov.bc.ca"
   },
   "engines": {
-    "node": ">=20.19.4"
+    "node": "^24.12.0"
   },
   "main": "index.js",
   "devDependencies": {
     "@bcgov/wordpress-eslint": "github:bcgov/wordpress-eslint#semver:1.x",
     "@bcgov/wordpress-stylelintrc": "github:bcgov/wordpress-stylelintrc#semver:1.x",
-    "@wordpress/scripts": "^28.6.0",
-    "@wordpress/env": "^10.35.0"
+    "@wordpress/env": "^10.36.0",
+    "@wordpress/scripts": "^29.0.0"
   },
   "dependencies": {
     "@babel/runtime": "^7.28.4",
-    "@wordpress/compose": "^7.35.0",
-    "@wordpress/element": "^6.35.0",
-    "@wordpress/hooks": "^4.35.0"
+    "@wordpress/compose": "^7.36.0",
+    "@wordpress/element": "^6.36.0",
+    "@wordpress/hooks": "^4.36.0"
   },
   "scripts": {
-    "start": "wp-scripts start",
-    "build": "wp-scripts build",
+    "start": "npm i && wp-scripts start",
+    "build": "npm i && wp-scripts build",
     "lint:css": "wp-scripts lint-style 'src/**/*.scss' --allow-empty-input",
     "fix:css": "wp-scripts lint-style 'src/**/*.scss' --fix --allow-empty-input",
     "lint:js": "wp-scripts lint-js 'src/**/*.js'",
