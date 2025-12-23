@@ -9,4 +9,4 @@ jobs:
   js-tests:
     uses: bcgov/des-git-workflows/.github/workflows/js-tests.yml@1.2.0
     with:
-      node_version: '22'
+      node_version: '24'
