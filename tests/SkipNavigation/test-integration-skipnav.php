@@ -16,6 +16,8 @@
 
 namespace DesignSystemWordPressPlugin\Tests\SkipNavigation;
 
+use Bcgov\DesignSystemPlugin\SkipNavigation;
+
 /**
  * SkipNavigation Test Class
  *
@@ -155,7 +157,7 @@ class SkipNavigationTest extends \WP_UnitTestCase {
 	 */
 	public function test_block_modifications_add_main_content_id_to_post_content() {
 		// Create a SkipNavigation instance.
-		$skip_nav = new \Bcgov\DesignSystemPlugin\SkipNavigation();
+		$skip_nav = new SkipNavigation();
 
 		// Simulate core/post-content block.
 		$block_content = '<div class="wp-block-post-content"><p>Content here.</p></div>';
@@ -188,7 +190,7 @@ class SkipNavigationTest extends \WP_UnitTestCase {
 	 */
 	public function test_block_modifications_add_main_content_id_to_main_tag() {
 		// Create a SkipNavigation instance.
-		$skip_nav = new \Bcgov\DesignSystemPlugin\SkipNavigation();
+		$skip_nav = new SkipNavigation();
 
 		// Simulate a block with main tag (when core/post-content is not present).
 		$block_content = '<main class="site-main"><p>Content here.</p></main>';
@@ -224,7 +226,7 @@ class SkipNavigationTest extends \WP_UnitTestCase {
 	 */
 	public function test_block_modifications_add_main_navigation_id_to_navigation_block() {
 		// Create a SkipNavigation instance.
-		$skip_nav = new \Bcgov\DesignSystemPlugin\SkipNavigation();
+		$skip_nav = new SkipNavigation();
 
 		// Simulate core/navigation block.
 		$block_content = '<nav class="wp-block-navigation"><ul><li>Item</li></ul></nav>';
@@ -257,7 +259,7 @@ class SkipNavigationTest extends \WP_UnitTestCase {
 	 */
 	public function test_default_wordpress_skip_link_is_removed() {
 		// Create a SkipNavigation instance.
-		$skip_nav = new \Bcgov\DesignSystemPlugin\SkipNavigation();
+		$skip_nav = new SkipNavigation();
 		$skip_nav->init();
 
 		// Check if the default action is removed.
@@ -376,7 +378,7 @@ class SkipNavigationTest extends \WP_UnitTestCase {
 	 */
 	public function test_null_block_content_is_handled_gracefully() {
 		// Create a SkipNavigation instance.
-		$skip_nav = new \Bcgov\DesignSystemPlugin\SkipNavigation();
+		$skip_nav = new SkipNavigation();
 
 		// Test with null block content.
 		$block = array(
@@ -399,7 +401,7 @@ class SkipNavigationTest extends \WP_UnitTestCase {
 	 */
 	public function test_block_modifications_preserve_existing_attributes() {
 		// Create a SkipNavigation instance.
-		$skip_nav = new \Bcgov\DesignSystemPlugin\SkipNavigation();
+		$skip_nav = new SkipNavigation();
 
 		// Test navigation block with existing attributes.
 		$block_content = '<nav class="wp-block-navigation" data-test="value" aria-label="Main Navigation"><ul></ul></nav>';
@@ -426,7 +428,7 @@ class SkipNavigationTest extends \WP_UnitTestCase {
 	 */
 	public function test_multiple_navigation_blocks_all_get_main_navigation_id() {
 		// Create a SkipNavigation instance.
-		$skip_nav = new \Bcgov\DesignSystemPlugin\SkipNavigation();
+		$skip_nav = new SkipNavigation();
 
 		// Simulate first navigation block.
 		$block_content1 = '<nav class="wp-block-navigation"><ul><li>Item 1</li></ul></nav>';
