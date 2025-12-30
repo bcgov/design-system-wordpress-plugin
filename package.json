@@ -26,6 +26,7 @@
   "devDependencies": {
     "@bcgov/wordpress-eslint": "github:bcgov/wordpress-eslint#semver:1.x",
     "@bcgov/wordpress-stylelintrc": "github:bcgov/wordpress-stylelintrc#semver:1.x",
+    "@playwright/test": "^1.57.0",
     "@wordpress/env": "^10.36.0",
     "@wordpress/scripts": "^29.0.0"
   },
@@ -40,8 +41,8 @@
     "build": "npm i && wp-scripts build",
     "lint:css": "wp-scripts lint-style 'src/**/*.scss' --allow-empty-input",
     "fix:css": "wp-scripts lint-style 'src/**/*.scss' --fix --allow-empty-input",
-    "lint:js": "wp-scripts lint-js 'src/**/*.js'",
-    "fix:js": "wp-scripts lint-js 'src/**/*.js' --fix",
+    "lint:js": "wp-scripts lint-js '{src,tests}/**/*.{js,ts}'",
+    "fix:js": "wp-scripts lint-js '{src,tests}/**/*.{js,ts}' --fix",
     "test": "wp-scripts test-unit-js --passWithNoTests",
     "test:e2e": "wp-scripts test-playwright",
     "test:e2e:help": "wp-scripts test-playwright --help",
