@@ -296,9 +296,10 @@ class NotificationBannerTest extends \WP_UnitTestCase {
 	 * Test: Banner attributes are properly escaped
 	 *
 	 * What this tests:
+	 * - Invalid color values are rejected by validation (whitelist approach)
 	 * - Background color is escaped using esc_attr()
 	 * - Text color is escaped using esc_attr()
-	 * - XSS protection: malicious attributes cannot be injected
+	 * - XSS protection: malicious attributes cannot be injected via color option
 	 * - HTML attributes are properly formatted
 	 */
 	public function test_banner_attributes_are_properly_escaped() {
@@ -306,7 +307,8 @@ class NotificationBannerTest extends \WP_UnitTestCase {
 		$notification_banner = new NotificationBanner();
 		$notification_banner->init();
 
-		// Enable banner with potentially dangerous color value.
+		// Test 1: Invalid color value is rejected and defaults to safe color.
+		// This is the primary security mechanism - whitelist validation.
 		update_option( 'dswp_notification_banner_enabled', '1' );
 		update_option( 'dswp_notification_banner_color', 'var(--dswp-icons-color-warning)" onmouseover="alert(1)' );
 		update_option( 'dswp_notification_banner_notification', 'Test message' );
@@ -316,16 +318,22 @@ class NotificationBannerTest extends \WP_UnitTestCase {
 		do_action( 'wp_head' );
 		$output = ob_get_clean();
 
-		// Verify attributes are escaped (esc_attr prevents attribute injection).
-		// The output should contain properly escaped attributes.
-		$this->assertStringContainsString( 'background-color:', $output, 'Background color attribute should be present' );
-		// esc_attr() converts quotes to HTML entities (&quot;), which breaks the attribute injection.
-		// The quotes are escaped, so the onmouseover attribute cannot execute.
-		// We check that quotes are escaped (converted to &quot;) rather than checking for the raw attribute.
-		$this->assertStringContainsString( '&quot;', $output, 'Quotes should be escaped to HTML entities' );
-		// Verify that even if onmouseover appears, it's broken by escaped quotes and cannot execute.
-		// The important thing is that esc_attr() was used, which converts quotes to entities.
-		$this->assertStringNotContainsString( 'onmouseover="alert', $output, 'Event handlers with unescaped quotes should not be present' );
+		// The invalid color should be rejected and replaced with default (warning color).
+		// This proves the whitelist validation works.
+		$this->assertStringContainsString( 'var(--dswp-icons-color-warning)', $output, 'Invalid color should be rejected and default to warning color' );
+		// The malicious onmouseover should NOT appear in output (prevented by validation, not escaping).
+		$this->assertStringNotContainsString( 'onmouseover=', $output, 'Malicious event handlers should be blocked by validation' );
+
+		// Test 2: Valid color values are present and properly formatted in output.
+		update_option( 'dswp_notification_banner_color', 'var(--dswp-icons-color-danger)' );
+		ob_start();
+		do_action( 'wp_head' );
+		$output_valid = ob_get_clean();
+
+		$this->assertStringContainsString( 'background-color: var(--dswp-icons-color-danger)', $output_valid, 'Valid color should be present in output' );
+		// Verify the style attribute is properly formatted.
+		$this->assertStringContainsString( 'style="background-color:', $output_valid, 'Style attribute should be properly formatted' );
+		$this->assertStringContainsString( '; padding: 10px; color:', $output_valid, 'Banner styling should include padding and color properties' );
 	}
 
 	/**
