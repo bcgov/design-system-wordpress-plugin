@@ -194,7 +194,7 @@ class NotificationBanner {
      */
     private function get_banner_color() {
         $color = get_option( 'dswp_notification_banner_color', self::DEFAULT_BACKGROUND_COLOR );
-        if ( '' === $color ) {
+        if ( ! array_key_exists( $color, self::COLOR_MAP ) ) {
             $color = self::DEFAULT_BACKGROUND_COLOR;
             update_option( 'dswp_notification_banner_color', $color );
         }
