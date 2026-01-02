@@ -23,6 +23,11 @@ class NotificationBanner {
     ];
 
     /**
+     * Default background color for the banner.
+     */
+    const DEFAULT_BACKGROUND_COLOR = 'var(--dswp-icons-color-warning)';
+
+    /**
      * NotificationBanner constructor.
      */
     public function init() {
@@ -51,7 +56,15 @@ class NotificationBanner {
     public function register_settings() {
         register_setting( 'dswp_options_group', 'dswp_notification_banner_notification', 'wp_kses_post' );
         register_setting( 'dswp_options_group', 'dswp_notification_banner_enabled', 'sanitize_text_field' );
-        register_setting( 'dswp_options_group', 'dswp_notification_banner_color' );
+        register_setting(
+            'dswp_options_group',
+            'dswp_notification_banner_color',
+            [
+                'type'              => 'string',
+                'sanitize_callback' => 'sanitize_text_field',
+                'default'           => self::DEFAULT_BACKGROUND_COLOR,
+            ]
+        );
 
         add_settings_section( 'dswp_notification_menu_settings_section', __( 'Notification Banner Settings', 'dswp' ), null, 'dswp-notification-menu' );
 
@@ -74,13 +87,13 @@ class NotificationBanner {
                 submit_button( __( 'Save Settings', 'dswp' ) );
                 ?>
             </form>
-    
+
             <h2><?php esc_html_e( 'Banner Preview', 'dswp' ); ?></h2>
             <div id="dswp-banner-preview" style="padding: 10px; text-align: center; border: 1px solid #ccc;">
                 <?php
                 // Fetch saved options.
                 $banner_enabled       = get_option( 'dswp_notification_banner_enabled', '0' );
-                $banner_color         = get_option( 'dswp_notification_banner_color', '#FFA500' );
+                $banner_color         = $this->get_banner_color();
                 $notification_message = get_option( 'dswp_notification_banner_notification', '' );
 
                 // Display the banner preview only if enabled.
@@ -130,7 +143,7 @@ class NotificationBanner {
      * Renders the field for selecting the banner color.
      */
     public function render_banner_color_field() {
-        $banner_color = get_option( 'dswp_notification_banner_color', '#FFA500' );
+        $banner_color = $this->get_banner_color();
 
         $color_options = [
             'var(--dswp-icons-color-warning)' => __( 'Warning', 'dswp' ),
@@ -152,7 +165,7 @@ class NotificationBanner {
      */
     public function display_banner() {
         $banner_enabled       = get_option( 'dswp_notification_banner_enabled', '0' );
-        $banner_color         = get_option( 'dswp_notification_banner_color', '#000000' );
+        $banner_color         = $this->get_banner_color();
         $notification_message = get_option( 'dswp_notification_banner_notification', '' );
 
         if ( '1' === $banner_enabled ) {
@@ -171,5 +184,20 @@ class NotificationBanner {
      */
     private function get_text_color( $background_color ) {
         return isset( self::COLOR_MAP[ $background_color ] ) ? self::COLOR_MAP[ $background_color ] : 'black';
+	}
+
+    /**
+     * Gets the background color for the banner
+     * Sets default to warning if none is set.
+     *
+     * @return string The background banner color.
+     */
+    private function get_banner_color() {
+        $color = get_option( 'dswp_notification_banner_color', self::DEFAULT_BACKGROUND_COLOR );
+        if ( '' === $color ) {
+            $color = self::DEFAULT_BACKGROUND_COLOR;
+            update_option( 'dswp_notification_banner_color', $color );
+        }
+        return $color;
     }
 }
