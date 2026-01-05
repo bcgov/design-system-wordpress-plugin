@@ -3,9 +3,6 @@ const path = require('path');
 
 const otherEntries = {
     'index': ['./src/scripts/index.js', './src/styles/index.scss'],
-    'auto-anchor': [
-        './src/AutoAnchor/AutoAnchor.js',
-    ],
     'in-page-nav': [
         './src/InPageNav/view.js',
         './src/InPageNav/style.css'
