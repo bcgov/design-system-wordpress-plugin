@@ -23,11 +23,6 @@ class NotificationBanner {
     ];
 
     /**
-     * Default background color for the banner.
-     */
-    const DEFAULT_BACKGROUND_COLOR = 'var(--dswp-icons-color-warning)';
-
-    /**
      * NotificationBanner constructor.
      */
     public function init() {
@@ -55,19 +50,19 @@ class NotificationBanner {
      */
     public function register_settings() {
         register_setting( 'dswp_options_group', 'dswp_notification_banner_notification', 'wp_kses_post' );
+
+        // Register banner enabled and color settings.
         register_setting( 'dswp_options_group', 'dswp_notification_banner_enabled', 'sanitize_text_field' );
-        register_setting(
-            'dswp_options_group',
-            'dswp_notification_banner_color',
-            [
-                'type'              => 'string',
-                'sanitize_callback' => 'sanitize_text_field',
-                'default'           => self::DEFAULT_BACKGROUND_COLOR,
+
+        // Register banner color setting with custom sanitization.
+        register_setting( 'dswp_options_group', 'dswp_notification_banner_color', [
+            'sanitize_callback' => 'sanitize_text_field',
+            'default'           => 'var(--dswp-icons-color-warning)',
             ]
         );
 
+        // Add settings section and fields.
         add_settings_section( 'dswp_notification_menu_settings_section', __( 'Notification Banner Settings', 'dswp' ), null, 'dswp-notification-menu' );
-
         add_settings_field( 'banner_enabled', __( 'Enable Banner', 'dswp' ), [ $this, 'render_banner_enabled_field' ], 'dswp-notification-menu', 'dswp_notification_menu_settings_section' );
         add_settings_field( 'banner_content', __( 'Banner Content (HTML allowed)', 'dswp' ), [ $this, 'render_banner_content_field' ], 'dswp-notification-menu', 'dswp_notification_menu_settings_section' );
         add_settings_field( 'banner_color', __( 'Banner Color', 'dswp' ), [ $this, 'render_banner_color_field' ], 'dswp-notification-menu', 'dswp_notification_menu_settings_section' );
@@ -93,8 +88,12 @@ class NotificationBanner {
                 <?php
                 // Fetch saved options.
                 $banner_enabled       = get_option( 'dswp_notification_banner_enabled', '0' );
-                $banner_color         = $this->get_banner_color();
+                $banner_color         = get_option( 'dswp_notification_banner_color');
                 $notification_message = get_option( 'dswp_notification_banner_notification', '' );
+
+                // for debugging, display current settings
+                echo '<pre>' . print_r( [ 'enabled' => $banner_enabled, 'color' => $banner_color, 'message' => $notification_message ], true ) . '</pre>';
+
 
                 // Display the banner preview only if enabled.
                 if ( '1' === $banner_enabled ) {
@@ -143,7 +142,7 @@ class NotificationBanner {
      * Renders the field for selecting the banner color.
      */
     public function render_banner_color_field() {
-        $banner_color = $this->get_banner_color();
+        $banner_color = get_option( 'dswp_notification_banner_color' ); // default handled in sanitize callback
 
         $color_options = [
             'var(--dswp-icons-color-warning)' => __( 'Warning', 'dswp' ),
@@ -165,7 +164,7 @@ class NotificationBanner {
      */
     public function display_banner() {
         $banner_enabled       = get_option( 'dswp_notification_banner_enabled', '0' );
-        $banner_color         = $this->get_banner_color();
+        $banner_color         = get_option( 'dswp_notification_banner_color' );
         $notification_message = get_option( 'dswp_notification_banner_notification', '' );
 
         if ( '1' === $banner_enabled ) {
@@ -187,17 +186,17 @@ class NotificationBanner {
 	}
 
     /**
-     * Gets the background color for the banner
-     * Sets default to warning if none is set.
+     * Sanitizes the banner color setting.
      *
-     * @return string The background banner color.
+     * @param string $color The color value to sanitize.
+     * @return string The sanitized color or default if invalid.
      */
-    private function get_banner_color() {
-        $color = get_option( 'dswp_notification_banner_color', self::DEFAULT_BACKGROUND_COLOR );
-        if ( ! array_key_exists( $color, self::COLOR_MAP ) ) {
-            $color = self::DEFAULT_BACKGROUND_COLOR;
-            update_option( 'dswp_notification_banner_color', $color );
+    public function sanitize_banner_color( $color ) {
+        if ( array_key_exists( $color, self::COLOR_MAP ) ) {
+            return $color;
+        } else {
+            // Default background color if invalid or unset
+            return 'var(--dswp-icons-color-warning)';
         }
-        return $color;
     }
 }
