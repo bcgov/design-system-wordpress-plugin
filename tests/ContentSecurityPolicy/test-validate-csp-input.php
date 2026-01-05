@@ -51,7 +51,7 @@ class ContentSecurityPolicyTest extends \WP_UnitTestCase {
         return [
             [ '', '' ],  // Empty input.
             [ 'self example.com', 'self example.com' ],
-            [ 'self *.gov.bc.ca', 'self *.gov.bc.ca' ],
+            [ 'SeLF *.gov.bc.ca', 'self *.gov.bc.ca' ],
             [ 'https://example.com:8080/path', 'https://example.com:8080/path' ],
             [ 'cdn1.example.com v2.api.example.com', 'cdn1.example.com v2.api.example.com' ],
             [ '   self example.com   ', 'self example.com' ],  // Whitespace trimmed.
@@ -81,6 +81,7 @@ class ContentSecurityPolicyTest extends \WP_UnitTestCase {
             [ 'unsafe-eval self example.com', 'self example.com', "'unsafe-eval' should be removed" ],
             [ 'none', '', "'none' should result in empty return" ],
             [ 'example.com data self', 'example.com self', "'data' should be removed" ],
+            [ 'example.com data: self', 'example.com data: self', "'data:' scheme should be preserved" ],
         ];
     }
 
@@ -133,7 +134,7 @@ class ContentSecurityPolicyTest extends \WP_UnitTestCase {
             [ 'example@com#test$value%test', 'examplecomtestvaluetest', 'Invalid chars removed' ],
             [ 'example.com sub-domain/path:8080', 'example.com sub-domain/path:8080', 'Valid chars preserved' ],
             [ '*.example.com', '*.example.com', 'Asterisk preserved' ],
-            [ "'self' example.com", 'self example.com', 'Quotes removed' ],
+            [ '"example.com" test.com', 'example.com test.com', 'Quotes removed' ],
         ];
     }
 

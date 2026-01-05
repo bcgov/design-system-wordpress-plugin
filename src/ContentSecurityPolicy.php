@@ -91,11 +91,17 @@ class ContentSecurityPolicy {
         $found_keywords = array_filter(
             $disallowed_keywords,
             function ( $keyword ) use ( &$input ) {
-                if ( strpos( $input, $keyword ) !== false ) {
+                // For 'data', preserve 'data:' but remove standalone 'data'.
+                if ( 'data' === $keyword ) {
+                    if ( strpos( $input, 'data:' ) === false && strpos( $input, 'data' ) !== false ) {
+                        $input = str_replace( 'data', '', $input );
+                        return true;
+                    }
+                } elseif ( strpos( $input, $keyword ) !== false ) {
                     $input = str_replace( $keyword, '', $input );
-                    return true; // Keep this keyword in the found list.
+                    return true;
                 }
-                return false; // Ignore this keyword.
+                return false;
             }
         );
 
@@ -166,7 +172,7 @@ class ContentSecurityPolicy {
                     <p><?php echo esc_html( $setting['description'] . ' ' . $setting['default'] ); ?></p>
                     <input class="admin-form-inputs"
                         type="text"
-                        name="<?php echo esc_attr( $option_name ); ?>" 
+                        name="<?php echo esc_attr( $option_name ); ?>"
                         value="<?php echo esc_attr( get_option( $option_name, $setting['default'] ) ); ?>" />
                 <?php endforeach; ?>
                 <?php submit_button( __( 'Save Settings', 'dswp' ) ); ?>
