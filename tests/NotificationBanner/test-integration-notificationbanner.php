@@ -23,7 +23,7 @@ class NotificationBannerTest extends \WP_UnitTestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
-		// Remove the wp_head action hook to prevent duplicate output
+		// Remove the wp_head action hook to prevent duplicate output.
 		remove_all_actions( 'wp_head' );
 	}
 
@@ -301,11 +301,11 @@ class NotificationBannerTest extends \WP_UnitTestCase {
 	 * - XSS protection: malicious attributes cannot be injected via color option
 	 */
 	public function test_banner_attributes_are_properly_escaped() {
-		// Initialize NotificationBanner
+		// Initialize NotificationBanner.
 		$notification_banner = new NotificationBanner();
 		$notification_banner->init();
 
-		// Test 1: Invalid color value should be rejected or escaped
+		// Test 1: Invalid color value should be rejected or escaped.
 		update_option( 'dswp_notification_banner_enabled', '1' );
 		update_option( 'dswp_notification_banner_color', 'var(--dswp-icons-color-warning)" onmouseover="alert(1)' );
 		update_option( 'dswp_notification_banner_notification', 'Test message' );
@@ -316,21 +316,21 @@ class NotificationBannerTest extends \WP_UnitTestCase {
 
 		// Verify that either:
 		// A) The invalid color is rejected and default is used, OR
-		// B) The malicious code is escaped so it cannot execute
-		$has_valid_warning = strpos( $output, 'var(--dswp-icons-color-warning)' ) !== false;
-		$has_escaped_payload = strpos( $output, '&quot; onmouseover=&quot;' ) !== false;
+		// B) The malicious code is escaped so it cannot execute.
+		$has_valid_warning     = strpos( $output, 'var(--dswp-icons-color-warning)' ) !== false;
+		$has_escaped_payload   = strpos( $output, '&quot; onmouseover=&quot;' ) !== false;
 		$has_unescaped_payload = strpos( $output, '" onmouseover="' ) !== false;
 
-		// The unescaped malicious payload should NOT be present
+		// The unescaped malicious payload should NOT be present.
 		$this->assertFalse( $has_unescaped_payload, 'Unescaped malicious payload should not be present in output' );
 
-		// Either the color was rejected (showing valid warning) or it was escaped
+		// Either the color was rejected (showing valid warning) or it was escaped.
 		$this->assertTrue(
 			$has_valid_warning || $has_escaped_payload,
 			'Invalid color should either be rejected or escaped'
 		);
 
-		// Test 2: Valid color values work correctly
+		// Test 2: Valid color values work correctly.
 		update_option( 'dswp_notification_banner_color', 'var(--dswp-icons-color-danger)' );
 		ob_start();
 		do_action( 'wp_head' );

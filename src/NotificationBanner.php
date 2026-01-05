@@ -53,7 +53,7 @@ class NotificationBanner {
 
         // Register banner enabled and color settings.
         register_setting( 'dswp_options_group', 'dswp_notification_banner_enabled', 'sanitize_text_field' );
-        register_setting( 'dswp_options_group', 'dswp_notification_banner_color', [$this, 'sanitize_banner_color'] );
+        register_setting( 'dswp_options_group', 'dswp_notification_banner_color', [ $this, 'sanitize_banner_color' ] );
 
         // Add settings section and fields.
         add_settings_section( 'dswp_notification_menu_settings_section', __( 'Notification Banner Settings', 'dswp' ), null, 'dswp-notification-menu' );
@@ -82,7 +82,7 @@ class NotificationBanner {
                 <?php
                 // Fetch saved options.
                 $banner_enabled       = get_option( 'dswp_notification_banner_enabled', '0' );
-                $banner_color         = get_option( 'dswp_notification_banner_color');
+                $banner_color         = get_option( 'dswp_notification_banner_color' );
                 $notification_message = get_option( 'dswp_notification_banner_notification', '' );
 
                 // Display the banner preview only if enabled.
@@ -132,7 +132,7 @@ class NotificationBanner {
      * Renders the field for selecting the banner color.
      */
     public function render_banner_color_field() {
-        $banner_color = get_option( 'dswp_notification_banner_color' ); // default handled in sanitize callback
+        $banner_color = get_option( 'dswp_notification_banner_color' );
 
         $color_options = [
             'var(--dswp-icons-color-warning)' => __( 'Warning', 'dswp' ),
@@ -185,7 +185,7 @@ class NotificationBanner {
         if ( array_key_exists( $color, self::COLOR_MAP ) ) {
             return $color;
         } else {
-            // Default background color if invalid or unset
+            // Default background color if invalid or unset.
             return 'var(--dswp-icons-color-warning)';
         }
     }
