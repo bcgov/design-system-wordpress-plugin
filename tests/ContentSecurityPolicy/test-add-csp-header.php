@@ -120,8 +120,7 @@ class ContentSecurityPolicyHeaderTest extends \WP_UnitTestCase {
     public function test_csp_formatting() {
         $headers = $this->csp->add_csp_header( [] );
         $csp     = $headers['Content-Security-Policy'];
-
-        $this->assertMatchesRegularExpression( '/default-src[^;]+;/', $csp );
+        $this->assertMatchesRegularExpression( '/default-src [^;]+;/', $csp );
         $this->assertStringEndsWith( ';', $csp );
     }
 
