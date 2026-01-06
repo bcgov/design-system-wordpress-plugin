@@ -5,19 +5,22 @@
 	"author": "govwordpress@gov.bc.ca",
 	"license": "GPL-2.0-or-later",
 	"main": "build/index.js",
+	"engines": {
+		"node": "^24.12.0"
+	},
 	"scripts": {
-		"build:production": "npm ci && npm run build:navigation && npm run build:breadcrumb && npm run fix:md && npm run test",
-		"build": "wp-scripts build",
-		"build:navigation": "wp-scripts lint-js --fix && wp-scripts build --webpack-src-dir=src/Navigation --output-path=build/Navigation",
-		"build:breadcrumb": "wp-scripts lint-js --fix && wp-scripts build --webpack-src-dir=src/Breadcrumb --output-path=build/Breadcrumb ",
+		"build:production": "npm i && npm run build:navigation && npm run build:breadcrumb && npm run fix:md && npm run test",
+		"build": "npm i && wp-scripts build",
+		"build:navigation": "npm i && wp-scripts lint-js --fix && wp-scripts build --webpack-src-dir=src/Navigation --output-path=build/Navigation",
+		"build:breadcrumb": "npm i && wp-scripts lint-js --fix && wp-scripts build --webpack-src-dir=src/Breadcrumb --output-path=build/Breadcrumb ",
 		"format": "wp-scripts format",
 		"lint:css": "wp-scripts lint-style",
 		"lint:js": "wp-scripts lint-js",
 		"packages-update": "wp-scripts packages-update",
 		"plugin-zip": "wp-scripts plugin-zip",
-		"start:navigation": "wp-scripts start --webpack-src-dir=src/Navigation --output-path=build/Navigation",
-		"start:breadcrumb": "wp-scripts start --webpack-src-dir=src/Breadcrumb --output-path=build/Breadcrumb",
-		"start": "wp-scripts start",
+		"start:navigation": "npm i && wp-scripts start --webpack-src-dir=src/Navigation --output-path=build/Navigation",
+		"start:breadcrumb": "npm i && wp-scripts start --webpack-src-dir=src/Breadcrumb --output-path=build/Breadcrumb",
+		"start": "npm i && wp-scripts start",
 		"fix:css": "wp-scripts lint-style 'src/**/*.scss' --fix --allow-empty-input",
 		"fix:js": "wp-scripts lint-js --fix",
 		"fix:md": "wp-scripts lint-md-docs --fix",
@@ -25,21 +28,20 @@
 		"test:e2e": "wp-scripts test-e2e --passWithNoTests",
 		"test:unit": "wp-scripts test-unit-js --passWithNoTests",
 		"test": "npm run test:unit"
-	
 	},
 	"devDependencies": {
-		"@wordpress/scripts": "^30.3.0",
-		"@bcgov/wordpress-eslint": "git+https://github.com/bcgov/wordpress-eslint.git#semver:1.x",
-		"@bcgov/wordpress-stylelintrc": "git+https://github.com/bcgov/wordpress-stylelintrc.git#semver:1.x",	
-		"prettier": "^2.2.0"
+		"@bcgov/wordpress-eslint": "github:bcgov/wordpress-eslint#semver:1.x",
+		"@bcgov/wordpress-stylelintrc": "github:bcgov/wordpress-stylelintrc#semver:1.x",
+        "@wordpress/scripts": "^29.0.0",
+		"prettier": "^2.8.8"
 	},
 	"dependencies": {
-		"@wordpress/block-editor": "^14.5.0",
-		"@wordpress/blocks": "^13.10.0",
-		"@wordpress/components": "^28.10.0",
-		"@wordpress/core-data": "",
-		"@wordpress/data": "",
-		"@wordpress/element": "",
-		"@wordpress/i18n": ""
+		"@wordpress/block-editor": "^15.9.0",
+		"@wordpress/blocks": "^15.9.0",
+		"@wordpress/components": "^30.9.0",
+		"@wordpress/core-data": "^7.36.0",
+		"@wordpress/data": "^10.36.0",
+		"@wordpress/element": "^6.36.0",
+		"@wordpress/i18n": "^6.9.0"
 	}
 }

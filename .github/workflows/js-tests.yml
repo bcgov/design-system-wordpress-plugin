@@ -1,0 +1,12 @@
+name: JS Testing
+
+on: [pull_request, workflow_dispatch]
+
+permissions:
+  contents: read
+
+jobs:
+  js-tests:
+    uses: bcgov/des-git-workflows/.github/workflows/js-tests.yml@1.2.0
+    with:
+      node_version: '24'
