@@ -111,12 +111,12 @@ class NotificationBanner {
     public function render_banner_enabled_field() {
         $banner_enabled = get_option( 'dswp_notification_banner_enabled', '0' );
 		?>
-        <label>
-            <input type="radio" name="dswp_notification_banner_enabled" value="1" <?php checked( $banner_enabled, '1' ); ?> />
+        <label for="dswp_banner_enable">
+            <input type="radio" id="dswp_banner_enable" name="dswp_notification_banner_enabled" value="1" <?php checked( $banner_enabled, '1' ); ?> />
             <?php esc_html_e( 'Enable', 'dswp' ); ?>
         </label>
-        <label>
-            <input type="radio" name="dswp_notification_banner_enabled" value="0" <?php checked( $banner_enabled, '0' ); ?> />
+        <label for="dswp_banner_disable">
+            <input type="radio" id="dswp_banner_disable" name="dswp_notification_banner_enabled" value="0" <?php checked( $banner_enabled, '0' ); ?> />
             <?php esc_html_e( 'Disable', 'dswp' ); ?>
         </label>
 		<?php
@@ -147,8 +147,9 @@ class NotificationBanner {
         ];
 
         foreach ( $color_options as $color => $label ) {
-            echo '<label>
-                    <input type="radio" name="dswp_notification_banner_color" value="' . esc_attr( $color ) . '" ' . checked( $banner_color, $color, false ) . ' />
+            $id = 'dswp_banner_color_' . strtolower( $label );
+            echo '<label for="' . esc_attr( $id ) . '">
+                    <input type="radio" id="' . esc_attr( $id ) . '" name="dswp_notification_banner_color" value="' . esc_attr( $color ) . '" ' . checked( $banner_color, $color, false ) . ' />
                     <span style="display:inline-block; width: 20px; height: 20px; background-color: ' . esc_attr( $color ) . ';"></span> ' . esc_html( $label ) . '
                   </label><br />';
         }
