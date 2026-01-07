@@ -401,7 +401,7 @@ class NotificationBannerTest extends \WP_UnitTestCase {
 		$output_disabled = ob_get_clean();
 
 		// Verify preview shows disabled message.
-		$this->assertStringContainsString( 'The banner is disabled', $output_disabled, 'Preview should show disabled message when disabled' );
+		$this->assertStringContainsString( 'This banner is disabled and will NOT display on the frontend', $output_disabled, 'Preview should show disabled message when disabled' );
 	}
 
 	/**
@@ -535,9 +535,8 @@ class NotificationBannerTest extends \WP_UnitTestCase {
 		do_action( 'wp_head' );
 		$output = ob_get_clean();
 
-		// Verify banner div is rendered (even with empty content).
-		$this->assertStringContainsString( '<div style', $output, 'Banner div should be rendered even with empty message' );
-		$this->assertStringContainsString( 'background-color', $output, 'Banner should have background color even with empty message' );
+		// Verify banner div is NOT rendered when message is empty (even if enabled).
+		$this->assertStringNotContainsString( 'dswp-notification-banner', $output, 'Banner div should not be rendered with empty message' );
 	}
 
 	/**
