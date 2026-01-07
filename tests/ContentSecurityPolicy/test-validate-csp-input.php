@@ -50,11 +50,11 @@ class ContentSecurityPolicyTest extends \WP_UnitTestCase {
     public static function validCspProvider() {
         return [
             [ '', '' ],  // Empty input.
-            [ 'self example.com', 'self example.com' ],
-            [ 'SeLF *.gov.bc.ca', 'self *.gov.bc.ca' ],
+            [ "'self' example.com", "'self' example.com" ],
+            [ "'SeLF' *.gov.bc.ca", "'self' *.gov.bc.ca" ],
             [ 'https://example.com:8080/path', 'https://example.com:8080/path' ],
             [ 'cdn1.example.com v2.api.example.com', 'cdn1.example.com v2.api.example.com' ],
-            [ '   self example.com   ', 'self example.com' ],  // Whitespace trimmed.
+            [ "   'self' example.com   ", "'self' example.com" ],  // Whitespace trimmed.
         ];
     }
 
@@ -78,9 +78,9 @@ class ContentSecurityPolicyTest extends \WP_UnitTestCase {
     public static function disallowedKeywordProvider() {
         return [
             [ 'unsafe-inline example.com', 'example.com', "'unsafe-inline' should be removed" ],
-            [ 'unsafe-eval self example.com', 'self example.com', "'unsafe-eval' should be removed" ],
+            [ "unsafe-eval 'self' example.com", "'self' example.com", "'unsafe-eval' should be removed" ],
             [ 'none', '', "'none' should result in empty return" ],
-            [ 'example.com data self', 'example.com self', "'data' should be removed" ],
+            [ "example.com data 'self'", "example.com 'self'", "'data' should be removed" ],
             [ 'example.com data: self', 'example.com data: self', "'data:' scheme should be preserved" ],
         ];
     }
@@ -107,7 +107,7 @@ class ContentSecurityPolicyTest extends \WP_UnitTestCase {
     public static function caseInsensitiveProvider() {
         return [
             [ 'UNSAFE-INLINE example.com', 'example.com' ],
-            [ 'Unsafe-Eval example.com', 'example.com' ],
+            [ "Unsafe-Eval 'self' example.com", "'self' example.com" ],
         ];
     }
 
@@ -133,8 +133,8 @@ class ContentSecurityPolicyTest extends \WP_UnitTestCase {
         return [
             [ 'example@com#test$value%test', 'examplecomtestvaluetest', 'Invalid chars removed' ],
             [ 'example.com sub-domain/path:8080', 'example.com sub-domain/path:8080', 'Valid chars preserved' ],
-            [ '*.example.com', '*.example.com', 'Asterisk preserved' ],
-            [ '"example.com" test.com', 'example.com test.com', 'Quotes removed' ],
+            [ "'*.example.com'", "'*.example.com'", 'Single quotes and asterisk preserved' ],
+            [ '"example.com" test.com', 'example.com test.com', 'Double quotes removed' ],
         ];
     }
 
@@ -178,8 +178,8 @@ class ContentSecurityPolicyTest extends \WP_UnitTestCase {
     public static function realWorldCspValuesProvider() {
         return [
             [
-                'self data gov.bc.ca *.gov.bc.ca *.twimg.com *.staticflickr.com',
-                'self gov.bc.ca *.gov.bc.ca *.twimg.com *.staticflickr.com',
+                "'self' data gov.bc.ca *.gov.bc.ca *.twimg.com *.staticflickr.com",
+                "'self' gov.bc.ca *.gov.bc.ca *.twimg.com *.staticflickr.com",
                 'Real-world img-src with disallowed data keyword removed',
             ],
         ];

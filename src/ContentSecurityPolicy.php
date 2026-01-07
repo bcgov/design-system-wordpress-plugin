@@ -91,17 +91,12 @@ class ContentSecurityPolicy {
         $found_keywords = array_filter(
             $disallowed_keywords,
             function ( $keyword ) use ( &$input ) {
-                // For 'data', preserve 'data:' but remove standalone 'data'.
-                if ( 'data' === $keyword ) {
-                    if ( strpos( $input, 'data:' ) === false && strpos( $input, 'data' ) !== false ) {
-                        $input = str_replace( 'data', '', $input );
-                        return true;
-                    }
-                } elseif ( strpos( $input, $keyword ) !== false ) {
-                    $input = str_replace( $keyword, '', $input );
-                    return true;
+                // Match keyword only as a complete word (followed by whitespace or end of string).
+                if ( preg_match( '/\b' . preg_quote( $keyword ) . '(?=\s|$)/i', $input ) ) {
+                    $input = preg_replace( '/\b' . preg_quote( $keyword ) . '(?=\s|$)/i', '', $input );
+                    return true; // Keep this keyword in the found list.
                 }
-                return false;
+                return false; // Ignore this keyword.
             }
         );
 
@@ -124,8 +119,8 @@ class ContentSecurityPolicy {
         }
 
         // Sanitize the input by removing invalid characters.
-        // We are allowing letters, digits, spaces, hyphens, colons, dots, slashes, and asterisk.
-        $input = preg_replace( '/[^a-z0-9 \-:\.\/\*]/i', '', $input );
+        // We are allowing letters, digits, spaces, hyphens, colons, dots, slashes, asterisk, and single quotes.
+        $input = preg_replace( '/[^a-z0-9 \-:\.\/\*\']/i', '', $input );
 
         // Return the sanitized input (if valid).
         return sanitize_text_field( $input );
