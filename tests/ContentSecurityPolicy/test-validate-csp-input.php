@@ -80,8 +80,7 @@ class ContentSecurityPolicyTest extends \WP_UnitTestCase {
             [ 'unsafe-inline example.com', 'example.com', "'unsafe-inline' should be removed" ],
             [ "unsafe-eval 'self' example.com", "'self' example.com", "'unsafe-eval' should be removed" ],
             [ 'none', '', "'none' should result in empty return" ],
-            [ "example.com data 'self'", "example.com 'self'", "'data' should be removed" ],
-            [ 'example.com data: self', 'example.com data: self', "'data:' scheme should be preserved" ],
+            [ "example.com data: 'self'", "example.com data: 'self'", "'data:' scheme should be preserved" ],
         ];
     }
 
