@@ -112,11 +112,11 @@ test.describe('NotificationBanner', () => {
         test('Banner should display with message and default color', async ({ page }) => {
             await enableBanner(page);
             await selectColor(page, 'Warning');
-            await fillContent(page, 'Test Notification Message');
+            await fillContent(page, MESSAGES.testMessage);
             await saveSettingsAndWait(page);
 
             const frontend = await visitFrontend(page);
-            await expect(frontend.locator('text=Test Notification Message')).toBeVisible();
+            await expect(frontend.locator(`text=${MESSAGES.testMessage}`)).toBeVisible();
             const banner = await assertBannerVisible(frontend);
             await expect(banner).toHaveAttribute(
                 'style',
@@ -130,7 +130,7 @@ test.describe('NotificationBanner', () => {
         for (const color of BANNER_COLORS) {
             await enableBanner(page);
             await selectColor(page, color.name);
-            const message = `Test Notification Message - ${color.name}`;
+            const message = `${MESSAGES.testMessage} - ${color.name}`;
             await fillContent(page, message);
             await saveSettingsAndWait(page);
 
@@ -149,14 +149,14 @@ test.describe('NotificationBanner', () => {
         test('Preview should be displayed even if banner is disabled', async ({ page }) => {
             await disableBanner(page);
             await selectColor(page, 'Danger');
-            await fillContent(page, 'This is a disabled banner preview');
+            await fillContent(page, MESSAGES.disabledPreview);
             await saveSettingsAndWait(page);
 
             const preview = page.locator('#dswp-banner-preview');
             await expect(preview).toBeVisible();
             const previewBanner = preview.locator('div[style*="background-color"]');
             await expect(previewBanner).toBeVisible();
-            await expect(previewBanner).toContainText('This is a disabled banner preview');
+            await expect(previewBanner).toContainText(MESSAGES.disabledPreview);
             await expect(page.locator('text=/This banner is disabled and will NOT display/')).toBeVisible();
         });
     });
@@ -164,19 +164,17 @@ test.describe('NotificationBanner', () => {
     test.describe('Content', () => {
         test('should display banner with custom message', async ({ page }) => {
             await enableBanner(page);
-            const customMessage = 'This is a custom notification';
-            await fillContent(page, customMessage);
+            await fillContent(page, MESSAGES.customMessage);
             await saveSettingsAndWait(page);
 
             const frontend = await visitFrontend(page);
-            await expect(frontend.locator(`text=${customMessage}`)).toBeVisible();
+            await expect(frontend.locator(`text=${MESSAGES.customMessage}`)).toBeVisible();
             await frontend.close();
         });
 
         test('should render HTML content correctly in banner', async ({ page }) => {
             await enableBanner(page);
-            const htmlContent = '<span><b>Test</b></span> message with <em>emphasis</em>';
-            await fillContent(page, htmlContent);
+            await fillContent(page, MESSAGES.htmlContent);
             await saveSettingsAndWait(page);
 
             const frontend = await visitFrontend(page);
