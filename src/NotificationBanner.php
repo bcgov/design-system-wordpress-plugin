@@ -85,15 +85,20 @@ class NotificationBanner {
                 $banner_color         = get_option( 'dswp_notification_banner_color' );
                 $notification_message = get_option( 'dswp_notification_banner_notification', '' );
 
-                // Display the banner preview only if enabled.
+                // Display the banner preview. Show this even if it is not enabled.
+                $text_color = $this->get_text_color( $banner_color ); // Get appropriate text color.
+                echo '<div style="background-color: ' . esc_attr( $banner_color ) . '; color: ' . esc_attr( $text_color ) . '; padding: 10px; text-align: center;">';
+                echo wp_kses_post( $notification_message );
+                echo '</div>';
+
+                // Display status indicator.
+                echo '<p style="margin-top: 10px; font-size: 0.9em;">';
                 if ( '1' === $banner_enabled ) {
-                    $text_color = $this->get_text_color( $banner_color ); // Get appropriate text color.
-                    echo '<div style="background-color: ' . esc_attr( $banner_color ) . '; color: ' . esc_attr( $text_color ) . '; padding: 10px; text-align: center;">';
-                    echo wp_kses_post( $notification_message );
-                    echo '</div>';
+                    echo '<strong style="color: green;">✓ This banner is enabled and will display on the frontend.</strong>';
                 } else {
-                    echo '<p>' . esc_html__( 'The banner is disabled. Enable it to see the preview.', 'dswp' ) . '</p>';
+                    echo '<strong style="color: darkred;">⚠ This banner is disabled and will NOT display on the frontend.</strong>';
                 }
+                echo '</p>';
                 ?>
             </div>
         </div>
@@ -157,9 +162,10 @@ class NotificationBanner {
         $banner_color         = get_option( 'dswp_notification_banner_color' );
         $notification_message = get_option( 'dswp_notification_banner_notification', '' );
 
-        if ( '1' === $banner_enabled ) {
+        // Display the banner only if enabled AND there is a message.
+        if ( '1' === $banner_enabled && ! empty( $notification_message ) ) {
             $text_color = $this->get_text_color( $banner_color );
-            echo '<div style="background-color: ' . esc_attr( $banner_color ) . '; padding: 10px; color: ' . esc_attr( $text_color ) . '; text-align: center;">';
+            echo '<div id="dswp-notification-banner" style="background-color: ' . esc_attr( $banner_color ) . '; padding: 10px; color: ' . esc_attr( $text_color ) . '; text-align: center;">';
             echo wp_kses_post( $notification_message );
             echo '</div>';
         }
