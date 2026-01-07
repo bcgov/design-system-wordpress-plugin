@@ -92,8 +92,8 @@ class ContentSecurityPolicy {
             $disallowed_keywords,
             function ( $keyword ) use ( &$input ) {
                 // Match keyword only as a complete word (followed by whitespace or end of string).
-                if ( preg_match( '/\b' . preg_quote( $keyword ) . '(?=\s|$)/i', $input ) ) {
-                    $input = preg_replace( '/\b' . preg_quote( $keyword ) . '(?=\s|$)/i', '', $input );
+                if ( preg_match( '/\b' . preg_quote( $keyword, '/' ) . '(?=\s|$)/i', $input ) ) {
+                    $input = preg_replace( '/\b' . preg_quote( $keyword, '/' ) . '(?=\s|$)/i', '', $input );
                     return true; // Keep this keyword in the found list.
                 }
                 return false; // Ignore this keyword.
