@@ -47,7 +47,7 @@ class ContentSecurityPolicyTest extends \WP_UnitTestCase {
      *
      * @return array
      */
-    public static function validCspProvider() {
+    public static function valid_csp_provider() {
         return [
             [ '', '' ],  // Empty input.
             [ "'self' example.com", "'self' example.com" ],
@@ -61,7 +61,7 @@ class ContentSecurityPolicyTest extends \WP_UnitTestCase {
     /**
      * Test: Valid CSP values are preserved.
      *
-     * @dataProvider validCspProvider
+     * @dataProvider valid_csp_provider
      *
      * @param string $input    The input CSP value.
      * @param string $expected The expected output.
@@ -75,7 +75,7 @@ class ContentSecurityPolicyTest extends \WP_UnitTestCase {
      *
      * @return array
      */
-    public static function disallowedKeywordProvider() {
+    public static function disallowed_keyword_provider() {
         return [
             [ 'unsafe-inline example.com', 'example.com', "'unsafe-inline' should be removed" ],
             [ "unsafe-eval 'self' example.com", "'self' example.com", "'unsafe-eval' should be removed" ],
@@ -88,7 +88,7 @@ class ContentSecurityPolicyTest extends \WP_UnitTestCase {
     /**
      * Test: Disallowed keywords are removed.
      *
-     * @dataProvider disallowedKeywordProvider
+     * @dataProvider disallowed_keyword_provider
      *
      * @param string $input    The input CSP value.
      * @param string $expected The expected output.
@@ -104,7 +104,7 @@ class ContentSecurityPolicyTest extends \WP_UnitTestCase {
      *
      * @return array
      */
-    public static function caseInsensitiveProvider() {
+    public static function case_insensitive_provider() {
         return [
             [ 'UNSAFE-INLINE example.com', 'example.com' ],
             [ "Unsafe-Eval 'self' example.com", "'self' example.com" ],
@@ -114,7 +114,7 @@ class ContentSecurityPolicyTest extends \WP_UnitTestCase {
     /**
      * Test: Input is case-insensitive for keyword matching.
      *
-     * @dataProvider caseInsensitiveProvider
+     * @dataProvider case_insensitive_provider
      *
      * @param string $input    The input CSP value.
      * @param string $expected The expected output.
@@ -129,7 +129,7 @@ class ContentSecurityPolicyTest extends \WP_UnitTestCase {
      *
      * @return array
      */
-    public static function characterValidationProvider() {
+    public static function character_validation_provider() {
         return [
             [ 'example@com#test$value%test', 'examplecomtestvaluetest', 'Invalid chars removed' ],
             [ 'example.com sub-domain/path:8080', 'example.com sub-domain/path:8080', 'Valid chars preserved' ],
@@ -141,7 +141,7 @@ class ContentSecurityPolicyTest extends \WP_UnitTestCase {
     /**
      * Test: Invalid characters are removed and valid ones preserved.
      *
-     * @dataProvider characterValidationProvider
+     * @dataProvider character_validation_provider
      *
      * @param string $input    The input CSP value.
      * @param string $expected The expected output.
@@ -175,7 +175,7 @@ class ContentSecurityPolicyTest extends \WP_UnitTestCase {
      *
      * @return array
      */
-    public static function realWorldCspValuesProvider() {
+    public static function real_world_csp_values_provider() {
         return [
             [
                 "'self' data gov.bc.ca *.gov.bc.ca *.twimg.com *.staticflickr.com",
@@ -188,7 +188,7 @@ class ContentSecurityPolicyTest extends \WP_UnitTestCase {
     /**
      * Test: Real-world CSP values are handled correctly.
      *
-     * @dataProvider realWorldCspValuesProvider
+     * @dataProvider real_world_csp_values_provider
      *
      * @param string $input    The input CSP value.
      * @param string $expected The expected output.
