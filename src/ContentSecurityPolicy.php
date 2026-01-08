@@ -81,48 +81,40 @@ class ContentSecurityPolicy {
      * @return string The sanitized and validated input value.
      */
     public function validate_csp_input( $input ) {
-        // Convert the input to lowercase for consistent validation.
-        $input = strtolower( $input );
+        // Normalize input: decode entities and convert to lowercase.
+        $input = strtolower( html_entity_decode( $input, ENT_QUOTES ) );
 
-        // Define CSP keywords that should not be allowed.
-        $disallowed_keywords = [ 'unsafe-inline', 'unsafe-eval', 'none', 'data' ];
+        // Remove disallowed keywords and track which were found.
+        $disallowed_keywords = [ "'unsafe-inline'", "'unsafe-eval'" ];
+        $found_keywords      = [];
 
-        // Find and remove disallowed keywords from the input.
-        $found_keywords = array_filter(
-            $disallowed_keywords,
-            function ( $keyword ) use ( &$input ) {
-                // Match keyword only as a complete word (followed by whitespace or end of string).
-                if ( preg_match( '/\b' . preg_quote( $keyword, '/' ) . '(?=\s|$)/i', $input ) ) {
-                    $input = preg_replace( '/\b' . preg_quote( $keyword, '/' ) . '(?=\s|$)/i', '', $input );
-                    return true; // Keep this keyword in the found list.
-                }
-                return false; // Ignore this keyword.
+        foreach ( $disallowed_keywords as $keyword ) {
+            if ( strpos( $input, $keyword ) !== false ) {
+                $found_keywords[] = $keyword;
+                $input            = str_replace( $keyword, '', $input );
             }
-        );
+        }
 
-        // Trim the input to check if it's empty after removing disallowed keywords.
         $input = trim( $input );
 
-        // If the input is empty after removing disallowed keywords, show an error.
-        if ( '' === $input && $found_keywords ) {
+        // If only disallowed keywords were provided, show error and reject.
+        if ( empty( $input ) && $found_keywords ) {
             add_settings_error(
                 'dswp_options_group',
                 'invalid_csp',
                 sprintf(
-                    /* translators: %s: List of disallowed keywords */
+                    /* translators: %s: List of disallowed CSP keywords */
                     __( 'Disallowed keyword(s) found: %s', 'dswp' ),
-                    implode( ', ', $found_keywords ) // Join found keywords into a string.
+                    implode( ', ', $found_keywords )
                 ),
                 'error'
             );
-            return '';  // Return an empty string if no valid input remains.
+            return '';
         }
 
-        // Sanitize the input by removing invalid characters.
-        // We are allowing letters, digits, spaces, hyphens, colons, dots, slashes, asterisk, and single quotes.
+        // Remove invalid characters: keep alphanumeric, spaces, hyphens, colons, periods, slashes, asterisks, and single quotes.
         $input = preg_replace( '/[^a-z0-9 \-:\.\/\*\']/i', '', $input );
 
-        // Return the sanitized input (if valid).
         return sanitize_text_field( $input );
     }
 
@@ -191,7 +183,7 @@ class ContentSecurityPolicy {
 
         foreach ( self::CSP_SETTINGS as $key => $value ) {
             $option_value       = get_option( self::OPTION_PREFIX . $value['option'] );
-            $white_list[ $key ] = sprintf( '%s %s', $value['default'], esc_attr( $option_value ) );
+            $white_list[ $key ] = sprintf( '%s %s', $value['default'], $option_value );
         }
 
         foreach ( $white_list as $white_list_item => $rule ) {
