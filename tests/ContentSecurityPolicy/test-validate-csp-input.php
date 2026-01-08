@@ -77,9 +77,8 @@ class ContentSecurityPolicyTest extends \WP_UnitTestCase {
      */
     public static function disallowed_keyword_provider() {
         return [
-            [ 'unsafe-inline example.com', 'example.com', "'unsafe-inline' should be removed" ],
-            [ "unsafe-eval 'self' example.com", "'self' example.com", "'unsafe-eval' should be removed" ],
-            [ 'none', '', "'none' should result in empty return" ],
+            [ "'unsafe-inline' example.com", 'example.com', "'unsafe-inline' should be removed" ],
+            [ "'unsafe-eval' 'self' example.com", "'self' example.com", "'unsafe-eval' should be removed" ],
             [ "example.com data: 'self'", "example.com data: 'self'", "'data:' scheme should be preserved" ],
         ];
     }
@@ -105,8 +104,12 @@ class ContentSecurityPolicyTest extends \WP_UnitTestCase {
      */
     public static function case_insensitive_provider() {
         return [
-            [ 'UNSAFE-INLINE example.com', 'example.com' ],
-            [ "Unsafe-Eval 'self' example.com", "'self' example.com" ],
+            [ "'SELF' example.com", "'self' example.com", "Uppercase 'SELF' converted to lowercase" ],
+            [ "'DATA:' *.gov.bc.ca", "'data:' *.gov.bc.ca", "Uppercase 'DATA:' scheme converted to lowercase" ],
+            [ "'Self' EXAMPLE.COM data:", "'self' example.com data:", 'Mixed case domains and schemes normalized' ],
+            [ 'HTTPS://CDN.EXAMPLE.COM/path', 'https://cdn.example.com/path', 'Full URL with uppercase scheme and domain' ],
+            [ "'SELF' 'NONE'", "'self' 'none'", 'Multiple uppercase CSP keywords' ],
+            [ 'BLOB: *.CLOUDFRONT.NET', 'blob: *.cloudfront.net', 'Scheme and wildcard domain in uppercase' ],
         ];
     }
 
@@ -117,10 +120,11 @@ class ContentSecurityPolicyTest extends \WP_UnitTestCase {
      *
      * @param string $input    The input CSP value.
      * @param string $expected The expected output.
+     * @param string $message  The assertion message.
      */
-    public function test_input_is_case_insensitive_for_keyword_matching( $input, $expected ) {
+    public function test_input_is_case_insensitive_for_keyword_matching( $input, $expected, $message ) {
         $result = $this->csp->validate_csp_input( $input );
-        $this->assertEquals( $expected, $result );
+        $this->assertEquals( $expected, $result, $message );
     }
 
     /**
@@ -152,21 +156,39 @@ class ContentSecurityPolicyTest extends \WP_UnitTestCase {
     }
 
     /**
+     * Data provider for disallowed keywords only tests.
+     *
+     * @return array
+     */
+    public static function disallowed_keywords_only_provider() {
+        return [
+            [ "'unsafe-inline'", 'Single unsafe-inline keyword' ],
+            [ "'unsafe-eval'", 'Single unsafe-eval keyword' ],
+            [ "'unsafe-inline' 'unsafe-eval'", 'All disallowed keywords combined' ],
+            [ "'UNSAFE-INLINE' 'UNSAFE-EVAL'", 'Uppercase disallowed keywords' ],
+        ];
+    }
+
+    /**
      * Test: Only disallowed keywords result in empty string and error
      *
      * What this tests:
      * - When only disallowed keywords are in input, result is empty string
      * - An error is displayed
      * - No error is shown if valid values remain after keyword removal
+     *
+     * @dataProvider disallowed_keywords_only_provider
+     *
+     * @param string $input   The input containing only disallowed keywords.
+     * @param string $message The assertion message.
      */
-    public function test_only_disallowed_keywords_returns_empty_and_error() {
-        $input  = 'unsafe-inline unsafe-eval';
+    public function test_only_disallowed_keywords_returns_empty_and_error( $input, $message ) {
         $result = $this->csp->validate_csp_input( $input );
-        $this->assertEquals( '', $result, 'Input with only disallowed keywords should return empty string' );
+        $this->assertEquals( '', $result, $message . ' should return empty string' );
 
         // Verify error was added.
         $errors = get_settings_errors( 'dswp_options_group' );
-        $this->assertNotEmpty( $errors, 'Settings error should be added when only disallowed keywords present' );
+        $this->assertNotEmpty( $errors, $message . ' should add settings error' );
     }
 
     /**
@@ -177,9 +199,24 @@ class ContentSecurityPolicyTest extends \WP_UnitTestCase {
     public static function real_world_csp_values_provider() {
         return [
             [
-                "'self' data gov.bc.ca *.gov.bc.ca *.twimg.com *.staticflickr.com",
-                "'self' gov.bc.ca *.gov.bc.ca *.twimg.com *.staticflickr.com",
-                'Real-world img-src with disallowed data keyword removed',
+                "'self' data: gov.bc.ca *.gov.bc.ca *.twimg.com *.staticflickr.com",
+                "'self' data: gov.bc.ca *.gov.bc.ca *.twimg.com *.staticflickr.com",
+                'Real-world img-src with data: scheme preserved',
+            ],
+            [
+                "'self' gov.bc.ca *.gov.bc.ca youtube.com *.youtube.com youtu.be",
+                "'self' gov.bc.ca *.gov.bc.ca youtube.com *.youtube.com youtu.be",
+                'Real-world frame-src with multiple domains',
+            ],
+            [
+                "https://cdn.example.com:8080/path 'self' *.gov.bc.ca",
+                "https://cdn.example.com:8080/path 'self' *.gov.bc.ca",
+                'Real-world with full URL including port and path',
+            ],
+            [
+                "'self' data: blob: *.cloudfront.net",
+                "'self' data: blob: *.cloudfront.net",
+                'Real-world with multiple schemes and CDN',
             ],
         ];
     }
