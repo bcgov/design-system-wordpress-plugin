@@ -38,9 +38,7 @@ test.describe( 'NotificationBanner', () => {
 				name: SELECTORS.saveButton.name,
 			} )
 			.click();
-        await page
-            .locator( '.notice-success, .updated.notice' )
-            .first();
+		await page.locator( '.notice-success, .updated.notice' ).first();
 	}
 
 	async function enableBanner( page: any ) {
