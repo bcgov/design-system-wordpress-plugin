@@ -38,22 +38,9 @@ test.describe( 'NotificationBanner', () => {
 				name: SELECTORS.saveButton.name,
 			} )
 			.click();
-		await Promise.race( [
-			page
-				.waitForURL(
-					/admin\.php\?page=dswp-notification-menu.*settings-updated/i,
-					{ timeout: 5000 }
-				)
-				.catch( () => {} ),
-			page
-				.locator( '.notice-success, .updated.notice' )
-				.first()
-				.waitFor( { state: 'visible', timeout: 5000 } )
-				.catch( () => {} ),
-			page
-				.waitForLoadState( 'networkidle', { timeout: 5000 } )
-				.catch( () => {} ),
-		] );
+        await page
+            .locator( '.notice-success, .updated.notice' )
+            .first();
 	}
 
 	async function enableBanner( page: any ) {
