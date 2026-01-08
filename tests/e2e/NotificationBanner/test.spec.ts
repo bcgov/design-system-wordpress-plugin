@@ -51,7 +51,7 @@ test.describe( 'NotificationBanner', () => {
 			.check();
 	}
 
-	async function disableBanner( page: any ) {
+	async function disableBanner( page: Page ) {
 		await page
 			.getByRole( SELECTORS.disableRadio.role, {
 				name: SELECTORS.disableRadio.name,
