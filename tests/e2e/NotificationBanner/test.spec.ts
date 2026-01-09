@@ -1,4 +1,5 @@
 import { test, expect } from '@wordpress/e2e-test-utils-playwright';
+import { Page } from '@playwright/test';
 
 test.describe( 'NotificationBanner', () => {
 	// =====================
