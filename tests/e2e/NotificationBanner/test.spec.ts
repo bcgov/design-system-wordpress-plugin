@@ -16,10 +16,10 @@ test.describe( 'NotificationBanner', () => {
 	const SELECTORS = {
 		banner: '#dswp-notification-banner',
 		previewSection: '#dswp-banner-preview',
-		enableRadio: { role: 'radio', name: 'Enable' },
-		disableRadio: { role: 'radio', name: 'Disable' },
-		contentTextarea: { role: 'textbox' },
-		saveButton: { role: 'button', name: 'Save Settings' },
+		enableRadio: { role: 'radio' as const, name: 'Enable' },
+		disableRadio: { role: 'radio' as const, name: 'Disable' },
+		contentTextarea: { role: 'textbox' as const },
+		saveButton: { role: 'button' as const, name: 'Save Settings' },
 	};
 
 	const MESSAGES = {
@@ -33,7 +33,7 @@ test.describe( 'NotificationBanner', () => {
 	// Helper Functions
 	// =====================
 
-	async function saveSettingsAndWait( page: any ) {
+	async function saveSettingsAndWait( page: Page ) {
 		await page
 			.getByRole( SELECTORS.saveButton.role, {
 				name: SELECTORS.saveButton.name,
@@ -42,7 +42,7 @@ test.describe( 'NotificationBanner', () => {
 		await page.locator( '.notice-success, .updated.notice' ).first();
 	}
 
-	async function enableBanner( page: any ) {
+	async function enableBanner( page: Page ) {
 		await page
 			.getByRole( SELECTORS.enableRadio.role, {
 				name: SELECTORS.enableRadio.name,
@@ -58,15 +58,15 @@ test.describe( 'NotificationBanner', () => {
 			.check();
 	}
 
-	async function selectColor( page: any, colorName: string ) {
+	async function selectColor( page: Page, colorName: string ) {
 		await page.getByRole( 'radio', { name: colorName } ).check();
 	}
 
-	async function fillContent( page: any, content: string ) {
+	async function fillContent( page: Page, content: string ) {
 		await page.getByRole( SELECTORS.contentTextarea.role ).fill( content );
 	}
 
-	async function visitFrontend( page: any ) {
+	async function visitFrontend( page: Page ) {
 		const frontend = await page.context().newPage();
 		await frontend.goto( '/' );
 		return frontend;
