@@ -12,6 +12,9 @@
 
 // Wait for DOM to be fully loaded before initializing.
 document.addEventListener( 'DOMContentLoaded', () => {
+	// Get navigation breakpoint from WordPress settings, with default fallback.
+	const navBreakpoint = window.dswpInPageNav?.options?.nav_breakpoint || 768;
+
 	// Detect WordPress admin bar and add class to body
 	const adminBar = document.getElementById( 'wpadminbar' );
 	if ( adminBar ) {
@@ -117,7 +120,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 	wrapper.appendChild( mainContent );
 
 	// Set initial active state - on mobile, first link should be active by default
-	if ( window.innerWidth <= 768 ) {
+	if ( window.innerWidth <= navBreakpoint ) {
 		const firstLink = nav.querySelector( 'a[data-heading-id]' );
 		if ( firstLink ) {
 			firstLink.setAttribute( 'aria-current', 'true' );
@@ -143,7 +146,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 		const navToggle = nav.querySelector( '.nav-toggle' );
 
 		// Handle responsive behavior.
-		if ( window.innerWidth > 768 ) {
+		if ( window.innerWidth > navBreakpoint ) {
 			// Desktop view: Always show expanded navigation, no scroll behavior needed.
 			navToggle.style.display = 'none';
 			nav.classList.add( 'is-expanded' );
@@ -195,7 +198,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 			link.setAttribute( 'aria-current', isCurrent ? 'true' : 'false' );
 
 			// Only apply visual styling classes on mobile
-			if ( window.innerWidth <= 768 ) {
+			if ( window.innerWidth <= navBreakpoint ) {
 				link.classList.toggle( 'dswp-current', isCurrent );
 				const listItem = link.closest( 'li' );
 				listItem.classList.toggle( 'current', isCurrent );
