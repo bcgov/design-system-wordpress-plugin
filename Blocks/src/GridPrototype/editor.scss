@@ -1,0 +1,76 @@
+/**
+ * Grid Prototype Block Editor Styles
+ * 
+ * Styles specific to the block editor interface
+ */
+
+.dswp-grid-prototype {
+	width: 100%;
+	box-sizing: border-box;
+
+	&__container {
+		gap: 1.5rem;
+		width: 100%;
+		box-sizing: border-box;
+		min-height: 200px;
+		padding: 1rem;
+		border: 1px dashed #ccc;
+		border-radius: 4px;
+		background-color: #f9f9f9;
+		align-items: start; // Ensure items align to top
+	}
+
+	// Custom grid implementation using CSS Grid
+	// Grid template is set via CSS using CSS variables
+	&--custom {
+		.dswp-grid-prototype__container {
+			display: grid;
+			gap: 1.5rem;
+			// Set grid template using CSS variables
+			grid-template-rows: repeat(var(--dswp-grid-rows, 1), minmax(0, 1fr));
+			grid-template-columns: repeat(var(--dswp-grid-columns, 1), minmax(0, 1fr));
+		}
+	}
+
+	// WordPress built-in grid implementation using flexbox
+	&--wordpress {
+		.dswp-grid-prototype__container {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 1.5rem;
+
+			> * {
+				flex: 1 1 calc((100% / var(--dswp-grid-columns, 1)) - 1.5rem);
+				min-width: 0;
+				max-width: 100%;
+			}
+		}
+	}
+
+	// Responsive behavior at breakpoint - always stack cells vertically on mobile
+	// Note: CSS variables don't work in media queries, so we use JavaScript-injected
+	// style tags for dynamic breakpoints in the editor
+	// This is a fallback for the default 768px breakpoint
+	@media (max-width: 768px) {
+		// Target the container to force single column stacking
+		&__container {
+			// Override grid template to force single column stacking
+			grid-template-columns: 1fr !important;
+			grid-template-rows: auto !important;
+		}
+
+		// Also target the custom variant specifically
+		&--custom &__container {
+			grid-template-columns: 1fr !important;
+			grid-template-rows: auto !important;
+		}
+
+		&--wordpress .dswp-grid-prototype__container {
+			> * {
+				flex: 1 1 100% !important;
+				max-width: 100%;
+			}
+		}
+	}
+}
+

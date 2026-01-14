@@ -1,0 +1,134 @@
+/**
+ * Grid Prototype Block Frontend Styles
+ * 
+ * Defines the visual presentation and layout of the grid prototype
+ * for both editor and frontend contexts
+ * Aligned with BC Gov design system principles
+ */
+
+.dswp-grid-prototype {
+	width: 100%;
+	box-sizing: border-box;
+
+	// The outer block should get constrained layout from WordPress (is-layout-constrained)
+	// This centers it and applies max-width - we don't override this
+	// If WordPress doesn't apply the class, the block will still work but may not be centered
+	// WordPress should apply is-layout-constrained automatically via useBlockProps when layout support is enabled
+
+	&__container {
+		gap: 1.5rem;
+		width: 100%;
+		box-sizing: border-box;
+		align-items: start; // Ensure items align to top
+	}
+	
+	// Override WordPress constrained layout ONLY on the inner grid container
+	// The outer block (.dswp-grid-prototype) should remain constrained and centered
+	// But the inner container should fill the parent width without its own constraints
+	&__container.is-layout-constrained,
+	&__container.wp-block-grid-prototype-is-layout-constrained,
+	&__container.has-global-padding.is-layout-constrained {
+		// Remove max-width constraint so grid can fill its constrained parent
+		max-width: none !important;
+		// Remove auto margins so it fills the parent (not centered itself)
+		margin-left: 0 !important;
+		margin-right: 0 !important;
+		width: 100% !important;
+		// Remove global padding from inner container - the outer block handles padding
+		// This prevents the indent that makes it not align with Group blocks
+		padding-left: 0 !important;
+		padding-right: 0 !important;
+	}
+	
+	// Also remove global padding when it's applied without constrained layout
+	&__container.has-global-padding {
+		// Remove global padding from inner container to match Group block behavior
+		padding-left: 0 !important;
+		padding-right: 0 !important;
+	}
+	
+	// Ensure the outer block itself respects constrained layout when applied
+	// WordPress should apply is-layout-constrained automatically when layout support is enabled
+	&.is-layout-constrained,
+	&.wp-block-design-system-wordpress-plugin-grid-prototype-is-layout-constrained {
+		// Let WordPress handle the constrained layout - don't override
+		// This will center the block and apply max-width
+	}
+	
+	// Fallback: If the inner container has is-layout-constrained, apply constrained layout to outer block
+	// This ensures the block centers even if WordPress doesn't apply the class to the outer block
+	&:has(.dswp-grid-prototype__container.is-layout-constrained),
+	&:has(.dswp-grid-prototype__container.wp-block-grid-prototype-is-layout-constrained) {
+		// Apply constrained layout styles to center the block
+		// WordPress's global styles will handle the actual centering via .is-layout-constrained
+		// But if that class isn't on the outer block, we need to ensure it still centers
+		max-width: var(--wp--style--global--content-size, 1200px);
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	// Custom grid implementation using CSS Grid
+	// Grid template is set via CSS using CSS variables
+	&--custom {
+		.dswp-grid-prototype__container {
+			display: grid;
+			gap: 1.5rem;
+			// Set grid template using CSS variables - no inline styles to override
+			grid-template-rows: repeat(var(--dswp-grid-rows, 1), minmax(0, 1fr));
+			grid-template-columns: repeat(var(--dswp-grid-columns, 1), minmax(0, 1fr));
+			max-width: none !important; // Remove constraint so grid fills parent
+			margin-left: 0 !important;
+			margin-right: 0 !important;
+			
+			// Ensure grid items fill their grid areas
+			> * {
+				min-width: 0;
+				width: 100%;
+				max-width: 100%;
+			}
+		}
+	}
+
+	// WordPress built-in grid implementation using flexbox
+	&--wordpress {
+		.dswp-grid-prototype__container {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 1.5rem;
+
+			> * {
+				flex: 1 1 calc((100% / var(--dswp-grid-columns, 1)) - 1.5rem);
+				min-width: 0;
+				max-width: 100%;
+			}
+		}
+	}
+
+	// Responsive behavior at breakpoint - always stack cells vertically on mobile
+	// Note: CSS variables don't work in media queries, so we use inline style tags
+	// injected by the save function for dynamic breakpoints
+	// This is a fallback for the default 768px breakpoint
+	@media (max-width: 768px) {
+		// Target the container to force single column stacking
+		&__container {
+			// Override grid template to force single column stacking
+			// Since we're not using inline styles for grid-template, this will work
+			grid-template-columns: 1fr !important;
+			grid-template-rows: auto !important;
+		}
+
+		// Also target the custom variant specifically
+		&--custom &__container {
+			grid-template-columns: 1fr !important;
+			grid-template-rows: auto !important;
+		}
+
+		&--wordpress .dswp-grid-prototype__container {
+			> * {
+				flex: 1 1 100% !important;
+				max-width: 100%;
+			}
+		}
+	}
+}
+

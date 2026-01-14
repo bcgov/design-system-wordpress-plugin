@@ -1,0 +1,48 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "design-system-wordpress-plugin/grid-prototype",
+	"version": "1.0.0",
+	"title": "Grid Prototype",
+	"category": "design-system",
+	"icon": "grid-view",
+	"description": "A prototype grid layout block with configurable rows and columns",
+	"supports": {
+		"html": false,
+		"align": ["wide", "full"],
+		"spacing": {
+			"blockGap": true,
+			"margin": true,
+			"padding": true
+		},
+		"layout": {
+			"allowSwitching": false,
+			"allowInheriting": true,
+			"default": {
+				"type": "constrained"
+			}
+		}
+	},
+	"attributes": {
+		"rows": {
+			"type": "number",
+			"default": 1
+		},
+		"columns": {
+			"type": "number",
+			"default": 1
+		},
+		"gridType": {
+			"type": "string",
+			"default": "custom"
+		},
+		"breakpoint": {
+			"type": "number",
+			"default": 768
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css"
+}
+

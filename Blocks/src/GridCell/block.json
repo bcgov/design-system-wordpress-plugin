@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "design-system-wordpress-plugin/grid-cell",
+	"version": "1.0.0",
+	"title": "Grid Cell",
+	"category": "design-system",
+	"icon": "layout",
+	"description": "A cell container for grid layouts that can hold any blocks",
+	"supports": {
+		"html": false,
+		"spacing": {
+			"blockGap": true,
+			"margin": true,
+			"padding": true
+		}
+	},
+	"parent": ["design-system-wordpress-plugin/grid-prototype"],
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css"
+}
+
+
