@@ -12,14 +12,14 @@
  * @var WP_Block $block      Block instance.
  */
 
-// Get block attributes with defaults
-$menu_id          = isset( $attributes['menuId'] ) ? (int) $attributes['menuId'] : 0;
-$overlay_menu     = isset( $attributes['overlayMenu'] ) ? $attributes['overlayMenu'] : 'never';
+// Get block attributes with defaults.
+$menu_id           = isset( $attributes['menuId'] ) ? (int) $attributes['menuId'] : 0;
+$overlay_menu      = isset( $attributes['overlayMenu'] ) ? $attributes['overlayMenu'] : 'never';
 $mobile_breakpoint = isset( $attributes['mobileBreakpoint'] ) ? (int) $attributes['mobileBreakpoint'] : 768;
-$show_in_desktop  = isset( $attributes['showInDesktop'] ) ? (bool) $attributes['showInDesktop'] : true;
-$show_in_mobile   = isset( $attributes['showInMobile'] ) ? (bool) $attributes['showInMobile'] : true;
+$show_in_desktop   = isset( $attributes['showInDesktop'] ) ? (bool) $attributes['showInDesktop'] : true;
+$show_in_mobile    = isset( $attributes['showInMobile'] ) ? (bool) $attributes['showInMobile'] : true;
 
-// Build class names
+// Build class names.
 $class_names = array(
 	'wp-block-design-system-wordpress-plugin-navigation',
 	'dswp-block-navigation-is-' . esc_attr( $overlay_menu ) . '-overlay',
@@ -27,14 +27,14 @@ $class_names = array(
 
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
-		'class'                      => implode( ' ', $class_names ),
+		'class'                       => implode( ' ', $class_names ),
 		'data-dswp-mobile-breakpoint' => $mobile_breakpoint,
-		'data-show-in-desktop'       => $show_in_desktop ? 'true' : 'false',
-		'data-show-in-mobile'        => $show_in_mobile ? 'true' : 'false',
+		'data-show-in-desktop'        => $show_in_desktop ? 'true' : 'false',
+		'data-show-in-mobile'         => $show_in_mobile ? 'true' : 'false',
 	)
 );
 
-// Get navigation menu content from wp_navigation post type
+// Get navigation menu content from wp_navigation post type.
 $navigation_content = '';
 if ( $menu_id > 0 ) {
 	$navigation_post = get_post( $menu_id );
@@ -43,7 +43,7 @@ if ( $menu_id > 0 ) {
 	}
 }
 
-// Parse and render the navigation blocks
+// Parse and render the navigation blocks.
 $parsed_blocks = array();
 if ( ! empty( $navigation_content ) ) {
 	$parsed_blocks = parse_blocks( $navigation_content );
@@ -61,7 +61,7 @@ if ( ! empty( $navigation_content ) ) {
 	</button>
 	<ul class="dswp-block-navigation__container">
 		<?php
-		// Render inner blocks from wp_navigation
+		// Render inner blocks from wp_navigation.
 		if ( ! empty( $parsed_blocks ) ) {
 			foreach ( $parsed_blocks as $inner_block ) {
 				echo render_block( $inner_block ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
