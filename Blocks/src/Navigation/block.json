@@ -49,6 +49,9 @@
 			"type": "string",
 			"default": "never"
 		},
+		"ref": {
+			"type": "number"
+		},
 		"menuId": {
 			"type": "number"
 		},
