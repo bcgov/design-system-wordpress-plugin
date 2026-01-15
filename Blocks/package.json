@@ -33,7 +33,9 @@
 		"@bcgov/wordpress-eslint": "github:bcgov/wordpress-eslint#semver:1.x",
 		"@bcgov/wordpress-stylelintrc": "github:bcgov/wordpress-stylelintrc#semver:1.x",
         "@wordpress/scripts": "^29.0.0",
-		"prettier": "^2.8.8"
+		"@playwright/test": "^1.57.0",
+		"prettier": "^2.8.8",
+		"typescript": "^5.9.3"
 	},
 	"dependencies": {
 		"@wordpress/block-editor": "^15.9.0",

@@ -487,6 +487,7 @@
 
 	// Second level items (first submenu)
 	.wp-block-navigation__submenu-container {
+
 		> .wp-block-navigation-item.active > .wp-block-navigation-item__content {
 			border-left: 3px solid #00000069;
 			background: #e1e1e161;
@@ -495,6 +496,7 @@
 
 		// Third level items (nested submenu)
 		.wp-block-navigation__submenu-container {
+
 			> .wp-block-navigation-item.active > .wp-block-navigation-item__content {
 				border-left: 3px solid #00000069;
 				background: #e1e1e161;
