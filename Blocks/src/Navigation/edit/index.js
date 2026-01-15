@@ -110,6 +110,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	/**
 	 * Processes navigation blocks to ensure correct structure and attributes
+	 * Preserves all block attributes to avoid validation errors
 	 * Memoized to prevent unnecessary recreation on re-renders
 	 *
 	 * @param {Array} blocks - Array of block objects to process
@@ -118,31 +119,37 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const processBlocks = useCallback( ( blocks ) => {
 		return blocks
 			.map( ( block ) => {
-				const commonProps = {
+				// Preserve core/spacer blocks as-is (they're allowed but were being filtered out)
+				if ( block.name === 'core/spacer' ) {
+					return createBlock( 'core/spacer', block.attributes || {} );
+				}
+
+				// For navigation blocks, preserve ALL attributes to maintain validation
+				// Only ensure opensInNewTab has a default if it's missing
+				const preservedAttributes = {
 					...block.attributes,
-					label: block.attributes.label,
-					url: block.attributes.url,
-					type: block.attributes.type,
-					id: block.attributes.id,
-					kind: block.attributes.kind,
-					opensInNewTab: block.attributes.opensInNewTab || false,
+					opensInNewTab: block.attributes?.opensInNewTab ?? false,
 				};
 
 				if ( block.name === 'core/navigation-link' ) {
-					return createBlock( 'core/navigation-link', commonProps );
+					return createBlock(
+						'core/navigation-link',
+						preservedAttributes
+					);
 				}
 
 				if ( block.name === 'core/navigation-submenu' ) {
 					return createBlock(
 						'core/navigation-submenu',
-						commonProps,
+						preservedAttributes,
 						block.innerBlocks
 							? processBlocks( block.innerBlocks )
 							: []
 					);
 				}
 
-				return null;
+				// If block type is not recognized, preserve it as-is to avoid data loss
+				return block;
 			} )
 			.filter( Boolean );
 	}, [] );
@@ -155,26 +162,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			const parsedBlocks = parse( selectedMenu.content );
 			initialBlocksRef.current = serialize( parsedBlocks );
 			lastSavedContent.current = initialBlocksRef.current;
-			registry
-				.dispatch( blockEditorStore )
-				.__unstableMarkNextChangeAsNotPersistent();
+			// Don't mark as non-persistent - inner blocks need to be saved to post content
+			// for block validation to work, even though they're also synced with wp_navigation
 		}
 	}, [ selectedMenu, registry ] );
-
-	/**
-	 * Effect for handling block content changes
-	 * Marks changes as non-persistent when content matches initial state
-	 */
-	useEffect( () => {
-		if ( ! isInitialLoad.current && currentBlocks ) {
-			const serializedContent = serialize( currentBlocks );
-			if ( serializedContent === initialBlocksRef.current ) {
-				registry
-					.dispatch( blockEditorStore )
-					.__unstableMarkNextChangeAsNotPersistent();
-			}
-		}
-	}, [ currentBlocks, registry ] );
 
 	/**
 	 * Effect for saving menu changes
@@ -225,9 +216,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	 */
 	useEffect( () => {
 		if ( ! selectedMenu || ! selectedMenu.content ) {
-			registry
-				.dispatch( blockEditorStore )
-				.__unstableMarkNextChangeAsNotPersistent();
+			// Don't mark as non-persistent - empty blocks need to be saved for validation
 			replaceInnerBlocks( clientId, [] );
 			lastSavedContent.current = serialize( [] );
 			isInitialLoad.current = false;
@@ -237,19 +226,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		const parsedBlocks = parse( selectedMenu.content );
 		const newBlocks = processBlocks( parsedBlocks );
 
-		registry
-			.dispatch( blockEditorStore )
-			.__unstableMarkNextChangeAsNotPersistent();
+		// Don't mark as non-persistent - inner blocks must be saved to post content
+		// for block validation, even though they're synced with wp_navigation
 		replaceInnerBlocks( clientId, newBlocks );
 
 		if ( isInitialLoad.current ) {
 			lastSavedContent.current = serialize( newBlocks );
 			initialBlocksRef.current = lastSavedContent.current;
 			isInitialLoad.current = false;
-
-			registry
-				.dispatch( blockEditorStore )
-				.__unstableMarkNextChangeAsNotPersistent();
 		}
 	}, [
 		selectedMenu,
