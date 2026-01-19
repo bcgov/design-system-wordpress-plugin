@@ -66,7 +66,7 @@
 		text-align: center;
 
 		&:hover {
-			background-color: var(--dswp-theme-gray-10);
+			background-color: #EDEBE9 // TODO will need to update to design system token from bcgov once the tokens are imported. token suggested by bcgov is --surface-color-menus-hover
 		}
 
 		&:last-child {
@@ -87,6 +87,16 @@
 		color: inherit;
 		opacity: 1;
 		white-space: nowrap;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+
+	// First link left-aligns with 1rem left padding
+	> .wp-block-navigation-item:first-child a {
+		padding-left: 1rem;
+		padding-right: 2rem;
 	}
 
 	// Submenu
@@ -148,7 +158,8 @@
 			.wp-block-navigation-item__content {
 
 				&:hover {
-					background-color: var(--dswp-theme-gray-10);
+					background-color: #efeeec;
+					text-decoration: underline;
 				}
 				padding-left: 2rem;
 			}
@@ -248,6 +259,11 @@
 		border-left: 3px solid var(--dswp-surface-color-border-default);
 		background: #e1e1e196;
 		padding-left: calc(2rem - 3px);
+	}
+
+	// First link active state - adjust padding for border
+	> .wp-block-navigation-item:first-child.active > .wp-block-navigation-item__content {
+		padding-left: calc(1rem - 3px);
 	}
 }
 
