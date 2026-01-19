@@ -52,72 +52,82 @@
 }
 
 // Editor-specific styles for hamburger menu visibility
-.wp-block-design-system-wordpress-plugin-navigation {
-	// Ensure nav element has positioning context for absolute children
-	&.dswp-block-navigation-is-mobile-overlay,
-	&.dswp-block-navigation-is-always-overlay {
-		position: relative;
-		min-height: 3rem; // Ensure space for hamburger icon
-	}
+// Scope to editor only using WordPress editor classes
+.block-editor-block-list__block,
+.editor-styles-wrapper {
+	.wp-block-design-system-wordpress-plugin-navigation {
+		// Show hamburger icon in editor when mobile or always overlay is selected
+		&.dswp-block-navigation-is-mobile-overlay,
+		&.dswp-block-navigation-is-always-overlay {
+			position: relative;
+			min-height: 3rem;
 
-	// Show hamburger icon in editor when mobile or always overlay is selected
-	&.dswp-block-navigation-is-mobile-overlay,
-	&.dswp-block-navigation-is-always-overlay {
-		.dswp-nav-mobile-toggle-icon {
-			display: flex !important;
+			.dswp-nav-mobile-toggle-icon {
+				display: flex !important;
+			}
+
+			// Ensure normal navigation displays horizontally when not open
+			.dswp-block-navigation__container:not(.is-menu-open) {
+				display: flex !important;
+				flex-direction: row !important;
+				align-items: center;
+			}
+
+			// Hide menu container when closed
+			.dswp-block-navigation__container.is-menu-closed {
+				display: none !important;
+			}
+
+			// Show menu container when open (so links can be edited)
+			.dswp-block-navigation__container.is-menu-open {
+				display: flex !important;
+				position: absolute;
+				background: var(--dswp-surface-color-background-white, #fff);
+				z-index: 1000;
+				box-sizing: border-box;
+				border: 1px solid rgba(0, 0, 0, 0.1);
+				border-radius: 4px;
+				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+				flex-direction: column;
+				align-items: stretch;
+				gap: 0.5rem;
+
+				> .wp-block-navigation-item {
+					width: 100%;
+					text-align: left;
+					border-right: none;
+					border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+					flex: none;
+					margin: 0;
+
+					> .wp-block-navigation-item__content {
+						padding: 0.75rem 1rem;
+						min-height: 44px;
+						display: flex;
+						align-items: center;
+					}
+
+					&:last-child {
+						border-bottom: none;
+					}
+				}
+			}
 		}
 
-		// Hide menu container when closed
-		.dswp-block-navigation__container.is-menu-closed {
-			display: none !important;
-		}
-
-		// Show menu container when open (so links can be edited)
-		.dswp-block-navigation__container.is-menu-open {
-			display: flex !important;
-			position: absolute;
-			top: 100%;
-			left: 0;
-			right: 0;
-			width: 100%;
-			background: var(--dswp-surface-color-background-white, #fff);
-			z-index: 1000;
-			padding: 1rem;
-			box-sizing: border-box;
-			margin-top: 0.5rem;
-			border: 1px solid rgba(0, 0, 0, 0.1);
-			border-radius: 4px;
-			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-			flex-direction: column;
-			align-items: stretch;
-			gap: 0.5rem;
-
-			> .wp-block-navigation-item {
-				width: 100%;
-				text-align: left;
-				border-right: none;
-				border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-				flex: none;
-				margin: 0;
-
-				> .wp-block-navigation-item__content {
-					padding: 0.75rem 1rem;
-					min-height: 44px;
-					display: flex;
-					align-items: center;
-				}
-
-				&:last-child {
-					border-bottom: none;
-				}
+		// Hide hamburger when never overlay is selected
+		&.dswp-block-navigation-is-never-overlay {
+			.dswp-nav-mobile-toggle-icon {
+				display: none !important;
 			}
 		}
 	}
 
-	// Hide hamburger when never overlay is selected
-	&.dswp-block-navigation-is-never-overlay {
-		.dswp-nav-mobile-toggle-icon {
-			display: none !important;
-		}
+	// Override selector for editor-specific styles (scoped to editor)
+	.dswp-block-navigation-is-mobile-overlay .dswp-block-navigation__container.is-menu-open,
+	.dswp-block-navigation-is-always-overlay .dswp-block-navigation__container.is-menu-open {
+		padding-top: 0 !important;
+		padding-bottom: 0px !important;
+		margin-block-start: 0 !important;
+		width: 20rem;
 	}
 }
