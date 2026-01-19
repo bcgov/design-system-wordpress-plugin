@@ -8,7 +8,7 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { useMemo } from '@wordpress/element';
+import { useMemo, useState } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import {
 	useBlockProps,
@@ -33,8 +33,12 @@ const ALLOWED_BLOCKS = [
  * Uses EntityProvider context to get blocks from wp_navigation
  * This matches WordPress core's navigation block structure exactly
  * Must be defined outside Edit component to avoid hook ordering issues
+ *
+ * @param {Object}  props                     - Component properties
+ * @param {boolean} props.isMenuOpen          - Whether the menu is currently open
+ * @param {boolean} props.shouldShowHamburger - Whether the hamburger menu should be visible
  */
-function NavigationInnerBlocks() {
+function NavigationInnerBlocks( { isMenuOpen, shouldShowHamburger } ) {
 	// Get blocks from EntityProvider context - no id parameter needed
 	// The EntityProvider context provides the entity ID automatically
 	const [ blocks, onInput, onChange ] = useEntityBlockEditor(
@@ -42,8 +46,16 @@ function NavigationInnerBlocks() {
 		'wp_navigation'
 	);
 
+	const containerClassName = [
+		'dswp-block-navigation__container',
+		shouldShowHamburger && isMenuOpen ? 'is-menu-open' : '',
+		shouldShowHamburger && ! isMenuOpen ? 'is-menu-closed' : '',
+	]
+		.filter( Boolean )
+		.join( ' ' );
+
 	const innerBlocksProps = useInnerBlocksProps(
-		{ className: 'dswp-block-navigation__container' },
+		{ className: containerClassName },
 		{
 			value: blocks,
 			onInput,
@@ -70,11 +82,18 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		menuId, // Keep menuId for backward compatibility, but also support ref
 		ref, // WordPress core uses 'ref'
-		overlayMenu,
+		overlayMenu = 'never',
 		mobileBreakpoint = 768,
 		showInDesktop,
 		showInMobile,
 	} = attributes;
+
+	// State to track if menu is open in editor
+	const [ isMenuOpen, setIsMenuOpen ] = useState( false );
+
+	// Determine if hamburger should be visible
+	const shouldShowHamburger =
+		overlayMenu === 'mobile' || overlayMenu === 'always';
 
 	// Use ref if available, otherwise fall back to menuId
 	const navigationMenuId = ref || menuId;
@@ -168,8 +187,24 @@ export default function Edit( { attributes, setAttributes } ) {
 					</PanelBody>
 				</InspectorControls>
 				<nav { ...blockProps }>
-					<MobileMenuIcon />
-					<ul className="dswp-block-navigation__container" />
+					<MobileMenuIcon
+						isVisible={ shouldShowHamburger }
+						isOpen={ isMenuOpen }
+						onClick={ () => setIsMenuOpen( ! isMenuOpen ) }
+					/>
+					<ul
+						className={ [
+							'dswp-block-navigation__container',
+							shouldShowHamburger && isMenuOpen
+								? 'is-menu-open'
+								: '',
+							shouldShowHamburger && ! isMenuOpen
+								? 'is-menu-closed'
+								: '',
+						]
+							.filter( Boolean )
+							.join( ' ' ) }
+					/>
 				</nav>
 			</>
 		);
@@ -287,8 +322,15 @@ export default function Edit( { attributes, setAttributes } ) {
 				</InspectorControls>
 
 				<nav { ...blockProps }>
-					<MobileMenuIcon />
-					<NavigationInnerBlocks />
+					<MobileMenuIcon
+						isVisible={ shouldShowHamburger }
+						isOpen={ isMenuOpen }
+						onClick={ () => setIsMenuOpen( ! isMenuOpen ) }
+					/>
+					<NavigationInnerBlocks
+						isMenuOpen={ isMenuOpen }
+						shouldShowHamburger={ shouldShowHamburger }
+					/>
 				</nav>
 			</>
 		</EntityProvider>
