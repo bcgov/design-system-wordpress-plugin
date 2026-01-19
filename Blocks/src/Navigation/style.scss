@@ -93,12 +93,6 @@
 		}
 	}
 
-	// First link left-aligns with 1rem left padding
-	> .wp-block-navigation-item:first-child a {
-		padding-left: 1rem;
-		padding-right: 2rem;
-	}
-
 	// Submenu
 	.wp-block-navigation-submenu {
 		position: relative;
@@ -225,6 +219,11 @@
 
 	// Desktop hover styles
 	&:not(.dswp-is-mobile) {
+		// First link left-aligns with 1rem left padding (desktop only)
+		> .wp-block-navigation-item:first-child a {
+			padding-left: 1rem;
+			padding-right: 2rem;
+		}
 
 		.wp-block-navigation-submenu {
 
@@ -261,9 +260,11 @@
 		padding-left: calc(2rem - 3px);
 	}
 
-	// First link active state - adjust padding for border
-	> .wp-block-navigation-item:first-child.active > .wp-block-navigation-item__content {
-		padding-left: calc(1rem - 3px);
+	// Desktop-only: First link active state - adjust padding for border
+	&:not(.dswp-is-mobile) {
+		> .wp-block-navigation-item:first-child.active > .wp-block-navigation-item__content {
+			padding-left: calc(1rem - 3px);
+		}
 	}
 }
 
