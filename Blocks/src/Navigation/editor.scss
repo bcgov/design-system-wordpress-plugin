@@ -55,6 +55,7 @@
 // Scope to editor only using WordPress editor classes
 .block-editor-block-list__block,
 .editor-styles-wrapper {
+
 	.wp-block-design-system-wordpress-plugin-navigation {
 		// Show hamburger icon in editor when mobile or always overlay is selected
 		&.dswp-block-navigation-is-mobile-overlay,
@@ -91,6 +92,10 @@
 				flex-direction: column;
 				align-items: stretch;
 				gap: 0.5rem;
+				padding-top: 0 !important;
+				padding-bottom: 0 !important;
+				margin-block-start: 0 !important;
+				width: 20rem;
 
 				> .wp-block-navigation-item {
 					width: 100%;
@@ -116,18 +121,10 @@
 
 		// Hide hamburger when never overlay is selected
 		&.dswp-block-navigation-is-never-overlay {
+
 			.dswp-nav-mobile-toggle-icon {
 				display: none !important;
 			}
 		}
-	}
-
-	// Override selector for editor-specific styles (scoped to editor)
-	.dswp-block-navigation-is-mobile-overlay .dswp-block-navigation__container.is-menu-open,
-	.dswp-block-navigation-is-always-overlay .dswp-block-navigation__container.is-menu-open {
-		padding-top: 0 !important;
-		padding-bottom: 0px !important;
-		margin-block-start: 0 !important;
-		width: 20rem;
 	}
 }
