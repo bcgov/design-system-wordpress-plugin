@@ -3,6 +3,30 @@ export default function MobileMenuIcon( { isOpen, onClick, isVisible } ) {
 		return null;
 	}
 
+	const topBarClassName = [
+		'dswp-nav-mobile-bar',
+		'dswp-nav-mobile-menu-top-bar',
+		isOpen && 'dswp-nav-mobile-menu-top-bar-open',
+	]
+		.filter( Boolean )
+		.join( ' ' );
+
+	const middleBarClassName = [
+		'dswp-nav-mobile-bar',
+		'dswp-nav-mobile-menu-middle-bar',
+		isOpen && 'dswp-nav-mobile-menu-middle-bar-open',
+	]
+		.filter( Boolean )
+		.join( ' ' );
+
+	const bottomBarClassName = [
+		'dswp-nav-mobile-bar',
+		'dswp-nav-mobile-menu-bottom-bar',
+		isOpen && 'dswp-nav-mobile-menu-bottom-bar-open',
+	]
+		.filter( Boolean )
+		.join( ' ' );
+
 	return (
 		<button
 			className="dswp-nav-mobile-toggle-icon"
@@ -22,25 +46,19 @@ export default function MobileMenuIcon( { isOpen, onClick, isVisible } ) {
 				focusable="false"
 			>
 				<path
-					className={ `dswp-nav-mobile-bar dswp-nav-mobile-menu-top-bar ${
-						isOpen ? 'dswp-nav-mobile-menu-top-bar-open' : ''
-					}` }
+					className={ topBarClassName }
 					d="M3,6h13"
 					strokeWidth="1"
 					stroke="currentColor"
 				/>
 				<path
-					className={ `dswp-nav-mobile-bar dswp-nav-mobile-menu-middle-bar ${
-						isOpen ? 'dswp-nav-mobile-menu-middle-bar-open' : ''
-					}` }
+					className={ middleBarClassName }
 					d="M3,12h13"
 					strokeWidth="1"
 					stroke="currentColor"
 				/>
 				<path
-					className={ `dswp-nav-mobile-bar dswp-nav-mobile-menu-bottom-bar ${
-						isOpen ? 'dswp-nav-mobile-menu-bottom-bar-open' : ''
-					}` }
+					className={ bottomBarClassName }
 					d="M3,18h13"
 					strokeWidth="1"
 					stroke="currentColor"
