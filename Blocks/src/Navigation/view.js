@@ -472,17 +472,41 @@ document.addEventListener( 'DOMContentLoaded', function () {
 		} );
 
 		// Add active link highlighting
-		const activePage = window.location.pathname;
+		const currentUrl = new URL( window.location.href );
+		const currentPathname = currentUrl.pathname;
+		const currentSearch = currentUrl.search;
+
 		nav.querySelectorAll( '.wp-block-navigation-item__content' ).forEach(
 			( link ) => {
-				if ( new URL( link.href ).pathname === activePage ) {
-					link.classList.add( 'active' );
-					// Add active class to parent item if it exists
-					const parentItem = link.closest(
-						'.wp-block-navigation-item'
-					);
-					if ( parentItem ) {
-						parentItem.classList.add( 'active' );
+				const linkUrl = new URL( link.href, window.location.origin );
+				const linkPathname = linkUrl.pathname;
+				const linkSearch = linkUrl.search;
+
+				// Only match if pathnames match
+				if ( linkPathname === currentPathname ) {
+					// If the link has query parameters, only match if they match exactly
+					// If the link has no query parameters, only match if current page also has no query parameters
+					// This prevents home link (/) from matching search pages (/?s=...)
+					if ( linkSearch ) {
+						// Link has query params - only match if they match exactly
+						if ( linkSearch === currentSearch ) {
+							link.classList.add( 'active' );
+							const parentItem = link.closest(
+								'.wp-block-navigation-item'
+							);
+							if ( parentItem ) {
+								parentItem.classList.add( 'active' );
+							}
+						}
+					} else if ( ! currentSearch ) {
+						// Link has no query params - only match if current page also has no query params
+						link.classList.add( 'active' );
+						const parentItem = link.closest(
+							'.wp-block-navigation-item'
+						);
+						if ( parentItem ) {
+							parentItem.classList.add( 'active' );
+						}
 					}
 				}
 			}
