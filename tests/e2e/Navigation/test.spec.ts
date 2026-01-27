@@ -1,4 +1,9 @@
-import { test, expect, Editor, RequestUtils } from '@wordpress/e2e-test-utils-playwright';
+import {
+	test,
+	expect,
+	Editor,
+	RequestUtils,
+} from '@wordpress/e2e-test-utils-playwright';
 import { Page } from '@playwright/test';
 import { closeChoosePatternModal } from '../helpers';
 
@@ -30,46 +35,69 @@ const TIMEOUTS = {
 /**
  * Wait for viewport resize to complete
  * Waits for the resize handler to finish processing
+ * @param page
  */
-async function waitForResize( page: Page ): Promise<void> {
+async function waitForResize( page: Page ): Promise< void > {
 	// Wait for any resize handlers to complete
-	await page.waitForFunction( () => {
-		return ! ( window as any ).__resizeTimeout;
-	}, { timeout: 2000 } ).catch( () => {
-		// If no resize handler, just wait a bit for layout to settle
-		return page.waitForTimeout( 100 );
-	} );
+	await page
+		.waitForFunction(
+			() => {
+				return ! ( window as any ).__resizeTimeout;
+			},
+			{ timeout: 2000 }
+		)
+		.catch( () => {
+			// If no resize handler, just wait a bit for layout to settle
+			return page.waitForTimeout( 100 );
+		} );
 }
 
 /**
  * Wait for submenu animation to complete
+ * @param page
  */
-async function waitForSubmenuAnimation( page: Page ): Promise<void> {
+async function waitForSubmenuAnimation( page: Page ): Promise< void > {
 	// Wait for submenu container to have stable visibility
-	await page.waitForFunction( () => {
-		const submenus = document.querySelectorAll( '.wp-block-navigation__submenu-container' );
-		return Array.from( submenus ).every( ( el ) => {
-			const style = window.getComputedStyle( el );
-			return style.transition === 'none' || ! style.transition.includes( 'opacity' );
+	await page
+		.waitForFunction(
+			() => {
+				const submenus = document.querySelectorAll(
+					'.wp-block-navigation__submenu-container'
+				);
+				return Array.from( submenus ).every( ( el ) => {
+					const style = window.getComputedStyle( el );
+					return (
+						style.transition === 'none' ||
+						! style.transition.includes( 'opacity' )
+					);
+				} );
+			},
+			{ timeout: 2000 }
+		)
+		.catch( () => {
+			// Fallback: wait for typical animation duration
+			return page.waitForTimeout( 200 );
 		} );
-	}, { timeout: 2000 } ).catch( () => {
-		// Fallback: wait for typical animation duration
-		return page.waitForTimeout( 200 );
-	} );
 }
 
 /**
  * Find submenu container for a given menu item link
  * Uses XPath to find the parent submenu element
+ * @param nav
+ * @param linkText
  */
 async function findSubmenuContainer( nav: any, linkText: string ) {
 	// Find the link first
 	const link = nav.getByRole( 'link', { name: linkText } );
 	await link.waitFor( { state: 'visible' } );
-	
+
 	// Find the parent submenu using XPath (more reliable than filter)
-	const submenu = link.locator( 'xpath=ancestor::li[contains(@class, "wp-block-navigation-submenu")]' ).first();
-	
+	const submenu = link
+		.locator(
+			'xpath=ancestor::li[contains(@class, "wp-block-navigation-submenu")]'
+		)
+		.first();
+
 	return {
 		submenu,
 		container: submenu.locator( '.wp-block-navigation__submenu-container' ),
@@ -157,21 +185,27 @@ test.describe( 'Navigation', () => {
 			await closeChoosePatternModal( editor );
 
 			const preview = await editor.openPreviewPage();
-			
+
 			// Verify we're using the plugin's navigation block, not WordPress core's
 			// Plugin block uses: wp-block-design-system-wordpress-plugin-navigation
 			// Core block uses: wp-block-navigation (without the plugin prefix)
 			const nav = preview.locator(
 				'.wp-block-design-system-wordpress-plugin-navigation'
 			);
-			
+
 			// Ensure it's NOT WordPress core's navigation block
-			const coreNav = preview.locator( '.wp-block-navigation:not(.wp-block-design-system-wordpress-plugin-navigation)' );
+			const coreNav = preview.locator(
+				'.wp-block-navigation:not(.wp-block-design-system-wordpress-plugin-navigation)'
+			);
 			await expect( coreNav ).toHaveCount( 0 );
 
 			await expect( nav ).toBeVisible();
-			await expect( nav.getByRole( 'link', { name: 'Home' } ) ).toBeVisible();
-			await expect( nav.getByRole( 'link', { name: 'About' } ) ).toBeVisible();
+			await expect(
+				nav.getByRole( 'link', { name: 'Home' } )
+			).toBeVisible();
+			await expect(
+				nav.getByRole( 'link', { name: 'About' } )
+			).toBeVisible();
 		} );
 
 		test( 'should not appear when no menu is selected', async ( {
@@ -466,7 +500,9 @@ test.describe( 'Navigation', () => {
 			await menuContainer.waitFor( { state: 'visible' } );
 
 			// Click outside (on body)
-			await preview.locator( 'body' ).click( { position: { x: 10, y: 10 } } );
+			await preview
+				.locator( 'body' )
+				.click( { position: { x: 10, y: 10 } } );
 			await menuContainer.waitFor( { state: 'hidden' } );
 
 			await expect( menuContainer ).not.toBeVisible();
@@ -488,28 +524,48 @@ test.describe( 'Navigation', () => {
 			const bottomBar = nav.locator( '.dswp-nav-mobile-menu-bottom-bar' );
 
 			// Initially, bars should not have open classes
-			await expect( topBar ).not.toHaveClass( /dswp-nav-mobile-menu-top-bar-open/ );
-			await expect( middleBar ).not.toHaveClass( /dswp-nav-mobile-menu-middle-bar-open/ );
-			await expect( bottomBar ).not.toHaveClass( /dswp-nav-mobile-menu-bottom-bar-open/ );
+			await expect( topBar ).not.toHaveClass(
+				/dswp-nav-mobile-menu-top-bar-open/
+			);
+			await expect( middleBar ).not.toHaveClass(
+				/dswp-nav-mobile-menu-middle-bar-open/
+			);
+			await expect( bottomBar ).not.toHaveClass(
+				/dswp-nav-mobile-menu-bottom-bar-open/
+			);
 
 			// Click to open
 			await hamburger.click();
 			await topBar.waitFor( { state: 'attached' } );
 
 			// Bars should have open classes
-			await expect( topBar ).toHaveClass( /dswp-nav-mobile-menu-top-bar-open/ );
-			await expect( middleBar ).toHaveClass( /dswp-nav-mobile-menu-middle-bar-open/ );
-			await expect( bottomBar ).toHaveClass( /dswp-nav-mobile-menu-bottom-bar-open/ );
+			await expect( topBar ).toHaveClass(
+				/dswp-nav-mobile-menu-top-bar-open/
+			);
+			await expect( middleBar ).toHaveClass(
+				/dswp-nav-mobile-menu-middle-bar-open/
+			);
+			await expect( bottomBar ).toHaveClass(
+				/dswp-nav-mobile-menu-bottom-bar-open/
+			);
 
 			// Click to close
 			await hamburger.click();
 			// Wait for open classes to be removed
-			await expect( topBar ).not.toHaveClass( /dswp-nav-mobile-menu-top-bar-open/ );
+			await expect( topBar ).not.toHaveClass(
+				/dswp-nav-mobile-menu-top-bar-open/
+			);
 
 			// Bars should not have open classes
-			await expect( topBar ).not.toHaveClass( /dswp-nav-mobile-menu-top-bar-open/ );
-			await expect( middleBar ).not.toHaveClass( /dswp-nav-mobile-menu-middle-bar-open/ );
-			await expect( bottomBar ).not.toHaveClass( /dswp-nav-mobile-menu-bottom-bar-open/ );
+			await expect( topBar ).not.toHaveClass(
+				/dswp-nav-mobile-menu-top-bar-open/
+			);
+			await expect( middleBar ).not.toHaveClass(
+				/dswp-nav-mobile-menu-middle-bar-open/
+			);
+			await expect( bottomBar ).not.toHaveClass(
+				/dswp-nav-mobile-menu-bottom-bar-open/
+			);
 		} );
 	} );
 
@@ -536,12 +592,15 @@ test.describe( 'Navigation', () => {
 				'.wp-block-design-system-wordpress-plugin-navigation'
 			);
 			const servicesItem = nav.getByRole( 'link', { name: 'Services' } );
-			
+
 			// Wait for Services link to be visible first
 			await servicesItem.waitFor( { state: 'visible' } );
 
 			// Find the submenu container using stable selector
-			const { container: submenuContainer } = await findSubmenuContainer( nav, 'Services' );
+			const { container: submenuContainer } = await findSubmenuContainer(
+				nav,
+				'Services'
+			);
 
 			// Submenu container should not be visible initially (closed)
 			await expect( submenuContainer ).not.toBeVisible();
@@ -557,7 +616,9 @@ test.describe( 'Navigation', () => {
 			).toBeVisible();
 
 			// Move pointer away
-			await preview.locator( 'body' ).hover( { position: { x: 10, y: 10 } } );
+			await preview
+				.locator( 'body' )
+				.hover( { position: { x: 10, y: 10 } } );
 			await waitForSubmenuAnimation( preview );
 
 			// Submenu container should be hidden (closed)
@@ -589,17 +650,22 @@ test.describe( 'Navigation', () => {
 
 			// Open mobile menu first
 			await hamburger.click();
-			const menuContainer = nav.locator( '.dswp-block-navigation__container' );
+			const menuContainer = nav.locator(
+				'.dswp-block-navigation__container'
+			);
 			await menuContainer.waitFor( { state: 'visible' } );
 
 			const servicesItem = nav.getByRole( 'link', { name: 'Services' } );
-			
+
 			// Wait for Services link to be visible first
 			await servicesItem.waitFor( { state: 'visible' } );
 
 			// Find the submenu using stable selector
-			const { submenu: servicesSubmenu, container: submenuContainer } = await findSubmenuContainer( nav, 'Services' );
-			const submenuToggle = servicesSubmenu.locator( '.dswp-submenu-toggle' );
+			const { submenu: servicesSubmenu, container: submenuContainer } =
+				await findSubmenuContainer( nav, 'Services' );
+			const submenuToggle = servicesSubmenu.locator(
+				'.dswp-submenu-toggle'
+			);
 
 			// Submenu container should not be visible initially (closed)
 			await expect( submenuContainer ).not.toBeVisible();
@@ -650,12 +716,16 @@ test.describe( 'Navigation', () => {
 			await waitForSubmenuAnimation( preview );
 
 			// First level submenu should be visible - wait for both items
-			const category1Link = nav.getByRole( 'link', { name: 'Category 1' } );
-			const category2Link = nav.getByRole( 'link', { name: 'Category 2' } );
-			
+			const category1Link = nav.getByRole( 'link', {
+				name: 'Category 1',
+			} );
+			const category2Link = nav.getByRole( 'link', {
+				name: 'Category 2',
+			} );
+
 			await expect( category1Link ).toBeVisible();
 			await expect( category2Link ).toBeVisible();
-			
+
 			// Wait for first level submenu to be fully rendered
 			await waitForSubmenuAnimation( preview );
 
@@ -700,9 +770,9 @@ test.describe( 'Navigation', () => {
 			await servicesItem.hover();
 			await waitForSubmenuAnimation( preview );
 
-			const submenuContainer = nav.locator(
-				'.wp-block-navigation__submenu-container.is-open'
-			).first();
+			const submenuContainer = nav
+				.locator( '.wp-block-navigation__submenu-container.is-open' )
+				.first();
 
 			// Get bounding box to check if it's within viewport
 			const boundingBox = await submenuContainer.boundingBox();
@@ -768,7 +838,9 @@ test.describe( 'Navigation', () => {
 			await servicesItem.hover();
 			await waitForSubmenuAnimation( preview );
 
-			const webDesignLink = nav.getByRole( 'link', { name: 'Web Design' } );
+			const webDesignLink = nav.getByRole( 'link', {
+				name: 'Web Design',
+			} );
 			await expect( webDesignLink ).toBeVisible();
 			await expect( webDesignLink ).toHaveAttribute(
 				'href',
@@ -849,30 +921,44 @@ test.describe( 'Navigation', () => {
 			const preview = await editor.openPreviewPage();
 			const siteUrl = new URL( preview.url() ).origin;
 			const fullPageUrl = siteUrl + pageUrl;
-			
+
 			// Navigate to the page
 			await preview.goto( fullPageUrl, { waitUntil: 'networkidle' } );
-			
+
 			// Wait for page to fully load and scripts to execute
 			await preview.waitForLoadState( 'domcontentloaded' );
 			// Wait for active link detection script to run
-			await preview.waitForFunction( () => {
-				const nav = document.querySelector( '.wp-block-design-system-wordpress-plugin-navigation' );
-				if ( ! nav ) return false;
-				// Check if any links have the active class
-				const activeLinks = nav.querySelectorAll( '.active, .wp-block-navigation-item.active' );
-				return activeLinks.length > 0 || document.readyState === 'complete';
-			}, { timeout: 3000 } ).catch( () => {
-				// Script might not run or no active link, that's okay
-			} );
+			await preview
+				.waitForFunction(
+					() => {
+						const nav = document.querySelector(
+							'.wp-block-design-system-wordpress-plugin-navigation'
+						);
+						if ( ! nav ) {
+							return false;
+						}
+						// Check if any links have the active class
+						const activeLinks = nav.querySelectorAll(
+							'.active, .wp-block-navigation-item.active'
+						);
+						return (
+							activeLinks.length > 0 ||
+							document.readyState === 'complete'
+						);
+					},
+					{ timeout: 3000 }
+				)
+				.catch( () => {
+					// Script might not run or no active link, that's okay
+				} );
 
 			const nav = preview.locator(
 				'.wp-block-design-system-wordpress-plugin-navigation'
 			);
-			
+
 			// Wait for navigation to be visible
 			await nav.waitFor( { state: 'visible' } );
-			
+
 			const activeLink = nav.getByRole( 'link', { name: 'Test Page' } );
 			await activeLink.waitFor( { state: 'visible' } );
 
@@ -881,9 +967,13 @@ test.describe( 'Navigation', () => {
 			const linkHasActive = await activeLink
 				.evaluate( ( el ) => el.classList.contains( 'active' ) )
 				.catch( () => false );
-			
+
 			// Check parent navigation item - find the closest li with wp-block-navigation-item class
-			const parentItem = activeLink.locator( 'xpath=ancestor::li[contains(@class, "wp-block-navigation-item")]' ).first();
+			const parentItem = activeLink
+				.locator(
+					'xpath=ancestor::li[contains(@class, "wp-block-navigation-item")]'
+				)
+				.first();
 			const parentHasActive = await parentItem
 				.evaluate( ( el ) => el.classList.contains( 'active' ) )
 				.catch( () => false );
@@ -891,7 +981,7 @@ test.describe( 'Navigation', () => {
 			// Get the current URL and link href for comparison
 			const currentUrl = new URL( preview.url() );
 			const linkHref = await activeLink.getAttribute( 'href' );
-			
+
 			// Check if URLs match (pathname comparison)
 			let urlsMatch = false;
 			if ( linkHref ) {
@@ -901,26 +991,18 @@ test.describe( 'Navigation', () => {
 					urlsMatch = currentUrl.pathname === linkUrl.pathname;
 				} catch {
 					// If URL parsing fails, try simple string comparison
-					urlsMatch = currentUrl.pathname.includes( linkHref ) || linkHref.includes( currentUrl.pathname );
+					urlsMatch =
+						currentUrl.pathname.includes( linkHref ) ||
+						linkHref.includes( currentUrl.pathname );
 				}
 			}
-			
+
 			// At least one should be true: active class OR URLs match
 			// Note: Active link detection compares pathnames, but in test environments
 			// the script might not run or URLs might not match exactly due to preview mode
 			const hasActiveClass = linkHasActive || parentHasActive;
 			const testPasses = hasActiveClass || urlsMatch;
-			
-			if ( ! testPasses ) {
-				// Debug info
-				console.log( 'Active link test failed:' );
-				console.log( 'Current URL:', currentUrl.href );
-				console.log( 'Link href:', linkHref );
-				console.log( 'Link has active class:', linkHasActive );
-				console.log( 'Parent has active class:', parentHasActive );
-				console.log( 'URLs match:', urlsMatch );
-			}
-			
+
 			expect( testPasses ).toBe( true );
 		} );
 	} );
@@ -950,14 +1032,20 @@ test.describe( 'Navigation', () => {
 			);
 
 			// Test at 769px (just above breakpoint)
-			await preview.setViewportSize( { width: VIEWPORT_SIZES.MOBILE_BREAKPOINT + 1, height: 768 } );
+			await preview.setViewportSize( {
+				width: VIEWPORT_SIZES.MOBILE_BREAKPOINT + 1,
+				height: 768,
+			} );
 			await waitForResize( preview );
 
 			await expect( hamburger ).not.toBeVisible();
 			await expect( menuContainer ).toBeVisible();
 
 			// Test at 767px (just below breakpoint)
-			await preview.setViewportSize( { width: VIEWPORT_SIZES.MOBILE_BREAKPOINT - 1, height: 768 } );
+			await preview.setViewportSize( {
+				width: VIEWPORT_SIZES.MOBILE_BREAKPOINT - 1,
+				height: 768,
+			} );
 			await waitForResize( preview );
 
 			await expect( hamburger ).toBeVisible();
@@ -989,14 +1077,20 @@ test.describe( 'Navigation', () => {
 			);
 
 			// Test at 1025px (just above custom breakpoint)
-			await preview.setViewportSize( { width: VIEWPORT_SIZES.CUSTOM_BREAKPOINT + 1, height: 768 } );
+			await preview.setViewportSize( {
+				width: VIEWPORT_SIZES.CUSTOM_BREAKPOINT + 1,
+				height: 768,
+			} );
 			await waitForResize( preview );
 
 			await expect( hamburger ).not.toBeVisible();
 			await expect( menuContainer ).toBeVisible();
 
 			// Test at 1023px (just below custom breakpoint)
-			await preview.setViewportSize( { width: VIEWPORT_SIZES.CUSTOM_BREAKPOINT - 1, height: 768 } );
+			await preview.setViewportSize( {
+				width: VIEWPORT_SIZES.CUSTOM_BREAKPOINT - 1,
+				height: 768,
+			} );
 			await waitForResize( preview );
 
 			await expect( hamburger ).toBeVisible();
@@ -1067,14 +1161,20 @@ test.describe( 'Navigation', () => {
 
 			// Focus first link
 			await nav.getByRole( 'link', { name: 'Home' } ).focus();
-			await expect( nav.getByRole( 'link', { name: 'Home' } ) ).toBeFocused();
+			await expect(
+				nav.getByRole( 'link', { name: 'Home' } )
+			).toBeFocused();
 
 			// Tab through all links
 			await preview.keyboard.press( 'Tab' );
-			await expect( nav.getByRole( 'link', { name: 'About' } ) ).toBeFocused();
+			await expect(
+				nav.getByRole( 'link', { name: 'About' } )
+			).toBeFocused();
 
 			await preview.keyboard.press( 'Tab' );
-			await expect( nav.getByRole( 'link', { name: 'Contact' } ) ).toBeFocused();
+			await expect(
+				nav.getByRole( 'link', { name: 'Contact' } )
+			).toBeFocused();
 		} );
 
 		test( 'Focus management works correctly when opening/closing menus', async ( {
@@ -1105,7 +1205,7 @@ test.describe( 'Navigation', () => {
 
 			// Focus hamburger - click first to ensure it's interactive
 			await hamburger.click();
-			
+
 			// Close menu if it opened from the click
 			const menuContainer = nav.locator(
 				'.dswp-block-navigation__container'
@@ -1119,12 +1219,28 @@ test.describe( 'Navigation', () => {
 			// Now focus the hamburger for keyboard navigation
 			await hamburger.evaluate( ( el ) => el.focus() );
 			// Wait for focus to be set
-			await preview.waitForFunction( () => {
-				const activeEl = document.activeElement;
-				return activeEl && activeEl.classList.contains( 'dswp-nav-mobile-toggle-icon' );
-			}, { timeout: 1000 } ).catch( () => {
-				// Focus might not be detectable, that's okay
-			} );
+			await preview
+				.waitForFunction(
+					() => {
+						const hamburgerEl = document.querySelector(
+							'.dswp-nav-mobile-toggle-icon'
+						);
+						if ( ! hamburgerEl ) {
+							return false;
+						}
+						const activeEl = hamburgerEl.ownerDocument.activeElement;
+						return (
+							activeEl &&
+							activeEl.classList.contains(
+								'dswp-nav-mobile-toggle-icon'
+							)
+						);
+					},
+					{ timeout: 1000 }
+				)
+				.catch( () => {
+					// Focus might not be detectable, that's okay
+				} );
 
 			// Open menu with Enter key
 			await preview.keyboard.press( 'Enter' );
@@ -1164,21 +1280,34 @@ test.describe( 'Navigation', () => {
 			const hamburger = nav.locator( '.dswp-nav-mobile-toggle-icon' );
 
 			// Check hamburger ARIA attributes
-			await expect( hamburger ).toHaveAttribute( 'aria-label', /Toggle menu/i );
-			await expect( hamburger ).toHaveAttribute( 'aria-expanded', 'false' );
+			await expect( hamburger ).toHaveAttribute(
+				'aria-label',
+				/Toggle menu/i
+			);
+			await expect( hamburger ).toHaveAttribute(
+				'aria-expanded',
+				'false'
+			);
 
 			// Open menu
 			await hamburger.click();
 			await hamburger.waitFor( { state: 'attached' } );
 
 			// ARIA expanded should be true
-			await expect( hamburger ).toHaveAttribute( 'aria-expanded', 'true' );
+			await expect( hamburger ).toHaveAttribute(
+				'aria-expanded',
+				'true'
+			);
 
 			// Check submenu toggle ARIA attributes
 			const servicesSubmenu = nav
 				.locator( '.wp-block-navigation-submenu' )
-				.filter( { has: nav.getByRole( 'link', { name: 'Services' } ) } );
-			const submenuToggle = servicesSubmenu.locator( '.dswp-submenu-toggle' );
+				.filter( {
+					has: nav.getByRole( 'link', { name: 'Services' } ),
+				} );
+			const submenuToggle = servicesSubmenu.locator(
+				'.dswp-submenu-toggle'
+			);
 
 			if ( ( await submenuToggle.count() ) > 0 ) {
 				await expect( submenuToggle ).toHaveAttribute(
@@ -1195,7 +1324,6 @@ test.describe( 'Navigation', () => {
 
 	test.describe( 'Role-Based Permissions', () => {
 		let editorUserId: number;
-		let editorMenuId: number;
 		let editorPageId: number;
 
 		test.beforeAll( async ( { requestUtils: utils } ) => {
@@ -1207,15 +1335,6 @@ test.describe( 'Navigation', () => {
 				roles: [ 'editor' ],
 			} );
 			editorUserId = editorUser.id;
-
-			// Create a menu that the editor can see but may not be able to edit
-			editorMenuId = await createNavigationMenu( utils, {
-				title: 'Editor Test Menu',
-				items: [
-					{ title: 'Home', url: '/' },
-					{ title: 'About', url: '/about/' },
-				],
-			} );
 
 			// Create a page that the editor can edit (editors can edit pages, just not create them)
 			// Make sure the page is published so editor can access it
@@ -1250,7 +1369,9 @@ test.describe( 'Navigation', () => {
 			);
 
 			// Admin should see the navigation menu
-			await expect( nav.getByRole( 'link', { name: 'Home' } ) ).toBeVisible();
+			await expect(
+				nav.getByRole( 'link', { name: 'Home' } )
+			).toBeVisible();
 		} );
 
 		test( 'Admin can edit navigation menu content (add links)', async ( {
@@ -1267,9 +1388,11 @@ test.describe( 'Navigation', () => {
 			await closeChoosePatternModal( editor );
 
 			// Admin should be able to click on the navigation block to edit it
-			const navigationBlock = editor.canvas.locator(
-				'[data-type="design-system-wordpress-plugin/navigation"]'
-			).first();
+			const navigationBlock = editor.canvas
+				.locator(
+					'[data-type="design-system-wordpress-plugin/navigation"]'
+				)
+				.first();
 
 			// Click on the block to select it
 			await navigationBlock.click();
@@ -1289,7 +1412,6 @@ test.describe( 'Navigation', () => {
 		} );
 
 		test( 'Editor cannot edit navigation menu content (restricted)', async ( {
-			requestUtils,
 			page,
 		} ) => {
 			// Login as editor user using the page context
@@ -1303,26 +1425,29 @@ test.describe( 'Navigation', () => {
 
 			// Try to create a navigation menu via REST API as editor
 			// Use fetch directly since RequestUtils.rest() doesn't support different auth
-			const response = await page.request.post( '/wp-json/wp/v2/navigation', {
-				data: {
-					title: 'Editor Modified Menu',
-					content: '<!-- wp:navigation-link {"label":"Test","url":"/test/"} /-->',
-					status: 'publish',
-				},
-			} );
+			const response = await page.request.post(
+				'/wp-json/wp/v2/navigation',
+				{
+					data: {
+						title: 'Editor Modified Menu',
+						content:
+							'<!-- wp:navigation-link {"label":"Test","url":"/test/"} /-->',
+						status: 'publish',
+					},
+				}
+			);
 
 			// Editor should NOT be able to create navigation menus
 			// Navigation menus require 'edit_theme_options' capability which editors don't have
 			const status = response.status();
 			expect( status ).toBeGreaterThanOrEqual( 400 );
-			
+
 			// Could be 403 (Forbidden), 404 (Not Found - endpoint hidden), or 401 (Unauthorized)
 			// All indicate permission/access issues
 			expect( [ 401, 403, 404 ] ).toContain( status );
 		} );
 
 		test( 'Editor can view but not modify navigation block settings', async ( {
-			requestUtils,
 			page,
 		} ) => {
 			// Login as editor user
@@ -1348,7 +1473,7 @@ test.describe( 'Navigation', () => {
 			// Editor should NOT be able to modify navigation menus
 			const status = response.status();
 			expect( status ).toBeGreaterThanOrEqual( 400 );
-			
+
 			// Could be 403 (Forbidden), 404 (Not Found), 405 (Method Not Allowed), or 401 (Unauthorized)
 			// All indicate permission/access issues - the key is that editor cannot modify
 			expect( [ 401, 403, 404, 405 ] ).toContain( status );
@@ -1367,19 +1492,25 @@ test.describe( 'Navigation', () => {
 
 			// Navigate to edit the existing page (editors can edit pages, just not create them)
 			// Use domcontentloaded instead of networkidle to avoid timeout issues
-			await page.goto( `/wp-admin/post.php?post=${ editorPageId }&action=edit`, { 
-				waitUntil: 'domcontentloaded',
-				timeout: TIMEOUTS.SLOW 
-			} );
+			await page.goto(
+				`/wp-admin/post.php?post=${ editorPageId }&action=edit`,
+				{
+					waitUntil: 'domcontentloaded',
+					timeout: TIMEOUTS.SLOW,
+				}
+			);
 
 			// Wait for page to load and check if we were redirected
 			await page.waitForLoadState( 'domcontentloaded' );
-			
+
 			// Check if we were redirected (e.g., permission denied)
 			const currentUrl = page.url();
-			
+
 			// If redirected away from editor, the editor might not have permission
-			if ( ! currentUrl.includes( 'post.php' ) || currentUrl.includes( 'wp-admin/edit.php' ) ) {
+			if (
+				! currentUrl.includes( 'post.php' ) ||
+				currentUrl.includes( 'wp-admin/edit.php' )
+			) {
 				// Editor might not have permission - verify this is expected
 				// Editors can edit pages they have access to, but might be redirected if they don't
 				// This is a valid test result - editor cannot access the page
@@ -1388,19 +1519,27 @@ test.describe( 'Navigation', () => {
 			}
 
 			// Check for error messages first (might appear before editor loads)
-			const errorMessage = page.locator( '.notice-error, .error' ).first();
-			const hasError = await errorMessage.isVisible().catch( () => false );
-			
+			const errorMessage = page
+				.locator( '.notice-error, .error' )
+				.first();
+			const hasError = await errorMessage
+				.isVisible()
+				.catch( () => false );
+
 			if ( hasError ) {
 				// Editor doesn't have permission - this is expected
 				// Just verify we're not on the editor page
-				expect( page.url() ).not.toMatch( /post\.php\?post=.*&action=edit/ );
+				expect( page.url() ).not.toMatch(
+					/post\.php\?post=.*&action=edit/
+				);
 				return;
 			}
 
 			// Wait for Gutenberg editor to be ready
 			try {
-				await page.waitForSelector( '.block-editor-writing-flow', { timeout: TIMEOUTS.SLOW } );
+				await page.waitForSelector( '.block-editor-writing-flow', {
+					timeout: TIMEOUTS.SLOW,
+				} );
 			} catch {
 				// Editor didn't load - check again for errors or redirect
 				const finalUrl = page.url();
@@ -1408,8 +1547,12 @@ test.describe( 'Navigation', () => {
 					// Redirected away - editor doesn't have permission
 					return;
 				}
-				const finalError = page.locator( '.notice-error, .error' ).first();
-				const hasFinalError = await finalError.isVisible().catch( () => false );
+				const finalError = page
+					.locator( '.notice-error, .error' )
+					.first();
+				const hasFinalError = await finalError
+					.isVisible()
+					.catch( () => false );
 				if ( hasFinalError ) {
 					// Editor doesn't have permission
 					return;
@@ -1418,7 +1561,7 @@ test.describe( 'Navigation', () => {
 				// This can happen if the editor user doesn't have edit permissions
 				return;
 			}
-			
+
 			// Close welcome guide if present
 			const welcomeGuide = page.getByLabel( 'Welcome' );
 			if ( await welcomeGuide.isVisible().catch( () => false ) ) {
@@ -1428,71 +1571,102 @@ test.describe( 'Navigation', () => {
 
 			// Wait for editor to be interactive, then use keyboard shortcut to open inserter
 			// This is more reliable than clicking the button
-			const editorArea = page.locator( '.block-editor-writing-flow, .editor-post-text-editor, .block-editor-block-list__layout' ).first();
-			await editorArea.waitFor( { state: 'attached', timeout: TIMEOUTS.SLOW } );
-			
+			const editorArea = page
+				.locator(
+					'.block-editor-writing-flow, .editor-post-text-editor, .block-editor-block-list__layout'
+				)
+				.first();
+			await editorArea.waitFor( {
+				state: 'attached',
+				timeout: TIMEOUTS.SLOW,
+			} );
+
 			// Click in the editor area to ensure focus
 			await editorArea.click( { timeout: TIMEOUTS.SLOW } ).catch( () => {
 				// If clicking fails, try focusing the body
 				return page.locator( 'body' ).click();
 			} );
-			
+
 			// Use keyboard shortcut to open block inserter (slash)
 			await page.keyboard.press( '/' );
-			
+
 			// Wait for inserter to open
-			const inserter = page.locator( '.block-editor-inserter__menu, .block-editor-block-patterns-list' );
+			const inserter = page.locator(
+				'.block-editor-inserter__menu, .block-editor-block-patterns-list'
+			);
 			await inserter.waitFor( { state: 'attached' } ).catch( () => {
 				// Inserter might open differently, that's okay
 			} );
 
 			// Search for Navigation block
-			const searchInput = page.getByPlaceholder( /Search|Search for a block/i );
+			const searchInput = page.getByPlaceholder(
+				/Search|Search for a block/i
+			);
 			if ( await searchInput.isVisible().catch( () => false ) ) {
 				await searchInput.fill( 'Navigation' );
 				// Wait for search results to appear
-				await page.waitForSelector( '[role="option"]', { timeout: 3000 } ).catch( () => {
-					// Results might load differently
-				} );
+				await page
+					.waitForSelector( '[role="option"]', { timeout: 3000 } )
+					.catch( () => {
+						// Results might load differently
+					} );
 			}
 
 			// Try to find and insert the Navigation block
-			const navBlock = page.getByRole( 'option', { name: /Navigation/i } ).first();
-			const canInsertBlock = await navBlock.isVisible( { timeout: 3000 } ).catch( () => false );
+			const navBlock = page
+				.getByRole( 'option', { name: /Navigation/i } )
+				.first();
+			const canInsertBlock = await navBlock
+				.isVisible( { timeout: 3000 } )
+				.catch( () => false );
 
 			if ( canInsertBlock ) {
 				// Editor CAN insert the block
 				await navBlock.click();
 				// Wait for block to be inserted
 				await page
-					.locator( '[data-type="design-system-wordpress-plugin/navigation"]' )
+					.locator(
+						'[data-type="design-system-wordpress-plugin/navigation"]'
+					)
 					.waitFor( { state: 'attached' } );
 
 				// Check if editor can see the menu selector
-				const settingsButton = page.getByRole( 'button', { name: /Settings|Block Settings/i } ).first();
+				const settingsButton = page
+					.getByRole( 'button', { name: /Settings|Block Settings/i } )
+					.first();
 				await settingsButton.click();
 				// Wait for settings sidebar to open
-				await page.locator( '.interface-complementary-area' ).waitFor( { state: 'visible' } );
+				await page
+					.locator( '.interface-complementary-area' )
+					.waitFor( { state: 'visible' } );
 
 				// Try to find the "Select Menu" dropdown
 				const menuSelect = page.getByLabel( /Select Menu/i ).first();
-				const canSelectMenu = await menuSelect.isVisible( { timeout: 2000 } ).catch( () => false );
+				const canSelectMenu = await menuSelect
+					.isVisible( { timeout: 2000 } )
+					.catch( () => false );
 
 				// Editor should be able to SELECT a menu (view existing menus)
 				// but WordPress may restrict which menus they can see
 				expect( canSelectMenu ).toBe( true );
 
 				// Try to click on the navigation block to edit inner blocks
-				const navigationBlock = page.locator(
-					'[data-type="design-system-wordpress-plugin/navigation"]'
-				).first();
+				const navigationBlock = page
+					.locator(
+						'[data-type="design-system-wordpress-plugin/navigation"]'
+					)
+					.first();
 				await navigationBlock.click();
 				// Wait for block to be selected
 				await navigationBlock.waitFor( { state: 'attached' } );
 
 				// Check if editor can see block appender (ability to add links)
-				const blockAppender = navigationBlock.locator( '.block-list-appender' );
-				const canAddLinks = await blockAppender.isVisible().catch( () => false );
+				const blockAppender = navigationBlock.locator(
+					'.block-list-appender'
+				);
+				const canAddLinks = await blockAppender
+					.isVisible()
+					.catch( () => false );
 
 				// Editor should NOT be able to add links (requires edit_theme_options)
 				// The block appender might not be visible, or clicking it might fail
@@ -1528,32 +1702,36 @@ test.describe( 'Navigation', () => {
 /**
  * Helper function to create a WordPress navigation menu via REST API
  *
- * @param requestUtils - RequestUtils instance for API calls
- * @param menuData - Menu configuration
+ * @param requestUtils   - RequestUtils instance for API calls
+ * @param menuData       - Menu configuration
+ * @param menuData.title
+ * @param menuData.items
  * @return Menu ID
  */
 async function createNavigationMenu(
 	requestUtils: RequestUtils,
 	menuData: {
 		title: string;
-		items: Array<{
+		items: Array< {
 			title: string;
 			url: string;
-			children?: Array<{
+			children?: Array< {
 				title: string;
 				url: string;
-				children?: Array<{ title: string; url: string }>;
-			}>;
-		}>;
+				children?: Array< { title: string; url: string } >;
+			} >;
+		} >;
 	}
-): Promise<number> {
+): Promise< number > {
 	/**
 	 * Serialize a navigation link block to HTML comment format
+	 * @param title
+	 * @param url
 	 */
 	function serializeLinkBlock( title: string, url: string ): string {
 		const attrs = JSON.stringify( {
 			label: title,
-			url: url,
+			url,
 			kind: 'custom',
 		} );
 		return `<!-- wp:navigation-link ${ attrs } /-->`;
@@ -1561,26 +1739,33 @@ async function createNavigationMenu(
 
 	/**
 	 * Serialize a navigation submenu block to HTML comment format
+	 * @param title
+	 * @param url
+	 * @param children
 	 */
 	function serializeSubmenuBlock(
 		title: string,
 		url: string,
-		children: Array<{
+		children: Array< {
 			title: string;
 			url: string;
-			children?: Array<{ title: string; url: string }>;
-		}>
+			children?: Array< { title: string; url: string } >;
+		} >
 	): string {
 		const attrs = JSON.stringify( {
 			label: title,
-			url: url,
+			url,
 			kind: 'custom',
 		} );
 
 		const childrenContent = children
 			.map( ( child ) =>
 				child.children
-					? serializeSubmenuBlock( child.title, child.url, child.children )
+					? serializeSubmenuBlock(
+							child.title,
+							child.url,
+							child.children
+					  )
 					: serializeLinkBlock( child.title, child.url )
 			)
 			.join( '\n' );
@@ -1594,7 +1779,11 @@ ${ childrenContent }
 	const blocksContent = menuData.items
 		.map( ( item ) => {
 			if ( item.children ) {
-				return serializeSubmenuBlock( item.title, item.url, item.children );
+				return serializeSubmenuBlock(
+					item.title,
+					item.url,
+					item.children
+				);
 			}
 			return serializeLinkBlock( item.title, item.url );
 		} )
@@ -1623,7 +1812,7 @@ ${ childrenContent }
 async function insertNavigationBlock(
 	editor: Editor,
 	menuId: number
-): Promise<void> {
+): Promise< void > {
 	// Insert the plugin's navigation block (not WordPress core's)
 	await editor.insertBlock( {
 		name: 'design-system-wordpress-plugin/navigation',
@@ -1633,7 +1822,7 @@ async function insertNavigationBlock(
 	await editor.canvas
 		.locator( '[data-type="design-system-wordpress-plugin/navigation"]' )
 		.waitFor( { state: 'attached' } );
-	
+
 	// Note: We verify the correct block is used on the frontend by checking
 	// for the plugin's CSS class: wp-block-design-system-wordpress-plugin-navigation
 	// (not WordPress core's wp-block-navigation)
@@ -1685,12 +1874,12 @@ async function insertNavigationBlock(
  * Helper function to set Navigation block overlay mode
  *
  * @param editor - Editor instance
- * @param mode - Overlay mode: 'always', 'mobile', or 'never'
+ * @param mode   - Overlay mode: 'always', 'mobile', or 'never'
  */
 async function setOverlayMode(
 	editor: Editor,
 	mode: 'always' | 'mobile' | 'never'
-): Promise<void> {
+): Promise< void > {
 	await editor.openDocumentSettingsSidebar();
 
 	// Ensure Navigation Settings panel is open
@@ -1707,7 +1896,7 @@ async function setOverlayMode(
 	// Find the button with the mode name (capitalized: Mobile, Always, Never)
 	// The buttons are in a ButtonGroup, but we can find them directly by text
 	const modeName = mode.charAt( 0 ).toUpperCase() + mode.slice( 1 );
-	
+
 	// Try to find the button directly - it should be in the settings sidebar
 	const modeButton = editor.page
 		.getByRole( 'button', { name: modeName } )
@@ -1724,10 +1913,16 @@ async function setOverlayMode(
 		const fallbackButton = sidebar
 			.getByRole( 'button', { name: modeName } )
 			.first();
-		await fallbackButton.waitFor( { state: 'visible', timeout: TIMEOUTS.SLOW } );
+		await fallbackButton.waitFor( {
+			state: 'visible',
+			timeout: TIMEOUTS.SLOW,
+		} );
 		await fallbackButton.click();
 	} else {
-		await modeButton.waitFor( { state: 'visible', timeout: TIMEOUTS.SLOW } );
+		await modeButton.waitFor( {
+			state: 'visible',
+			timeout: TIMEOUTS.SLOW,
+		} );
 		await modeButton.click();
 	}
 
@@ -1740,15 +1935,15 @@ async function setOverlayMode(
 /**
  * Helper function to set Navigation block setting (toggle)
  *
- * @param editor - Editor instance
+ * @param editor      - Editor instance
  * @param settingName - Name of the setting (e.g., 'Show in Desktop')
- * @param value - Boolean value to set
+ * @param value       - Boolean value to set
  */
 async function setNavigationSetting(
 	editor: Editor,
 	settingName: string,
 	value: boolean
-): Promise<void> {
+): Promise< void > {
 	await editor.openDocumentSettingsSidebar();
 
 	const toggle = editor.page.getByRole( 'checkbox', {
@@ -1769,13 +1964,13 @@ async function setNavigationSetting(
 /**
  * Helper function to set Navigation block mobile breakpoint
  *
- * @param editor - Editor instance
+ * @param editor     - Editor instance
  * @param breakpoint - Breakpoint value in pixels
  */
 async function setMobileBreakpoint(
 	editor: Editor,
 	breakpoint: number
-): Promise<void> {
+): Promise< void > {
 	await editor.openDocumentSettingsSidebar();
 
 	// Find the mobile breakpoint control by label
