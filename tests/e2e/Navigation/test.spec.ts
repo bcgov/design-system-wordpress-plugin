@@ -1228,7 +1228,8 @@ test.describe( 'Navigation', () => {
 						if ( ! hamburgerEl ) {
 							return false;
 						}
-						const activeEl = hamburgerEl.ownerDocument.activeElement;
+						const activeEl =
+							hamburgerEl.ownerDocument.activeElement;
 						return (
 							activeEl &&
 							activeEl.classList.contains(
