@@ -4,7 +4,6 @@ import {
 	Editor,
 	RequestUtils,
 } from '@wordpress/e2e-test-utils-playwright';
-import { Page } from '@playwright/test';
 import { closeChoosePatternModal } from '../helpers';
 
 /**
@@ -31,54 +30,6 @@ const TIMEOUTS = {
 	// Slow operations (editor initialization, complex page loads) - longer than default 5s
 	SLOW: 10000,
 } as const;
-
-/**
- * Wait for viewport resize to complete
- * Waits for the resize handler to finish processing
- * @param page
- */
-async function waitForResize( page: Page ): Promise< void > {
-	// Wait for any resize handlers to complete
-	await page
-		.waitForFunction(
-			() => {
-				return ! ( window as any ).__resizeTimeout;
-			},
-			{ timeout: 2000 }
-		)
-		.catch( () => {
-			// If no resize handler, just wait a bit for layout to settle
-			return page.waitForTimeout( 100 );
-		} );
-}
-
-/**
- * Wait for submenu animation to complete
- * @param page
- */
-async function waitForSubmenuAnimation( page: Page ): Promise< void > {
-	// Wait for submenu container to have stable visibility
-	await page
-		.waitForFunction(
-			() => {
-				const submenus = document.querySelectorAll(
-					'.wp-block-navigation__submenu-container'
-				);
-				return Array.from( submenus ).every( ( el ) => {
-					const style = window.getComputedStyle( el );
-					return (
-						style.transition === 'none' ||
-						! style.transition.includes( 'opacity' )
-					);
-				} );
-			},
-			{ timeout: 2000 }
-		)
-		.catch( () => {
-			// Fallback: wait for typical animation duration
-			return page.waitForTimeout( 200 );
-		} );
-}
 
 /**
  * Find submenu container for a given menu item link
@@ -170,19 +121,20 @@ test.describe( 'Navigation', () => {
 		} );
 	} );
 
+	test.beforeEach( async ( { admin, editor } ) => {
+		await admin.createNewPost( {
+			postType: 'post',
+			title: 'Test Page',
+			showWelcomeGuide: false,
+		} );
+		await closeChoosePatternModal( editor );
+	} );
+
 	test.describe( 'Visibility', () => {
 		test( 'should appear on frontend when inserted and menu is selected', async ( {
-			admin,
 			editor,
 		} ) => {
-			await admin.createNewPost( {
-				postType: 'page',
-				title: 'Test Page',
-				showWelcomeGuide: false,
-			} );
-
 			await insertNavigationBlock( editor, simpleMenuId );
-			await closeChoosePatternModal( editor );
 
 			const preview = await editor.openPreviewPage();
 
@@ -209,20 +161,12 @@ test.describe( 'Navigation', () => {
 		} );
 
 		test( 'should not appear when no menu is selected', async ( {
-			admin,
 			editor,
 		} ) => {
-			await admin.createNewPost( {
-				postType: 'page',
-				title: 'Test Page',
-				showWelcomeGuide: false,
-			} );
-
 			// Insert Navigation block without selecting a menu
 			await editor.insertBlock( {
 				name: 'design-system-wordpress-plugin/navigation',
 			} );
-			await closeChoosePatternModal( editor );
 
 			const preview = await editor.openPreviewPage();
 			const nav = preview.locator(
@@ -242,24 +186,15 @@ test.describe( 'Navigation', () => {
 		} );
 
 		test( 'should respect "Show on Desktop" setting', async ( {
-			admin,
 			editor,
 		} ) => {
-			await admin.createNewPost( {
-				postType: 'page',
-				title: 'Test Page',
-				showWelcomeGuide: false,
-			} );
-
 			await insertNavigationBlock( editor, simpleMenuId );
 			await setNavigationSetting( editor, 'Show in Desktop', false );
-			await closeChoosePatternModal( editor );
 
 			const preview = await editor.openPreviewPage();
 
 			// Set viewport to desktop size (above 768px default breakpoint)
 			await preview.setViewportSize( VIEWPORT_SIZES.DESKTOP );
-			await waitForResize( preview );
 
 			const nav = preview.locator(
 				'.wp-block-design-system-wordpress-plugin-navigation'
@@ -270,24 +205,15 @@ test.describe( 'Navigation', () => {
 		} );
 
 		test( 'should respect "Show on Mobile" setting', async ( {
-			admin,
 			editor,
 		} ) => {
-			await admin.createNewPost( {
-				postType: 'page',
-				title: 'Test Page',
-				showWelcomeGuide: false,
-			} );
-
 			await insertNavigationBlock( editor, simpleMenuId );
 			await setNavigationSetting( editor, 'Show in Mobile', false );
-			await closeChoosePatternModal( editor );
 
 			const preview = await editor.openPreviewPage();
 
 			// Set viewport to mobile size (below 768px default breakpoint)
 			await preview.setViewportSize( VIEWPORT_SIZES.MOBILE );
-			await waitForResize( preview );
 
 			const nav = preview.locator(
 				'.wp-block-design-system-wordpress-plugin-navigation'
@@ -300,24 +226,15 @@ test.describe( 'Navigation', () => {
 
 	test.describe( 'Overlay Mode', () => {
 		test( 'Always Overlay mode: Menu always displays as overlay with hamburger toggle', async ( {
-			admin,
 			editor,
 		} ) => {
-			await admin.createNewPost( {
-				postType: 'page',
-				title: 'Test Page',
-				showWelcomeGuide: false,
-			} );
-
 			await insertNavigationBlock( editor, simpleMenuId );
 			await setOverlayMode( editor, 'always' );
-			await closeChoosePatternModal( editor );
 
 			const preview = await editor.openPreviewPage();
 
 			// Test at desktop size
 			await preview.setViewportSize( VIEWPORT_SIZES.DESKTOP );
-			await waitForResize( preview );
 
 			const nav = preview.locator(
 				'.wp-block-design-system-wordpress-plugin-navigation'
@@ -334,25 +251,16 @@ test.describe( 'Navigation', () => {
 
 			// Test at mobile size
 			await preview.setViewportSize( VIEWPORT_SIZES.MOBILE );
-			await waitForResize( preview );
 
 			await expect( hamburger ).toBeVisible();
 			await expect( menuContainer ).not.toBeVisible();
 		} );
 
 		test( 'Mobile Overlay mode: Menu switches to overlay below breakpoint, inline above breakpoint', async ( {
-			admin,
 			editor,
 		} ) => {
-			await admin.createNewPost( {
-				postType: 'page',
-				title: 'Test Page',
-				showWelcomeGuide: false,
-			} );
-
 			await insertNavigationBlock( editor, simpleMenuId );
 			await setOverlayMode( editor, 'mobile' );
-			await closeChoosePatternModal( editor );
 
 			const preview = await editor.openPreviewPage();
 			const nav = preview.locator(
@@ -365,7 +273,6 @@ test.describe( 'Navigation', () => {
 
 			// Test at desktop size (above 768px)
 			await preview.setViewportSize( VIEWPORT_SIZES.DESKTOP );
-			await waitForResize( preview );
 
 			// Hamburger should be hidden, menu should be visible inline
 			await expect( hamburger ).not.toBeVisible();
@@ -373,7 +280,6 @@ test.describe( 'Navigation', () => {
 
 			// Test at mobile size (below 768px)
 			await preview.setViewportSize( VIEWPORT_SIZES.MOBILE );
-			await waitForResize( preview );
 
 			// Hamburger should be visible, menu should be hidden initially
 			await expect( hamburger ).toBeVisible();
@@ -381,18 +287,10 @@ test.describe( 'Navigation', () => {
 		} );
 
 		test( 'Never Overlay mode: Menu always displays as inline menu (no hamburger)', async ( {
-			admin,
 			editor,
 		} ) => {
-			await admin.createNewPost( {
-				postType: 'page',
-				title: 'Test Page',
-				showWelcomeGuide: false,
-			} );
-
 			await insertNavigationBlock( editor, simpleMenuId );
 			await setOverlayMode( editor, 'never' );
-			await closeChoosePatternModal( editor );
 
 			const preview = await editor.openPreviewPage();
 			const nav = preview.locator(
@@ -405,14 +303,12 @@ test.describe( 'Navigation', () => {
 
 			// Test at desktop size
 			await preview.setViewportSize( VIEWPORT_SIZES.DESKTOP );
-			await waitForResize( preview );
 
 			await expect( hamburger ).not.toBeVisible();
 			await expect( menuContainer ).toBeVisible();
 
 			// Test at mobile size
 			await preview.setViewportSize( VIEWPORT_SIZES.MOBILE );
-			await waitForResize( preview );
 
 			// Even at mobile, hamburger should not be visible in "never" mode
 			await expect( hamburger ).not.toBeVisible();
@@ -421,16 +317,9 @@ test.describe( 'Navigation', () => {
 	} );
 
 	test.describe( 'Mobile Menu Toggle', () => {
-		test.beforeEach( async ( { admin, editor } ) => {
-			await admin.createNewPost( {
-				postType: 'page',
-				title: 'Test Page',
-				showWelcomeGuide: false,
-			} );
-
+		test.beforeEach( async ( { editor } ) => {
 			await insertNavigationBlock( editor, simpleMenuId );
 			await setOverlayMode( editor, 'mobile' );
-			await closeChoosePatternModal( editor );
 		} );
 
 		test( 'Hamburger icon appears when overlay mode is active', async ( {
@@ -438,7 +327,6 @@ test.describe( 'Navigation', () => {
 		} ) => {
 			const preview = await editor.openPreviewPage();
 			await preview.setViewportSize( VIEWPORT_SIZES.MOBILE );
-			await waitForResize( preview );
 
 			const nav = preview.locator(
 				'.wp-block-design-system-wordpress-plugin-navigation'
@@ -453,7 +341,6 @@ test.describe( 'Navigation', () => {
 		} ) => {
 			const preview = await editor.openPreviewPage();
 			await preview.setViewportSize( VIEWPORT_SIZES.MOBILE );
-			await waitForResize( preview );
 
 			const nav = preview.locator(
 				'.wp-block-design-system-wordpress-plugin-navigation'
@@ -485,7 +372,6 @@ test.describe( 'Navigation', () => {
 		} ) => {
 			const preview = await editor.openPreviewPage();
 			await preview.setViewportSize( VIEWPORT_SIZES.MOBILE );
-			await waitForResize( preview );
 
 			const nav = preview.locator(
 				'.wp-block-design-system-wordpress-plugin-navigation'
@@ -513,7 +399,6 @@ test.describe( 'Navigation', () => {
 		} ) => {
 			const preview = await editor.openPreviewPage();
 			await preview.setViewportSize( VIEWPORT_SIZES.MOBILE );
-			await waitForResize( preview );
 
 			const nav = preview.locator(
 				'.wp-block-design-system-wordpress-plugin-navigation'
@@ -571,22 +456,13 @@ test.describe( 'Navigation', () => {
 
 	test.describe( 'Submenus', () => {
 		test( 'Desktop: Submenus open on hover and close when pointer leaves', async ( {
-			admin,
 			editor,
 		} ) => {
-			await admin.createNewPost( {
-				postType: 'page',
-				title: 'Test Page',
-				showWelcomeGuide: false,
-			} );
-
 			await insertNavigationBlock( editor, submenuMenuId );
 			await setOverlayMode( editor, 'never' );
-			await closeChoosePatternModal( editor );
 
 			const preview = await editor.openPreviewPage();
 			await preview.setViewportSize( VIEWPORT_SIZES.DESKTOP );
-			await waitForResize( preview );
 
 			const nav = preview.locator(
 				'.wp-block-design-system-wordpress-plugin-navigation'
@@ -607,7 +483,6 @@ test.describe( 'Navigation', () => {
 
 			// Hover over Services item
 			await servicesItem.hover();
-			await waitForSubmenuAnimation( preview );
 
 			// Submenu container should be visible (open)
 			await expect( submenuContainer ).toBeVisible();
@@ -619,29 +494,19 @@ test.describe( 'Navigation', () => {
 			await preview
 				.locator( 'body' )
 				.hover( { position: { x: 10, y: 10 } } );
-			await waitForSubmenuAnimation( preview );
 
 			// Submenu container should be hidden (closed)
 			await expect( submenuContainer ).not.toBeVisible();
 		} );
 
 		test( 'Mobile: Submenus open/close via arrow toggle next to parent item', async ( {
-			admin,
 			editor,
 		} ) => {
-			await admin.createNewPost( {
-				postType: 'page',
-				title: 'Test Page',
-				showWelcomeGuide: false,
-			} );
-
 			await insertNavigationBlock( editor, submenuMenuId );
 			await setOverlayMode( editor, 'mobile' );
-			await closeChoosePatternModal( editor );
 
 			const preview = await editor.openPreviewPage();
 			await preview.setViewportSize( VIEWPORT_SIZES.MOBILE );
-			await waitForResize( preview );
 
 			const nav = preview.locator(
 				'.wp-block-design-system-wordpress-plugin-navigation'
@@ -689,22 +554,13 @@ test.describe( 'Navigation', () => {
 		} );
 
 		test( 'Nested submenus (multi-level) work correctly', async ( {
-			admin,
 			editor,
 		} ) => {
-			await admin.createNewPost( {
-				postType: 'page',
-				title: 'Test Page',
-				showWelcomeGuide: false,
-			} );
-
 			await insertNavigationBlock( editor, multiLevelMenuId );
 			await setOverlayMode( editor, 'never' );
-			await closeChoosePatternModal( editor );
 
 			const preview = await editor.openPreviewPage();
 			await preview.setViewportSize( VIEWPORT_SIZES.DESKTOP );
-			await waitForResize( preview );
 
 			const nav = preview.locator(
 				'.wp-block-design-system-wordpress-plugin-navigation'
@@ -713,7 +569,6 @@ test.describe( 'Navigation', () => {
 
 			// Hover over Products to open first level
 			await productsItem.hover();
-			await waitForSubmenuAnimation( preview );
 
 			// First level submenu should be visible - wait for both items
 			const category1Link = nav.getByRole( 'link', {
@@ -726,13 +581,9 @@ test.describe( 'Navigation', () => {
 			await expect( category1Link ).toBeVisible();
 			await expect( category2Link ).toBeVisible();
 
-			// Wait for first level submenu to be fully rendered
-			await waitForSubmenuAnimation( preview );
-
 			// Hover over Category 2 to open second level
 			// Use force to bypass pointer interception issues
 			await category2Link.hover( { force: true } );
-			await waitForSubmenuAnimation( preview );
 
 			// Second level submenu should be visible
 			await expect(
@@ -744,22 +595,13 @@ test.describe( 'Navigation', () => {
 		} );
 
 		test( 'Submenus remain within viewport boundaries', async ( {
-			admin,
 			editor,
 		} ) => {
-			await admin.createNewPost( {
-				postType: 'page',
-				title: 'Test Page',
-				showWelcomeGuide: false,
-			} );
-
 			await insertNavigationBlock( editor, submenuMenuId );
 			await setOverlayMode( editor, 'never' );
-			await closeChoosePatternModal( editor );
 
 			const preview = await editor.openPreviewPage();
 			await preview.setViewportSize( VIEWPORT_SIZES.DESKTOP );
-			await waitForResize( preview );
 
 			const nav = preview.locator(
 				'.wp-block-design-system-wordpress-plugin-navigation'
@@ -768,7 +610,6 @@ test.describe( 'Navigation', () => {
 
 			// Hover to open submenu
 			await servicesItem.hover();
-			await waitForSubmenuAnimation( preview );
 
 			const submenuContainer = nav
 				.locator( '.wp-block-navigation__submenu-container.is-open' )
@@ -789,17 +630,9 @@ test.describe( 'Navigation', () => {
 
 	test.describe( 'Navigation Links', () => {
 		test( 'Top-level navigation links are clickable and navigate correctly', async ( {
-			admin,
 			editor,
 		} ) => {
-			await admin.createNewPost( {
-				postType: 'page',
-				title: 'Test Page',
-				showWelcomeGuide: false,
-			} );
-
 			await insertNavigationBlock( editor, simpleMenuId );
-			await closeChoosePatternModal( editor );
 
 			const preview = await editor.openPreviewPage();
 			const nav = preview.locator(
@@ -812,22 +645,13 @@ test.describe( 'Navigation', () => {
 		} );
 
 		test( 'Submenu links are clickable and navigate correctly', async ( {
-			admin,
 			editor,
 		} ) => {
-			await admin.createNewPost( {
-				postType: 'page',
-				title: 'Test Page',
-				showWelcomeGuide: false,
-			} );
-
 			await insertNavigationBlock( editor, submenuMenuId );
 			await setOverlayMode( editor, 'never' );
-			await closeChoosePatternModal( editor );
 
 			const preview = await editor.openPreviewPage();
 			await preview.setViewportSize( VIEWPORT_SIZES.DESKTOP );
-			await waitForResize( preview );
 
 			const nav = preview.locator(
 				'.wp-block-design-system-wordpress-plugin-navigation'
@@ -836,7 +660,6 @@ test.describe( 'Navigation', () => {
 
 			// Hover to open submenu
 			await servicesItem.hover();
-			await waitForSubmenuAnimation( preview );
 
 			const webDesignLink = nav.getByRole( 'link', {
 				name: 'Web Design',
@@ -849,17 +672,9 @@ test.describe( 'Navigation', () => {
 		} );
 
 		test( 'Links work with keyboard navigation (Tab, Enter)', async ( {
-			admin,
 			editor,
 		} ) => {
-			await admin.createNewPost( {
-				postType: 'page',
-				title: 'Test Page',
-				showWelcomeGuide: false,
-			} );
-
 			await insertNavigationBlock( editor, simpleMenuId );
-			await closeChoosePatternModal( editor );
 
 			const preview = await editor.openPreviewPage();
 			const nav = preview.locator(
@@ -882,7 +697,6 @@ test.describe( 'Navigation', () => {
 		} );
 
 		test( 'Active/current page link is properly highlighted', async ( {
-			admin,
 			editor,
 		} ) => {
 			// Create a page that will be linked in the menu
@@ -907,14 +721,7 @@ test.describe( 'Navigation', () => {
 				],
 			} );
 
-			await admin.createNewPost( {
-				postType: 'page',
-				title: 'Test Page',
-				showWelcomeGuide: false,
-			} );
-
 			await insertNavigationBlock( editor, menuId );
-			await closeChoosePatternModal( editor );
 
 			// Navigate to the test page
 			// Use the full URL including the site URL
@@ -1009,18 +816,10 @@ test.describe( 'Navigation', () => {
 
 	test.describe( 'Responsive Behavior', () => {
 		test( 'Menu behavior changes correctly at mobile breakpoint (default 768px)', async ( {
-			admin,
 			editor,
 		} ) => {
-			await admin.createNewPost( {
-				postType: 'page',
-				title: 'Test Page',
-				showWelcomeGuide: false,
-			} );
-
 			await insertNavigationBlock( editor, simpleMenuId );
 			await setOverlayMode( editor, 'mobile' );
-			await closeChoosePatternModal( editor );
 
 			const preview = await editor.openPreviewPage();
 			const nav = preview.locator(
@@ -1036,7 +835,6 @@ test.describe( 'Navigation', () => {
 				width: VIEWPORT_SIZES.MOBILE_BREAKPOINT + 1,
 				height: 768,
 			} );
-			await waitForResize( preview );
 
 			await expect( hamburger ).not.toBeVisible();
 			await expect( menuContainer ).toBeVisible();
@@ -1046,26 +844,17 @@ test.describe( 'Navigation', () => {
 				width: VIEWPORT_SIZES.MOBILE_BREAKPOINT - 1,
 				height: 768,
 			} );
-			await waitForResize( preview );
 
 			await expect( hamburger ).toBeVisible();
 			await expect( menuContainer ).not.toBeVisible();
 		} );
 
 		test( 'Custom mobile breakpoint setting is respected', async ( {
-			admin,
 			editor,
 		} ) => {
-			await admin.createNewPost( {
-				postType: 'page',
-				title: 'Test Page',
-				showWelcomeGuide: false,
-			} );
-
 			await insertNavigationBlock( editor, simpleMenuId );
 			await setOverlayMode( editor, 'mobile' );
 			await setMobileBreakpoint( editor, 1024 );
-			await closeChoosePatternModal( editor );
 
 			const preview = await editor.openPreviewPage();
 			const nav = preview.locator(
@@ -1081,7 +870,6 @@ test.describe( 'Navigation', () => {
 				width: VIEWPORT_SIZES.CUSTOM_BREAKPOINT + 1,
 				height: 768,
 			} );
-			await waitForResize( preview );
 
 			await expect( hamburger ).not.toBeVisible();
 			await expect( menuContainer ).toBeVisible();
@@ -1091,25 +879,16 @@ test.describe( 'Navigation', () => {
 				width: VIEWPORT_SIZES.CUSTOM_BREAKPOINT - 1,
 				height: 768,
 			} );
-			await waitForResize( preview );
 
 			await expect( hamburger ).toBeVisible();
 			await expect( menuContainer ).not.toBeVisible();
 		} );
 
 		test( 'Menu layout adapts correctly when viewport is resized', async ( {
-			admin,
 			editor,
 		} ) => {
-			await admin.createNewPost( {
-				postType: 'page',
-				title: 'Test Page',
-				showWelcomeGuide: false,
-			} );
-
 			await insertNavigationBlock( editor, simpleMenuId );
 			await setOverlayMode( editor, 'mobile' );
-			await closeChoosePatternModal( editor );
 
 			const preview = await editor.openPreviewPage();
 			const nav = preview.locator(
@@ -1122,19 +901,16 @@ test.describe( 'Navigation', () => {
 
 			// Start at desktop
 			await preview.setViewportSize( VIEWPORT_SIZES.DESKTOP );
-			await waitForResize( preview );
 			await expect( hamburger ).not.toBeVisible();
 			await expect( menuContainer ).toBeVisible();
 
 			// Resize to mobile
 			await preview.setViewportSize( VIEWPORT_SIZES.MOBILE );
-			await waitForResize( preview );
 			await expect( hamburger ).toBeVisible();
 			await expect( menuContainer ).not.toBeVisible();
 
 			// Resize back to desktop
 			await preview.setViewportSize( VIEWPORT_SIZES.DESKTOP );
-			await waitForResize( preview );
 			await expect( hamburger ).not.toBeVisible();
 			await expect( menuContainer ).toBeVisible();
 		} );
@@ -1142,17 +918,9 @@ test.describe( 'Navigation', () => {
 
 	test.describe( 'Keyboard Navigation & Accessibility', () => {
 		test( 'All menu items are keyboard accessible', async ( {
-			admin,
 			editor,
 		} ) => {
-			await admin.createNewPost( {
-				postType: 'page',
-				title: 'Test Page',
-				showWelcomeGuide: false,
-			} );
-
 			await insertNavigationBlock( editor, simpleMenuId );
-			await closeChoosePatternModal( editor );
 
 			const preview = await editor.openPreviewPage();
 			const nav = preview.locator(
@@ -1178,22 +946,13 @@ test.describe( 'Navigation', () => {
 		} );
 
 		test( 'Focus management works correctly when opening/closing menus', async ( {
-			admin,
 			editor,
 		} ) => {
-			await admin.createNewPost( {
-				postType: 'page',
-				title: 'Test Page',
-				showWelcomeGuide: false,
-			} );
-
 			await insertNavigationBlock( editor, submenuMenuId );
 			await setOverlayMode( editor, 'mobile' );
-			await closeChoosePatternModal( editor );
 
 			const preview = await editor.openPreviewPage();
 			await preview.setViewportSize( VIEWPORT_SIZES.MOBILE );
-			await waitForResize( preview );
 
 			const nav = preview.locator(
 				'.wp-block-design-system-wordpress-plugin-navigation'
@@ -1258,22 +1017,13 @@ test.describe( 'Navigation', () => {
 		} );
 
 		test( 'ARIA attributes are present and correct', async ( {
-			admin,
 			editor,
 		} ) => {
-			await admin.createNewPost( {
-				postType: 'page',
-				title: 'Test Page',
-				showWelcomeGuide: false,
-			} );
-
 			await insertNavigationBlock( editor, submenuMenuId );
 			await setOverlayMode( editor, 'mobile' );
-			await closeChoosePatternModal( editor );
 
 			const preview = await editor.openPreviewPage();
 			await preview.setViewportSize( VIEWPORT_SIZES.MOBILE );
-			await waitForResize( preview );
 
 			const nav = preview.locator(
 				'.wp-block-design-system-wordpress-plugin-navigation'
@@ -1351,18 +1101,10 @@ test.describe( 'Navigation', () => {
 		} );
 
 		test( 'Admin can insert Navigation block and select menu', async ( {
-			admin,
 			editor,
 		} ) => {
-			await admin.createNewPost( {
-				postType: 'page',
-				title: 'Admin Test Page',
-				showWelcomeGuide: false,
-			} );
-
 			// Admin should be able to insert the block
 			await insertNavigationBlock( editor, simpleMenuId );
-			await closeChoosePatternModal( editor );
 
 			const preview = await editor.openPreviewPage();
 			const nav = preview.locator(
@@ -1376,17 +1118,9 @@ test.describe( 'Navigation', () => {
 		} );
 
 		test( 'Admin can edit navigation menu content (add links)', async ( {
-			admin,
 			editor,
 		} ) => {
-			await admin.createNewPost( {
-				postType: 'page',
-				title: 'Admin Edit Test Page',
-				showWelcomeGuide: false,
-			} );
-
 			await insertNavigationBlock( editor, simpleMenuId );
-			await closeChoosePatternModal( editor );
 
 			// Admin should be able to click on the navigation block to edit it
 			const navigationBlock = editor.canvas
