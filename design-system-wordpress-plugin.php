@@ -99,27 +99,50 @@ function dswp_add_new_block_category( $categories ) {
 }
 add_filter( 'block_categories_all', 'dswp_add_new_block_category', 10, 2 );
 
-
 // Design System Plugin
 // When the plugin is enabled, the 'design-system-wordpress-theme//header-content' is unregistered,
-// and updated with plugin which calls the header-with-design-system-plugin template part.
+// and updated with plugin which calls the appropriate template part based on other plugins.
 add_action( 'init', 'design_system_register_header_template', 99 );
 /**
  * Registers the Design System Plugin header template.
  *
  * Unregisters the default design system header template and registers
- * the plugin's header template that uses the header-with-design-system-plugin template part.
+ * the plugin's header template. If Search Plugin is also enabled, registers
+ * the combined template part.
  */
 function design_system_register_header_template() {
-	unregister_block_template( 'design-system-wordpress-theme//header-content' );
-	register_block_template(
-		'design-system-wordpress-plugin//header-content',
-		[
-			'title'       => __( 'Header with Design System Plugin', 'design-system-wordpress-plugin' ),
-			'description' => __( 'Header content', 'design-system-wordpress-plugin' ),
-			'content'     => '<!-- wp:template-part {"slug":"header-with-design-system-plugin","area":"header"} /-->',
-		],
-	);
+	$block_registry = \WP_Block_Type_Registry::get_instance();
+	$search_plugin_active = $block_registry->is_registered( 'wordpress-search/search-bar' );
+	
+	// Only unregister if the template is registered (check to avoid errors)
+	$template_registry = \WP_Block_Templates_Registry::get_instance();
+	$all_templates = $template_registry->get_all_registered();
+	$template_id = 'design-system-wordpress-theme//header-content';
+	if ( isset( $all_templates[ $template_id ] ) ) {
+		unregister_block_template( $template_id );
+	}
+	
+	if ( $search_plugin_active ) {
+		// Both plugins active - use combined template
+		register_block_template(
+			'design-system-wordpress-plugin//header-content',
+			[
+				'title'       => __( 'Header with Design System Plugin', 'design-system-wordpress-plugin' ),
+				'description' => __( 'Header content', 'design-system-wordpress-plugin' ),
+				'content'     => '<!-- wp:template-part {"slug":"header-with-both-plugins","area":"header"} /-->',
+			],
+		);
+	} else {
+		// Only Design System Plugin active
+		register_block_template(
+			'design-system-wordpress-plugin//header-content',
+			[
+				'title'       => __( 'Header with Design System Plugin', 'design-system-wordpress-plugin' ),
+				'description' => __( 'Header content', 'design-system-wordpress-plugin' ),
+				'content'     => '<!-- wp:template-part {"slug":"header-with-design-system-plugin","area":"header"} /-->',
+			],
+		);
+	}
 }
 
 /**
