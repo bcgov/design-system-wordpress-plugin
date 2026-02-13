@@ -100,6 +100,28 @@ function dswp_add_new_block_category( $categories ) {
 add_filter( 'block_categories_all', 'dswp_add_new_block_category', 10, 2 );
 
 
+// Design System Plugin
+// When the plugin is enabled, the 'design-system-wordpress-theme//header-content' is unregistered,
+// and updated with plugin which calls the header-with-design-system-plugin template part.
+add_action( 'init', 'design_system_register_header_template', 99 );
+/**
+ * Registers the Design System Plugin header template.
+ *
+ * Unregisters the default design system header template and registers
+ * the plugin's header template that uses the header-with-design-system-plugin template part.
+ */
+function design_system_register_header_template() {
+	unregister_block_template( 'design-system-wordpress-theme//header-content' );
+	register_block_template(
+		'design-system-wordpress-plugin//header-content',
+		[
+			'title'       => __( 'Header with Design System Plugin', 'design-system-wordpress-plugin' ),
+			'description' => __( 'Header content', 'design-system-wordpress-plugin' ),
+			'content'     => '<!-- wp:template-part {"slug":"header-with-design-system-plugin","area":"header"} /-->',
+		],
+	);
+}
+
 /**
  * Design System settings
  */
