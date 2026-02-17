@@ -20,6 +20,7 @@ class NotificationBanner {
         'var(--dswp-icons-color-danger)'  => 'white',
         'var(--dswp-icons-color-success)' => 'white',
         'var(--dswp-icons-color-info)'    => 'white',
+        '#2d2d2d'                         => '#ffffff',
     ];
 
     /**
@@ -144,6 +145,7 @@ class NotificationBanner {
             'var(--dswp-icons-color-danger)'  => __( 'Danger', 'dswp' ),
             'var(--dswp-icons-color-success)' => __( 'Success', 'dswp' ),
             'var(--dswp-icons-color-info)'    => __( 'Info', 'dswp' ),
+            '#2d2d2d'                         => __( 'Black', 'dswp' ),
         ];
 
         foreach ( $color_options as $color => $label ) {

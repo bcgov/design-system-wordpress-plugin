@@ -111,19 +111,19 @@ add_action( 'init', 'design_system_register_header_template', 99 );
  * the combined template part.
  */
 function design_system_register_header_template() {
-	$block_registry = \WP_Block_Type_Registry::get_instance();
+	$block_registry       = \WP_Block_Type_Registry::get_instance();
 	$search_plugin_active = $block_registry->is_registered( 'wordpress-search/search-bar' );
-	
-	// Only unregister if the template is registered (check to avoid errors)
+
+	// Only unregister if the template is registered (check to avoid errors).
 	$template_registry = \WP_Block_Templates_Registry::get_instance();
-	$all_templates = $template_registry->get_all_registered();
-	$template_id = 'design-system-wordpress-theme//header-content';
+	$all_templates     = $template_registry->get_all_registered();
+	$template_id       = 'design-system-wordpress-theme//header-content';
 	if ( isset( $all_templates[ $template_id ] ) ) {
 		unregister_block_template( $template_id );
 	}
-	
+
 	if ( $search_plugin_active ) {
-		// Both plugins active - use combined template
+		// Both plugins active - use combined template.
 		register_block_template(
 			'design-system-wordpress-plugin//header-content',
 			[
@@ -133,7 +133,7 @@ function design_system_register_header_template() {
 			],
 		);
 	} else {
-		// Only Design System Plugin active
+		// Only Design System Plugin active.
 		register_block_template(
 			'design-system-wordpress-plugin//header-content',
 			[
