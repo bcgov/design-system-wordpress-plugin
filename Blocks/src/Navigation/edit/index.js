@@ -143,26 +143,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	};
 
 	/**
-	 * Handles mutually exclusive visibility toggle changes
-	 * Ensures that when one toggle is turned ON, the other is turned OFF, and vice versa
-	 * @param {string}  toggleType - Either 'desktop' or 'mobile'
-	 * @param {boolean} value      - The new value for the toggle
-	 */
-	const handleVisibilityToggle = ( toggleType, value ) => {
-		if ( toggleType === 'desktop' ) {
-			setAttributes( {
-				showInDesktop: value,
-				showInMobile: ! value,
-			} );
-		} else if ( toggleType === 'mobile' ) {
-			setAttributes( {
-				showInMobile: value,
-				showInDesktop: ! value,
-			} );
-		}
-	};
-
-	/**
 	 * Memoize menu options to avoid recalculating on every render
 	 */
 	const menuOptions = useMemo( () => {
@@ -201,16 +181,40 @@ export default function Edit( { attributes, setAttributes } ) {
 						<ToggleControl
 							label={ __( 'Show in Desktop', 'dswp' ) }
 							checked={ showInDesktop }
-							onChange={ ( value ) =>
-								handleVisibilityToggle( 'desktop', value )
-							}
+							onChange={ ( value ) => {
+								if ( value ) {
+									// Turning Desktop ON: turn Mobile OFF
+									setAttributes( {
+										showInDesktop: true,
+										showInMobile: false,
+									} );
+								} else {
+									// Turning Desktop OFF: turn Mobile ON
+									setAttributes( {
+										showInDesktop: false,
+										showInMobile: true,
+									} );
+								}
+							} }
 						/>
 						<ToggleControl
 							label={ __( 'Show in Mobile', 'dswp' ) }
 							checked={ showInMobile }
-							onChange={ ( value ) =>
-								handleVisibilityToggle( 'mobile', value )
-							}
+							onChange={ ( value ) => {
+								if ( value ) {
+									// Turning Mobile ON: turn Desktop OFF
+									setAttributes( {
+										showInMobile: true,
+										showInDesktop: false,
+									} );
+								} else {
+									// Turning Mobile OFF: turn Desktop ON
+									setAttributes( {
+										showInMobile: false,
+										showInDesktop: true,
+									} );
+								}
+							} }
 						/>
 						<SelectControl
 							label={ __( 'Select Menu', 'dswp' ) }
@@ -329,16 +333,40 @@ export default function Edit( { attributes, setAttributes } ) {
 						<ToggleControl
 							label={ __( 'Show in Desktop', 'dswp' ) }
 							checked={ showInDesktop }
-							onChange={ ( value ) =>
-								handleVisibilityToggle( 'desktop', value )
-							}
+							onChange={ ( value ) => {
+								if ( value ) {
+									// Turning Desktop ON: turn Mobile OFF
+									setAttributes( {
+										showInDesktop: true,
+										showInMobile: false,
+									} );
+								} else {
+									// Turning Desktop OFF: turn Mobile ON
+									setAttributes( {
+										showInDesktop: false,
+										showInMobile: true,
+									} );
+								}
+							} }
 						/>
 						<ToggleControl
 							label={ __( 'Show in Mobile', 'dswp' ) }
 							checked={ showInMobile }
-							onChange={ ( value ) =>
-								handleVisibilityToggle( 'mobile', value )
-							}
+							onChange={ ( value ) => {
+								if ( value ) {
+									// Turning Mobile ON: turn Desktop OFF
+									setAttributes( {
+										showInMobile: true,
+										showInDesktop: false,
+									} );
+								} else {
+									// Turning Mobile OFF: turn Desktop ON
+									setAttributes( {
+										showInMobile: false,
+										showInDesktop: true,
+									} );
+								}
+							} }
 						/>
 						<SelectControl
 							label={ __( 'Select Menu', 'dswp' ) }
