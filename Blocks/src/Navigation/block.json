@@ -47,7 +47,7 @@
 	"attributes": {
 		"overlayMenu": {
 			"type": "string",
-			"default": "mobile"
+			"default": "never"
 		},
 		"ref": {
 			"type": "number"

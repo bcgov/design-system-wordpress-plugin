@@ -13,7 +13,7 @@
  */
 
 $menu_id           = isset( $attributes['menuId'] ) ? (int) $attributes['menuId'] : 0;
-$overlay_menu      = isset( $attributes['overlayMenu'] ) ? $attributes['overlayMenu'] : 'mobile';
+$overlay_menu      = isset( $attributes['overlayMenu'] ) ? $attributes['overlayMenu'] : 'never';
 $mobile_breakpoint = isset( $attributes['mobileBreakpoint'] ) ? (int) $attributes['mobileBreakpoint'] : 768;
 $show_in_desktop   = isset( $attributes['showInDesktop'] ) ? (bool) $attributes['showInDesktop'] : true;
 $show_in_mobile    = isset( $attributes['showInMobile'] ) ? (bool) $attributes['showInMobile'] : false;

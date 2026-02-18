@@ -82,7 +82,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		menuId, // Keep menuId for backward compatibility, but also support ref
 		ref, // WordPress core uses 'ref'
-		overlayMenu = 'mobile',
+		overlayMenu = 'never',
 		mobileBreakpoint = 768,
 		showInDesktop,
 		showInMobile,
