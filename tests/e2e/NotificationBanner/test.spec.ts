@@ -6,11 +6,16 @@ test.describe( 'NotificationBanner', () => {
 	// Constants
 	// =====================
 
-	const BANNER_COLORS = [
+	const BANNER_COLORS: Array< {
+		name: string;
+		cssVar: string | null;
+		literalValue?: string;
+	} > = [
 		{ name: 'Warning', cssVar: '--dswp-icons-color-warning' },
 		{ name: 'Danger', cssVar: '--dswp-icons-color-danger' },
 		{ name: 'Success', cssVar: '--dswp-icons-color-success' },
 		{ name: 'Info', cssVar: '--dswp-icons-color-info' },
+		{ name: 'Black', cssVar: null, literalValue: '#2d2d2d' },
 	];
 
 	const SELECTORS = {
@@ -83,8 +88,18 @@ test.describe( 'NotificationBanner', () => {
 		await expect( banner ).toHaveCount( 0 );
 	}
 
-	function getBackgroundColorRegex( cssVar: string ): RegExp {
-		return new RegExp( `background-color:\\s*var\\(${ cssVar }\\)` );
+	function getBackgroundColorRegex(
+		color: ( typeof BANNER_COLORS )[ 0 ]
+	): RegExp {
+		if ( color.literalValue ) {
+			return new RegExp(
+				`background-color:\\s*${ color.literalValue.replace(
+					/[.*+?^${}()|[\]\\]/g,
+					'\\$&'
+				) }`
+			);
+		}
+		return new RegExp( `background-color:\\s*var\\(${ color.cssVar }\\)` );
 	}
 
 	// =====================
@@ -134,7 +149,7 @@ test.describe( 'NotificationBanner', () => {
 			const banner = await assertBannerVisible( frontend );
 			await expect( banner ).toHaveAttribute(
 				'style',
-				getBackgroundColorRegex( BANNER_COLORS[ 0 ].cssVar )
+				getBackgroundColorRegex( BANNER_COLORS[ 0 ] )
 			);
 			await frontend.close();
 		} );
@@ -157,7 +172,7 @@ test.describe( 'NotificationBanner', () => {
 			const banner = await assertBannerVisible( frontend );
 			await expect( banner ).toHaveAttribute(
 				'style',
-				getBackgroundColorRegex( color.cssVar )
+				getBackgroundColorRegex( color )
 			);
 			await frontend.close();
 		}
