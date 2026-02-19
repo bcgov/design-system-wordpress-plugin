@@ -143,6 +143,26 @@ export default function Edit( { attributes, setAttributes } ) {
 	};
 
 	/**
+	 * Handles mutually exclusive visibility toggle changes
+	 * Ensures that when one toggle is turned ON, the other is turned OFF, and vice versa
+	 * @param {string}  toggleType - Either 'desktop' or 'mobile'
+	 * @param {boolean} value      - The new value for the toggle
+	 */
+	const handleVisibilityToggle = ( toggleType, value ) => {
+		if ( toggleType === 'desktop' ) {
+			setAttributes( {
+				showInDesktop: value,
+				showInMobile: ! value,
+			} );
+		} else if ( toggleType === 'mobile' ) {
+			setAttributes( {
+				showInMobile: value,
+				showInDesktop: ! value,
+			} );
+		}
+	};
+
+	/**
 	 * Memoize menu options to avoid recalculating on every render
 	 */
 	const menuOptions = useMemo( () => {
@@ -178,12 +198,96 @@ export default function Edit( { attributes, setAttributes } ) {
 			<>
 				<InspectorControls>
 					<PanelBody title={ __( 'Navigation Settings', 'dswp' ) }>
+						<ToggleControl
+							label={ __( 'Show in Desktop', 'dswp' ) }
+							checked={ showInDesktop }
+							onChange={ ( value ) =>
+								handleVisibilityToggle( 'desktop', value )
+							}
+						/>
+						<ToggleControl
+							label={ __( 'Show in Mobile', 'dswp' ) }
+							checked={ showInMobile }
+							onChange={ ( value ) =>
+								handleVisibilityToggle( 'mobile', value )
+							}
+						/>
 						<SelectControl
 							label={ __( 'Select Menu', 'dswp' ) }
 							value={ 0 }
 							options={ menuOptions }
 							onChange={ handleMenuSelect }
 						/>
+
+						<ButtonGroup>
+							<span
+								className="components-base-control__label"
+								style={ {
+									display: 'block',
+									marginBottom: '8px',
+								} }
+							>
+								{ __( 'Overlay Menu', 'dswp' ) }
+							</span>
+							<Button
+								variant={
+									overlayMenu === 'mobile'
+										? 'primary'
+										: 'secondary'
+								}
+								onClick={ () =>
+									setAttributes( { overlayMenu: 'mobile' } )
+								}
+							>
+								{ __( 'Mobile', 'dswp' ) }
+							</Button>
+							<Button
+								variant={
+									overlayMenu === 'always'
+										? 'primary'
+										: 'secondary'
+								}
+								onClick={ () =>
+									setAttributes( { overlayMenu: 'always' } )
+								}
+							>
+								{ __( 'Always', 'dswp' ) }
+							</Button>
+							<Button
+								variant={
+									overlayMenu === 'never'
+										? 'primary'
+										: 'secondary'
+								}
+								onClick={ () =>
+									setAttributes( { overlayMenu: 'never' } )
+								}
+							>
+								{ __( 'Never', 'dswp' ) }
+							</Button>
+						</ButtonGroup>
+
+						{ ( showInDesktop ||
+							showInMobile ||
+							overlayMenu === 'mobile' ) && (
+							<div style={ { marginTop: '1rem' } }>
+								<RangeControl
+									label={ __(
+										'Mobile Breakpoint (px)',
+										'dswp'
+									) }
+									value={ mobileBreakpoint }
+									onChange={ ( value ) =>
+										setAttributes( {
+											mobileBreakpoint: value,
+										} )
+									}
+									min={ 320 }
+									max={ 1200 }
+									step={ 1 }
+								/>
+							</div>
+						) }
 					</PanelBody>
 				</InspectorControls>
 				<nav { ...blockProps }>
@@ -225,22 +329,16 @@ export default function Edit( { attributes, setAttributes } ) {
 						<ToggleControl
 							label={ __( 'Show in Desktop', 'dswp' ) }
 							checked={ showInDesktop }
-							onChange={ ( value ) => {
-								setAttributes( { showInDesktop: value } );
-								if ( value ) {
-									setAttributes( { showInMobile: false } );
-								}
-							} }
+							onChange={ ( value ) =>
+								handleVisibilityToggle( 'desktop', value )
+							}
 						/>
 						<ToggleControl
 							label={ __( 'Show in Mobile', 'dswp' ) }
 							checked={ showInMobile }
-							onChange={ ( value ) => {
-								setAttributes( { showInMobile: value } );
-								if ( value ) {
-									setAttributes( { showInDesktop: false } );
-								}
-							} }
+							onChange={ ( value ) =>
+								handleVisibilityToggle( 'mobile', value )
+							}
 						/>
 						<SelectControl
 							label={ __( 'Select Menu', 'dswp' ) }

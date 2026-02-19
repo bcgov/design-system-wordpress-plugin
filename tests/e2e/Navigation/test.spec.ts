@@ -230,6 +230,8 @@ test.describe( 'Navigation', () => {
 		} ) => {
 			await insertNavigationBlock( editor, simpleMenuId );
 			await setOverlayMode( editor, 'always' );
+			await setNavigationVisibilityBothDesktopAndMobile( editor );
+			await editor.saveDraft();
 
 			const preview = await editor.openPreviewPage();
 
@@ -261,6 +263,8 @@ test.describe( 'Navigation', () => {
 		} ) => {
 			await insertNavigationBlock( editor, simpleMenuId );
 			await setOverlayMode( editor, 'mobile' );
+			await setNavigationVisibilityBothDesktopAndMobile( editor );
+			await editor.saveDraft();
 
 			const preview = await editor.openPreviewPage();
 			const nav = preview.locator(
@@ -291,6 +295,8 @@ test.describe( 'Navigation', () => {
 		} ) => {
 			await insertNavigationBlock( editor, simpleMenuId );
 			await setOverlayMode( editor, 'never' );
+			await setNavigationVisibilityBothDesktopAndMobile( editor );
+			await editor.saveDraft();
 
 			const preview = await editor.openPreviewPage();
 			const nav = preview.locator(
@@ -320,6 +326,7 @@ test.describe( 'Navigation', () => {
 		test.beforeEach( async ( { editor } ) => {
 			await insertNavigationBlock( editor, simpleMenuId );
 			await setOverlayMode( editor, 'mobile' );
+			await setNavigationSetting( editor, 'Show in Mobile', true );
 		} );
 
 		test( 'Hamburger icon appears when overlay mode is active', async ( {
@@ -504,6 +511,7 @@ test.describe( 'Navigation', () => {
 		} ) => {
 			await insertNavigationBlock( editor, submenuMenuId );
 			await setOverlayMode( editor, 'mobile' );
+			await setNavigationSetting( editor, 'Show in Mobile', true );
 
 			const preview = await editor.openPreviewPage();
 			await preview.setViewportSize( VIEWPORT_SIZES.MOBILE );
@@ -820,6 +828,8 @@ test.describe( 'Navigation', () => {
 		} ) => {
 			await insertNavigationBlock( editor, simpleMenuId );
 			await setOverlayMode( editor, 'mobile' );
+			await setNavigationVisibilityBothDesktopAndMobile( editor );
+			await editor.saveDraft();
 
 			const preview = await editor.openPreviewPage();
 			const nav = preview.locator(
@@ -854,7 +864,9 @@ test.describe( 'Navigation', () => {
 		} ) => {
 			await insertNavigationBlock( editor, simpleMenuId );
 			await setOverlayMode( editor, 'mobile' );
+			await setNavigationVisibilityBothDesktopAndMobile( editor );
 			await setMobileBreakpoint( editor, 1024 );
+			await editor.saveDraft();
 
 			const preview = await editor.openPreviewPage();
 			const nav = preview.locator(
@@ -889,6 +901,8 @@ test.describe( 'Navigation', () => {
 		} ) => {
 			await insertNavigationBlock( editor, simpleMenuId );
 			await setOverlayMode( editor, 'mobile' );
+			await setNavigationVisibilityBothDesktopAndMobile( editor );
+			await editor.saveDraft();
 
 			const preview = await editor.openPreviewPage();
 			const nav = preview.locator(
@@ -950,6 +964,7 @@ test.describe( 'Navigation', () => {
 		} ) => {
 			await insertNavigationBlock( editor, submenuMenuId );
 			await setOverlayMode( editor, 'mobile' );
+			await setNavigationSetting( editor, 'Show in Mobile', true );
 
 			const preview = await editor.openPreviewPage();
 			await preview.setViewportSize( VIEWPORT_SIZES.MOBILE );
@@ -1021,6 +1036,7 @@ test.describe( 'Navigation', () => {
 		} ) => {
 			await insertNavigationBlock( editor, submenuMenuId );
 			await setOverlayMode( editor, 'mobile' );
+			await setNavigationSetting( editor, 'Show in Mobile', true );
 
 			const preview = await editor.openPreviewPage();
 			await preview.setViewportSize( VIEWPORT_SIZES.MOBILE );
@@ -1189,8 +1205,11 @@ test.describe( 'Navigation', () => {
 			await page.goto( '/wp-login.php' );
 			await page.fill( '#user_login', 'test_editor' );
 			await page.fill( '#user_pass', 'password' );
-			await page.click( '#wp-submit' );
-			await page.waitForURL( /wp-admin/ );
+			// Wait for redirect after submit; use explicit timeout to avoid eating full test timeout on CI
+			await Promise.all( [
+				page.waitForURL( /wp-admin/, { timeout: 30000 } ),
+				page.click( '#wp-submit' ),
+			] );
 			// Wait for admin dashboard to load
 			await page.waitForLoadState( 'domcontentloaded' );
 
@@ -1694,6 +1713,37 @@ async function setNavigationSetting(
 
 	// Wait for attribute change to be reflected
 	await toggle.waitFor( { state: 'attached' } );
+}
+
+/**
+ * Sets Navigation block visible on both desktop and mobile by updating block
+ * attributes directly (UI toggles are mutually exclusive).
+ * Call saveDraft() after this if opening a preview so the preview uses saved content.
+ *
+ * @param editor - Editor instance
+ */
+async function setNavigationVisibilityBothDesktopAndMobile(
+	editor: Editor
+): Promise< void > {
+	const navBlock = editor.canvas.locator(
+		'[data-type="design-system-wordpress-plugin/navigation"]'
+	);
+	await navBlock.waitFor( { state: 'attached' } );
+	const clientId = await navBlock.getAttribute( 'data-block' );
+	if ( ! clientId ) {
+		throw new Error( 'Navigation block clientId not found' );
+	}
+	await editor.page.evaluate(
+		( [ id ] ) => {
+			( window as any ).wp.data
+				.dispatch( 'core/block-editor' )
+				.updateBlockAttributes( id, {
+					showInDesktop: true,
+					showInMobile: true,
+				} );
+		},
+		[ clientId ]
+	);
 }
 
 /**
