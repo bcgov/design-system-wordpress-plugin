@@ -12,14 +12,14 @@
  * @var WP_Block $block      Block instance.
  */
 
-// Support both 'ref' (WordPress core standard) and 'menuId' (backward compatibility)
+// Support both 'ref' (WordPress core standard) and 'menuId' (backward compatibility).
 $menu_id           = isset( $attributes['ref'] ) ? (int) $attributes['ref'] : ( isset( $attributes['menuId'] ) ? (int) $attributes['menuId'] : 0 );
 $overlay_menu      = isset( $attributes['overlayMenu'] ) ? $attributes['overlayMenu'] : 'never';
 $mobile_breakpoint = isset( $attributes['mobileBreakpoint'] ) ? (int) $attributes['mobileBreakpoint'] : 768;
 $show_in_desktop   = isset( $attributes['showInDesktop'] ) ? (bool) $attributes['showInDesktop'] : true;
 $show_in_mobile    = isset( $attributes['showInMobile'] ) ? (bool) $attributes['showInMobile'] : false;
 
-// Build nav class names
+// Build nav class names.
 $class_names = array(
 	'wp-block-design-system-wordpress-plugin-navigation',
 	'dswp-block-navigation-is-' . esc_attr( $overlay_menu ) . '-overlay',
@@ -37,19 +37,19 @@ if ( $menu_id > 0 ) {
 $parsed_blocks = array();
 if ( ! empty( $navigation_content ) ) {
 	$parsed_blocks = parse_blocks( $navigation_content );
-	
-	// Filter out empty/null blocks (parse_blocks includes null blocks for whitespace)
+
+	// Filter out empty/null blocks (parse_blocks includes null blocks for whitespace).
 	$parsed_blocks = block_core_navigation_filter_out_empty_blocks( $parsed_blocks );
-	
-	// Only allow navigation-specific blocks
+
+	// Only allow navigation-specific blocks.
 	$allowed_blocks = array( 'core/navigation-link', 'core/navigation-submenu', 'core/spacer' );
-	$parsed_blocks = array_filter(
+	$parsed_blocks  = array_filter(
 		$parsed_blocks,
-		static function( $block ) use ( $allowed_blocks ) {
+		static function ( $block ) use ( $allowed_blocks ) {
 			return isset( $block['blockName'] ) && in_array( $block['blockName'], $allowed_blocks, true );
 		}
 	);
-	$parsed_blocks = array_values( $parsed_blocks ); // Reset array keys
+	$parsed_blocks  = array_values( $parsed_blocks ); // Reset array keys.
 }
 
 ?>
