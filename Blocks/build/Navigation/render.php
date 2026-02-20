@@ -13,7 +13,7 @@
  */
 
 // Support both 'ref' (WordPress core standard) and 'menuId' (backward compatibility).
-$menu_id           = isset( $attributes['ref'] ) ? (int) $attributes['ref'] : ( isset( $attributes['menuId'] ) ? (int) $attributes['menuId'] : 0 );
+$menu_id           = (int) ( $attributes['ref'] ?? $attributes['menuId'] ?? 0 );
 $overlay_menu      = isset( $attributes['overlayMenu'] ) ? $attributes['overlayMenu'] : 'never';
 $mobile_breakpoint = isset( $attributes['mobileBreakpoint'] ) ? (int) $attributes['mobileBreakpoint'] : 768;
 $show_in_desktop   = isset( $attributes['showInDesktop'] ) ? (bool) $attributes['showInDesktop'] : true;
@@ -36,10 +36,8 @@ if ( $menu_id > 0 ) {
 
 $parsed_blocks = array();
 if ( ! empty( $navigation_content ) ) {
-	$parsed_blocks = parse_blocks( $navigation_content );
-
 	// Filter out empty/null blocks (parse_blocks includes null blocks for whitespace).
-	$parsed_blocks = block_core_navigation_filter_out_empty_blocks( $parsed_blocks );
+	$parsed_blocks = block_core_navigation_filter_out_empty_blocks( parse_blocks( $navigation_content ) );
 
 	// Only allow navigation-specific blocks.
 	$allowed_blocks = array( 'core/navigation-link', 'core/navigation-submenu', 'core/spacer' );
