@@ -12,12 +12,14 @@
  * @var WP_Block $block      Block instance.
  */
 
-$menu_id           = isset( $attributes['menuId'] ) ? (int) $attributes['menuId'] : 0;
+// Support both 'ref' (WordPress core standard) and 'menuId' (backward compatibility).
+$menu_id           = (int) ( $attributes['ref'] ?? $attributes['menuId'] ?? 0 );
 $overlay_menu      = isset( $attributes['overlayMenu'] ) ? $attributes['overlayMenu'] : 'never';
 $mobile_breakpoint = isset( $attributes['mobileBreakpoint'] ) ? (int) $attributes['mobileBreakpoint'] : 768;
 $show_in_desktop   = isset( $attributes['showInDesktop'] ) ? (bool) $attributes['showInDesktop'] : true;
 $show_in_mobile    = isset( $attributes['showInMobile'] ) ? (bool) $attributes['showInMobile'] : false;
 
+// Build nav class names.
 $class_names = array(
 	'wp-block-design-system-wordpress-plugin-navigation',
 	'dswp-block-navigation-is-' . esc_attr( $overlay_menu ) . '-overlay',
@@ -34,7 +36,18 @@ if ( $menu_id > 0 ) {
 
 $parsed_blocks = array();
 if ( ! empty( $navigation_content ) ) {
-	$parsed_blocks = parse_blocks( $navigation_content );
+	// Filter out empty/null blocks (parse_blocks includes null blocks for whitespace).
+	$parsed_blocks = block_core_navigation_filter_out_empty_blocks( parse_blocks( $navigation_content ) );
+
+	// Only allow navigation-specific blocks.
+	$allowed_blocks = array( 'core/navigation-link', 'core/navigation-submenu', 'core/spacer' );
+	$parsed_blocks  = array_filter(
+		$parsed_blocks,
+		static function ( $block ) use ( $allowed_blocks ) {
+			return isset( $block['blockName'] ) && in_array( $block['blockName'], $allowed_blocks, true );
+		}
+	);
+	$parsed_blocks  = array_values( $parsed_blocks ); // Reset array keys.
 }
 
 ?>
@@ -47,7 +60,7 @@ if ( ! empty( $navigation_content ) ) {
 			<path class="dswp-nav-mobile-bar dswp-nav-mobile-menu-bottom-bar" d="M3,18h13" stroke-width="1" stroke="currentColor"></path>
 		</svg>
 	</button>
-	<ul class="dswp-block-navigation__container">
+	<ul class="dswp-block-navigation__container is-layout-flex wp-block-navigation-is-layout-flex">
 		<?php
 		if ( ! empty( $parsed_blocks ) ) {
 			foreach ( $parsed_blocks as $inner_block ) {

@@ -35,13 +35,6 @@
         "vh",
         "vw"
       ]
-    },
-    "layout": {
-      "allowSwitching": false,
-      "allowInheriting": false,
-      "default": {
-        "type": "flex"
-      }
     }
   },
   "attributes": {
