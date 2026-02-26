@@ -11,13 +11,9 @@ import metadata from '../block.json';
 /**
  * Edit Component for Breadcrumb Block
  *
- * @param {Object}   props               - Component properties
- * @param {Object}   props.attributes    - Current block attributes
- * @param {Function} props.setAttributes - Function to update block attributes
  * @return {JSX.Element} Rendered edit interface for breadcrumb block
  */
-export default function Edit( { attributes } ) {
-	// Generate block properties with editor preview class
+export default function Edit() {
 	const blockProps = useBlockProps( {
 		className: 'is-editor-preview',
 	} );

@@ -14,6 +14,11 @@ namespace DesignSystemWordPressPlugin\Breadcrumb;
 // Get current page context.
 $current_page_id = get_the_ID();
 
+// Do not display breadcrumb on the home/front page.
+if ( is_front_page() ) {
+	return '';
+}
+
 /**
  * Build Page Hierarchy
  * Constructs an array representing the page's ancestral path, starting with Home.
@@ -28,7 +33,7 @@ $hierarchy[] = array(
 
 $ancestors = get_post_ancestors( $current_page_id );
 
-// Add ancestors to the hierarchy in correct order.
+// Add ancestors to the hierarchy in correct order (when page has a parent).
 if ( ! empty( $ancestors ) ) {
     // Reverse ancestors to display from top-level to current page.
     $ancestors = array_reverse( $ancestors );
@@ -55,7 +60,6 @@ $hierarchy[] = array(
     <div class="dswp-block-breadcrumb__container is-loaded">
         <?php
         foreach ( $hierarchy as $index => $item ) :
-            // Only the current page (last item) is not linkable.
             $is_last = count( $hierarchy ) - 1 === $index;
 
             if ( $is_last ) :
