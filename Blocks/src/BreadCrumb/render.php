@@ -53,11 +53,21 @@ $hierarchy[] = array(
 
 /**
  * Render Breadcrumb Navigation
- * Outputs the complete breadcrumb with appropriate links and separators
+ * Outputs the complete breadcrumb with appropriate links and separators.
+ * Desktop: left/right arrows appear when content overflows for scroll.
  */
 ?>
 <div class="wp-block-design-system-wordpress-plugin-breadcrumb">
+    <button type="button" class="dswp-breadcrumb-arrow dswp-breadcrumb-arrow--left" aria-label="<?php esc_attr_e( 'Scroll breadcrumb left', 'design-system-wordpress-plugin' ); ?>">
+        <span class="dswp-breadcrumb-chevron" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </span>
+    </button>
+    <div class="dswp-breadcrumb__scroll-wrap">
     <div class="dswp-block-breadcrumb__container is-loaded">
+        <div class="dswp-breadcrumb__track">
         <?php
         foreach ( $hierarchy as $index => $item ) :
             $is_last = count( $hierarchy ) - 1 === $index;
@@ -89,5 +99,14 @@ $hierarchy[] = array(
             endif;
         endforeach;
         ?>
+        </div>
     </div>
+    </div>
+    <button type="button" class="dswp-breadcrumb-arrow dswp-breadcrumb-arrow--right" aria-label="<?php esc_attr_e( 'Scroll breadcrumb right', 'design-system-wordpress-plugin' ); ?>">
+        <span class="dswp-breadcrumb-chevron" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </span>
+    </button>
 </div>
