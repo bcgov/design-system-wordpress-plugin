@@ -170,11 +170,17 @@ class ContentSecurityPolicy {
 
     /**
      * Adds the Content Security Policy header to the response.
+     * Skipped in the admin so core scripts/styles (e.g. wp) load correctly.
      *
      * @param array $headers Existing headers.
      * @return array Modified headers with CSP.
      */
     public function add_csp_header( $headers ) {
+        // Do not apply CSP or HSTS in admin; it breaks script/style loading and causes "wp is not defined" etc.
+        if ( is_admin() ) {
+            return $headers;
+        }
+
         $csp        = '';
         $white_list = [
             'upgrade-insecure-requests',

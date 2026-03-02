@@ -3,11 +3,11 @@
  * Adjusts the appearance of the toggle control in the inspector
  */
 .dswp-current-page-as-link {
-    margin: 2rem 0;
+	margin: 2rem 0;
 
-    .components-toggle-control__help {
-        margin-inline-start: 0px;
-    }
+	.components-toggle-control__help {
+		margin-inline-start: 0;
+	}
 }
 
 /**
@@ -15,14 +15,14 @@
  * Defines the appearance of the breadcrumb in the block editor
  */
 .dswp-block-breadcrumb__container {
-    position: relative;
-    padding: 12px;
-    border-radius: 4px;
+	position: relative;
+	padding: 12px;
+	border-radius: 4px;
 
-    .dswp-breadcrumb-separator {
-        color: #666;
-        margin: 0 4px;
-    }
+	.dswp-breadcrumb-separator {
+		color: #666;
+		margin: 0 4px;
+	}
 }
 
 /**
@@ -30,41 +30,42 @@
  * Ensures proper display and visibility in the block editor
  */
 .is-editor-preview {
-    .dswp-block-breadcrumb__container {
-        padding: 12px;
-        border-radius: 4px;
-        opacity: 1 !important;
 
-        .dswp-breadcrumb-placeholder {
-            color: #666;
-            text-align: center;
-        }
-    }
+	.dswp-block-breadcrumb__container {
+		padding: 12px;
+		border-radius: 4px;
+		opacity: 1 !important;
+
+		.dswp-breadcrumb-placeholder {
+			color: #666;
+			text-align: center;
+		}
+	}
 }
 
 /**
  * Editor block version displayed in the block settings sidebar
  */
- .dswp-block-version {
-    font-size: 12px;
-    color: #666;
-    background: #0000001f;
-    padding: 1rem;
+.dswp-block-version {
+	font-size: 12px;
+	color: #666;
+	background: #0000001f;
+	padding: 1rem;
 }
 
 /**
  * Editor block setting labels
  */
 .dswp-block-setting-label {
-    font-size: 11px;
-    font-weight: 500;
-    line-height: 1.4;
-    text-transform: uppercase;
-    display: block;
-    margin-bottom: calc(8px);
-    padding: 0px;
+	font-size: 11px;
+	font-weight: 500;
+	line-height: 1.4;
+	text-transform: uppercase;
+	display: block;
+	margin-bottom: calc(8px);
+	padding: 0;
 }
 
-.dswp-block-setting-warning{
-    margin-bottom: 2rem;
+.dswp-block-setting-warning {
+	margin-bottom: 2rem;
 }
