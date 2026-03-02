@@ -15,11 +15,5 @@
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
   "style": "file:./style-index.css",
-  "render": "file:./render.php",
-  "attributes": {
-    "currentAsLink": {
-      "type": "boolean",
-      "default": false
-    }
-  }
+  "render": "file:./render.php"
 }

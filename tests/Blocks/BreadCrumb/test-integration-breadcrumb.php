@@ -38,7 +38,8 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 	 * What this tests:
 	 * - Main container div with correct class
 	 * - Container div with is-loaded class
-	 * - Current page as span (not link) when currentAsLink is false
+	 * - Home link as first item
+	 * - Current page as span (not link)
 	 * - Proper nesting of HTML elements
 	 */
 	public function test_single_page_renders_correct_html_structure() {
@@ -58,16 +59,16 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 
 		// Capture output.
 		ob_start();
-		$this->render_breadcrumb_block( array( 'currentAsLink' => false ) );
+		$this->render_breadcrumb_block( array() );
 		$output = ob_get_clean();
 
 		// Verify main container structure.
 		$this->assertStringContainsString( '<div class="wp-block-design-system-wordpress-plugin-breadcrumb">', $output, 'Should contain main block wrapper class' );
 		$this->assertStringContainsString( '<div class="dswp-block-breadcrumb__container is-loaded">', $output, 'Should contain container with is-loaded class' );
 
-		// Verify current page is rendered as span (not link).
-		$this->assertStringContainsString( '<span class="current-page">', $output, 'Should render current page as span when currentAsLink is false' );
-		$this->assertStringNotContainsString( '<a href', $output, 'Should not contain links when only one page exists' );
+		// Verify Home link is present and current page is rendered as span (not link).
+		$this->assertStringContainsString( '<a href', $output, 'Should contain Home link' );
+		$this->assertStringContainsString( '<span class="current-page">', $output, 'Should render current page as span' );
 
 		// Clean up.
 		wp_reset_postdata();
@@ -79,10 +80,10 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 	 *
 	 * What this tests:
 	 * - Main container and wrapper divs
-	 * - Parent page as clickable link
-	 * - Separator between parent and child
+	 * - Home and parent page as clickable links
+	 * - Separator between items
 	 * - Current (child) page as span (not link)
-	 * - Proper hierarchy order (parent before child)
+	 * - Proper hierarchy order (Home, parent, child)
 	 */
 	public function test_page_hierarchy_renders_correct_html_structure() {
 		// Create parent page.
@@ -111,15 +112,15 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 
 		// Capture output.
 		ob_start();
-		$this->render_breadcrumb_block( array( 'currentAsLink' => false ) );
+		$this->render_breadcrumb_block( array() );
 		$output = ob_get_clean();
 
 		// Verify structure.
 		$this->assertStringContainsString( '<div class="wp-block-design-system-wordpress-plugin-breadcrumb">', $output, 'Should contain main block wrapper class' );
 		$this->assertStringContainsString( '<div class="dswp-block-breadcrumb__container is-loaded">', $output, 'Should contain container with is-loaded class' );
 
-		// Verify parent link exists.
-		$this->assertStringContainsString( '<a href', $output, 'Should contain parent page as clickable link' );
+		// Verify Home and parent links exist.
+		$this->assertStringContainsString( '<a href', $output, 'Should contain Home and parent as clickable links' );
 		$this->assertStringContainsString( 'Parent Page', $output, 'Should display parent page title' );
 
 		// Verify separator exists.
@@ -127,7 +128,7 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 		$this->assertStringContainsString( '/', $output, 'Should contain separator character' );
 
 		// Verify current page is rendered as span.
-		$this->assertStringContainsString( '<span class="current-page">', $output, 'Should render current page as span when currentAsLink is false' );
+		$this->assertStringContainsString( '<span class="current-page">', $output, 'Should render current page as span' );
 		$this->assertStringContainsString( 'Child Page', $output, 'Should display child page title' );
 
 		// Clean up.
@@ -172,7 +173,7 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 
 		// Capture output.
 		ob_start();
-		$this->render_breadcrumb_block( array( 'currentAsLink' => false ) );
+		$this->render_breadcrumb_block( array() );
 		$output = ob_get_clean();
 
 		// Get the parent page URL.
@@ -220,7 +221,7 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 
 		// Capture output.
 		ob_start();
-		$this->render_breadcrumb_block( array( 'currentAsLink' => false ) );
+		$this->render_breadcrumb_block( array() );
 		$output = ob_get_clean();
 
 		// Verify content is properly escaped.
@@ -276,7 +277,7 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 
 		// Capture output.
 		ob_start();
-		$this->render_breadcrumb_block( array( 'currentAsLink' => false ) );
+		$this->render_breadcrumb_block( array() );
 		$output = ob_get_clean();
 
 		// Verify parent title is properly escaped in link.
@@ -297,14 +298,14 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Test: currentAsLink=false renders current page as text (not link)
+	 * Test: Current page is always rendered as text (not link)
 	 *
 	 * What this tests:
-	 * - When currentAsLink attribute is false (default), current page is rendered as <span>
-	 * - Current page is not a clickable link
-	 * - No link elements are present in single-page breadcrumb
+	 * - Current page is always rendered as <span>, never as link
+	 * - Home is always a link; only the current page is not linkable
+	 * - Single-page breadcrumb has Home link and current page as span
 	 */
-	public function test_current_as_link_false_renders_current_page_as_text() {
+	public function test_current_page_renders_as_text_not_link() {
 		// Create a test page.
 		$page_id = $this->factory->post->create(
 			array(
@@ -319,15 +320,15 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 		$post = get_post( $page_id );
 		setup_postdata( $post );
 
-		// Capture output with currentAsLink = false.
+		// Capture output.
 		ob_start();
-		$this->render_breadcrumb_block( array( 'currentAsLink' => false ) );
+		$this->render_breadcrumb_block( array() );
 		$output = ob_get_clean();
 
-		// Verify current page is rendered as span (not link).
-		$this->assertStringContainsString( '<span class="current-page">', $output, 'Should render current page as span when currentAsLink is false' );
-		$this->assertStringNotContainsString( '<a href', $output, 'Should not contain links when currentAsLink is false' );
-		$this->assertStringNotContainsString( 'current-page-link', $output, 'Should not have current-page-link class when currentAsLink is false' );
+		// Verify Home is link and current page is span (not link).
+		$this->assertStringContainsString( '<span class="current-page">', $output, 'Should render current page as span' );
+		$this->assertStringContainsString( '<a href', $output, 'Should contain Home link' );
+		$this->assertStringNotContainsString( 'current-page-link', $output, 'Current page should not be a link' );
 
 		// Clean up.
 		wp_reset_postdata();
@@ -335,58 +336,14 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Test: currentAsLink=true renders current page as clickable link
+	 * Test: Only current page is not linkable in hierarchy
 	 *
 	 * What this tests:
-	 * - When currentAsLink attribute is true, current page is rendered as <a> link
-	 * - Link has proper URL escaping using esc_url()
-	 * - Link has correct CSS class (current-page-link)
-	 * - Current page is clickable
+	 * - Home and ancestor pages are always links
+	 * - Only the current (last) page is rendered as span
+	 * - Correct number of links (Home + ancestors)
 	 */
-	public function test_current_as_link_true_renders_current_page_as_link() {
-		// Create a test page.
-		$page_id = $this->factory->post->create(
-			array(
-				'post_type'  => 'page',
-				'post_title' => 'Test Page',
-				'post_name'  => 'test-page',
-			)
-		);
-
-		// Set up global post.
-		global $post;
-		$post = get_post( $page_id );
-		setup_postdata( $post );
-
-		// Capture output with currentAsLink = true.
-		ob_start();
-		$this->render_breadcrumb_block( array( 'currentAsLink' => true ) );
-		$output = ob_get_clean();
-
-		// Verify current page is rendered as link.
-		$this->assertStringContainsString( '<a href', $output, 'Should render current page as link when currentAsLink is true' );
-		$this->assertStringContainsString( 'class="current-page-link"', $output, 'Should have current-page-link class when currentAsLink is true' );
-		$this->assertStringNotContainsString( '<span class="current-page">', $output, 'Should not render as span when currentAsLink is true' );
-
-		// Verify URL is properly escaped.
-		$page_url = get_permalink( $page_id );
-		$this->assertStringContainsString( 'href="' . esc_url( $page_url ) . '"', $output, 'Should use esc_url() to escape current page URL' );
-
-		// Clean up.
-		wp_reset_postdata();
-		wp_delete_post( $page_id, true );
-	}
-
-	/**
-	 * Test: currentAsLink configuration works correctly with page hierarchy
-	 *
-	 * What this tests:
-	 * - currentAsLink setting affects only the current page, not ancestors
-	 * - Ancestor pages always remain as links regardless of currentAsLink setting
-	 * - Both false and true values work correctly with hierarchies
-	 * - Correct number of links based on configuration
-	 */
-	public function test_current_as_link_configuration_works_with_page_hierarchy() {
+	public function test_only_current_page_not_linkable_in_hierarchy() {
 		// Create parent page.
 		$parent_id = $this->factory->post->create(
 			array(
@@ -411,26 +368,19 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 		$post = get_post( $child_id );
 		setup_postdata( $post );
 
-		// Test with currentAsLink = false.
+		// Capture output.
 		ob_start();
-		$this->render_breadcrumb_block( array( 'currentAsLink' => false ) );
-		$output_false = ob_get_clean();
+		$this->render_breadcrumb_block( array() );
+		$output = ob_get_clean();
 
-		// Verify parent is link, child is span.
-		$this->assertStringContainsString( '<a href', $output_false, 'Parent should always be a link' );
-		$this->assertStringContainsString( '<span class="current-page">', $output_false, 'Child should be span when currentAsLink is false' );
-		$this->assertStringNotContainsString( 'current-page-link', $output_false, 'Should not have current-page-link class when currentAsLink is false' );
+		// Verify Home and parent are links, child is span.
+		$this->assertStringContainsString( '<a href', $output, 'Home and parent should be links' );
+		$this->assertStringContainsString( '<span class="current-page">', $output, 'Child should be span (only current page not linkable)' );
+		$this->assertStringNotContainsString( 'current-page-link', $output, 'Current page should not have link class' );
 
-		// Test with currentAsLink = true.
-		ob_start();
-		$this->render_breadcrumb_block( array( 'currentAsLink' => true ) );
-		$output_true = ob_get_clean();
-
-		// Verify both parent and child are links.
-		$link_count = substr_count( $output_true, '<a href' );
-		$this->assertEquals( 2, $link_count, 'Should have 2 links (parent and child) when currentAsLink is true' );
-		$this->assertStringContainsString( 'class="current-page-link"', $output_true, 'Should have current-page-link class when currentAsLink is true' );
-		$this->assertStringNotContainsString( '<span class="current-page">', $output_true, 'Should not render as span when currentAsLink is true' );
+		// Should have 2 links: Home and Parent.
+		$link_count = substr_count( $output, '<a href' );
+		$this->assertEquals( 2, $link_count, 'Should have 2 links (Home and parent)' );
 
 		// Clean up.
 		wp_reset_postdata();
@@ -474,20 +424,20 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 
 		// Capture output.
 		ob_start();
-		$this->render_breadcrumb_block( array( 'currentAsLink' => false ) );
+		$this->render_breadcrumb_block( array() );
 		$output = ob_get_clean();
 
 		// Verify separator is present.
 		$this->assertStringContainsString( '<span class="dswp-breadcrumb-separator">', $output, 'Should contain separator element' );
 		$this->assertStringContainsString( '/', $output, 'Should contain separator character' );
 
-		// Verify separator is between parent and child (not after child).
+		// Verify separator is after a link and before next item (not after current page).
 		$separator_position = strpos( $output, '<span class="dswp-breadcrumb-separator">' );
-		$parent_link_end    = strpos( $output, '</a>' );
+		$first_link_end     = strpos( $output, '</a>' );
 		$child_span_start   = strpos( $output, '<span class="current-page">' );
 
-		$this->assertGreaterThan( $parent_link_end, $separator_position, 'Separator should be after parent link' );
-		$this->assertLessThan( $child_span_start, $separator_position, 'Separator should be before child span' );
+		$this->assertGreaterThan( $first_link_end, $separator_position, 'Separator should be after first link (Home)' );
+		$this->assertLessThan( $child_span_start, $separator_position, 'Separator should be before current page span' );
 
 		// Clean up.
 		wp_reset_postdata();
@@ -541,7 +491,7 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 
 		// Capture output.
 		ob_start();
-		$this->render_breadcrumb_block( array( 'currentAsLink' => false ) );
+		$this->render_breadcrumb_block( array() );
 		$output = ob_get_clean();
 
 		// Verify all ancestors are present.
@@ -557,9 +507,9 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 		$this->assertLessThan( $parent_pos, $grandparent_pos, 'Grandparent should come before parent in hierarchy' );
 		$this->assertLessThan( $child_pos, $parent_pos, 'Parent should come before child in hierarchy' );
 
-		// Verify correct number of separators (2 for 3 levels).
+		// Verify correct number of separators (Home + 3 levels = 4 items, so 3 separators).
 		$separator_count = substr_count( $output, '<span class="dswp-breadcrumb-separator">' );
-		$this->assertEquals( 2, $separator_count, 'Should have 2 separators for 3-level hierarchy (n-1 separators for n levels)' );
+		$this->assertEquals( 3, $separator_count, 'Should have 3 separators for Home + 3-level hierarchy' );
 
 		// Clean up.
 		wp_reset_postdata();
@@ -575,12 +525,7 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 	 */
 	private function render_breadcrumb_block( $attributes = array() ) {
 		// Set up attributes for the render template.
-		$attributes = wp_parse_args(
-			$attributes,
-			array(
-				'currentAsLink' => false,
-			)
-		);
+		$attributes = wp_parse_args( $attributes, array() );
 
 		// Get plugin root directory.
 		$plugin_root = dirname( __DIR__, 3 );
