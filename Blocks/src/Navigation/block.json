@@ -18,6 +18,10 @@
 			"wide",
 			"full"
 		],
+		"color": {
+			"text": true,
+			"background": false
+		},
 		"typography": {
 			"fontSize": true,
 			"lineHeight": true,
