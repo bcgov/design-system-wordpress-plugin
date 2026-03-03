@@ -183,7 +183,6 @@
 
 	// Links: blue, underlined
 	a {
-		color: rgb(26, 90, 150);
 		text-decoration: underline;
 
 		&:hover {
@@ -194,7 +193,6 @@
 	// Current page: bold, not a link
 	.current-page,
 	.current-page-link {
-		color: rgb(41, 41, 41);
 		font-weight: 700;
 	}
 
