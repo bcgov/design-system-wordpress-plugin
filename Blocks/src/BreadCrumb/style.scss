@@ -128,7 +128,6 @@
 	min-width: 0;
 	max-width: 100%;
 	font-size: 1.125rem;
-	color: rgb(41, 41, 41);
 	// Scroll viewport; inner track has flex row and width: max-content
 	display: block;
 	overflow-x: auto;
@@ -198,7 +197,6 @@
 
 	// Separator
 	.dswp-breadcrumb-separator {
-		color: rgb(41, 41, 41);
 		font-size: 0.875em;
 	}
 }
