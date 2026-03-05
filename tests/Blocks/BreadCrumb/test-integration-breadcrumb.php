@@ -52,10 +52,8 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 			)
 		);
 
-		// Set up global post.
-		global $post;
-		$post = get_post( $page_id );
-		setup_postdata( $post );
+		// Set main query to this page so is_singular() and get_the_ID() are correct.
+		$this->go_to( get_permalink( $page_id ) );
 
 		// Capture output.
 		ob_start();
@@ -71,7 +69,6 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 		$this->assertStringContainsString( '<span class="current-page">', $output, 'Should render current page as span' );
 
 		// Clean up.
-		wp_reset_postdata();
 		wp_delete_post( $page_id, true );
 	}
 
@@ -105,10 +102,8 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 			)
 		);
 
-		// Set up global post.
-		global $post;
-		$post = get_post( $child_id );
-		setup_postdata( $post );
+		// Set main query to child page so breadcrumb sees singular page with hierarchy.
+		$this->go_to( get_permalink( $child_id ) );
 
 		// Capture output.
 		ob_start();
@@ -132,7 +127,6 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 		$this->assertStringContainsString( 'Child Page', $output, 'Should display child page title' );
 
 		// Clean up.
-		wp_reset_postdata();
 		wp_delete_post( $child_id, true );
 		wp_delete_post( $parent_id, true );
 	}
@@ -166,10 +160,8 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 			)
 		);
 
-		// Set up global post.
-		global $post;
-		$post = get_post( $child_id );
-		setup_postdata( $post );
+		// Set main query to child page so breadcrumb shows parent link.
+		$this->go_to( get_permalink( $child_id ) );
 
 		// Capture output.
 		ob_start();
@@ -190,7 +182,6 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 		$this->assertStringNotContainsString( '<a href="&', $output, 'Should not contain unescaped ampersands in URLs' );
 
 		// Clean up.
-		wp_reset_postdata();
 		wp_delete_post( $child_id, true );
 		wp_delete_post( $page_id, true );
 	}
@@ -214,10 +205,8 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 			)
 		);
 
-		// Set up global post.
-		global $post;
-		$post = get_post( $page_id );
-		setup_postdata( $post );
+		// Set main query to this page so breadcrumb uses its title.
+		$this->go_to( get_permalink( $page_id ) );
 
 		// Capture output.
 		ob_start();
@@ -237,7 +226,6 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'alert("XSS")', $output, 'Raw JavaScript should not be present in output' );
 
 		// Clean up.
-		wp_reset_postdata();
 		wp_delete_post( $page_id, true );
 	}
 
@@ -270,10 +258,8 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 			)
 		);
 
-		// Set up global post.
-		global $post;
-		$post = get_post( $child_id );
-		setup_postdata( $post );
+		// Set main query to child page so breadcrumb shows parent in hierarchy.
+		$this->go_to( get_permalink( $child_id ) );
 
 		// Capture output.
 		ob_start();
@@ -292,7 +278,6 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'src="x"', $output, 'Attribute values should be escaped' );
 
 		// Clean up.
-		wp_reset_postdata();
 		wp_delete_post( $child_id, true );
 		wp_delete_post( $parent_id, true );
 	}
@@ -315,10 +300,8 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 			)
 		);
 
-		// Set up global post.
-		global $post;
-		$post = get_post( $page_id );
-		setup_postdata( $post );
+		// Set main query to this page.
+		$this->go_to( get_permalink( $page_id ) );
 
 		// Capture output.
 		ob_start();
@@ -331,7 +314,6 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'current-page-link', $output, 'Current page should not be a link' );
 
 		// Clean up.
-		wp_reset_postdata();
 		wp_delete_post( $page_id, true );
 	}
 
@@ -363,10 +345,8 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 			)
 		);
 
-		// Set up global post.
-		global $post;
-		$post = get_post( $child_id );
-		setup_postdata( $post );
+		// Set main query to child page so breadcrumb has Home + Parent (links) and Child (span).
+		$this->go_to( get_permalink( $child_id ) );
 
 		// Capture output.
 		ob_start();
@@ -383,7 +363,6 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 		$this->assertEquals( 2, $link_count, 'Should have 2 links (Home and parent)' );
 
 		// Clean up.
-		wp_reset_postdata();
 		wp_delete_post( $child_id, true );
 		wp_delete_post( $parent_id, true );
 	}
@@ -417,10 +396,8 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 			)
 		);
 
-		// Set up global post.
-		global $post;
-		$post = get_post( $child_id );
-		setup_postdata( $post );
+		// Set main query to child page.
+		$this->go_to( get_permalink( $child_id ) );
 
 		// Capture output.
 		ob_start();
@@ -440,7 +417,6 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 		$this->assertLessThan( $child_span_start, $separator_position, 'Separator should be before current page span' );
 
 		// Clean up.
-		wp_reset_postdata();
 		wp_delete_post( $child_id, true );
 		wp_delete_post( $parent_id, true );
 	}
@@ -484,10 +460,8 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 			)
 		);
 
-		// Set up global post.
-		global $post;
-		$post = get_post( $child_id );
-		setup_postdata( $post );
+		// Set main query to child page so breadcrumb shows full hierarchy.
+		$this->go_to( get_permalink( $child_id ) );
 
 		// Capture output.
 		ob_start();
@@ -512,7 +486,6 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 		$this->assertEquals( 3, $separator_count, 'Should have 3 separators for Home + 3-level hierarchy' );
 
 		// Clean up.
-		wp_reset_postdata();
 		wp_delete_post( $child_id, true );
 		wp_delete_post( $parent_id, true );
 		wp_delete_post( $grandparent_id, true );
