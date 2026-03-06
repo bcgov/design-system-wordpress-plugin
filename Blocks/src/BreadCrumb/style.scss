@@ -97,14 +97,12 @@
 
 		&::before {
 			left: 0;
-			background:
- linear-gradient(to right, var(--dswp-breadcrumb-fade, #fff) 0%, transparent 100%);
+			background: linear-gradient(to right, var(--dswp-breadcrumb-fade, #fff) 0%, transparent 100%);
 		}
 
 		&::after {
 			right: 0;
-			background:
- linear-gradient(to left, var(--dswp-breadcrumb-fade, #fff) 0%, transparent 100%);
+			background: linear-gradient(to left, var(--dswp-breadcrumb-fade, #fff) 0%, transparent 100%);
 		}
 	}
 }

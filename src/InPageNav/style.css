@@ -8,241 +8,246 @@
 /* CSS Variables with Fallbacks
    ========================================================================== */
 :root {
-    --dswp-layout-content-size: 1200px;
-    --dswp-padding-right: 2rem;
-    --dswp-padding-left: 2rem;
+	--dswp-layout-content-size: 1200px;
+	--dswp-padding-right: 2rem;
+	--dswp-padding-left: 2rem;
 }
 
 /* Container Layout
    ========================================================================== */
 .dswp-nav-content-container {
-    position: relative;
-    max-width: var(--dswp-layout-content-size, 1200px);
-    margin: 0 auto;
-    width: 100%;
+	position: relative;
+	max-width: var(--dswp-layout-content-size, 1200px);
+	margin: 0 auto;
+	width: 100%;
 }
 
 /* Navigation Base Styles
    ========================================================================== */
 .dswp-in-page-nav {
-    padding-right: var(--wp--style--root--padding-right, var(--dswp-padding-right));
-    padding-left: var(--wp--style--root--padding-left, var(--dswp-padding-left));
-    position: relative; /* Default position for desktop */
-    width: 100%;
-    max-width: var(--dswp-layout-content-size, 1200px);
-    margin: auto;
-    padding-top: 1rem;
-    background-color: #ffffff;
-    z-index: 50;
-    display: block !important; /* Ensure visibility */
+	padding-right: var(--wp--style--root--padding-right, var(--dswp-padding-right));
+	padding-left: var(--wp--style--root--padding-left, var(--dswp-padding-left));
+	position: relative; /* Default position for desktop */
+	width: 100%;
+	max-width: var(--dswp-layout-content-size, 1200px);
+	margin: auto;
+	padding-top: 1rem;
+	background-color: #fff;
+	z-index: 50;
+	display: block !important; /* Ensure visibility */
 }
 
 /* Mobile-only sticky positioning */
 @media (max-width: 768px) {
-    .dswp-in-page-nav {
-        position: sticky;
-        top: 0;
-    }
 
-    /* Adjust for WordPress admin bar if present */
-    .admin-bar .dswp-in-page-nav {
-        top: 46px;
-    }
+	.dswp-in-page-nav {
+		position: sticky;
+		top: 0;
+	}
 
-    /* Light gray background when scrolling on mobile */
-    .dswp-in-page-nav.is-scrolled {
-        background-color: #f8f8f8;
-        transition: background-color 0.3s ease;
-    }
+	/* Adjust for WordPress admin bar if present */
+	.admin-bar .dswp-in-page-nav {
+		top: 46px;
+	}
+
+	/* Light gray background when scrolling on mobile */
+	.dswp-in-page-nav.is-scrolled {
+		background-color: #f8f8f8;
+		transition: background-color 0.3s ease;
+	}
 }
 
 /* Navigation Header
    ========================================================================== */
 .dswp-in-page-nav .nav-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	cursor: pointer;
 }
 
 .dswp-in-page-nav h4 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: bold;
-    padding-left: 1.5rem;
+	margin: 0;
+	font-size: 20px;
+	font-weight: 700;
+	padding-left: 1.5rem;
 }
 
 /* Toggle Button Styles
    ========================================================================== */
 .dswp-in-page-nav .nav-toggle {
-    background: none;
-    border: none;
-    padding: 0.5rem;
-    cursor: pointer;
-    display: none; /* Hidden by default, shown in mobile */
-    width: 32px;
-    height: 32px;
-    position: relative;
-    align-items: center;
-    justify-content: center;
-    transition: display 0.3s ease, opacity 0.3s ease;
+	background: none;
+	border: none;
+	padding: 0.5rem;
+	cursor: pointer;
+	display: none; /* Hidden by default, shown in mobile */
+	width: 32px;
+	height: 32px;
+	position: relative;
+	align-items: center;
+	justify-content: center;
+	transition: display 0.3s ease, opacity 0.3s ease;
 }
 
 /* Toggle button arrow indicator */
 .dswp-in-page-nav .nav-toggle::after {
-    content: '';
-    display: block;
-    width: 10px;
-    height: 10px;
-    border-right: 2px solid #1b1b1b;
-    border-bottom: 2px solid #1b1b1b;
-    transform: rotate(45deg);
-    transition: transform 0.3s ease;
+	content: "";
+	display: block;
+	width: 10px;
+	height: 10px;
+	border-right: 2px solid #1b1b1b;
+	border-bottom: 2px solid #1b1b1b;
+	transform: rotate(45deg);
+	transition: transform 0.3s ease;
 }
 
 .dswp-in-page-nav.is-expanded .nav-toggle::after {
-    transform: rotate(-135deg);
+	transform: rotate(-135deg);
 }
 
 /* Navigation Links
    ========================================================================== */
 .dswp-in-page-nav .nav-links {
-    list-style: none;
-    padding-inline-start: 0px;
+	list-style: none;
+	padding-inline-start: 0;
 }
 
 .dswp-in-page-nav .nav-links li {
-    padding-left: 2rem;
-    border-left: solid 1px;
+	padding-left: 2rem;
+	border-left: solid 1px;
 }
 
 /* Active state indicator */
+
 /* Active state indicator - mobile only */
 @media (max-width: 768px) {
-    .dswp-in-page-nav .nav-links .current {
-        border-left: solid 3px #1b1b1b;
-        padding-left: 1.9rem !important;
-    }
+
+	.dswp-in-page-nav .nav-links .current {
+		border-left: solid 3px #1b1b1b;
+		padding-left: 1.9rem !important;
+	}
 }
 
 /* Link Styles */
 .dswp-in-page-nav a {
-    color: #1b1b1b;
-    text-decoration: none;
-    display: block;
-    padding: 0.25rem 0;
-    font-size: 16px;
+	color: #1b1b1b;
+	text-decoration: none;
+	display: block;
+	padding: 0.25rem 0;
+	font-size: 16px;
 }
 
 /* Excerpt Styles */
 .dswp-in-page-nav .nav-excerpt {
-    border-left: solid 1px #ccc;
-    padding-left: 1.5rem!important;
-    padding-bottom: .75rem;
+	border-left: solid 1px #ccc;
+	padding-left: 1.5rem !important;
+	padding-bottom: 0.75rem;
 }
 
 .dswp-in-page-nav .excerpt-text {
-    color: #666;
-    font-size: 16px;
-    line-height: 1.4;
+	color: #666;
+	font-size: 16px;
+	line-height: 1.4;
 }
 
 /* Heading Number Styles */
 .dswp-in-page-nav .heading-number {
-    color: #005ea2;
-    font-weight: normal;
-    margin-right: 0.25rem;
-    display: inline-block;
+	color: #005ea2;
+	font-weight: 400;
+	margin-right: 0.25rem;
+	display: inline-block;
 }
 
 .dswp-in-page-nav .heading-text {
-    color: #005ea2;
+	color: #005ea2;
 }
 
 .dswp-in-page-nav a:hover {
-    color: #005ea2;
-    text-decoration: underline;
+	color: #005ea2;
+	text-decoration: underline;
 }
 
 .dswp-in-page-nav a.dswp-current {
-    font-weight: bold;
-    color: #005ea2;
+	font-weight: 700;
+	color: #005ea2;
 }
 
 /* Selected link text styling - mobile only */
 @media (max-width: 768px) {
-    .dswp-in-page-nav .nav-links .current .heading-text {
-        font-weight: bold;
-    }
+
+	.dswp-in-page-nav .nav-links .current .heading-text {
+		font-weight: 700;
+	}
 }
 
 /* Responsive Mobile Styles
    ========================================================================== */
 @media screen and (max-width: 768px) {
-    /* Mobile container adjustments */
-    .dswp-in-page-nav {
-        padding: 1.75rem;
-        width: 100%;
-        box-sizing: border-box;
-    }
 
-    /* Mobile header layout */
-    .dswp-in-page-nav .nav-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0;
-        gap: 1rem;
-        width: 100%;
-    }
+	/* Mobile container adjustments */
+	.dswp-in-page-nav {
+		padding: 1.75rem;
+		width: 100%;
+		box-sizing: border-box;
+	}
 
-    .dswp-in-page-nav .nav-title {
-        flex: 1;
-        min-width: 0;
-    }
+	/* Mobile header layout */
+	.dswp-in-page-nav .nav-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0;
+		gap: 1rem;
+		width: 100%;
+	}
 
-    /* Mobile toggle button visibility */
-    .dswp-in-page-nav .nav-toggle {
-        display: flex;
-        flex-shrink: 0;
-        margin-left: auto;
-        opacity: 1;
-        transition: opacity 0.2s ease;
-    }
+	.dswp-in-page-nav .nav-title {
+		flex: 1;
+		min-width: 0;
+	}
 
-    /* Mobile navigation links animation setup */
-    .dswp-in-page-nav .nav-links {
-        position: relative;
-        height: 2rem;
-        transition: height 0.3s ease;
-        width: 100%;
-    }
+	/* Mobile toggle button visibility */
+	.dswp-in-page-nav .nav-toggle {
+		display: flex;
+		flex-shrink: 0;
+		margin-left: auto;
+		opacity: 1;
+		transition: opacity 0.2s ease;
+	}
 
-    /* Mobile link item animations */
-    .dswp-in-page-nav .nav-links li {
-        position: absolute;
-        width: 100%;
-        opacity: 0;
-        transform: translateY(100%);
-        transition: transform 0.3s ease, opacity 0.3s ease;
-        margin: 0;
-    }
+	/* Mobile navigation links animation setup */
+	.dswp-in-page-nav .nav-links {
+		position: relative;
+		height: 2rem;
+		transition: height 0.3s ease;
+		width: 100%;
+	}
 
-    /* Current link visibility in collapsed state */
-    .dswp-in-page-nav .nav-links li.current {
-        opacity: 1;
-        transform: translateY(0);
-    }
+	/* Mobile link item animations */
+	.dswp-in-page-nav .nav-links li {
+		position: absolute;
+		width: 100%;
+		opacity: 0;
+		transform: translateY(100%);
+		transition: transform 0.3s ease, opacity 0.3s ease;
+		margin: 0;
+	}
 
-    /* Expanded state styles */
-    .dswp-in-page-nav.is-expanded .nav-links {
-        height: auto;
-        position: static;
-    }
+	/* Current link visibility in collapsed state */
+	.dswp-in-page-nav .nav-links li.current {
+		opacity: 1;
+		transform: translateY(0);
+	}
 
-    .dswp-in-page-nav.is-expanded .nav-links li {
-        position: relative;
-        opacity: 1;
-        transform: none;
-    }
+	/* Expanded state styles */
+	.dswp-in-page-nav.is-expanded .nav-links {
+		height: auto;
+		position: static;
+	}
+
+	.dswp-in-page-nav.is-expanded .nav-links li {
+		position: relative;
+		opacity: 1;
+		transform: none;
+	}
 }

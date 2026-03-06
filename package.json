@@ -40,8 +40,8 @@
   "scripts": {
     "start": "npm i && wp-scripts start",
     "build": "npm i && wp-scripts build",
-    "lint:css": "wp-scripts lint-style 'src/**/*.scss' --allow-empty-input",
-    "fix:css": "wp-scripts lint-style 'src/**/*.scss' --fix --allow-empty-input",
+    "lint:css": "wp-scripts lint-style 'src/**/*.{css,scss}' --allow-empty-input",
+    "fix:css": "wp-scripts lint-style 'src/**/*.{css,scss}' --fix --allow-empty-input",
     "lint:js": "wp-scripts lint-js '{src,tests}/**/*.{js,ts}'",
     "fix:js": "wp-scripts lint-js '{src,tests}/**/*.{js,ts}' --fix",
     "test": "wp-scripts test-unit-js --passWithNoTests",
