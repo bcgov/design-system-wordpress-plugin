@@ -117,7 +117,7 @@ $wrapper_attributes = get_block_wrapper_attributes();
  * Desktop: left/right arrows appear when content overflows for scroll.
  */
 ?>
-<div <?php echo $wrapper_attributes; ?>>
+<div <?php echo wp_kses_data( $wrapper_attributes ); ?>>
     <button type="button" class="dswp-breadcrumb-arrow dswp-breadcrumb-arrow--left" aria-label="<?php esc_attr_e( 'Scroll breadcrumb left', 'design-system-wordpress-plugin' ); ?>">
         <span class="dswp-breadcrumb-chevron" aria-hidden="true">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
