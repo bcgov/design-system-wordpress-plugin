@@ -42,7 +42,7 @@ if ( is_singular() ) {
 		$current_url   = home_url( '/' );
 	}
 } elseif ( is_search() ) {
-	$search_query = trim( (string) get_search_query() );
+	$search_query  = trim( (string) get_search_query() );
 	$current_title = '' !== $search_query
 		? sprintf(
 			/* translators: %s: search query */

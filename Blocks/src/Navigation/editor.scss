@@ -1,3 +1,4 @@
+/* stylelint-disable no-descending-specificity */
 .wp-block-custom-navigation {
 
 	.wp-block-navigation-submenu {
@@ -126,5 +127,13 @@
 				display: none !important;
 			}
 		}
+	}
+}
+
+.dswp-block-navigation__container {
+	display: inherit;
+
+	.wp-block-navigation-item {
+		display: inline-flex;
 	}
 }
