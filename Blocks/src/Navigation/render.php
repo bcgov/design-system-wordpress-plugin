@@ -19,12 +19,6 @@ $mobile_breakpoint = isset( $attributes['mobileBreakpoint'] ) ? (int) $attribute
 $show_in_desktop   = isset( $attributes['showInDesktop'] ) ? (bool) $attributes['showInDesktop'] : true;
 $show_in_mobile    = isset( $attributes['showInMobile'] ) ? (bool) $attributes['showInMobile'] : false;
 
-// Build nav class names.
-$class_names = array(
-	'wp-block-design-system-wordpress-plugin-navigation',
-	'dswp-block-navigation-is-' . esc_attr( $overlay_menu ) . '-overlay',
-);
-
 // Load navigation menu content from wp_navigation post type.
 $navigation_content = '';
 if ( $menu_id > 0 ) {
@@ -50,8 +44,17 @@ if ( ! empty( $navigation_content ) ) {
 	$parsed_blocks  = array_values( $parsed_blocks ); // Reset array keys.
 }
 
+$wrapper_attributes = get_block_wrapper_attributes(
+    [
+		'class'                       => "dswp-block-navigation-is-$overlay_menu-overlay",
+		'data-dswp-mobile-breakpoint' => $mobile_breakpoint,
+		'data-show-in-desktop'        => $show_in_desktop ? 'true' : 'false',
+		'data-show-in-mobile'         => $show_in_mobile ? 'true' : 'false',
+	]
+);
+
 ?>
-<nav class="<?php echo esc_attr( implode( ' ', $class_names ) ); ?>" data-dswp-mobile-breakpoint="<?php echo esc_attr( (string) $mobile_breakpoint ); ?>" data-show-in-desktop="<?php echo esc_attr( $show_in_desktop ? 'true' : 'false' ); ?>" data-show-in-mobile="<?php echo esc_attr( $show_in_mobile ? 'true' : 'false' ); ?>">
+<nav <?php echo wp_kses_data( $wrapper_attributes ); ?>>
 	<button class="dswp-nav-mobile-toggle-icon" aria-label="<?php echo esc_attr__( 'Toggle menu', 'dswp' ); ?>" aria-expanded="false">
 		<span class="dswp-nav-mobile-menu-icon-text"><?php echo esc_html__( 'Menu', 'dswp' ); ?></span>
 		<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
