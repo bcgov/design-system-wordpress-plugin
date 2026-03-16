@@ -120,4 +120,30 @@ test.describe( 'Breadcrumb Block', () => {
 		// Cleanup
 		await requestUtils.deleteAllPages();
 	} );
+
+	test( 'typography settings are applied to frontend', async ( {
+		admin,
+		editor,
+	} ) => {
+		await admin.createNewPost( {
+			showWelcomeGuide: false,
+		} );
+
+		await editor.insertBlock( { name: BLOCK_NAME } );
+
+		await editor.page.getByRole( 'tab', { name: 'Styles' } ).click();
+		await editor.page
+			.getByRole( 'radio', { name: 'Large', exact: true } )
+			.click();
+
+		const preview = await editor.openPreviewPage();
+
+		await expect(
+			preview
+				.locator(
+					'.wp-block-design-system-wordpress-plugin-breadcrumb'
+				)
+				.first()
+		).toContainClass( 'has-large-font-size' );
+	} );
 } );
