@@ -42,7 +42,7 @@ if ( is_singular() ) {
 		$current_url   = home_url( '/' );
 	}
 } elseif ( is_search() ) {
-	$search_query = trim( (string) get_search_query() );
+	$search_query  = trim( (string) get_search_query() );
 	$current_title = '' !== $search_query
 		? sprintf(
 			/* translators: %s: search query */
@@ -109,13 +109,15 @@ $hierarchy[] = array(
 	'url'   => $current_url,
 );
 
+$wrapper_attributes = get_block_wrapper_attributes();
+
 /**
  * Render Breadcrumb Navigation
  * Outputs the complete breadcrumb with appropriate links and separators.
  * Desktop: left/right arrows appear when content overflows for scroll.
  */
 ?>
-<div class="wp-block-design-system-wordpress-plugin-breadcrumb">
+<div <?php echo wp_kses_data( $wrapper_attributes ); ?>>
     <button type="button" class="dswp-breadcrumb-arrow dswp-breadcrumb-arrow--left" aria-label="<?php esc_attr_e( 'Scroll breadcrumb left', 'design-system-wordpress-plugin' ); ?>">
         <span class="dswp-breadcrumb-chevron" aria-hidden="true">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">

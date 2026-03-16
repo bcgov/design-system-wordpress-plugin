@@ -61,7 +61,6 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 		$output = ob_get_clean();
 
 		// Verify main container structure.
-		$this->assertStringContainsString( '<div class="wp-block-design-system-wordpress-plugin-breadcrumb">', $output, 'Should contain main block wrapper class' );
 		$this->assertStringContainsString( '<div class="dswp-block-breadcrumb__container is-loaded">', $output, 'Should contain container with is-loaded class' );
 
 		// Verify Home link is present and current page is rendered as span (not link).
@@ -111,7 +110,6 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 		$output = ob_get_clean();
 
 		// Verify structure.
-		$this->assertStringContainsString( '<div class="wp-block-design-system-wordpress-plugin-breadcrumb">', $output, 'Should contain main block wrapper class' );
 		$this->assertStringContainsString( '<div class="dswp-block-breadcrumb__container is-loaded">', $output, 'Should contain container with is-loaded class' );
 
 		// Verify Home and parent links exist.
