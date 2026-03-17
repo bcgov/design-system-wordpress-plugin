@@ -44,12 +44,14 @@ if ( ! empty( $navigation_content ) ) {
 	$parsed_blocks  = array_values( $parsed_blocks ); // Reset array keys.
 }
 
-$wrapper_attributes = get_block_wrapper_attributes([
-    'class'                       => "dswp-block-navigation-is-$overlay_menu-overlay",
-    'data-dswp-mobile-breakpoint' => $mobile_breakpoint,
-    'data-show-in-desktop'        => $show_in_desktop ? 'true' : 'false',
-    'data-show-in-mobile'         => $show_in_mobile ? 'true' : 'false'
-]);
+$wrapper_attributes = get_block_wrapper_attributes(
+    [
+		'class'                       => "dswp-block-navigation-is-$overlay_menu-overlay",
+		'data-dswp-mobile-breakpoint' => $mobile_breakpoint,
+		'data-show-in-desktop'        => $show_in_desktop ? 'true' : 'false',
+		'data-show-in-mobile'         => $show_in_mobile ? 'true' : 'false',
+	]
+);
 
 ?>
 <nav <?php echo wp_kses_data( $wrapper_attributes ); ?>>
