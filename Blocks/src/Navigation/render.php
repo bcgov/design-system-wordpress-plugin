@@ -19,6 +19,33 @@ $mobile_breakpoint = isset( $attributes['mobileBreakpoint'] ) ? (int) $attribute
 $show_in_desktop   = isset( $attributes['showInDesktop'] ) ? (bool) $attributes['showInDesktop'] : true;
 $show_in_mobile    = isset( $attributes['showInMobile'] ) ? (bool) $attributes['showInMobile'] : false;
 
+// Fallback resolution when no menu is explicitly set.
+if ( 0 === $menu_id ) {
+
+	// Try Gutenberg-native menus.
+	$navigation_posts = get_posts(
+		[
+			'post_type'      => 'wp_navigation',
+			'posts_per_page' => 1,
+			'post_status'    => 'publish',
+		]
+	);
+
+	if ( ! empty( $navigation_posts ) ) {
+		$menu_id = (int) $navigation_posts[0]->ID;
+	}
+}
+
+// Fallback to classic menus if no navigation posts exist.
+if ( 0 === $menu_id ) {
+
+	$menus = wp_get_nav_menus();
+
+	if ( ! empty( $menus ) ) {
+		$menu_id = (int) $menus[0]->term_id;
+	}
+}
+
 // Load navigation menu content from wp_navigation post type.
 $navigation_content = '';
 if ( $menu_id > 0 ) {
@@ -70,6 +97,16 @@ $wrapper_attributes = get_block_wrapper_attributes(
 				$block_output = render_block( $inner_block );
 				echo wp_kses_post( $block_output );
 			}
+		} else {
+			// Final fallback: page list.
+			echo wp_kses_post(
+				wp_list_pages(
+                    [
+						'title_li' => '',
+						'echo'     => false,
+					]
+                )
+			);
 		}
 		?>
 	</ul>
