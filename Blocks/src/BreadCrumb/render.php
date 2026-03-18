@@ -65,8 +65,11 @@ if ( is_singular() ) {
 	$current_url = ( is_string( $archive_link ) && '' !== $archive_link && ! is_wp_error( $archive_link ) )
 		? $archive_link
 		: '';
+} elseif ( is_404() ) {
+	// 404 template: match on-page heading rather than generic "Page".
+	$current_title = __( '404' );
 } else {
-	// Fallback: e.g. 404 or other template — use queried object or generic.
+	// Fallback: other templates — use queried object or generic.
 	$current_page_id = get_queried_object_id();
 	if ( $current_page_id > 0 ) {
 		$current_title = get_the_title( $current_page_id );
@@ -118,55 +121,61 @@ $wrapper_attributes = get_block_wrapper_attributes();
  */
 ?>
 <div <?php echo wp_kses_data( $wrapper_attributes ); ?>>
-    <button type="button" class="dswp-breadcrumb-arrow dswp-breadcrumb-arrow--left" aria-label="<?php esc_attr_e( 'Scroll breadcrumb left', 'design-system-wordpress-plugin' ); ?>">
-        <span class="dswp-breadcrumb-chevron" aria-hidden="true">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </span>
-    </button>
-    <div class="dswp-breadcrumb__scroll-wrap">
-    <div class="dswp-block-breadcrumb__container is-loaded">
-        <div class="dswp-breadcrumb__track">
-        <?php
-        foreach ( $hierarchy as $index => $item ) :
-            $is_last = count( $hierarchy ) - 1 === $index;
-
-            if ( $is_last ) :
-                ?>
-                <span class="current-page">
-                    <?php echo esc_html( $item['title'] ); ?>
-                </span>
-                <?php
-            else :
-                ?>
-                <a href="<?php echo esc_url( $item['url'] ); ?>">
-                    <?php echo esc_html( $item['title'] ); ?>
-                </a>
-                <span class="dswp-breadcrumb-separator">
-                    <?php
-                    echo wp_kses(
-                        '/',
-                        array(
-							'span' => array(
-								'class' => true,
-							),
-                        )
-                    );
-                    ?>
-                </span>
+	<button type="button" class="dswp-breadcrumb-arrow dswp-breadcrumb-arrow--left"
+		aria-label="<?php esc_attr_e( 'Scroll breadcrumb left', 'design-system-wordpress-plugin' ); ?>">
+		<span class="dswp-breadcrumb-chevron" aria-hidden="true">
+			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+				aria-hidden="true">
+				<path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+					stroke-linejoin="round" />
+			</svg>
+		</span>
+	</button>
+	<div class="dswp-breadcrumb__scroll-wrap">
+		<div class="dswp-block-breadcrumb__container is-loaded">
+			<div class="dswp-breadcrumb__track">
 				<?php
-            endif;
-        endforeach;
-        ?>
-        </div>
-    </div>
-    </div>
-    <button type="button" class="dswp-breadcrumb-arrow dswp-breadcrumb-arrow--right" aria-label="<?php esc_attr_e( 'Scroll breadcrumb right', 'design-system-wordpress-plugin' ); ?>">
-        <span class="dswp-breadcrumb-chevron" aria-hidden="true">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </span>
-    </button>
+				foreach ( $hierarchy as $index => $item ) :
+					$is_last = count( $hierarchy ) - 1 === $index;
+
+					if ( $is_last ) :
+						?>
+						<span class="current-page">
+							<?php echo esc_html( $item['title'] ); ?>
+						</span>
+						<?php
+					else :
+						?>
+						<a href="<?php echo esc_url( $item['url'] ); ?>">
+							<?php echo esc_html( $item['title'] ); ?>
+						</a>
+						<span class="dswp-breadcrumb-separator">
+							<?php
+							echo wp_kses(
+								'/',
+								array(
+									'span' => array(
+										'class' => true,
+									),
+								)
+							);
+							?>
+						</span>
+						<?php
+					endif;
+				endforeach;
+				?>
+			</div>
+		</div>
+	</div>
+	<button type="button" class="dswp-breadcrumb-arrow dswp-breadcrumb-arrow--right"
+		aria-label="<?php esc_attr_e( 'Scroll breadcrumb right', 'design-system-wordpress-plugin' ); ?>">
+		<span class="dswp-breadcrumb-chevron" aria-hidden="true">
+			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+				aria-hidden="true">
+				<path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+					stroke-linejoin="round" />
+			</svg>
+		</span>
+	</button>
 </div>
