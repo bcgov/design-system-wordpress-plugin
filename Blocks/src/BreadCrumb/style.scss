@@ -1,48 +1,214 @@
 /**
  * Breadcrumb Block Frontend Styles
- * 
+ *
  * Defines the visual presentation and layout of the breadcrumb navigation
  * for both editor and frontend contexts
  */
 
+// Block wrapper: never wider than page; scroll stays inside the block
+.wp-block-design-system-wordpress-plugin-breadcrumb {
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+	overflow: hidden; // Contain overflow; only inner container scrolls
+	margin-left: auto;
+	margin-right: auto;
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+	display: flex;
+	align-items: flex-start; // Arrows line up with text row
+	gap: 0.25rem;
+
+	// Desktop-only scroll chevrons (left/right): blue, no border
+	.dswp-breadcrumb-arrow {
+		display: none; // Hidden on mobile; touch scroll only
+		flex-shrink: 0;
+		width: 1.5rem;
+		min-height: 1.75rem; // Match text row height
+		padding: 0;
+		border: none;
+		border-radius: 0;
+		background: transparent;
+		color: rgb(26, 90, 150);
+		cursor: pointer;
+		align-items: center;
+		justify-content: center;
+		transition: background-color 0.15s, opacity 0.15s;
+
+		&:focus-visible {
+			outline: 2px solid rgb(26, 90, 150);
+			outline-offset: 2px;
+		}
+
+		&:hover:not(.is-hidden) {
+			background: rgba(26, 90, 150, 0.08);
+		}
+
+		// SVG chevron
+		.dswp-breadcrumb-chevron {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: rgb(26, 90, 150);
+
+			svg {
+				display: block;
+				width: 1.25rem;
+				height: 1.25rem;
+				color: inherit;
+			}
+		}
+	}
+
+	@media (min-width: 768px) {
+
+		.dswp-breadcrumb-arrow {
+			display: flex;
+		}
+	}
+
+	// Hidden arrow: no layout space (overrides desktop display: flex)
+	.dswp-breadcrumb-arrow.is-hidden {
+		display: none;
+		pointer-events: none;
+	}
+}
+
+// Scroll wrapper; gradient overlays here (outside scrolling content)
+.dswp-breadcrumb__scroll-wrap {
+	flex: 1;
+	min-width: 0;
+	position: relative;
+
+	@media (min-width: 768px) {
+
+		&::before,
+		&::after {
+			content: "";
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			width: 1.25rem;
+			pointer-events: none;
+			z-index: 10;
+			opacity: 0;
+			transition: opacity 0.2s ease;
+		}
+
+		&::before {
+			left: 0;
+			background: linear-gradient(to right, var(--dswp-breadcrumb-fade, #fff) 0%, transparent 100%);
+		}
+
+		&::after {
+			right: 0;
+			background: linear-gradient(to left, var(--dswp-breadcrumb-fade, #fff) 0%, transparent 100%);
+		}
+	}
+}
+
+// Gradients when that side's arrow is visible
+.wp-block-design-system-wordpress-plugin-breadcrumb:has(
+.dswp-breadcrumb-arrow--left:not(.is-hidden)
+) .dswp-breadcrumb__scroll-wrap::before {
+	opacity: 1;
+}
+
+.wp-block-design-system-wordpress-plugin-breadcrumb:has(
+.dswp-breadcrumb-arrow--right:not(.is-hidden)
+) .dswp-breadcrumb__scroll-wrap::after {
+	opacity: 1;
+}
+
 .dswp-block-breadcrumb__container {
-    // Flexbox layout for horizontal navigation
-    display: flex;
-    align-items: center;
-    gap: 0.625rem; // Small spacing between breadcrumb items
-    min-height: 24px; // Minimum height for consistent layout
-    flex-wrap: wrap;
-    
-    // Frontend fade-in effect for smooth loading
-    &:not(.is-editor) {
-        opacity: 0; // Initially hidden
-        transition: opacity 0.3s ease-in; // Smooth transition
-        
-        // Fully visible when loaded
-        &.is-loaded {
-            opacity: 1;
-        }
-    }
-    
-    // Link styling within breadcrumb
-    a {
-        color: inherit; // Inherit text color from parent
-        text-decoration: none; // Remove underline by default
-        
-        // Underline on hover for interactive feedback
-        &:hover {
-            text-decoration: underline;
-        }
-    }
-    
-    // Styling for current page (last item in breadcrumb)
-    .current-page,
-    .current-page-link {
-        color: #666; // Muted color for current page
-    }
-    
-    .dswp-breadcrumb-separator {
-        color: #666;
-        font-size: 22px;
-    }
+	// Take space between arrows; constrain so overflow scrolls
+	flex: 1;
+	min-width: 0;
+	max-width: 100%;
+	// Scroll viewport; inner track has flex row and width: max-content
+	display: block;
+	overflow-x: auto;
+	overflow-y: hidden;
+	-webkit-overflow-scrolling: touch;
+	padding-bottom: 8px; // Space for scrollbar on mobile
+
+	// Mobile: padding at end so full trail is scrollable
+	@media (max-width: 767px) {
+		padding-right: 1rem;
+		width: 100%;
+		box-sizing: border-box;
+	}
+
+	// Scrollbar: visible on mobile (touch), hidden on desktop (arrows only)
+	scrollbar-width: thin;
+
+	&::-webkit-scrollbar {
+		height: 4px;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background: #d1d5db;
+		border-radius: 3px;
+	}
+
+	&::-webkit-scrollbar-thumb:hover {
+		background: #9ca3af;
+	}
+
+	@media (min-width: 768px) {
+		padding-bottom: 0;
+		scrollbar-width: none; // Firefox: hide scrollbar
+		&::-webkit-scrollbar {
+			display: none; // Chrome, Safari, Edge: hide scrollbar
+		}
+	}
+
+	// Frontend fade-in
+	&:not(.is-editor) {
+		opacity: 0;
+		transition: opacity 0.3s ease-in;
+
+		&.is-loaded {
+			opacity: 1;
+		}
+	}
+
+	// Links: blue, underlined
+	a {
+		text-decoration: underline;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+
+	// Current page: bold, not a link
+	.current-page,
+	.current-page-link {
+		font-weight: 700;
+	}
+
+	// Separator
+	.dswp-breadcrumb-separator {
+		font-size: 0.875em;
+	}
+}
+
+// Inner track: width: max-content so scroll extent = full content on mobile
+.dswp-breadcrumb__track {
+	display: flex;
+	align-items: center;
+	flex-wrap: nowrap;
+	gap: 0.625rem;
+	min-height: 28px;
+	width: max-content;
+	min-width: 100%;
+
+	> * {
+		flex-shrink: 0;
+	}
 }

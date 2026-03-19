@@ -1,0 +1,12 @@
+name: WordPress PHP Testing
+on: [push, workflow_dispatch]
+permissions:
+  contents: read
+  pull-requests: write
+
+
+jobs:
+  test-php:
+    uses: bcgov/des-git-workflows/.github/workflows/wordpress-php-tests.yml@1.2.0
+    with:
+      node_version: "24" # Will use the latest available Node.js 24.x version

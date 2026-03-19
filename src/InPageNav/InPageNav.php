@@ -140,6 +140,7 @@ class InPageNav {
 			'dswpInPageNav',
 			[
 				'options'      => [
+					'nav_breakpoint'    => 768,
 					'mobile_breakpoint' => 1800,
 					'scroll_offset'     => 60,
 					'heading_selectors' => [ 'h2' ],

@@ -17,7 +17,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: "22.14.0"
+          node-version: "24" # Will use the latest available Node.js 24.x version
 
       - name: Install and Build 🔧
         run: |

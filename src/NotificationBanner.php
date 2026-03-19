@@ -20,6 +20,7 @@ class NotificationBanner {
         'var(--dswp-icons-color-danger)'  => 'white',
         'var(--dswp-icons-color-success)' => 'white',
         'var(--dswp-icons-color-info)'    => 'white',
+        '#2d2d2d'                         => '#ffffff',
     ];
 
     /**
@@ -50,11 +51,13 @@ class NotificationBanner {
      */
     public function register_settings() {
         register_setting( 'dswp_options_group', 'dswp_notification_banner_notification', 'wp_kses_post' );
+
+        // Register banner enabled and color settings.
         register_setting( 'dswp_options_group', 'dswp_notification_banner_enabled', 'sanitize_text_field' );
-        register_setting( 'dswp_options_group', 'dswp_notification_banner_color' );
+        register_setting( 'dswp_options_group', 'dswp_notification_banner_color', [ $this, 'sanitize_banner_color' ] );
 
+        // Add settings section and fields.
         add_settings_section( 'dswp_notification_menu_settings_section', __( 'Notification Banner Settings', 'dswp' ), null, 'dswp-notification-menu' );
-
         add_settings_field( 'banner_enabled', __( 'Enable Banner', 'dswp' ), [ $this, 'render_banner_enabled_field' ], 'dswp-notification-menu', 'dswp_notification_menu_settings_section' );
         add_settings_field( 'banner_content', __( 'Banner Content (HTML allowed)', 'dswp' ), [ $this, 'render_banner_content_field' ], 'dswp-notification-menu', 'dswp_notification_menu_settings_section' );
         add_settings_field( 'banner_color', __( 'Banner Color', 'dswp' ), [ $this, 'render_banner_color_field' ], 'dswp-notification-menu', 'dswp_notification_menu_settings_section' );
@@ -74,24 +77,29 @@ class NotificationBanner {
                 submit_button( __( 'Save Settings', 'dswp' ) );
                 ?>
             </form>
-    
+
             <h2><?php esc_html_e( 'Banner Preview', 'dswp' ); ?></h2>
             <div id="dswp-banner-preview" style="padding: 10px; text-align: center; border: 1px solid #ccc;">
                 <?php
                 // Fetch saved options.
                 $banner_enabled       = get_option( 'dswp_notification_banner_enabled', '0' );
-                $banner_color         = get_option( 'dswp_notification_banner_color', '#FFA500' );
+                $banner_color         = get_option( 'dswp_notification_banner_color' );
                 $notification_message = get_option( 'dswp_notification_banner_notification', '' );
 
-                // Display the banner preview only if enabled.
+                // Display the banner preview. Show this even if it is not enabled.
+                $text_color = $this->get_text_color( $banner_color ); // Get appropriate text color.
+                echo '<div style="background-color: ' . esc_attr( $banner_color ) . '; color: ' . esc_attr( $text_color ) . '; padding: 10px; text-align: center;">';
+                echo wp_kses_post( $notification_message );
+                echo '</div>';
+
+                // Display status indicator.
+                echo '<p style="margin-top: 10px; font-size: 0.9em;">';
                 if ( '1' === $banner_enabled ) {
-                    $text_color = $this->get_text_color( $banner_color ); // Get appropriate text color.
-                    echo '<div style="background-color: ' . esc_attr( $banner_color ) . '; color: ' . esc_attr( $text_color ) . '; padding: 10px; text-align: center;">';
-                    echo wp_kses_post( $notification_message );
-                    echo '</div>';
+                    echo '<strong style="color: green;">✓ This banner is enabled and will display on the frontend.</strong>';
                 } else {
-                    echo '<p>' . esc_html__( 'The banner is disabled. Enable it to see the preview.', 'dswp' ) . '</p>';
+                    echo '<strong style="color: darkred;">⚠ This banner is disabled and will NOT display on the frontend.</strong>';
                 }
+                echo '</p>';
                 ?>
             </div>
         </div>
@@ -104,12 +112,12 @@ class NotificationBanner {
     public function render_banner_enabled_field() {
         $banner_enabled = get_option( 'dswp_notification_banner_enabled', '0' );
 		?>
-        <label>
-            <input type="radio" name="dswp_notification_banner_enabled" value="1" <?php checked( $banner_enabled, '1' ); ?> />
+        <label for="dswp_banner_enable">
+            <input type="radio" id="dswp_banner_enable" name="dswp_notification_banner_enabled" value="1" <?php checked( $banner_enabled, '1' ); ?> />
             <?php esc_html_e( 'Enable', 'dswp' ); ?>
         </label>
-        <label>
-            <input type="radio" name="dswp_notification_banner_enabled" value="0" <?php checked( $banner_enabled, '0' ); ?> />
+        <label for="dswp_banner_disable">
+            <input type="radio" id="dswp_banner_disable" name="dswp_notification_banner_enabled" value="0" <?php checked( $banner_enabled, '0' ); ?> />
             <?php esc_html_e( 'Disable', 'dswp' ); ?>
         </label>
 		<?php
@@ -130,18 +138,20 @@ class NotificationBanner {
      * Renders the field for selecting the banner color.
      */
     public function render_banner_color_field() {
-        $banner_color = get_option( 'dswp_notification_banner_color', '#FFA500' );
+        $banner_color = get_option( 'dswp_notification_banner_color' );
 
         $color_options = [
             'var(--dswp-icons-color-warning)' => __( 'Warning', 'dswp' ),
             'var(--dswp-icons-color-danger)'  => __( 'Danger', 'dswp' ),
             'var(--dswp-icons-color-success)' => __( 'Success', 'dswp' ),
             'var(--dswp-icons-color-info)'    => __( 'Info', 'dswp' ),
+            '#2d2d2d'                         => __( 'Black', 'dswp' ),
         ];
 
         foreach ( $color_options as $color => $label ) {
-            echo '<label>
-                    <input type="radio" name="dswp_notification_banner_color" value="' . esc_attr( $color ) . '" ' . checked( $banner_color, $color, false ) . ' />
+            $id = 'dswp_banner_color_' . strtolower( $label );
+            echo '<label for="' . esc_attr( $id ) . '">
+                    <input type="radio" id="' . esc_attr( $id ) . '" name="dswp_notification_banner_color" value="' . esc_attr( $color ) . '" ' . checked( $banner_color, $color, false ) . ' />
                     <span style="display:inline-block; width: 20px; height: 20px; background-color: ' . esc_attr( $color ) . ';"></span> ' . esc_html( $label ) . '
                   </label><br />';
         }
@@ -152,12 +162,13 @@ class NotificationBanner {
      */
     public function display_banner() {
         $banner_enabled       = get_option( 'dswp_notification_banner_enabled', '0' );
-        $banner_color         = get_option( 'dswp_notification_banner_color', '#000000' );
+        $banner_color         = get_option( 'dswp_notification_banner_color' );
         $notification_message = get_option( 'dswp_notification_banner_notification', '' );
 
-        if ( '1' === $banner_enabled ) {
+        // Display the banner only if enabled AND there is a message.
+        if ( '1' === $banner_enabled && ! empty( $notification_message ) ) {
             $text_color = $this->get_text_color( $banner_color );
-            echo '<div style="background-color: ' . esc_attr( $banner_color ) . '; padding: 10px; color: ' . esc_attr( $text_color ) . '; text-align: center;">';
+            echo '<div id="dswp-notification-banner" style="background-color: ' . esc_attr( $banner_color ) . '; padding: 10px; color: ' . esc_attr( $text_color ) . '; text-align: center;">';
             echo wp_kses_post( $notification_message );
             echo '</div>';
         }
@@ -171,5 +182,20 @@ class NotificationBanner {
      */
     private function get_text_color( $background_color ) {
         return isset( self::COLOR_MAP[ $background_color ] ) ? self::COLOR_MAP[ $background_color ] : 'black';
+	}
+
+    /**
+     * Sanitizes the banner color setting.
+     *
+     * @param string $color The color value to sanitize.
+     * @return string The sanitized color or default if invalid.
+     */
+    public function sanitize_banner_color( $color ) {
+        if ( array_key_exists( $color, self::COLOR_MAP ) ) {
+            return $color;
+        } else {
+            // Default background color if invalid or unset.
+            return 'var(--dswp-icons-color-warning)';
+        }
     }
 }
