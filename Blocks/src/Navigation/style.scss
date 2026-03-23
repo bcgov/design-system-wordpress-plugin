@@ -62,13 +62,12 @@
 	padding-inline-start: 0 !important;
 	// Top level links border separation
 	> .wp-block-navigation-item {
-		flex: 1;
 		text-align: center;
 
-        &:not(:last-child):after {
-            content: "";
-            border-right: 1px solid var(--dswp-surface-color-border-default);
-        }
+		&:not(:last-child)::after {
+			content: "";
+			border-right: 1px solid var(--dswp-surface-color-border-default);
+		}
 
 		&:hover {
 			background-color: #edebe9 // TODO will need to update to design system token from bcgov once the tokens are imported. token suggested by bcgov is --surface-color-menus-hover
