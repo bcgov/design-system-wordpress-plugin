@@ -55,7 +55,12 @@ export default defineUserConfig({
 			{
 				text: "Developers",
 				collapsible: true,
-				children: [],
+				children: [
+					{
+						text: "Block authoring best practices",
+						link: "/guide/Blocks/BlockAuthoringBestPractices",
+					},
+				],
 			},
 		],
 	}),
