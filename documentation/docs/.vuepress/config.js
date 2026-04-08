@@ -58,7 +58,7 @@ export default defineUserConfig({
 				children: [
 					{
 						text: "Block authoring best practices",
-						link: "/guide/Blocks/BlockAuthoringBestPractices",
+						link: "/guide/SiteEditor/Blocks/BlockAuthoringBestPractices",
 					},
 				],
 			},

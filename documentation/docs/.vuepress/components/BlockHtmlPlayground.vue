@@ -259,58 +259,57 @@ const defaultSnapshot = () => ( {
 } );
 
 function buildCardGroupBlockJson() {
-	const o = {
-		$schema: 'https://schemas.wp.org/trunk/block.json',
-		apiVersion: 3,
+	return buildBlockJson( {
 		name: 'block-plugin/card-group',
 		title: 'Card Group',
-		category: 'widgets',
 		icon: 'screenoptions',
 		description: 'Parent block: header row and inner Card Item blocks.',
-		textdomain: 'block-plugin',
-		editorScript: 'file:./index.js',
-		render: 'file:./render.php',
-		style: 'file:./style-index.css',
-		supports: {
-			html: false,
-			border: {
-				color: true,
-				radius: true,
-				style: true,
-				width: true,
-			},
-			color: { text: true, background: true },
-			spacing: { padding: true, margin: true },
-		},
-	};
-	return `${ JSON.stringify( o, null, 2 ) }\n`;
+		render: true,
+	} );
 }
 
 function buildCardItemBlockJson() {
+	return buildBlockJson( {
+		name: 'block-plugin/card-item',
+		title: 'Card Item',
+		icon: 'index-card',
+		description: 'Child block: title and body saved in post content.',
+		parent: 'block-plugin/card-group',
+	} );
+}
+
+const blockSupports = {
+	html: false,
+	border: {
+		color: true,
+		radius: true,
+		style: true,
+		width: true,
+	},
+	color: { text: true, background: true },
+	spacing: { padding: true, margin: true },
+};
+
+function buildBlockJson( { name, title, icon, description, parent, render = false } ) {
 	const o = {
 		$schema: 'https://schemas.wp.org/trunk/block.json',
 		apiVersion: 3,
-		name: 'block-plugin/card-item',
-		title: 'Card Item',
+		name,
+		title,
 		category: 'widgets',
-		icon: 'index-card',
-		description: 'Child block: title and body saved in post content.',
+		icon,
+		description,
 		textdomain: 'block-plugin',
-		parent: [ 'block-plugin/card-group' ],
 		editorScript: 'file:./index.js',
 		style: 'file:./style-index.css',
-		supports: {
-			html: false,
-			border: {
-				color: true,
-				radius: true,
-				style: true,
-				width: true,
-			},
-			color: { text: true, background: true },
-			spacing: { padding: true, margin: true },
-		},
+		supports: blockSupports,
 	};
+	if ( parent ) {
+		o.parent = [ parent ];
+	}
+	if ( render ) {
+		o.render = 'file:./render.php';
+	}
 	return `${ JSON.stringify( o, null, 2 ) }\n`;
 }
 
@@ -400,7 +399,7 @@ function flattenTree( nodes, depth = 0, acc = [] ) {
 	return acc;
 }
 
-const flatTree = computed( () => flattenTree( tree ) );
+const flatTree = flattenTree( tree );
 
 function escHtml( s ) {
 	return s
@@ -410,11 +409,7 @@ function escHtml( s ) {
 		.replace( /"/g, '&quot;' );
 }
 
-function escPhpSingle( s ) {
-	return s.replace( /\\/g, '\\\\' ).replace( /'/g, "\\'" );
-}
-
-function escJsSingle( s ) {
+function escSingleQuoted( s ) {
 	return s.replace( /\\/g, '\\\\' ).replace( /'/g, "\\'" );
 }
 
@@ -446,7 +441,7 @@ $wrapper_attributes = get_block_wrapper_attributes();
 
 <div <?php echo $wrapper_attributes; ?>>
 	<div class="card-group__header">
-		<?php echo esc_html__( '${ escPhpSingle( snap.groupHeader ) }', 'block-plugin' ); ?>
+		<?php echo esc_html__( '${ escSingleQuoted( snap.groupHeader ) }', 'block-plugin' ); ?>
 	</div>
 
 	<div class="card-group__items">
@@ -469,8 +464,8 @@ export default function save( { attributes } ) {
 
 	return (
 		<div { ...useBlockProps.save() }>
-			<RichText.Content tagName="h3" className="card-item__title" value={ '${ escJsSingle( c.title ) }' } />
-			<RichText.Content tagName="p" className="card-item__body" value={ '${ escJsSingle( c.body ) }' } />
+			<RichText.Content tagName="h3" className="card-item__title" value={ '${ escSingleQuoted( c.title ) }' } />
+			<RichText.Content tagName="p" className="card-item__body" value={ '${ escSingleQuoted( c.body ) }' } />
 		</div>
 	);
 }
@@ -742,6 +737,10 @@ const selectedPath = ref( 'CardGroup/render.php' );
 
 let debounceId = null;
 
+function syncFilesFromSnapshot() {
+	Object.assign( files, composeFiles( snapshot ) );
+}
+
 function selectFile( path ) {
 	if ( path.startsWith( 'dir:' ) ) {
 		return;
@@ -757,16 +756,8 @@ function onFileInput( value ) {
 	}
 	debounceId = setTimeout( () => {
 		debounceId = null;
-		const snap = {
-			...snapshot,
-			cards: snapshot.cards.map( ( c ) => ( { ...c } ) ),
-			cardGroupBlockJsonText: snapshot.cardGroupBlockJsonText,
-			cardItemBlockJsonText: snapshot.cardItemBlockJsonText,
-			themeJsonText: snapshot.themeJsonText,
-		};
-		applyParsedToFiles( path, value, snap );
-		Object.assign( snapshot, snap );
-		Object.assign( files, composeFiles( snapshot ) );
+		applyParsedToFiles( path, value, snapshot );
+		syncFilesFromSnapshot();
 	}, 280 );
 }
 
@@ -777,7 +768,7 @@ function resetAll() {
 		cardItemBlockJsonText: buildCardItemBlockJson(),
 		themeJsonText: buildThemeJson(),
 	} );
-	Object.assign( files, composeFiles( snapshot ) );
+	syncFilesFromSnapshot();
 	selectedPath.value = 'CardGroup/render.php';
 }
 
