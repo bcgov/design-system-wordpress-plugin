@@ -55,6 +55,10 @@
 
 // Main navigation container
 .dswp-block-navigation__container {
+	--dswp-nav-active-bg: var(--bcds-surface-color-secondary-pressed, #e0dedc);
+	--dswp-nav-hover-bg: var(--wp--custom--dswp--surface-color-menus-hover, #edebe9);
+	--dswp-nav-divider: var(--dswp-surface-color-border-default, #d8d8d8);
+
 	display: flex;
 	align-items: center;
 	list-style: none;
@@ -65,12 +69,7 @@
 		text-align: center;
 
 		&:not(:last-child)::after {
-			content: "";
 			border-right: 1px solid var(--dswp-surface-color-border-default);
-		}
-
-		&:hover {
-			background-color: #edebe9 // TODO will need to update to design system token from bcgov once the tokens are imported. token suggested by bcgov is --surface-color-menus-hover
 		}
 
 		&:last-child {
@@ -79,8 +78,8 @@
 		}
 
 		&.active > .wp-block-navigation-item__content {
-			border-left: 4px solid var(--dswp-surface-color-border-default);
-			background: #e1e1e196;
+			background: var(--dswp-nav-active-bg);
+			border-bottom: 1px solid var(--dswp-nav-divider);
 		}
 	}
 
@@ -116,9 +115,6 @@
 			display: none;
 			z-index: 1000;
 			background: var(--dswp-surface-color-background-white);
-			box-shadow:
-				0 1.2px 3.6px 0 rgba(0, 0, 0, 0.1),
-				0 6.4px 14.4px 0 rgba(0, 0, 0, 0.13);
 			padding: 0;
 			margin: 0;
 			width: max-content !important;
@@ -153,9 +149,13 @@
 			}
 
 			.wp-block-navigation-item__content {
+				display: block;
+				width: 100%;
+				box-sizing: border-box;
 
 				&:hover {
-					background-color: #efeeec;
+					background-color: var(--dswp-nav-hover-bg);
+					border-bottom: 1px solid var(--dswp-nav-divider);
 					text-decoration: underline;
 				}
 				padding-left: 2rem;
@@ -180,8 +180,8 @@
 		&.is-open {
 
 			> .wp-block-navigation-item__content {
-				font-weight: 700;
-				background-color: var(--dswp-theme-gray-10);
+				background-color: var(--dswp-nav-active-bg);
+				border-bottom: 1px solid var(--dswp-nav-divider);
 			}
 
 			> .wp-block-navigation-item__content::after {
@@ -222,25 +222,15 @@
 
 	// Desktop hover styles
 	&:not(.dswp-is-mobile) {
-		// First link left-aligns with 1rem left padding (desktop only)
-		> .wp-block-navigation-item:first-child a {
-			padding-left: 1rem;
-			padding-right: 2rem;
-		}
 
-		// Desktop-only: First link active state - use pseudo-element for border
-		> .wp-block-navigation-item:first-child.active > .wp-block-navigation-item__content {
-			padding-left: 1rem;
-			position: relative;
+		> .wp-block-navigation-item {
 
-			&::before {
-				content: "";
-				position: absolute;
-				left: 0;
-				top: 0;
-				bottom: 0;
-				width: 3px;
-				background: var(--dswp-surface-color-border-default);
+			&:hover {
+
+				> .wp-block-navigation-item__content {
+					background-color: var(--dswp-nav-hover-bg);
+					border-bottom: 1px solid var(--dswp-nav-divider);
+				}
 			}
 		}
 
@@ -274,18 +264,8 @@
 	// Target any active link at any nesting level
 	.wp-block-navigation-item.active > .wp-block-navigation-item__content,
 	.wp-block-navigation__submenu-container .wp-block-navigation-item.active > .wp-block-navigation-item__content {
-		background: #e1e1e196;
-		position: relative;
-
-		&::before {
-			content: "";
-			position: absolute;
-			left: 0;
-			top: 0;
-			bottom: 0;
-			width: 3px;
-			background: var(--dswp-surface-color-border-default);
-		}
+		background: var(--dswp-nav-active-bg);
+		border-bottom: 1px solid var(--dswp-nav-divider);
 	}
 }
 
@@ -310,7 +290,7 @@
 		padding-top: 1rem;
 		box-sizing: border-box;
 		margin-block-start: 3rem !important;
-		padding-bottom: 5rem;
+		padding-bottom: 1rem;
 		border-bottom: solid 3px #00000096;
 
 		// Force items into columns of 10
@@ -318,6 +298,23 @@
 			break-inside: avoid;
 			display: block;
 		}
+
+		// Normalize open-menu row height in overlay modes.
+		> .wp-block-navigation-item {
+			margin: 0;
+
+			> .wp-block-navigation-item__content {
+				display: flex;
+				align-items: center;
+				height: 32px;
+				min-height: 32px;
+				padding-top: 0.25rem;
+				padding-bottom: 0.25rem;
+				line-height: 1.3;
+				box-sizing: border-box;
+			}
+		}
+
 	}
 }
 
@@ -382,7 +379,7 @@
 .dswp-block-navigation__container.dswp-is-mobile {
 
 	.dswp-submenu-toggle {
-		height: 44px;
+		height: 32px;
 
 		&[aria-expanded="true"]::after {
 			transform: rotate(-180deg);
@@ -400,11 +397,20 @@
 			width: 100%;
 			text-align: left;
 			border-right: none;
+			margin: 0;
 
-			.wp-block-navigation-item__content {
+			> .wp-block-navigation-item__content {
 				width: 100%;
+				display: flex;
+				align-items: center;
 				justify-content: flex-start;
 				font-size: 16px;
+				height: 40px;
+				padding-top: 0.25rem;
+				padding-bottom: 0.25rem;
+				min-height: 40px;
+				line-height: 1.3;
+				box-sizing: border-box;
 			}
 		}
 
@@ -450,7 +456,7 @@
 
 		// Adjust submenu toggle button positioning for mobile
 		.dswp-submenu-toggle {
-			height: 44px; // Fixed height instead of 100%
+			height: 40px;
 			align-self: center;
 		}
 
@@ -466,7 +472,6 @@
 				// Ensure proper arrow positioning for nested levels
 				.dswp-submenu-toggle {
 					right: 0;
-					height: 44px;
 				}
 			}
 		}
@@ -493,18 +498,8 @@
 
 			// Active state for second level items
 			&.active > .wp-block-navigation-item__content {
-				background: #e1e1e161;
-				position: relative;
-
-				&::before {
-					content: "";
-					position: absolute;
-					left: 0;
-					top: 0;
-					bottom: 0;
-					width: 3px;
-					background: #00000069;
-				}
+				background: var(--dswp-nav-active-bg);
+				border-bottom: 1px solid var(--dswp-nav-divider);
 			}
 		}
 
@@ -520,28 +515,10 @@
 
 				// Active state for third level items
 				&.active > .wp-block-navigation-item__content {
-					background: #e1e1e161;
-					position: relative;
-
-					&::before {
-						content: "";
-						position: absolute;
-						left: 0;
-						top: 0;
-						bottom: 0;
-						width: 3px;
-						background: #00000069;
-					}
+					background: var(--dswp-nav-active-bg);
+					border-bottom: 1px solid var(--dswp-nav-divider);
 				}
 			}
-		}
-	}
-
-	// Make items bold when their submenu is open
-	.wp-block-navigation-submenu.is-open {
-
-		> .wp-block-navigation-item__content {
-			font-weight: 700 !important;
 		}
 	}
 
@@ -549,17 +526,7 @@
 
 	// First level items
 	> .wp-block-navigation-item.active > .wp-block-navigation-item__content {
-		background: #e1e1e161;
-		position: relative;
-
-		&::before {
-			content: "";
-			position: absolute;
-			left: 0;
-			top: 0;
-			bottom: 0;
-			width: 3px;
-			background: #00000069;
-		}
+		background: var(--dswp-nav-active-bg);
+		border-bottom: 1px solid var(--dswp-nav-divider);
 	}
 }
