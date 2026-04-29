@@ -69,7 +69,8 @@
 		text-align: center;
 
 		&:not(:last-child)::after {
-			border-right: 1px solid var(--dswp-surface-color-border-default);
+			content: none;
+			border-right: none;
 		}
 
 		&:last-child {
@@ -222,6 +223,11 @@
 
 	// Desktop hover styles
 	&:not(.dswp-is-mobile) {
+
+		> .wp-block-navigation-item:not(:last-child)::after {
+			content: "";
+			border-right: 1px solid var(--dswp-surface-color-border-default);
+		}
 
 		> .wp-block-navigation-item {
 
