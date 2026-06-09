@@ -1,13 +1,5 @@
 {
     "core": "WordPress/WordPress#6.8",
     "phpVersion": "7.4",
-	"port": 8898,
-	"testsPort": 8899,
-    "plugins": [ "." ],
-		"themes": [
-			"../../themes/design-system-wordpress-theme/"
-		],
-		"lifecycleScripts": {
-    	"afterStart": "wp-env run tests-cli wp theme activate design-system-wordpress-theme && wp-env run cli wp theme activate design-system-wordpress-theme"
-    }
+    "plugins": [ "." ]
 }
