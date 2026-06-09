@@ -80,7 +80,6 @@
 
 		&.active > .wp-block-navigation-item__content {
 			background: var(--dswp-nav-active-bg);
-			border-bottom: 1px solid var(--dswp-nav-divider);
 		}
 	}
 
@@ -156,7 +155,6 @@
 
 				&:hover {
 					background-color: var(--dswp-nav-hover-bg);
-					border-bottom: 1px solid var(--dswp-nav-divider);
 					text-decoration: underline;
 				}
 				padding-left: 2rem;
@@ -182,7 +180,6 @@
 
 			> .wp-block-navigation-item__content {
 				background-color: var(--dswp-nav-active-bg);
-				border-bottom: 1px solid var(--dswp-nav-divider);
 			}
 
 			> .wp-block-navigation-item__content::after {
@@ -235,7 +232,6 @@
 
 				> .wp-block-navigation-item__content {
 					background-color: var(--dswp-nav-hover-bg);
-					border-bottom: 1px solid var(--dswp-nav-divider);
 				}
 			}
 		}
@@ -271,7 +267,6 @@
 	.wp-block-navigation-item.active > .wp-block-navigation-item__content,
 	.wp-block-navigation__submenu-container .wp-block-navigation-item.active > .wp-block-navigation-item__content {
 		background: var(--dswp-nav-active-bg);
-		border-bottom: 1px solid var(--dswp-nav-divider);
 	}
 }
 
@@ -424,7 +419,6 @@
 		> .wp-block-navigation-item {
 
 			> .wp-block-navigation-item__content {
-				border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 			}
 
 			&:last-child > .wp-block-navigation-item__content {
@@ -505,7 +499,6 @@
 			// Active state for second level items
 			&.active > .wp-block-navigation-item__content {
 				background: var(--dswp-nav-active-bg);
-				border-bottom: 1px solid var(--dswp-nav-divider);
 			}
 		}
 
@@ -522,7 +515,6 @@
 				// Active state for third level items
 				&.active > .wp-block-navigation-item__content {
 					background: var(--dswp-nav-active-bg);
-					border-bottom: 1px solid var(--dswp-nav-divider);
 				}
 			}
 		}
@@ -533,6 +525,5 @@
 	// First level items
 	> .wp-block-navigation-item.active > .wp-block-navigation-item__content {
 		background: var(--dswp-nav-active-bg);
-		border-bottom: 1px solid var(--dswp-nav-divider);
 	}
 }
