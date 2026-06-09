@@ -78,6 +78,10 @@
 			padding-right: 0;
 		}
 
+		> .wp-block-navigation-item__content {
+			border-bottom: 1px solid transparent;
+		}
+
 		&.active > .wp-block-navigation-item__content {
 			background: var(--dswp-nav-active-bg);
 			border-bottom: 1px solid var(--dswp-nav-divider);
@@ -153,6 +157,7 @@
 				display: block;
 				width: 100%;
 				box-sizing: border-box;
+				border-bottom: 1px solid transparent;
 
 				&:hover {
 					background-color: var(--dswp-nav-hover-bg);
